@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Jewelry extends Model
+{
+    use HasFactory;
+    use SoftDeletes;
+    protected $fillable = [
+        'type_jewelry_id',
+        'jewelry_code',
+        'jewelry_title_name',
+        'jewelry_code_new' , 
+        'jewelry_price',
+        'jewelry_deposit',
+        'jewelry_count',
+        'jewelry_status',
+        'jewelry_description',
+        'jewelry_rental',        
+    ];
+
+    //ตาราง jew เป็น M ต่อ 1 ของตาราง typejew
+    public function jewelry(){
+        return $this->belongsTo(Jewelry::class,'type_jewelry_id') ; 
+    }
+    //jew เป็น 1 ต่อ M ของตาราง jewimage
+    public function jewelryimages(){
+        return $this->hasMany(Jewelryimage::class,'jewelry_id') ; 
+    }
+}

@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Dress extends Model
+{
+    use HasFactory;
+    use SoftDeletes;
+    protected $fillable = [
+        'type_dress_id',
+        'dress_code',
+        'dress_title_name',
+        'dress_color',
+        'dress_price',
+        'dress_deposit',
+        'dress_count',
+        'dress_status',
+        'dress_description',
+        'dress_rental',
+        'dress_code_new' , 
+        
+    ];
+
+    // dress เป็น M - 1 ของ type
+    public function typedress(){
+        return $this->belongsTo(Typedress::class,'type_dress_id') ; 
+    }
+
+    // dress เป็น 1 - M ของ dressimage
+    public function dressimages(){
+        return $this->hasMany(Dressimage::class,'dress_id') ; 
+    }
+
+    // dress เป็น 1 - M ของ dressme
+    public function dressmeasurements(){
+        return $this->hasMany(Dressmeasurement::class,'dress_id') ; 
+    }
+
+
+
+}

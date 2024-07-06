@@ -91,7 +91,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/addcutdress/savecutdress', [EmployeeController::class, 'savecutdress'])->name('employee.savecutdress'); 
 
     Route::get('/employee/cart', [EmployeeController::class, 'cart'])->name('employee.cart'); //ตะกร้าสินค้า
-    Route::post('/employee/cart/deletelist/{id}', [EmployeeController::class, 'deletelist'])->name('employee.deletelist'); //ตะกร้าสินค้า
+    Route::post('/employee/cart/deletelist/{id}', [EmployeeController::class, 'deletelist'])->name('employee.deletelist'); //ลบรายการในตะกร้า
+    Route::get('/employee/card/manageitem/{id}', [EmployeeController::class, 'manageitem'])->name('employee.manageitem'); //จัดการตาม item
+    Route::post('/employee/manageitem/deletemeasurement/{id}', [EmployeeController::class, 'deletemeasurement'])->name('employee.deletemeasurementitem'); //ลบdeletemeasurement ใน item
+    Route::post('/employee/manageitem/deletefittingitem/{id}', [EmployeeController::class, 'deletefittingitem'])->name('employee.deletefittingitem'); //ลบdeletefittng ใน item
 
+    Route::post('/employee/manageitem/savemanageitem/{id}', [EmployeeController::class, 'savemanageitem'])->name('employee.savemanageitem'); //บันทึกจัดการตาม item
 
 });

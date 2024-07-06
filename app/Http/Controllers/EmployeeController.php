@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Date;
+use App\Models\Dress;
 use App\Models\Financial;
 use App\Models\Fitting;
 use App\Models\Imagerent;
@@ -70,17 +71,39 @@ class EmployeeController extends Controller
                 $update_total_price->total_quantity = $check_order->total_quantity + 1;
                 $update_total_price->save();
             }
+
+
+
+
             // ตารางorderdetail
             if ($request->input('type_dress') == 'other_type') {
-                $TYPE_DRESS = $request->input('other_input');
-            } else {
+                $checkdouble = Typedress::where('type_dress_name', $request->input('other_input'))->first();
+                if ($checkdouble) {
+                    $TYPE_DRESS = $request->input('other_input');
+                } 
+                else {
+                    //สร้างตัวอักษรมา1ตัว
+                    do {
+                        $random = chr(65 + rand(0, 25));
+                        $check = Typedress::where('specific_letter', $random)->first();
+                    } while ($check);
+                    $character = $random; //ได้ตัวอักษรมาแล้ว 
+                    $create_id_of_typedress = new Typedress();
+                    $create_id_of_typedress->type_dress_name = $request->input('other_input');
+                    $create_id_of_typedress->specific_letter = $character;
+                    $create_id_of_typedress->save();
+                    $TYPE_DRESS = $request->input('other_input');
+                }
+            }
+            else {
                 $TYPE_DRESS = $request->input('type_dress');
             }
+
             $orderdetail = new Orderdetail();
             $orderdetail->order_id = $ID_ORDER;
             $orderdetail->type_dress = $TYPE_DRESS;
             $orderdetail->type_order = 1; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4เช่าตัด
-            $orderdetail->title_name = "ตัด" . $TYPE_DRESS ; 
+            $orderdetail->title_name = "ตัด" . $TYPE_DRESS;
             $orderdetail->pickup_date = $request->input('pickup_date');
             $orderdetail->amount = $request->input('amount');
 
@@ -118,7 +141,7 @@ class EmployeeController extends Controller
                 $amount_of_money = $request->input('deposit') * $request->input('amount');
                 $text = "จ่ายมัดจำ";
             } else {
-                $amount_of_money = $request->input('price') *$request->input('amount');
+                $amount_of_money = $request->input('price') * $request->input('amount');
                 $text = "จ่ายเต็ม";
             }
             $financial->item_name = $text . "(ตัดชุด)";
@@ -178,45 +201,123 @@ class EmployeeController extends Controller
     }
 
     //ตะกร้าสินค้า
-    public function cart(){
-        $order = Order::where('user_id',Auth::user()->id)
-                        ->where('order_status',0)
-                        ->first() ;  
-                        
-        return view('Employee.cart',compact('order')) ; 
+    public function cart()
+    {
+        $order = Order::where('user_id', Auth::user()->id)
+            ->where('order_status', 0)
+            ->first();
+
+        return view('Employee.cart', compact('order'));
     }
 
     //ลบรายการต่างๆ
-    public function deletelist($id){
-        $delete_orderdetail = Orderdetail::find($id) ; 
+    public function deletelist($id)
+    {
+        $delete_orderdetail = Orderdetail::find($id);
         $delete_orderdetail->delete();
 
         //ลบลูกๆมันด้วย
-        Imagerent::where('order_detail_id',$id)->delete() ; 
-        Paymentstatus::where('order_detail_id',$id)->delete() ; 
-        Fitting::where('order_detail_id',$id)->delete() ; 
-        Financial::where('order_detail_id',$id)->delete() ;  
-        Date::where('order_detail_id',$id)->delete() ; 
-        Measurementorderdetail::where('order_detail_id',$id)->delete() ; 
-        Orderdetailstatus::where('order_detail_id',$id)->delete() ;
-        
-        
+        Imagerent::where('order_detail_id', $id)->delete();
+        Paymentstatus::where('order_detail_id', $id)->delete();
+        Fitting::where('order_detail_id', $id)->delete();
+        Financial::where('order_detail_id', $id)->delete();
+        Date::where('order_detail_id', $id)->delete();
+        Measurementorderdetail::where('order_detail_id', $id)->delete();
+        Orderdetailstatus::where('order_detail_id', $id)->delete();
+
         //อัปเดตตาราง order ด้วย เพราะorderdetail มันลบไปแล้วไง
-        $ORDER_ID = $delete_orderdetail->order_id ; //21
-        $update_order = Order::find($ORDER_ID) ; 
+        $ORDER_ID = $delete_orderdetail->order_id; //21
+        $update_order = Order::find($ORDER_ID);
 
-        $update_order->total_quantity = $update_order->total_quantity - 1 ;//รายการทั้งหมดจะลดลงทีละ1 
-        $update_order->total_price = $update_order->total_price - ($delete_orderdetail->price * $delete_orderdetail->amount) ; 
-        $update_order->total_deposit = $update_order->total_deposit - ($delete_orderdetail->deposit * $delete_orderdetail->amount) ; 
-        $update_order->save() ; 
+        $update_order->total_quantity = $update_order->total_quantity - 1; //รายการทั้งหมดจะลดลงทีละ1 
+        $update_order->total_price = $update_order->total_price - ($delete_orderdetail->price * $delete_orderdetail->amount);
+        $update_order->total_deposit = $update_order->total_deposit - ($delete_orderdetail->deposit * $delete_orderdetail->amount);
+        $update_order->save();
 
-        if($update_order->total_quantity == 0){
-            $update_order->delete() ; 
+        if ($update_order->total_quantity == 0) {
+            $update_order->delete();
         }
         return redirect()->back();
     }
 
+    //จัดการตาม item
+    public function manageitem($id)
+    {
+        $type_dress = Typedress::all();
+        $orderdetail = Orderdetail::find($id);
+        $measurementorderdetail = Measurementorderdetail::where('order_detail_id', $id)->get();
+        $fitting = Fitting::where('order_detail_id', $id)->get();
+        $imagerent = Imagerent::where('order_detail_id', $id)->get();
+        return view('Employee.manageitem', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fitting', 'imagerent'));
+    }
+
+    //ลบdeletemeasurement ใน item
+    public function deletemeasurement($id)
+    {
+        $delete_mea = Measurementorderdetail::find($id);
+        $delete_mea->delete();
+        return redirect()->back();
+    }
+
+    //ลบdeletefittingitem ใน item
+    public function deletefittingitem($id)
+    {
+        $delete_fitting = Fitting::find($id);
+        $delete_fitting->delete();
+        return redirect()->back();
+    }
+
+    //อัปเดตข้อมูลในรายการ item 
+    public function savemanageitem(Request $request, $id)
+    {
+        // $orderdetail = Orderdetail::find($id) ; 
 
 
-   
+        DB::beginTransaction();
+        try {
+            $orderdetail = Orderdetail::find($id);  //ค้นหา order_detail_id ในตาราง orderdetail 
+
+            //เลือกอื่นๆ ต้องกรอก   ประเภทชุดที่เลือกตัด
+            if ($request->input('type_dress') == 'other_type') {
+                $checkdouble = Typedress::where('type_dress_name',$request->input('other_type'))->first() ; 
+                if($checkdouble){
+                    $TYPE_DRESS_NAME = $request->input('other_type') ; 
+                }
+                else{
+                    //สร้างอักษรมา 1 ตัว 
+                    do{
+                        $random = chr(65 + rand(0,25)) ; 
+                        $check = Typedress::where('specific_letter',$random)->first() ; 
+                    }while($check) ; 
+                    $character = $random ; //ได้ตัวอักษรมาแล้ว 
+                    $create_id_of_typedress = new Typedress();
+                    $create_id_of_typedress->type_dress_name = $request->input('other_input');
+                    $create_id_of_typedress->specific_letter = $character;
+                    $create_id_of_typedress->save();
+                    $TYPE_DRESS_NAME = $request->input('other_input');
+                }
+            } 
+            // เลือกในดรอปดาว  ประเภทชุดที่เลือกตัด
+            else {
+                if($request->input('type_dress') == $orderdetail->type_dress){
+                    $TYPE_DRESS_NAME = $request->input('type_dress') ; 
+                    dd('เลือกกุชชี่เหมือนเดิม') ; 
+                }
+                else{
+                    $find_id_order_id = Typedress::where('type_dress_name',$orderdetail->type_dress)->value('id') ; 
+                    $find_table_order_detail_id = Dress::where('type_dress_id',$find_id_order_id)->first() ; 
+                    dd($find_table_order_detail_id) ; 
+
+                }
+            }
+
+
+
+
+
+
+        } catch (\Exception $e) {
+            DB::rollback();
+        }
+    }
 }

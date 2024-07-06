@@ -58,9 +58,19 @@ class DressController extends Controller
         else {
             $TYPE_ID = $request->input('type_dress_id'); //เก็บid  typedress เพื่อนำไปใส่ในตาราง dress
             $maxDressCode = Dress::where('type_dress_id', $request->input('type_dress_id'))->max('dress_code');
+            
+            if($maxDressCode){
+                //ถ้ามี
+                $newDressCode = $maxDressCode + 1; //กำหนดให้หมายเลขชุดที่มี + 1 เพิ่มขึ้นไปเรื่อยๆ 
+            }
+            else{
+                //ถ้าไม่มีก็ให้เริ่มที่ 1 
+                $newDressCode = 1 ; 
+            }
+
             $unique_character = Typedress::where('id', $request->input('type_dress_id'))->value('specific_letter');
             $name_for_session = Typedress::where('id', $request->input('type_dress_id'))->value('type_dress_name');
-            $newDressCode = $maxDressCode + 1; //กำหนดให้หมายเลขชุดที่มี + 1 เพิ่มขึ้นไปเรื่อยๆ
+            
         }
 
 

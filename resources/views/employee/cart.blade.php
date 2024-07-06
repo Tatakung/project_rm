@@ -28,7 +28,7 @@
                                 <td>{{ $detail->amount }}</td>
                                 <td>{{ number_format($detail->price * $detail->amount, 2) }}</td>
                                 <td>
-                                    <a href="" class="btn btn-warning btn-sm">จัดการ</a>
+                                    <a href="{{route('employee.manageitem',['id' => $detail->id])}}" class="btn btn-warning btn-sm">จัดการ</a>
                                     <form action="{{route('employee.deletelist',['id' => $detail->id])}}" method="POST" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn btn-danger btn-sm"

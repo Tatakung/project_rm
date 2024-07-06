@@ -297,7 +297,9 @@
             <!-- ปุ่มตะกร้า -->
             <button class="btn py-0 ml-auto" id="cart-button">
                 <span class="bi bi-cart text-primary h4">
-                    <a href="">ตะกร้า</a>
+                    <a href="{{route('employee.cart')}}">ตะกร้า {{ App\Models\Order::where('user_id',Auth::user()->id)
+                        ->where('order_status',0)
+                        ->value('total_quantity') ?? 0 }}</a>
                 </span>
             </button>
             @endif

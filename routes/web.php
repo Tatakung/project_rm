@@ -87,8 +87,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     // Route::get('/homepage', [HomeController::class, 'homepage'])->name('homepage'); // หน้าแรก
     Route::get('/employee/homepage', [EmployeeController::class, 'homepage'])->name('employee.homepage'); // หน้าแรก
     Route::get('/employee/addorder', [EmployeeController::class, 'addorder'])->name('employee.addorder'); 
-    Route::get('/employee/addcutdress', [EmployeeController::class, 'addcutdress'])->name('employee.addcutdress'); 
+    Route::get('/employee/addcutdress', [EmployeeController::class, 'addcutdress'])->name('employee.addcutdress'); //เพิ่มตัดชุด
+    Route::post('/employee/addcutdress/savecutdress', [EmployeeController::class, 'savecutdress'])->name('employee.savecutdress'); 
 
+    Route::get('/employee/cart', [EmployeeController::class, 'cart'])->name('employee.cart'); //ตะกร้าสินค้า
+    Route::post('/employee/cart/deletelist/{id}', [EmployeeController::class, 'deletelist'])->name('employee.deletelist'); //ตะกร้าสินค้า
 
 
 });

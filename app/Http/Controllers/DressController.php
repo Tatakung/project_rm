@@ -14,14 +14,8 @@ use Illuminate\Support\Str;
 
 class DressController extends Controller
 {
-    //
-    // public function formadddress()
-    // {
-    //     $showtype = Typedress::all();
-    //     return view('admin.adddress', compact('showtype'));
-    // }
 
-    
+
     public function formadddress()
     {
         $typeDresses = Typedress::all();

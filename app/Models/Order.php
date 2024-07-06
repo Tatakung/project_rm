@@ -31,7 +31,7 @@ class Order extends Model
     }
 
     //ตารางorder เป็น 1 - M ของตาราง orderdetail
-    public function orderdetails()
+    public function order_one_many_orderdetails()
     {
         return $this->hasMany(Orderdetail::class, 'order_id');
     }

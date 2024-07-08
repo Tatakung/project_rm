@@ -224,7 +224,11 @@
                     @if ($measurementorderdetail->count() > 0)
                         @foreach ($measurementorderdetail as $showmea)
                             <div class="row mb-3">
+
                                 <div class="col-sm-3">
+                                    <input type="hidden" class="form-control" name="mea_id_[]"
+                                    placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{$showmea->id}}">
+    
                                     <input type="text" class="form-control" name="mea_name_[]"
                                         placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $showmea->measurement_name }}">
                                 </div>
@@ -235,7 +239,7 @@
                                 </div>
 
                                 <div class="col-sm-3">
-                                    <select class="form-control" name="mea_unit[]">
+                                    <select class="form-control" name="mea_unit_[]">
                                         <option value="นิ้ว"
                                             {{ $showmea->measurement_unit == 'นิ้ว' ? 'selected' : '' }}>
                                             นิ้ว
@@ -327,11 +331,16 @@
                                     <label class="form-label">วันที่นัดลองชุด</label>
                                 </div>
                                 <div class="col-sm-3">
-                                    <input type="date" class="form-control" id="fitting_date" name="fitting_date"
+
+                                    <input type="hidden" class="form-control"  name="fitting_id_[]"
+                                        value="{{$showfitting->id}}">
+
+
+                                    <input type="date" class="form-control"  name="fitting_date_[]"
                                         value="{{ $showfitting->fitting_date }}">
                                 </div>
                                 <div class="col-sm-3">
-                                    <input type="text" class="form-control" id="fitting_note" name="fitting_note"
+                                    <input type="text" class="form-control"  name="fitting_note_[]"
                                         placeholder="รายละเอียด" value="{{ $showfitting->fitting_note }}">
                                 </div>
                                 <div class="col-sm-2">
@@ -398,7 +407,7 @@
 
                 <div id="aria_show_input_of_image">
 
-                    @foreach ($imagerent as $showimage)
+                    {{-- @foreach ($imagerent as $showimage)
                         <div class="row mb-3">
                             <label for="image" class="col-sm-2 col-form-label">อัปโหลดรูปภาพ</label>
                             <div class="col-sm-7">
@@ -409,7 +418,7 @@
                                 <button class="form-control btn btn-danger" type="button">ลบ</button>
                             </div>
                         </div>
-                    @endforeach
+                    @endforeach --}}
 
                     {{-- ตัวแบบ --}}
                     {{-- <div class="row mb-3">

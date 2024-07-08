@@ -43,7 +43,8 @@
 
 
 
-    <form action="{{ route('employee.savemanageitem',['id' =>$orderdetail->id ]) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('employee.savemanageitem', ['id' => $orderdetail->id]) }}" method="POST"
+        enctype="multipart/form-data">
         @csrf
         <div class="container mt-4">
             <!-- กล่องแรก: ฟอร์มเพิ่มออเดอร์ -->
@@ -86,49 +87,61 @@
                 </div>
 
                 <div class="row mb-3">
-                    <label for="pickup_date" class="col-sm-2 col-form-label">วันที่นัดรับชุด</label>
+                    <label for="update_pickup_date" class="col-sm-2 col-form-label">วันที่นัดรับชุด</label>
                     <div class="col-sm-3">
-                        <input type="date" class="form-control" id="pickup_date" name="pickup_date"
+                        <input type="date" class="form-control" id="update_pickup_date" name="update_pickup_date"
                             value="{{ $orderdetail->pickup_date }}" required>
                     </div>
                 </div>
-                <div class="row mb-3">
+                <div class="row mb-3" @if ($orderdetail->type_order == 1 ) style="display: none ; " @endif>
+                    <label for="" class="col-sm-2 col-form-label">วันที่นัดคืนชุด</label>
+                    <div class="col-sm-3">
+                        <input type="date" class="form-control" id="" name=""
+                            value="">
+                    </div>
+                </div>
+
+
+                <div class="row mb-3" >
                     <label for="amount" class="col-sm-2 col-form-label">จำนวนชุด</label>
                     <div class="col-sm-3">
-                        <input type="number" class="form-control" id="amount" name="amount"
+                        <input type="number" class="form-control" id="update_amount" name="update_amount"
                             value="{{ $orderdetail->amount }}" min="1" required>
                     </div>
-
-
                 </div>
+                
+
+
                 <div class="row mb-3">
                     <label for="price" class="col-sm-2 col-form-label">ราคาเต็ม/ชุด</label>
                     <div class="col-sm-3">
-                        <input type="number" class="form-control" id="price" name="price" placeholder="ใส่ตัวเลข"
-                            min="1" step="0.01" value="{{ $orderdetail->price }}" required>
+                        <input type="number" class="form-control" id="update_price" name="update_price"
+                            placeholder="ใส่ตัวเลข" min="1" step="0.01" value="{{ $orderdetail->price }}"
+                            required>
                     </div>
 
                 </div>
                 <div class="row mb-3">
                     <label for="deposit" class="col-sm-2 col-form-label">ราคามัดจำ/ชุด</label>
                     <div class="col-sm-3">
-                        <input type="number" class="form-control" id="deposit" name="deposit" placeholder="ใส่ตัวเลข"
-                            min="1" step="0.01" value="{{ $orderdetail->deposit }}" required>
+                        <input type="number" class="form-control" id="update_deposit" name="update_deposit"
+                            placeholder="ใส่ตัวเลข" min="1" step="0.01" value="{{ $orderdetail->deposit }}"
+                            required>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <label class="col-sm-2 col-form-label">ผ้า</label>
                     <div class="col-sm-10">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="cloth" id="cloth1" value="1"
+                            <input class="form-check-input" type="radio" name="update_cloth" id="cloth1" value="1"
                                 {{ $orderdetail->cloth == 1 ? 'checked' : '' }}>
                             <label class="form-check-label" for="cloth1">
                                 ลูกค้านำผ้ามาเอง
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="cloth" id="cloth2" value="2"
-                                {{ $orderdetail->cloth == 2 ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="update_cloth" id="cloth2"
+                                value="2" {{ $orderdetail->cloth == 2 ? 'checked' : '' }}>
                             <label class="form-check-label" for="cloth2">
                                 ทางร้านหาผ้าให้
                             </label>
@@ -136,9 +149,9 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <label for="color" class="col-sm-2 col-form-label">สีของชุด</label>
+                    <label for="update_color" class="col-sm-2 col-form-label">สีของชุด</label>
                     <div class="col-sm-3">
-                        <select class="form-control" id="color" name="color" required>
+                        <select class="form-control" id="update_color" name="update_color" required>
                             <option value="" disabled selected>--สี--</option>
                             <option value="ขาว" {{ $orderdetail->color == 'ขาว' ? 'selected' : '' }}>ขาว</option>
                             <option value="ครีม" {{ $orderdetail->color == 'ครีม' ? 'selected' : '' }}>ครีม</option>
@@ -168,15 +181,17 @@
                     <label class="col-sm-2 col-form-label">การจ่ายเงิน</label>
                     <div class="col-sm-10">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="status_payment" id="status_payment1"
-                                value="1" {{ $orderdetail->status_payment == '1' ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="update_status_payment"
+                                id="status_payment1" value="1"
+                                {{ $orderdetail->status_payment == '1' ? 'checked' : '' }}>
                             <label class="form-check-label" for="status_payment1">
                                 จ่ายมัดจำ
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="status_payment" id="status_payment2"
-                                value="2" {{ $orderdetail->status_payment == '2' ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="update_status_payment"
+                                id="status_payment2" value="2"
+                                {{ $orderdetail->status_payment == '2' ? 'checked' : '' }}>
                             <label class="form-check-label" for="status_payment2">
                                 จ่ายเต็มจำนวน
                             </label>
@@ -187,7 +202,7 @@
                 <div class="row mb-3">
                     <label for="note" class="col-sm-2 col-form-label">รายละเอียดอื่นๆ</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" id="note" name="note" rows="4"
+                        <textarea class="form-control" id="update_note" name="update_note" rows="4"
                             placeholder="ใส่รายละเอียดเพิ่มเติมที่เกี่ยวข้อง">{{ $orderdetail->note }}</textarea>
                     </div>
                 </div>
@@ -248,7 +263,7 @@
 
             <script>
                 var aria_mea = document.getElementById('aria_show_measurement'); //พื้นที่แสดง
-                var add_button = document.getElementById('addfittingitem');
+                var add_button = document.getElementById('addMeasurementitem');
                 var count_mea = 0;
                 add_button.addEventListener('click', function() {
                     count_mea++;

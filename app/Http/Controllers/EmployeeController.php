@@ -80,8 +80,7 @@ class EmployeeController extends Controller
                 $checkdouble = Typedress::where('type_dress_name', $request->input('other_input'))->first();
                 if ($checkdouble) {
                     $TYPE_DRESS = $request->input('other_input');
-                } 
-                else {
+                } else {
                     //สร้างตัวอักษรมา1ตัว
                     do {
                         $random = chr(65 + rand(0, 25));
@@ -94,8 +93,7 @@ class EmployeeController extends Controller
                     $create_id_of_typedress->save();
                     $TYPE_DRESS = $request->input('other_input');
                 }
-            }
-            else {
+            } else {
                 $TYPE_DRESS = $request->input('type_dress');
             }
 
@@ -270,54 +268,99 @@ class EmployeeController extends Controller
     //อัปเดตข้อมูลในรายการ item 
     public function savemanageitem(Request $request, $id)
     {
-        // $orderdetail = Orderdetail::find($id) ; 
+        $orderdetail = Orderdetail::find($id);
+        //บันทึกกรณีตัดชุด
+        if ($orderdetail->type_order == 1) {
+            return $this->savemanageitemone($request, $id);
+        }
+        // บันทึกกรณีเช่าชุด
+        elseif($orderdetail->type_order == 2 ){
+            return $this->savemanageitemtwo($request , $id) ; 
+        }
+    }
 
 
-        DB::beginTransaction();
-        try {
-            $orderdetail = Orderdetail::find($id);  //ค้นหา order_detail_id ในตาราง orderdetail 
+    //อัปเดพกรณีตัดชุด
+    private function savemanageitemone(Request $request, $id)
+    {
+        $orderdetail = Orderdetail::find($id);  //ค้นหา order_detail_id ในตาราง orderdetail 
 
-            //เลือกอื่นๆ ต้องกรอก   ประเภทชุดที่เลือกตัด
-            if ($request->input('type_dress') == 'other_type') {
-                $checkdouble = Typedress::where('type_dress_name',$request->input('other_type'))->first() ; 
-                if($checkdouble){
-                    $TYPE_DRESS_NAME = $request->input('other_type') ; 
-                }
-                else{
-                    //สร้างอักษรมา 1 ตัว 
-                    do{
-                        $random = chr(65 + rand(0,25)) ; 
-                        $check = Typedress::where('specific_letter',$random)->first() ; 
-                    }while($check) ; 
-                    $character = $random ; //ได้ตัวอักษรมาแล้ว 
-                    $create_id_of_typedress = new Typedress();
-                    $create_id_of_typedress->type_dress_name = $request->input('other_input');
-                    $create_id_of_typedress->specific_letter = $character;
-                    $create_id_of_typedress->save();
-                    $TYPE_DRESS_NAME = $request->input('other_input');
-                }
-            } 
-            // เลือกในดรอปดาว  ประเภทชุดที่เลือกตัด
-            else {
-                if($request->input('type_dress') == $orderdetail->type_dress){
-                    $TYPE_DRESS_NAME = $request->input('type_dress') ; 
-                    dd('เลือกกุชชี่เหมือนเดิม') ; 
-                }
-                else{
-                    $find_id_order_id = Typedress::where('type_dress_name',$orderdetail->type_dress)->value('id') ; 
-                    $find_table_order_detail_id = Dress::where('type_dress_id',$find_id_order_id)->first() ; 
-                    dd($find_table_order_detail_id) ; 
+        //เลือกอื่นๆ ต้องกรอก   ประเภทชุดที่เลือกตัด
+        if ($request->input('type_dress') == 'other_type') {
+            $checkdouble = Typedress::where('type_dress_name', $request->input('other_type'))->first();
+            if ($checkdouble) {
+                $TYPE_DRESS_NAME = $request->input('other_type');
+            } else {
+                //สร้างอักษรมา 1 ตัว 
+                do {
+                    $random = chr(65 + rand(0, 25));
+                    $check = Typedress::where('specific_letter', $random)->first();
+                } while ($check);
+                $character = $random; //ได้ตัวอักษรมาแล้ว 
+                $create_id_of_typedress = new Typedress();
+                $create_id_of_typedress->type_dress_name = $request->input('other_input');
+                $create_id_of_typedress->specific_letter = $character;
+                $create_id_of_typedress->save();
+                $TYPE_DRESS_NAME = $request->input('other_input');
 
+                //ลบประเภทชุดเดิมที่เคยสร้าง
+                $ID_FOR_TYPE_NAME = Typedress::where('type_dress_name', $orderdetail->type_dress)->value('id');  //ได้ id มาแล้ว
+                $find_for_delete = Dress::where('type_dress_id', $ID_FOR_TYPE_NAME)->first(); //ค้นหาว่าid ของประเภทชุดมันมีไหม
+                if (!$find_for_delete) {
+                    $delete_type_name_now = Typedress::find($orderdetail->type_dress);
+                    $delete_type_name_now->delete(); //ลบประเภทชุดที่เคยเลือกแล้ว
                 }
             }
-
-
-
-
-
-
-        } catch (\Exception $e) {
-            DB::rollback();
         }
+        // เลือกในดรอปดาว  ประเภทชุดที่เลือกตัด
+        else {
+            $TYPE_DRESS_NAME = $request->input('type_dress');
+            //เช็คว่าเลือกอันเดิมไหม ถ้าไม่เลือกอันเดิม จะลบ ประเภทชุดทิ้ง
+            if ($request->input('type_dress') != $orderdetail->type_dress) {
+                $ID_FOR_TYPE_NAME = Typedress::where('type_dress_name', $orderdetail->type_dress)->value('id');  //ได้ id มาแล้ว
+                $find_for_delete = Dress::where('type_dress_id', $ID_FOR_TYPE_NAME)->first(); //ค้นหาว่าid ของประเภทชุดมันมีไหม 
+                if (!$find_for_delete) {
+                    $delete_type_name_now = Typedress::find($orderdetail->type_dress);
+                    $delete_type_name_now->delete(); //ลบประเภทชุดที่เคยเลือกแล้ว
+                }
+            }
+        }
+        //อัปเดตตารางorderdetail
+        $update_order_detail = Orderdetail::find($id);
+        $update_order_detail->title_name = 'ตัด' . $TYPE_DRESS_NAME;
+        $update_order_detail->type_dress = $TYPE_DRESS_NAME;
+        $update_order_detail->pickup_date = $request->input('update_pickup_date');
+        $update_order_detail->amount = $request->input('update_amount');
+        $update_order_detail->price = $request->input('update_price');
+        $update_order_detail->deposit = $request->input('update_deposit');
+        $update_order_detail->note = $request->input('update_note');
+        $update_order_detail->color = $request->input('update_color');
+        $update_order_detail->cloth = $request->input('update_cloth');
+        $update_order_detail->status_payment = $request->input('update_status_payment');
+
+        //อัปเดตตาราง date
+        $find_id_in_date = Date::where('order_detail_id', $id)->first();
+        $find_id_in_date->pickup_date = $request->input('update_pickup_date');
+        $find_id_in_date->save();
+
+
+        //อัปเดตตารางstatus_payment
+        $find_id_in_payment = Paymentstatus::where('order_detail_id', $id)->first();
+        $find_id_in_payment->payment_status = $request->input('update_status_payment');
+        $find_id_in_payment->save();
+
+        //อัปเดตตาราง financial
+        $find_id_in_financial = Fitting::where('order_detail_id', $id)->first();
+        if ($request->input('update_status_payment') == 1) {
+            $text_update_financial = "จ่ายมัดจำ";
+            $income = $request->input('update_deposit') * $request->input('update_amount');
+        } else {
+            $text_update_financial = "จ่ายเต็ม";
+            $income = $request->input('update_price') * $request->input('update_amount');
+        }
+        $find_id_in_financial->item_name = $text_update_financial . '(ตัดชุด)';
+        $find_id_in_financial->type_order = $orderdetail->type_order;
+        $find_id_in_financial->financial_income = $income ; 
+        $find_id_in_financial->save() ; 
     }
 }

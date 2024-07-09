@@ -13,7 +13,6 @@
                         <th scope="col">จำนวน</th>
                         <th scope="col">ราคารวม</th>
                         <th scope="col">Action</th>
-
                     </tr>
                 </thead>
                 <tbody>

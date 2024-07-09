@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DressController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\JewelryController;
+use App\Http\Controllers\ManageorderController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -96,6 +97,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/manageitem/deletemeasurement/{id}', [EmployeeController::class, 'deletemeasurement'])->name('employee.deletemeasurementitem'); //ลบdeletemeasurement ใน item
     Route::post('/employee/manageitem/deletefittingitem/{id}', [EmployeeController::class, 'deletefittingitem'])->name('employee.deletefittingitem'); //ลบdeletefittng ใน item
 
-    Route::post('/employee/manageitem/savemanageitem/{id}', [EmployeeController::class, 'savemanageitem'])->name('employee.savemanageitem'); //บันทึกจัดการตาม item
+    Route::post('/employee/manageitem/savemanageitem/{id}', [ManageorderController::class, 'savemanageitem'])->name('employee.savemanageitem'); //บันทึกจัดการตาม item
+
+
+    //เพิ่มเช่าชุดลงในตะกร้า
+    Route::get('/employee/typerentdress', [ManageorderController::class, 'typerentdress'])->name('employee.typerentdress'); //เช่าชุดหน้าเลือกประเภทชุด
+    Route::get('/employee/typerentdress/show/{id}', [ManageorderController::class, 'typerentdressshow'])->name('employee.typerentdressshow');//หลังจากที่เลือกประเภทชุดแล้ว
+    Route::post('/employee/typerentdress/show/addrentdresscart', [ManageorderController::class, 'addrentdresscart'])->name('employee.addrentdresscart'); //เช่าชุดเพิ่มลงในตะกร้า
+    
 
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Date;
 use App\Models\Dress;
 use App\Models\Dressimage;
+use App\Models\Dressmeasurement;
 use App\Models\Financial;
 use App\Models\Fitting;
 use App\Models\Imagerent;
@@ -213,18 +214,18 @@ class EmployeeController extends Controller
         $delete_orderdetail = Orderdetail::find($id);
         $delete_orderdetail->delete();
 
-        if($delete_orderdetail->type_order == 2){ //เช่าชุด เปลี่ยนสถานะของชุดให้เป็นเหมือนเดิม เพราะลบออกจากรายการ
+        if ($delete_orderdetail->type_order == 2) { //เช่าชุด เปลี่ยนสถานะของชุดให้เป็นเหมือนเดิม เพราะลบออกจากรายการ
             // $dress = Dress::where('id',$delete_orderdetail->dress_id); 
-            $edit_dress = Dress::find($delete_orderdetail->dress_id) ; 
-            $edit_dress->dress_status = "พร้อมให้เช่า" ; 
-            $edit_dress->save() ; 
+            $edit_dress = Dress::find($delete_orderdetail->dress_id);
+            $edit_dress->dress_status = "พร้อมให้เช่า";
+            $edit_dress->save();
         }
-        if($delete_orderdetail->type_order == 3){ //เช่าเครื่องประดับ เปลี่ยนสถานะของเครื่องประดับให้เป็นเหมือนเดิม เพราะลบออกจากรายการ
-            $edit_jewelry = Jewelry::find($delete_orderdetail->jewelry_id) ; 
-            $edit_jewelry->jewelry_status = "พร้อมให้เช่า" ; 
-            $edit_jewelry->save() ; 
+        if ($delete_orderdetail->type_order == 3) { //เช่าเครื่องประดับ เปลี่ยนสถานะของเครื่องประดับให้เป็นเหมือนเดิม เพราะลบออกจากรายการ
+            $edit_jewelry = Jewelry::find($delete_orderdetail->jewelry_id);
+            $edit_jewelry->jewelry_status = "พร้อมให้เช่า";
+            $edit_jewelry->save();
         }
-        
+
 
 
 
@@ -239,7 +240,7 @@ class EmployeeController extends Controller
         Orderdetailstatus::where('order_detail_id', $id)->delete();
 
         //อัปเดตตาราง order ด้วย เพราะorderdetail มันลบไปแล้วไง
-        $ORDER_ID = $delete_orderdetail->order_id; 
+        $ORDER_ID = $delete_orderdetail->order_id;
         $update_order = Order::find($ORDER_ID);
 
         $update_order->total_quantity = $update_order->total_quantity - 1; //รายการทั้งหมดจะลดลงทีละ1 
@@ -257,34 +258,129 @@ class EmployeeController extends Controller
 
 
     //จัดการตาม item
-    public function manageitem($id)
-    {
-        $type_dress = Typedress::all();
-        $orderdetail = Orderdetail::find($id);
-        $dress = Dress::where('id',$orderdetail->dress_id)->select('dress_code_new','dress_code')->first() ; 
-        $imagedress = Dressimage::where('dress_id',$orderdetail->dress_id)->first() ; 
+    // public function manageitem($id)
+    // {
+    //     $type_dress = Typedress::all();
+    //     $orderdetail = Orderdetail::find($id);
+    //     $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
+    //     $imagedress = Dressimage::where('dress_id', $orderdetail->dress_id)->first();
+    //     $measurementdress = Dressmeasurement::where('dress_id',$orderdetail->dress_id)->get() ; 
 
-        $measurementorderdetail = Measurementorderdetail::where('order_detail_id', $id)->get();
-        $fitting = Fitting::where('order_detail_id', $id)->get();
-        $imagerent = Imagerent::where('order_detail_id', $id)->get();
-        return view('Employee.manageitem', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fitting', 'imagerent','dress','imagedress'));
+    //     $measurementorderdetails = Measurementorderdetail::where('order_detail_id', $id)->get();
+    //     $fitting = Fitting::where('order_detail_id', $id)->get();
+    //     $imagerent = Imagerent::where('order_detail_id', $id)->get();
+
+    //     return view('Employee.manageitem', compact('orderdetail', 'type_dress', 'measurementorderdetails', 'fitting', 'imagerent', 'dress', 'imagedress'));
+    // }
+
+    //จุดแยก type_order
+    public function manageitem(Request $request, $id)
+    {
+        // dd($id) ; 
+        $type_order = $request->input('type_order');
+        // dd($type_order) ; 
+        if ($type_order == 1) {
+            return $this->manageitemcutdress($request, $id);
+        }
+        if ($type_order == 2) {
+            return $this->manageitemrentdress($request, $id);
+        }
+        if ($type_order == 3) {
+            return $this->manageitemrentjewelry($request, $id);
+        }
+        if ($type_order == 4) {
+            return $this->manageitemrentcut($request, $id);
+        }
     }
 
-    //ลบdeletemeasurement ใน item
-    public function deletemeasurement($id)
+    //ตัดชุด
+    private function manageitemcutdress($id)
     {
-        $delete_mea = Measurementorderdetail::find($id);
-        $delete_mea->delete();
+        $id = $id->id;
+        $type_dress = Typedress::all();
+        $orderdetail = Orderdetail::find($id);
+        $measurementorderdetails = Measurementorderdetail::where('order_detail_id', $id)->get();
+        $fitting = Fitting::where('order_detail_id', $id)->get();
+        return view('employeecutdress.manageitemcutdress', compact('orderdetail', 'type_dress', 'measurementorderdetails', 'fitting'));
+    }
+
+    //เช่าชุด
+    private function manageitemrentdress($id)
+    {
+        $id = $id->id ; 
+        $type_dress = Typedress::all();
+        $orderdetail = Orderdetail::find($id);
+        $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
+        $imagedress = Dressimage::where('dress_id', $orderdetail->dress_id)->get();
+        $measurementdress = Dressmeasurement::where('dress_id', $orderdetail->dress_id)->get();
+        $measurementorderdetails = Measurementorderdetail::where('order_detail_id', $id)->get();
+        $fitting = Fitting::where('order_detail_id', $id)->get();
+        $imagerent = Imagerent::where('order_detail_id', $id)->get();
+
+        return view('employeerentdress.manageitemrentdress', compact('orderdetail', 'type_dress', 'measurementorderdetails', 'fitting', 'imagerent', 'dress', 'imagedress','measurementdress'));
+    }
+
+    //เช่าเครื่องประดับ
+    private function manageitemrentjewelry($id)
+    {
+    }
+
+    //เช่าตัด
+    private function manageitemrentcut($id)
+    {
+    }
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //ลบdeletemeasurementitem ใน item
+    public function deletemeasurementitem($id)
+    {
+        dd($id);
+        $delete_measuremen = Measurementorderdetail::find($id);
+        $delete_measuremen->delete();
         return redirect()->back();
     }
 
     //ลบdeletefittingitem ใน item
     public function deletefittingitem($id)
     {
+        dd($id);
         $delete_fitting = Fitting::find($id);
         $delete_fitting->delete();
         return redirect()->back();
     }
-
-    
 }

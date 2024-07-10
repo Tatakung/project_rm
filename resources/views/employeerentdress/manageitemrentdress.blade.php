@@ -49,68 +49,48 @@
         <div class="container mt-4">
             <!-- กล่องแรกฟอร์มเพิ่มออเดอร์ -->
             <div class="shadow p-4 mb-5 bg-red rounded">
-                @if ($orderdetail->type_order == 1)
-                    <h4 class="mb-4" style="text-align: center">ข้อมูลตัดชุด</h4>
-                @elseif($orderdetail->type_order == 2)
-                    <h4 class="mb-4" style="text-align: center">ข้อมูลเช่าชุด</h4>
-                @elseif($orderdetail->type_order == 3)
-                    <h4 class="mb-4" style="text-align: center">ข้อมูลเช่าเครื่องประดับ</h4>
-                @elseif($orderdetail->type_order == 4)
-                    <h4 class="mb-4" style="text-align: center">ข้อมูลเช่าตัด</h4>
-                @endif
-
-                @csrf
+                <h4 class="mb-4" style="text-align: center">ข้อมูลเช่าชุด</h4>
                 <div class="row mb-3">
 
                     <div class="col-sm-4">
                         <label for="dressType" class="form-label">ประเภทชุด</label>
-                        <select class="form-control" id="type_dress" name="type_dress" required
-                            @if ($orderdetail->type_order != 1) disabled @endif>
-                            <option value="" selected disabled>เลือกรายการ</option>
-                            @foreach ($type_dress as $dressType)
-                                <option value="{{ $dressType->type_dress_name }}"
-                                    {{ $orderdetail->type_dress == $dressType->type_dress_name ? 'selected' : '' }}>
-                                    {{ $dressType->type_dress_name }}</option>
-                            @endforeach
-                            <option value="other_type">อื่นๆ</option>
-                        </select>
+                        <input type="text" class="form-control" id="type_dress" name="type_dress" value="{{$orderdetail->type_dress}}" readonly>
                     </div>
-                    <div class="col-md-4" style="display: none;" id="showinput">
-                        <label for="" class="form-label">ประเภทชุดอื่นๆ</label>
-                        <input type="text" class="form-control" id="other_input" name="other_input"
-                            placeholder="กรอกประเภทชุดอื่นๆ">
-                    </div>
+                    
 
-                    <div class="col-md-4" @if ($orderdetail->type_order != 1) style='display:block;' @endif>
-                        @if ($dress)
+                    <div class="col-md-4">
                             <label for="" class="form-label">หมายเลขชุด</label>
                             <input type="text" class="form-control" id="" name=""
                                 value="{{ $dress->dress_code_new }}{{ $dress->dress_code }}" readonly>
-                        @endif
+                    </div>
+                    <div class="col-md-4">
+                        <label for="amount" class="form-label">จำนวนชุด</label>
+                        <input type="number" class="form-control" id="update_amount" name="update_amount"
+                            value="{{ $orderdetail->amount }}" min="1" required readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                
+                    <div class="col-md-4">
+                        <label for="price" class="form-label">ราคาเต็ม/ชุด</label>
+                        <input type="number" class="form-control" id="update_price" name="update_price"
+                            placeholder="จำนวนเงิน" min="1" step="0.01" value="{{ $orderdetail->price }}"
+                            required @if ($orderdetail->type_order != 1) readonly @endif>
                     </div>
 
-
-
-
-
-
-                    <script>
-                        var select_type = document.getElementById('type_dress');
-                        var show_input_other = document.getElementById('showinput');
-                        var input_type = document.getElementById('other_input');
-                        select_type.addEventListener('change', function() {
-                            if (select_type.value === 'other_type') {
-                                show_input_other.style.display = 'block';
-                            } else {
-                                show_input_other.style.display = 'none';
-                                input_type.value = '';
-
-                            }
-                        });
-                    </script>
-
+                    <div class="col-md-4" @if ($orderdetail->type_order == 1) style="display:none;" @endif>
+                        <label for="deposit" class="form-label">ราคามัดจำ/ชุด</label>
+                        <input type="number" class="form-control" id="update_deposit" name="update_deposit"
+                            placeholder="จำนวนเงิน" min="1" step="0.01" value="{{ $orderdetail->deposit }}"
+                            required @if ($orderdetail->type_order != 1) readonly @endif>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="update_color" class="form-label">สีของชุด</label>
+                        <input type="text" class="form-control" id="update_color" name="update_color" value="{{$orderdetail->color}}" readonly>
+                        
+                    </div>
+                    
                 </div>
-
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="update_pickup_date" class="form-label">วันที่นัดรับชุด</label>
@@ -132,82 +112,19 @@
                     </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 </div>
 
 
 
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="amount" class="form-label">จำนวนชุด</label>
-                        <input type="number" class="form-control" id="update_amount" name="update_amount"
-                            value="{{ $orderdetail->amount }}" min="1" required
-                            @if ($orderdetail->type_order != 1) readonly @endif>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label for="price" class="form-label">ราคาเต็ม/ชุด</label>
-                        <input type="number" class="form-control" id="update_price" name="update_price"
-                            placeholder="จำนวนเงิน" min="1" step="0.01" value="{{ $orderdetail->price }}"
-                            required @if ($orderdetail->type_order != 1) readonly @endif>
-                    </div>
-
-                    <div class="col-md-4" @if ($orderdetail->type_order == 1) style="display:none;" @endif>
-                        <label for="deposit" class="form-label">ราคามัดจำ/ชุด</label>
-                        <input type="number" class="form-control" id="update_deposit" name="update_deposit"
-                            placeholder="จำนวนเงิน" min="1" step="0.01" value="{{ $orderdetail->deposit }}"
-                            required @if ($orderdetail->type_order != 1) readonly @endif>
-                    </div>
-                </div>
+                
 
                 <div class="row mb-3">
-                    <div class="col-md-4" @if ($orderdetail->type_order == 1) style="display:none;" @endif>
+                    <div class="col-md-4">
                         <label for="update_color" class="form-label">ประกันค่าเสียหาย</label>
                         <input type="number" class="form-control" id="" name=""
                             placeholder="จำนวนเงิน" min="1">
                     </div>
-                    <div class="col-md-4">
-                        <label for="update_color" class="form-label">สีของชุด</label>
-                        <select class="form-control" id="update_color" name="update_color" required
-                            @if ($orderdetail->type_order != 1) disabled @endif>
-                            <option value="" disabled selected>--สี--</option>
-                            <option value="ขาว" {{ $orderdetail->color == 'ขาว' ? 'selected' : '' }}>ขาว</option>
-                            <option value="ครีม" {{ $orderdetail->color == 'ครีม' ? 'selected' : '' }}>ครีม</option>
-                            <option value="ชมพู" {{ $orderdetail->color == 'ชมพู' ? 'selected' : '' }}>ชมพู</option>
-                            <option value="ดำ" {{ $orderdetail->color == 'ดำ' ? 'selected' : '' }}>ดำ</option>
-                            <option value="ทอง" {{ $orderdetail->color == 'ทอง' ? 'selected' : '' }}>ทอง</option>
-                            <option value="น้ำตาล" {{ $orderdetail->color == 'น้ำตาล' ? 'selected' : '' }}>น้ำตาล</option>
-                            <option value="น้ำเงิน" {{ $orderdetail->color == 'น้ำเงิน' ? 'selected' : '' }}>น้ำเงิน
-                            </option>
-                            <option value="บานเย็น" {{ $orderdetail->color == 'บานเย็น' ? 'selected' : '' }}>บานเย็น
-                            </option>
-                            <option value="พิ้งค์โกลด์" {{ $orderdetail->color == 'พิ้งค์โกลด์' ? 'selected' : '' }}>
-                                พิ้งค์โกลด์</option>
-                            <option value="ฟ้า" {{ $orderdetail->color == 'ฟ้า' ? 'selected' : '' }}>ฟ้า</option>
-                            <option value="ม่วง" {{ $orderdetail->color == 'ม่วง' ? 'selected' : '' }}>ม่วง</option>
-                            <option value="ส้ม" {{ $orderdetail->color == 'ส้ม' ? 'selected' : '' }}>ส้ม</option>
-                            <option value="เขียว" {{ $orderdetail->color == 'เขียว' ? 'selected' : '' }}>เขียว</option>
-                            <option value="เทา" {{ $orderdetail->color == 'เทา' ? 'selected' : '' }}>เทา</option>
-                            <option value="เหลือง" {{ $orderdetail->color == 'เหลือง' ? 'selected' : '' }}>เหลือง</option>
-                            <option value="แดง" {{ $orderdetail->color == 'แดง' ? 'selected' : '' }}>แดง</option>
-                            <option value="ไม่ระบุ" {{ $orderdetail->color == 'ไม่ระบุ' ? 'selected' : '' }}>ไม่ระบุ
-                            </option>
-                        </select>
-                    </div>
+                    
 
                     <div class="col-md-4">
                         <label class="form-label">การจ่ายเงิน</label>
@@ -229,59 +146,25 @@
                         </div>
                         {{-- **หมายเหตุ -ลูกค้าจะต้องจ่ายมัดจำหรือจ่ายเต็มจำนวนเท่านั้นพนักงานจึงจะสามารถบันทึกรายการให้ได้ --}}
                     </div>
-
-                    <div class="col-md-4" @if ($orderdetail->type_order != 1) style='display:none;' @endif>
-                        <label class="form-label">ผ้า</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="update_cloth" id="cloth1"
-                                value="1" {{ $orderdetail->cloth == 1 ? 'checked' : '' }}>
-                            <label class="form-check-label" for="cloth1">
-                                ลูกค้านำผ้ามาเอง
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="update_cloth" id="cloth2"
-                                value="2" {{ $orderdetail->cloth == 2 ? 'checked' : '' }}>
-                            <label class="form-check-label" for="cloth2">
-                                ทางร้านหาผ้าให้
-                            </label>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="note" class="form-label">รายละเอียดอื่นๆ</label>
                         <textarea class="form-control" id="update_note" name="update_note" rows="4"
                             placeholder="ใส่รายละเอียดเพิ่มเติมที่เกี่ยวข้อง">{{ $orderdetail->note }}</textarea>
                     </div>
 
-
-                    <div class="col-md-4" @if ($orderdetail->type_order != 1) style='display:block;' @endif>
-                        @if ($imagedress)
-                            <label for="">รูปภาพชุด</label>
-                            <p>
-                                <img src="{{ asset('storage/' . $imagedress->dress_image) }}" alt=""
-                                    width="110px ; ">
-                            </p>
-                        @endif
-
-                    </div>
-
-
-
-
                 </div>
 
-
-
-
-
-
-
-
-
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                            <label for="">รูปภาพชุด</label>
+                            <p>
+                                @foreach ($imagedress as $imagedress)
+                                <img src="{{ asset('storage/' . $imagedress->dress_image) }}" alt=""
+                                width="110px ; ">
+                                @endforeach
+                            </p>
+                    </div>
+                </div>
             </div>
 
 
@@ -294,8 +177,8 @@
                 </div>
 
                 <div id="aria_show_measurement">
-                    @if ($measurementorderdetails->count() > 0)
-                        @foreach ($measurementorderdetails as $showmea)
+                    @if ($measurementdress->count() > 0)
+                        @foreach ($measurementdress as $showmea)
                             <div class="row mb-3">
 
                                 <div class="col-sm-3">
@@ -303,34 +186,34 @@
                                         placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $showmea->id }}">
 
                                     <input type="text" class="form-control" name="mea_name_[]"
-                                        placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $showmea->measurement_name }}">
+                                        placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $showmea->measurement_dress_name	 }}" readonly>
                                 </div>
 
                                 <div class="col-sm-3">
                                     <input type="number" class="form-control" name="mea_number_[]"
-                                        placeholder="ใส่ตัวเลข" value="{{ $showmea->measurement_number }}">
+                                        placeholder="ใส่ตัวเลข" step="0.01" value="{{ $showmea->measurement_dress_number }}" >
                                 </div>
 
                                 <div class="col-sm-3">
                                     <select class="form-control" name="mea_unit_[]">
                                         <option value="นิ้ว"
-                                            {{ $showmea->measurement_unit == 'นิ้ว' ? 'selected' : '' }}>
+                                            {{ $showmea->measurement_dress_unit == 'นิ้ว' ? 'selected' : '' }}>
                                             นิ้ว
                                         </option>
                                         <option value="เซนติเมตร"
-                                            {{ $showmea->measurement_unit == 'เซนติเมตร' ? 'selected' : '' }}>เซนติเมตร
+                                            {{ $showmea->measurement_dress_unit == 'เซนติเมตร' ? 'selected' : '' }}>เซนติเมตร
                                         </option>
                                         <option value="มิลลิเมตร"
-                                            {{ $showmea->measurement_unit == 'มิลลิเมตร' ? 'selected' : '' }}>มิลลิเมตร
+                                            {{ $showmea->measurement_dress_unit == 'มิลลิเมตร' ? 'selected' : '' }}>มิลลิเมตร
                                         </option>
                                     </select>
                                 </div>
                                 <div class="col-sm-2">
-                                    <form action="{{route('employee.deletemeasurementitem',['id'=>$showmea->id])}}"
+                                    {{-- <form action="{{ route('employee.deletemeasurementitem', ['id' => $showmea->id]) }}"
                                         method="POST">
                                         @csrf
                                         <button class="form-control btn btn-danger" type="submit">ลบ</button>
-                                    </form>
+                                    </form> --}}
                                 </div>
                             </div>
                         @endforeach
@@ -421,8 +304,7 @@
                                     <form action="{{ route('employee.deletefittingitem', ['id' => $showfitting->id]) }}"
                                         method="POST">
                                         @csrf
-                                        <button class="form-control btn btn-danger"
-                                            type="submit">ลบ</button>
+                                        <button class="form-control btn btn-danger" type="submit">ลบ</button>
                                     </form>
                                 </div>
                             </div>

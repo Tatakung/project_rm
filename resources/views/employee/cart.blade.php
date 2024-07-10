@@ -13,6 +13,7 @@
                         <th scope="col">จำนวน</th>
                         <th scope="col">ราคารวม</th>
                         <th scope="col">Action</th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,13 +28,26 @@
                                 <td>{{ $detail->amount }}</td>
                                 <td>{{ number_format($detail->price * $detail->amount, 2) }}</td>
                                 <td>
-                                    <a href="{{route('employee.manageitem',['id' => $detail->id])}}" class="btn btn-warning btn-sm">จัดการ</a>
+                                    {{-- <a href="{{route('employee.manageitem',['id' => $detail->id])}}" class="btn btn-warning btn-sm">จัดการ</a> --}}
+                                    <form action="{{route('employee.manageitem',['id' => $detail->id])}}" method="GET" style="display:inline;">
+                                        @csrf
+                                        <input type="hidden" name="type_order" value="{{$detail->type_order}}"> 
+                                        <button type="submit" class="btn btn-warning btn-sm">จัดการ</button>
+                                    </form>
+
+
+
+
                                     <form action="{{route('employee.deletelist',['id' => $detail->id])}}" method="POST" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn btn-danger btn-sm"
                                             onclick="return confirm('แน่ใจใช่ไหมว่าคุณต้องการนำออก?')">นำออก</button>
                                     </form>
+
+
+
                                 </td>
+                                <td>{{$detail->type_order}}</td>
                             </tr>
                         @endforeach
                         

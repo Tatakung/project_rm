@@ -323,6 +323,7 @@ class EmployeeController extends Controller
     //เช่าเครื่องประดับ
     private function manageitemrentjewelry($id)
     {
+        
     }
 
     //เช่าตัด
@@ -369,7 +370,7 @@ class EmployeeController extends Controller
     //ลบdeletemeasurementitem ใน item
     public function deletemeasurementitem($id)
     {
-        dd($id);
+        dd($id) ;
         $delete_measuremen = Measurementorderdetail::find($id);
         $delete_measuremen->delete();
         return redirect()->back();
@@ -378,7 +379,6 @@ class EmployeeController extends Controller
     //ลบdeletefittingitem ใน item
     public function deletefittingitem($id)
     {
-        dd($id);
         $delete_fitting = Fitting::find($id);
         $delete_fitting->delete();
         return redirect()->back();

@@ -43,7 +43,7 @@
 
 
 
-    <form action="{{ route('employee.savemanageitemrentdress', ['id' => $orderdetail->id]) }}" method="POST"
+    <form action="{{ route('employee.savemanageitemcutdress', ['id' => $orderdetail->id]) }}" method="POST"
         enctype="multipart/form-data">
         @csrf
         <div class="container mt-4">

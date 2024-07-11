@@ -43,7 +43,7 @@
 
 
 
-    <form action="{{ route('employee.savemanageitem', ['id' => $orderdetail->id]) }}" method="POST"
+    <form action="{{ route('employee.savemanageitemrentdress', ['id' => $orderdetail->id]) }}" method="POST"
         enctype="multipart/form-data">
         @csrf
         <div class="container mt-4">
@@ -75,14 +75,14 @@
                         <label for="price" class="form-label">ราคาเต็ม/ชุด</label>
                         <input type="number" class="form-control" id="update_price" name="update_price"
                             placeholder="จำนวนเงิน" min="1" step="0.01" value="{{ $orderdetail->price }}"
-                            required @if ($orderdetail->type_order != 1) readonly @endif>
+                            required readonly>
                     </div>
 
-                    <div class="col-md-4" @if ($orderdetail->type_order == 1) style="display:none;" @endif>
+                    <div class="col-md-4">
                         <label for="deposit" class="form-label">ราคามัดจำ/ชุด</label>
                         <input type="number" class="form-control" id="update_deposit" name="update_deposit"
                             placeholder="จำนวนเงิน" min="1" step="0.01" value="{{ $orderdetail->deposit }}"
-                            required @if ($orderdetail->type_order != 1) readonly @endif>
+                            required readonly>
                     </div>
                     <div class="col-md-4">
                         <label for="update_color" class="form-label">สีของชุด</label>
@@ -95,18 +95,18 @@
                     <div class="col-md-4">
                         <label for="update_pickup_date" class="form-label">วันที่นัดรับชุด</label>
                         <input type="date" class="form-control" id="update_pickup_date" name="update_pickup_date"
-                            value="{{ $orderdetail->pickup_date }}" required>
+                            value="{{ $orderdetail->pickup_date }}" >
                     </div>
 
-                    <div class="col-md-4" @if ($orderdetail->type_order == 1) style = "display:none ;" @endif>
+                    <div class="col-md-4">
                         <label for="" class="form-label">วันที่นัดคืนชุด</label>
-                        <input type="date" class="form-control" id="" name="">
+                        <input type="date" class="form-control" id="update_return_date" name="update_return_date" value="{{$orderdetail->return_date}}">
                     </div>
 
-                    <div class="col-md-4" @if ($orderdetail->type_order == 1) style='display:none;' @endif>
+                    <div class="col-md-4">
                         <label for="amount" class="form-label">Late Charge หรือ ค่าบริการขยายเวลาเช่าชุด :</label>
-                        <input type="number" class="form-control" id="" name="" value="" required
-                            @if ($orderdetail->type_order != 1) readonly @endif>
+                        <input type="number" class="form-control" id="update_late_charge" name="update_late_charge" value="{{$orderdetail->late_charge}}" required
+                            readonly>
                         **หมายเหตุ วันที่นัดรับชุด - วันที่นัดคืนชุด ทางร้านอนุญาตให้เช่าชุดสูงสุด 3 วัน
                         หากเกินกำหนดจะคิดค่าบริการขยายเวลาเช่าชุดวันละ 20% ของราคาค่าเช่าชุด
                     </div>
@@ -121,8 +121,8 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="update_color" class="form-label">ประกันค่าเสียหาย</label>
-                        <input type="number" class="form-control" id="" name=""
-                            placeholder="จำนวนเงิน" min="1">
+                        <input type="number" class="form-control" id="update_damage_insurance" name="update_damage_insurance"
+                            placeholder="จำนวนเงิน" min="1" value="{{$orderdetail->damage_insurance}}">
                     </div>
                     
 
@@ -172,7 +172,7 @@
             {{-- กล่องที่สอง --}}
             <div class="shadow p-4 mb-5 bg-white rounded">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-0">ข้อมูลการวัด</h4>
+                    <h4 class="mb-0">ข้อมูลของชุด/ข้อมูลการวัด</h4>
                     <button type="button" class="btn btn-primary" id="addMeasurementitem">+ เพิ่มการวัด</button>
                 </div>
 
@@ -182,20 +182,20 @@
                             <div class="row mb-3">
 
                                 <div class="col-sm-3">
-                                    <input type="hidden" class="form-control" name="mea_id_[]"
+                                    <input type="hidden" class="form-control" name="mea_dress_id_[]"
                                         placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $showmea->id }}">
 
-                                    <input type="text" class="form-control" name="mea_name_[]"
+                                    <input type="text" class="form-control" name="mea_dress_name_[]"
                                         placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $showmea->measurement_dress_name	 }}" readonly>
                                 </div>
 
                                 <div class="col-sm-3">
-                                    <input type="number" class="form-control" name="mea_number_[]"
+                                    <input type="number" class="form-control" name="mea_dress_number_[]"
                                         placeholder="ใส่ตัวเลข" step="0.01" value="{{ $showmea->measurement_dress_number }}" >
                                 </div>
 
                                 <div class="col-sm-3">
-                                    <select class="form-control" name="mea_unit_[]">
+                                    <select class="form-control" name="mea_dress_unit_[]">
                                         <option value="นิ้ว"
                                             {{ $showmea->measurement_dress_unit == 'นิ้ว' ? 'selected' : '' }}>
                                             นิ้ว
@@ -209,15 +209,55 @@
                                     </select>
                                 </div>
                                 <div class="col-sm-2">
-                                    {{-- <form action="{{ route('employee.deletemeasurementitem', ['id' => $showmea->id]) }}"
-                                        method="POST">
-                                        @csrf
-                                        <button class="form-control btn btn-danger" type="submit">ลบ</button>
-                                    </form> --}}
                                 </div>
                             </div>
                         @endforeach
                     @endif
+
+
+                    @if ($measurementorderdetails->count() > 0)
+                        @foreach ($measurementorderdetails as $measurementorderdetails)
+                            <div class="row mb-3">
+
+                                <div class="col-sm-3">
+                                    <input type="hidden" class="form-control" name="mea_orderdetail_id_[]"
+                                        placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $measurementorderdetails->id }}">
+
+                                    <input type="text" class="form-control" name="mea_orderdetail_name_[]"
+                                        placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $measurementorderdetails->measurement_name}}">
+                                </div>
+
+                                <div class="col-sm-3">
+                                    <input type="number" class="form-control" name="mea_orderdetail_number_[]"
+                                        placeholder="ใส่ตัวเลข" step="0.01" value="{{ $measurementorderdetails->measurement_number }}" >
+                                </div>
+
+                                <div class="col-sm-3">
+                                    <select class="form-control" name="mea_orderdetail_unit_[]">
+                                        <option value="นิ้ว"
+                                            {{ $measurementorderdetails->measurement_unit == 'นิ้ว' ? 'selected' : '' }}>
+                                            นิ้ว
+                                        </option>
+                                        <option value="เซนติเมตร"
+                                            {{ $measurementorderdetails->measurement_unit == 'เซนติเมตร' ? 'selected' : '' }}>เซนติเมตร
+                                        </option>
+                                        <option value="มิลลิเมตร"
+                                            {{ $measurementorderdetails->measurement_unit == 'มิลลิเมตร' ? 'selected' : '' }}>มิลลิเมตร
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <form action="{{route('employee.deletemeasurementitem',['id'=>$measurementorderdetails->id])}}"
+                                        method="POST">
+                                        @csrf
+                                        <button class="form-control btn btn-danger" type="submit">ลบ</button>
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+
+
 
                 </div>
             </div>

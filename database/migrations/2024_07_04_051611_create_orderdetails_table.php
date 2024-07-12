@@ -33,7 +33,7 @@ return new class extends Migration
             $table->decimal('total_damage_insurance', 8, 2)->nullable();  //ปรับจริงเท่าไหร่   
             $table->string('cause_for_insurance')->nullable(); //เหตุผลในการปรับ
             $table->boolean('cloth')->nullable(); // 1นำผ้ามาเอง 2.ร้านหาผ้าให้
-            $table->string('status_detail')->nullable();
+            $table->string('status_detail')->nullable(); //สถานะของออเดอร์นี้
             $table->boolean('status_payment')->nullable(); // 1จ่ายมัดจำแล้ว 2.จ่ายเต็ม
             $table->decimal('late_fee', 8, 2)->nullable();  //ค่าปรับกรณีเลยกำหนดคืนชุด
             $table->decimal('total_other_price', 8, 2)->nullable(); //ผลรวมค่าปักดอกไม้เพิ่ม

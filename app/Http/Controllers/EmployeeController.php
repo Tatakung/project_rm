@@ -10,6 +10,7 @@ use App\Models\Financial;
 use App\Models\Fitting;
 use App\Models\Imagerent;
 use App\Models\Jewelry;
+use App\Models\Jewelryimage;
 use App\Models\Measurementorderdetail;
 use App\Models\Order;
 use App\Models\Orderdetail;
@@ -33,17 +34,24 @@ class EmployeeController extends Controller
     {
         return view('Employee.addorder');
     }
-
+    //หน้าformเพิ่มตัดชุด
     public function addcutdress()
     {
         $type_dress = Typedress::all();
         return view('Employee.addcutdress', compact('type_dress'));
     }
+    //หน้า form เพิ่มเช่าตัด
+    public function addcutrent()
+    {
+        $type_dress = Typedress::all();
+        return view('Employee.addcutrent', compact('type_dress'));
+    }
 
-    //เพิ่มการตัดชุดลงในตะกร้า
+
+
+    //เพิ่มการตัดชุดลงในตะกร้า บันทึก
     public function savecutdress(Request $request)
     {
-
         DB::beginTransaction();
         try {
 
@@ -99,6 +107,7 @@ class EmployeeController extends Controller
 
             $orderdetail = new Orderdetail();
             $orderdetail->order_id = $ID_ORDER;
+            $orderdetail->employee_id = $id_employee;
             $orderdetail->type_dress = $TYPE_DRESS;
             $orderdetail->type_order = 1; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4เช่าตัด
             $orderdetail->title_name = "ตัด" . $TYPE_DRESS;
@@ -132,26 +141,26 @@ class EmployeeController extends Controller
             $datedate->save();
 
             // ตาราง financial
-            $financial = new Financial();
-            $financial->order_detail_id = $orderdetail->id;
-            $financial->type_order = 1;
-            if ($request->input('status_payment') == 1) {
-                $amount_of_money = $request->input('deposit') * $request->input('amount');
-                $text = "จ่ายมัดจำ";
-            } else {
-                $amount_of_money = $request->input('price') * $request->input('amount');
-                $text = "จ่ายเต็ม";
-            }
-            $financial->item_name = $text . "(ตัดชุด)";
-            $financial->financial_income = $amount_of_money;
-            $financial->financial_expenses = 0;
-            $financial->save();
+            // $financial = new Financial();
+            // $financial->order_detail_id = $orderdetail->id;
+            // $financial->type_order = 1;
+            // if ($request->input('status_payment') == 1) {
+            //     $amount_of_money = $request->input('deposit') * $request->input('amount');
+            //     $text = "จ่ายมัดจำ";
+            // } else {
+            //     $amount_of_money = $request->input('price') * $request->input('amount');
+            //     $text = "จ่ายเต็ม";
+            // }
+            // $financial->item_name = $text . "(ตัดชุด)";
+            // $financial->financial_income = $amount_of_money;
+            // $financial->financial_expenses = 0;
+            // $financial->save();
 
             // ตารางorderdetailstatuses
-            $orderdetailstatus = new Orderdetailstatus();
-            $orderdetailstatus->order_detail_id = $orderdetail->id;
-            $orderdetailstatus->status = "รอตัด";
-            $orderdetailstatus->save();
+            // $orderdetailstatus = new Orderdetailstatus();
+            // $orderdetailstatus->order_detail_id = $orderdetail->id;
+            // $orderdetailstatus->status = "รอตัด";
+            // $orderdetailstatus->save();
 
             // บันทึกข้อมูลในตาราง Measurementorderdetail
             $mea_name = $request->input('mea_name_');
@@ -198,6 +207,181 @@ class EmployeeController extends Controller
         }
     }
 
+    //เพิ่มการเช่าตัดชุดลงในตะกร้า บันทึก
+    public function savecutrent(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+
+            $id_employee = Auth::user()->id;
+            // 0คือยังไม่เสร็จ 1 คือ เสร็จแล้ว
+            $check_order = Order::where('user_id', $id_employee)
+                ->where('order_status', 0)->first();
+            // ถ้ามันไม่มีให้สร้างใหม่
+            if (!$check_order) {
+                // ตารางorder
+                $order = new Order();
+                $order->user_id = Auth::user()->id;
+                $order->total_quantity = 1;
+                $order->total_price = $request->input('price') * $request->input('amount');
+                $order->total_deposit = $request->input('deposit') * $request->input('amount');
+
+                $order->order_status = 0;
+                $order->save();
+                $ID_ORDER = $order->id;
+            } else { // ถ้ามีให้ดึงidมา
+                $ID_ORDER = $check_order->id;
+                // อัปเดตราคารวม + จำนวนรายการ
+                $update_total_price = Order::find($check_order->id);
+                $update_total_price->total_price = $check_order->total_price + ($request->input('price') * $request->input('amount'));
+                $update_total_price->total_deposit = $check_order->total_deposit + ($request->input('deposit') * $request->input('amount'));
+                $update_total_price->total_quantity = $check_order->total_quantity + 1;
+                $update_total_price->save();
+            }
+
+            // ตารางorderdetail
+            if ($request->input('type_dress') == 'other_type') {
+                $checkdouble = Typedress::where('type_dress_name', $request->input('other_input'))->first();
+                if ($checkdouble) {
+                    $TYPE_DRESS = $request->input('other_input');
+                } else {
+                    //สร้างตัวอักษรมา1ตัว
+                    do {
+                        $random = chr(65 + rand(0, 25));
+                        $check = Typedress::where('specific_letter', $random)->first();
+                    } while ($check);
+                    $character = $random; //ได้ตัวอักษรมาแล้ว นำไปคำนวณcen
+                    $create_id_of_typedress = new Typedress();
+                    $create_id_of_typedress->type_dress_name = $request->input('other_input');
+                    $create_id_of_typedress->specific_letter = $character;
+                    $create_id_of_typedress->save();
+                    $TYPE_DRESS = $request->input('other_input');
+                }
+            } else {
+                $TYPE_DRESS = $request->input('type_dress');
+            }
+
+            $orderdetail = new Orderdetail();
+            $orderdetail->order_id = $ID_ORDER;
+            $orderdetail->employee_id = $id_employee;
+            $orderdetail->type_dress = $TYPE_DRESS;
+            $orderdetail->type_order = 4; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4เช่าตัด
+            $orderdetail->title_name = "เช่าตัด" . $TYPE_DRESS;
+            $orderdetail->pickup_date = $request->input('pickup_date');
+            $orderdetail->return_date = $request->input('return_date');
+            $orderdetail->late_charge = $request->input('late_charge');
+            $orderdetail->damage_insurance = $request->input('damage_insurance');
+
+            $orderdetail->amount = $request->input('amount');
+
+            if ($request->input('deposit') > $request->input('price')) {
+                DB::rollback();
+                return redirect()->back()->with('fail', "ราคาตัดต้องมากกว่าราคามัดจำ");
+            } else {
+                $orderdetail->price = $request->input('price');
+                $orderdetail->deposit = $request->input('deposit');
+            }
+            $orderdetail->color = $request->input('color');
+            $orderdetail->status_payment = $request->input('status_payment');
+            $orderdetail->note = $request->input('note');
+            $orderdetail->save();
+
+            // ตารางstatus_payment   1จ่ายมัดจำแล้ว 2.จ่ายเต็ม
+            $status_payment = new Paymentstatus();
+            $status_payment->order_detail_id = $orderdetail->id;
+            $status_payment->payment_status = $request->input('status_payment');
+            $status_payment->save();
+
+            // ตาราง date
+            $datedate = new Date();
+            $datedate->order_detail_id = $orderdetail->id;
+            $datedate->pickup_date = $request->input('pickup_date');
+            $datedate->return_date = $request->input('return_date');
+            $datedate->save();
+
+            // ตาราง financial
+            // $financial = new Financial();
+            // $financial->order_detail_id = $orderdetail->id;
+            // $financial->type_order = 1;
+            // if ($request->input('status_payment') == 1) {
+            //     $amount_of_money = $request->input('deposit') * $request->input('amount');
+            //     $text = "จ่ายมัดจำ";
+            // } else {
+            //     $amount_of_money = $request->input('price') * $request->input('amount');
+            //     $text = "จ่ายเต็ม";
+            // }
+            // $financial->item_name = $text . "(เช่าตัดชุด)";
+            // $financial->financial_income = $amount_of_money;
+            // $financial->financial_expenses = 0;
+            // $financial->save();
+
+            // ตารางorderdetailstatuses
+            // $orderdetailstatus = new Orderdetailstatus();
+            // $orderdetailstatus->order_detail_id = $orderdetail->id;
+            // $orderdetailstatus->status = "รอตัด";
+            // $orderdetailstatus->save();
+
+            // บันทึกข้อมูลในตาราง Measurementorderdetail
+            $mea_name = $request->input('add_mea_name_');
+            $mea_number = $request->input('add_mea_number_');
+            $mea_unit = $request->input('add_mea_unit_');
+            if ($mea_name && $mea_number && $mea_unit) {
+                foreach ($mea_name as $index => $mea) {
+                    $data = new Measurementorderdetail();
+                    $data->order_detail_id = $orderdetail->id;
+                    $data->measurement_name = $mea;
+                    $data->measurement_number = $mea_number[$index];
+                    $data->measurement_unit = $mea_unit[$index];
+                    $data->save();
+                }
+            }
+
+            //ตาราง fitting 
+            $fit_date = $request->input('add_fitting_date_');
+            $fit_note = $request->input('add_fitting_note_');
+            if ($fit_date && $fit_note) {
+                foreach ($fit_date as $index => $fiting) {
+                    $data = new Fitting();
+                    $data->order_detail_id = $orderdetail->id;
+                    $data->fitting_date = $fiting;
+                    $data->fitting_note = $fit_note[$index];
+                    $data->save();
+                }
+            }
+
+            //ตารางimage
+            if ($request->hasFile('add_image_')) {
+                $imf_loop = $request->file('add_image_');
+                foreach ($imf_loop as $index => $img) {
+                    $image_save = new Imagerent();
+                    $image_save->order_detail_id = $orderdetail->id;
+                    $image_save->image = $img->store('rent_images', 'public');
+                    $image_save->save();
+                }
+            }
+            DB::commit();
+            return redirect()->back()->with('success', 'เพิ่มลงตะกร้าแล้ว !');
+        } catch (\Exception $e) {
+            DB::rollback();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //ตะกร้าสินค้า
     public function cart()
     {
@@ -226,10 +410,6 @@ class EmployeeController extends Controller
             $edit_jewelry->save();
         }
 
-
-
-
-
         //ลบลูกๆมันด้วย
         Imagerent::where('order_detail_id', $id)->delete();
         Paymentstatus::where('order_detail_id', $id)->delete();
@@ -255,23 +435,6 @@ class EmployeeController extends Controller
     }
 
 
-
-
-    //จัดการตาม item
-    // public function manageitem($id)
-    // {
-    //     $type_dress = Typedress::all();
-    //     $orderdetail = Orderdetail::find($id);
-    //     $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
-    //     $imagedress = Dressimage::where('dress_id', $orderdetail->dress_id)->first();
-    //     $measurementdress = Dressmeasurement::where('dress_id',$orderdetail->dress_id)->get() ; 
-
-    //     $measurementorderdetails = Measurementorderdetail::where('order_detail_id', $id)->get();
-    //     $fitting = Fitting::where('order_detail_id', $id)->get();
-    //     $imagerent = Imagerent::where('order_detail_id', $id)->get();
-
-    //     return view('Employee.manageitem', compact('orderdetail', 'type_dress', 'measurementorderdetails', 'fitting', 'imagerent', 'dress', 'imagedress'));
-    // }
 
     //จุดแยก type_order
     public function manageitem(Request $request, $id)
@@ -307,7 +470,7 @@ class EmployeeController extends Controller
     //เช่าชุด
     private function manageitemrentdress($id)
     {
-        $id = $id->id ; 
+        $id = $id->id;
         $type_dress = Typedress::all();
         $orderdetail = Orderdetail::find($id);
         $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
@@ -317,60 +480,38 @@ class EmployeeController extends Controller
         $fitting = Fitting::where('order_detail_id', $id)->get();
         $imagerent = Imagerent::where('order_detail_id', $id)->get();
 
-        return view('employeerentdress.manageitemrentdress', compact('orderdetail', 'type_dress', 'measurementorderdetails', 'fitting', 'imagerent', 'dress', 'imagedress','measurementdress'));
+        return view('employeerentdress.manageitemrentdress', compact('orderdetail', 'type_dress', 'measurementorderdetails', 'fitting', 'imagerent', 'dress', 'imagedress', 'measurementdress'));
     }
 
     //เช่าเครื่องประดับ
     private function manageitemrentjewelry($id)
     {
-        
+        $id = $id->id;
+        $type_dress = Typedress::all();
+        $orderdetail = Orderdetail::find($id);
+        // $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
+        $jewelry = Jewelry::where('id', $orderdetail->jewelry_id)->select('jewelry_code_new', 'jewelry_code')->first();
+        $imagejewelry = Jewelryimage::where('jewelry_id', $orderdetail->jewelry_id)->get();
+        $fitting = Fitting::where('order_detail_id', $id)->get();
+        $imagerent = Imagerent::where('order_detail_id', $id)->get();
+
+        return view('employeerentjewelry.manageitemrentjewelry', compact('orderdetail', 'type_dress', 'fitting', 'imagerent', 'jewelry', 'imagejewelry'));
     }
 
     //เช่าตัด
     private function manageitemrentcut($id)
     {
+        $id = $id->id;
+        $type_dress = Typedress::all();
+        $orderdetail = Orderdetail::find($id);
+        $measurementorderdetails = Measurementorderdetail::where('order_detail_id', $id)->get();
+        $fitting = Fitting::where('order_detail_id', $id)->get();
+        $imagerent = Imagerent::where('order_detail_id', $id)->get();
+        return view('employeerentcut.manageitemrentcut', compact('orderdetail', 'type_dress', 'measurementorderdetails', 'fitting', 'imagerent'));
     }
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //ลบdeletemeasurementitem ใน item
     public function deletemeasurementitem($id)
     {
-        dd($id) ;
         $delete_measuremen = Measurementorderdetail::find($id);
         $delete_measuremen->delete();
         return redirect()->back();
@@ -382,5 +523,155 @@ class EmployeeController extends Controller
         $delete_fitting = Fitting::find($id);
         $delete_fitting->delete();
         return redirect()->back();
+    }
+
+
+
+    //ยืนยันการเพิ่มออเดอร์
+    public function confirmorder(Request $request, $id)
+    {
+        $order_id = $id;
+        $order_detail_id = json_decode($request->input('order_detail_id'), true);
+
+        //อัปเดตตารางorder เป็ฯ 1 เสร็จแล้ว
+        $update_order_status = Order::find($id) ; 
+        $update_order_status->order_status = 1 ;
+        $update_order_status->save() ; 
+
+
+
+        foreach ($order_detail_id as $id_for_orderdetail) {
+
+            $check = Orderdetail::find($id_for_orderdetail);
+            if ($check->type_order == 1) {
+
+                //ตารางorderdetail_status
+                $create_orderdetail_status = new Orderdetailstatus();
+                $create_orderdetail_status->order_detail_id = $id_for_orderdetail;
+                $create_orderdetail_status->status = "รอตัด";
+                $create_orderdetail_status->save();
+
+                //ตารางorderdetail
+                $check->status_detail = "รอตัด";
+                $check->save();
+
+                // ตารางfinancial
+                $status_payment = $check->status_payment;
+                $price = $check->price;
+                $deposit = $check->deposit;
+                $amount = $check->amount;
+
+                if ($status_payment == 1) {
+                    $text = 'จ่ายมัดจำ(ตัดชุด)';
+                    $income = $deposit * $amount;
+                } elseif ($status_payment == 2) {
+                    $text = 'จ่ายเต็ม(ตัดชุด)';
+                    $income = $price * $amount;
+                }
+                $create_financial = new Financial();
+                $create_financial->order_detail_id = $id_for_orderdetail;
+                $create_financial->type_order = $check->type_order;
+                $create_financial->item_name = $text;
+                $create_financial->financial_income = $income;
+                $create_financial->financial_expenses = 0;
+                $create_financial->save();
+            } elseif ($check->type_order == 2) {
+                $create_orderdetail_status = new Orderdetailstatus();
+                $create_orderdetail_status->order_detail_id = $id_for_orderdetail;
+                $create_orderdetail_status->status = "จองชุด";
+                $create_orderdetail_status->save();
+                //ตารางorderdetail
+                $check->status_detail = "จองชุดแล้ว";
+                $check->save();
+                // ตารางfinancial
+                $status_payment = $check->status_payment;
+                $price = $check->price;
+                $deposit = $check->deposit;
+                $amount = $check->amount;
+
+                if ($status_payment == 1) {
+                    $text = 'จ่ายมัดจำ(เช่าชุด)';
+                    $income = $deposit *$amount;
+                } elseif ($status_payment == 2) {
+                    $text = 'จ่ายเต็ม(เช่าชุด)';
+                    $income = $price *$amount;
+                }
+                $create_financial = new Financial();
+                $create_financial->order_detail_id = $id_for_orderdetail;
+                $create_financial->type_order = $check->type_order;
+                $create_financial->item_name = $text;
+                $create_financial->financial_income = $income;
+                $create_financial->financial_expenses = 0;
+                $create_financial->save();
+
+                //อัปเดตstatus ของชุด
+                $update_dress = Dress::find($check->dress_id);
+                $update_dress->dress_status = "ถูกจองแล้ว";
+                $update_dress->save();
+            } elseif ($check->type_order == 3) {
+                $create_orderdetail_status = new Orderdetailstatus();
+                $create_orderdetail_status->order_detail_id = $id_for_orderdetail;
+                $create_orderdetail_status->status = "จองเครื่องประดับ";
+                $create_orderdetail_status->save();
+                //ตารางorderdetail
+                $check->status_detail = "จองเครื่องประดับแล้ว";
+                $check->save();
+                // ตารางfinancial
+                $status_payment = $check->status_payment;
+                $price = $check->price;
+                $deposit = $check->deposit;
+                $amount = $check->amount;
+
+                if ($status_payment == 1) {
+                    $text = 'จ่ายมัดจำ(เช่าเครื่องประดับ)';
+                    $income = $deposit * $amount ;
+                } elseif ($status_payment == 2) {
+                    $text = 'จ่ายเต็ม(เช่าเครื่องประดับ)';
+                    $income = $price * $amount;
+                }
+                $create_financial = new Financial();
+                $create_financial->order_detail_id = $id_for_orderdetail;
+                $create_financial->type_order = $check->type_order;
+                $create_financial->item_name = $text;
+                $create_financial->financial_income = $income;
+                $create_financial->financial_expenses = 0;
+                $create_financial->save();
+
+
+                //อัปเดต status ของเครื่องประดับ
+                $update_jewelry = Jewelry::find($check->jewelry_id);
+                $update_jewelry->jewelry_status = "ถูกจองแล้ว";
+                $update_jewelry->save();
+            } elseif ($check->type_order == 4) {
+                $create_orderdetail_status = new Orderdetailstatus();
+                $create_orderdetail_status->order_detail_id = $id_for_orderdetail;
+                $create_orderdetail_status->status = "รอตัด";
+                $create_orderdetail_status->save();
+                //ตารางorderdetail
+                $check->status_detail = "รอตัด";
+                $check->save();
+                // ตารางfinancial
+                $status_payment = $check->status_payment;
+                $price = $check->price;
+                $deposit = $check->deposit;
+                $amount = $check->amount;
+
+                if ($status_payment == 1) {
+                    $text = 'จ่ายมัดจำ(เช่าตัด)';
+                    $income = $deposit * $amount;
+                } elseif ($status_payment == 2) {
+                    $text = 'จ่ายเต็ม(เช่าตัด)';
+                    $income = $price * $amount;
+                }
+                $create_financial = new Financial();
+                $create_financial->order_detail_id = $id_for_orderdetail;
+                $create_financial->type_order = $check->type_order;
+                $create_financial->item_name = $text;
+                $create_financial->financial_income = $income;
+                $create_financial->financial_expenses = 0 ;
+                $create_financial->save();
+            }
+        }
+        return redirect()->back()->with('success', 'ทำรายการแล้ว !');
     }
 }

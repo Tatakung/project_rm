@@ -42,7 +42,7 @@
                                 <h5 class="card-title mt-3">เช่าเครื่องประดับ</h5>
                             </div>
                             <button class="btn btn-primary mt-3">
-                                <a href="" style="color: rgb(255, 255, 255)">เพิ่มออเดอร์</a>
+                                <a href="{{route('employee.typerentjewelry')}}" style="color: rgb(255, 255, 255)">เพิ่มออเดอร์</a>
                             </button>
                         </div>
                     </div>
@@ -55,7 +55,10 @@
                                 <i class="bi bi-scissors" style="font-size: 2rem;"></i>
                                 <h5 class="card-title mt-3">เช่าตัด</h5>
                             </div>
-                            <button class="btn btn-primary mt-3">เพิ่มออเดอร์</button>
+                            {{-- <button class="btn btn-primary mt-3">เพิ่มออเดอร์</button> --}}
+                            <button class="btn btn-primary mt-3">
+                                <a href="{{route('employee.addcutrent')}}" style="color: rgb(255, 255, 255)">เพิ่มออเดอร์</a>
+                            </button>
                         </div>
                     </div>
                 </div>

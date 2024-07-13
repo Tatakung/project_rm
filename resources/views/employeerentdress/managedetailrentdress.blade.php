@@ -607,12 +607,10 @@
                                     <td>{{$mea_dress->measurement_dress_number}}</td>
                                     <td>{{$mea_dress->measurement_dress_unit}}</td>
                                     <td>
-                                        <button type="button" data-toggle="modal"
-                                            data-target="#modaleditfitting{{ $fit->id }}">
-                                            <i class="bi bi-eye-fill"></i>
+                                        <button type="button">
+                                            <i class="bi bi-eye-fill">{{$mea_dress->id}}</i>
                                         </button>
-                                        <button type="submit" data-toggle="modal"
-                                            data-target="#modaldeletefitting{{ $fit->id }}">
+                                        <button type="submit">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
                                     </td>
@@ -624,9 +622,8 @@
                                     <td>{{$mea_orderdetail->measurement_number}}</td>
                                     <td>{{$mea_orderdetail->measurement_unit}}</td>
                                     <td>
-                                        <button type="button" data-toggle="modal"
-                                            data-target="#modaleditfitting{{ $fit->id }}">
-                                            <i class="bi bi-eye-fill"></i>
+                                        <button type="button">
+                                            <i class="bi bi-eye-fill">{{$mea_orderdetail->id}}</i>
                                         </button>
                                         <button type="submit" data-toggle="modal"
                                             data-target="#modaldeletefitting{{ $fit->id }}">

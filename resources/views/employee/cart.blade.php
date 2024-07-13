@@ -6,8 +6,32 @@
     @endphp
     <div class="container mt-4">
         <!-- กล่องแรก: ฟอร์มเพิ่มออเดอร์ -->
-        <div class="shadow p-4 mb-5 bg-white rounded">
+        <div class="shadow p-5 mb-5 bg-white rounded">
             <h4 class="mb-4">ตะกร้าสินค้า ({{ $order->total_quantity ?? 0 }})</h4>
+            @if($order)
+            <div class="customer-info p-4 mb-4 bg-light rounded">
+                <h5 class="mb-4">ข้อมูลลูกค้า</h5>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="firstName" class="form-label">ชื่อ</label>
+                        <input type="text" name="firstName" id="firstName" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="lastName" class="form-label">นามสกุล</label>
+                        <input type="text" name="lastName" id="lastName" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="phone" class="form-label">เบอร์ติดต่อ</label>
+                        <input type="text" name="phone" id="phone" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-3 d-flex align-items-end">
+                        <button class="btn btn-warning w-100">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+            @endif
+            
+            
             <table class="table table-striped">
                 <thead>
                     <tr>

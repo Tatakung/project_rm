@@ -250,7 +250,7 @@
                 </div>
 
 
-                <a href="" class="list-group-item list-group-item-action border-0 align-items-center "
+                <a href="{{route('employee.ordertotal')}}" class="list-group-item list-group-item-action border-0 align-items-center "
                     id="d1">
                     <span class="bi bi-box "></span>
                     <span class="ml-2 nav-pills">รายการออเดอร์ทั้งหมด</span>

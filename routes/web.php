@@ -6,6 +6,7 @@ use App\Http\Controllers\DressController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\JewelryController;
 use App\Http\Controllers\ManageorderController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -122,7 +123,25 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/addcutrent', [EmployeeController::class, 'addcutrent'])->name('employee.addcutrent'); //เพิ่มเช่าตัด
     Route::post('/employee/addcutrent/savecutrent', [EmployeeController::class, 'savecutrent'])->name('employee.savecutrent'); //บันทึกเช่าตัดลงในตะกร้า
     Route::post('/employee/manageitem/savemanageitemcutrent/{id}', [ManageorderController::class, 'savemanageitemcutrent'])->name('employee.savemanageitemcutrent'); //บันทึกของเช่าตัดชุด item
-
     Route::post('/employee/cart/confirmorder/{id}', [EmployeeController::class, 'confirmorder'])->name('employee.confirmorder'); //ยืนยันออเดอร์ทั้งหมด
+
+
+
+    //หน้าแสดงออเดอร์ทั้งหมด
+    Route::get('/employee/ordertotal', [OrderController::class, 'ordertotal'])->name('employee.ordertotal'); //ออเดอร์ทั้งหมด
+    Route::get('/employee/ordertotal/detail/{id}', [OrderController::class, 'ordertotaldetail'])->name('employee.ordertotaldetail'); //ออเดอร์detail แยก
+
+    Route::get('/employee/ordertotal/detail/show/{id}', [OrderController::class, 'ordertotaldetailshow'])->name('employee.ordertotaldetailshow'); //ออเดอร์orderdetail_id เลย
+
+
+    //action ต่างๆภายใน detail
+    Route::post('/employee/ordertotal/detail/show/addfitting/{id}', [OrderController::class, 'actionaddfitting'])->name('employee.actionaddfitting'); //
+    Route::post('/employee/ordertotal/detail/show/addcost/{id}', [OrderController::class, 'actionaddcost'])->name('employee.actionaddcost'); //
+    Route::post('/employee/ordertotal/detail/show/updatefitting/{id}', [OrderController::class, 'actionupdatefitting'])->name('employee.actionupdatefitting'); //
+    Route::delete('/employee/ordertotal/detail/show/deletefitting/{id}', [OrderController::class, 'actiondeletefitting'])->name('employee.actiondeletefitting'); //
+    Route::post('/employee/ordertotal/detail/show/updatecost/{id}', [OrderController::class, 'actionupdatecost'])->name('employee.actionupdatecost'); //
+
+    Route::delete('/employee/ordertotal/detail/show/deletecost/{id}', [OrderController::class, 'actiondeletecost'])->name('employee.actiondeletecost'); //
+    Route::post('/employee/ordertotal/detail/show/adddecoration/{id}', [OrderController::class, 'actionadddecoration'])->name('employee.actionadddecoration'); //
 
 });

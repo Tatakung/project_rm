@@ -560,19 +560,32 @@
 
             <div class="col-md-6">
                 <div class="card shadow mb-5">
-                    <div class="card-header bg-secondary text-white">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0"><i class="bi bi-image-fill me-2"></i>รูปภาพก่อนเช่าชุด</h4>
+
+                        <button class="btn btn-warning" data-toggle="modal" data-target="#modaladdimagerent">
+                            เพิ่มรูปภาพ
+                        </button>
                     </div>
-                    @if($imagerent->count() > 0)
-                    @foreach ($imagerent as $imagerent)
-                        <p>{{asset('storage/' .$imagerent->image)}}</p>
-                    @endforeach
+                    @if ($imagerent->count() > 0)
+                        {{-- @foreach ($imagerent as $imagerent)
+                        <img src="{{asset('storage/' .$imagerent->image)}}" alt="" width="140px ; ">
+                        @endforeach --}}
+                        <div class="row">
+                            @foreach ($imagerent as $imagerent)
+                                <div class="col-md-4">
+
+                                    <img src="{{ asset('storage/' . $imagerent->image) }}" alt="" width="140px;" height="140px" >
+                                </div>
+                            @endforeach
+
+                        </div>
                     @else
-                    <div class="card-body">
-                        <p class="lead text-center">ไม่มีข้อมูลรูปภาพก่อนเช่าชุด</p>
-                    </div>
+                        <div class="card-body">
+                            <p class="lead text-center">ไม่มีข้อมูลรูปภาพก่อนเช่าชุด</p>
+                        </div>
                     @endif
-                    
+
                 </div>
             </div>
         </div>
@@ -587,7 +600,7 @@
                 <div class="card shadow mb-5">
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0"><i class="bi bi-calendar-fill me-2"></i>ข้อมูลการวัด</h4>
-                        <button class="btn btn-warning">
+                        <button class="btn btn-warning" data-toggle="modal" data-target="#modaladdmeaorderdetail">
                             เพิ่มข้อมูลการวัด
                         </button>
                     </div>
@@ -603,33 +616,186 @@
                         <tbody>
                             @foreach ($mea_dress as $mea_dress)
                                 <tr>
-                                    <td>{{$mea_dress->measurement_dress_name}}</td>
-                                    <td>{{$mea_dress->measurement_dress_number}}</td>
-                                    <td>{{$mea_dress->measurement_dress_unit}}</td>
+                                    <td>{{ $mea_dress->measurement_dress_name }}</td>
+                                    <td>{{ $mea_dress->measurement_dress_number }}</td>
+                                    <td>{{ $mea_dress->measurement_dress_unit }}</td>
                                     <td>
-                                        <button type="button">
-                                            <i class="bi bi-eye-fill">{{$mea_dress->id}}</i>
-                                        </button>
-                                        <button type="submit">
-                                            <i class="bi bi-trash-fill"></i>
+                                        <button type="button" data-toggle="modal"
+                                            data-target="#modaleditmeadress{{ $mea_dress->id }}">
+                                            <i class="bi bi-pencil"></i>
                                         </button>
                                     </td>
+                                    {{-- modalแก้ไขข้อมูลชุด --}}
+                                    <div class="modal fade" id="modaleditmeadress{{ $mea_dress->id }}" tabindex="-1"
+                                        role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">ข้อมูลการวัด</h5>
+                                                </div>
+                                                <form
+                                                    action="{{ route('employee.actionupdatemeadress', ['id' => $mea_dress->id]) }}"method="POST">
+                                                    @csrf
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="">ชื่อการวัด:
+                                                                {{ $mea_dress->measurement_dress_name }}</label>
+                                                        </div>
+
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label"
+                                                                for="update_measurement_dress_number">ตัวเลข:</label>
+                                                            <input type="number" class="form-control"
+                                                                name="update_measurement_dress_number"
+                                                                value="{{ $mea_dress->measurement_dress_number }}"
+                                                                step="0.01" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label"
+                                                                for="update_measurement_dress_unit">สถานะ:</label>
+                                                            <select class="form-control"
+                                                                name="update_measurement_dress_unit" required>
+                                                                <option
+                                                                    value="นิ้ว"{{ $mea_dress->measurement_dress_unit == 'นิ้ว' ? 'selected' : '' }}>
+                                                                    นิ้ว</option>
+                                                                <option
+                                                                    value="เซนติเมตร"{{ $mea_dress->measurement_dress_unit == 'เซนติเมตร' ? 'selected' : '' }}>
+                                                                    เซนติเมตร</option>
+                                                                <option
+                                                                    value="มิลลิเมตร"{{ $mea_dress->measurement_dress_unit == 'มิลลิเมตร' ? 'selected' : '' }}>
+                                                                    มิลลิเมตร</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-dismiss="modal">ยกเลิก</button>
+                                                            <button type="submit"
+                                                                class="btn btn-secondary">ยืนยัน</button>
+                                                        </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
                                 </tr>
                             @endforeach
                             @foreach ($mea_orderdetail as $mea_orderdetail)
                                 <tr>
-                                    <td>{{$mea_orderdetail->measurement_name}}</td>
-                                    <td>{{$mea_orderdetail->measurement_number}}</td>
-                                    <td>{{$mea_orderdetail->measurement_unit}}</td>
+                                    <td>{{ $mea_orderdetail->measurement_name }}</td>
+                                    <td>{{ $mea_orderdetail->measurement_number }}</td>
+                                    <td>{{ $mea_orderdetail->measurement_unit }}</td>
                                     <td>
-                                        <button type="button">
-                                            <i class="bi bi-eye-fill">{{$mea_orderdetail->id}}</i>
+                                        <button type="button" data-toggle="modal"
+                                            data-target="#modaleditmeaorderdetail{{ $mea_orderdetail->id }}">
+                                            <i class="bi bi-pencil"></i>
                                         </button>
                                         <button type="submit" data-toggle="modal"
-                                            data-target="#modaldeletefitting{{ $fit->id }}">
-                                            <i class="bi bi-trash-fill"></i>
+                                            data-target="#modaldeletemeaorderdetail{{ $mea_orderdetail->id }}">
+                                            <i class="bi bi-trash-fill">{{ $mea_orderdetail->id }}</i>
                                         </button>
                                     </td>
+
+                                    {{-- modalลบข้อมูลการวัดorderdetail --}}
+                                    <div class="modal fade" id="modaldeletemeaorderdetail{{ $mea_orderdetail->id }}"
+                                        role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">ยืนยันการลบข้อมูลการวัด</h5>
+
+                                                </div>
+                                                <form
+                                                    action="{{ route('employee.actiondeletemeaorderdetail', ['id' => $mea_orderdetail->id]) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <div class="modal-body">
+                                                        <p>แน่ใจหรือว่าต้องการจะลบรายการข้อมูลการวัดของลูกค้า</p>
+                                                        <hr>
+
+                                                        <div class="row">
+                                                            <div class="col-md-4"><strong>ชื่อการวัด:</strong></div>
+                                                            <div class="col-md-8">{{ $mea_orderdetail->measurement_name }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-4"><strong>ตัวเลข:</strong></div>
+                                                            <div class="col-md-8">
+                                                                {{ $mea_orderdetail->measurement_number }}</div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-4"><strong>หน่วยวัด:</strong></div>
+                                                            <div class="col-md-8">{{ $mea_orderdetail->measurement_unit }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-danger" type="button"
+                                                            data-dismiss="modal">ยกเลิก</button>
+                                                        <button class="btn btn-secondary" type="submit">ยืนยัน</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- modalแก้ไขการวัด meaorderdetail --}}
+                                    <div class="modal fade" id="modaleditmeaorderdetail{{ $mea_orderdetail->id }}"
+                                        tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">ข้อมูลการวัด</h5>
+                                                </div>
+                                                <form
+                                                    action="{{ route('employee.actionupdatemeaorderdetail', ['id' => $mea_orderdetail->id]) }}"method="POST">
+                                                    @csrf
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="">ชื่อการวัด:</label>
+                                                            <input type="text" class="form-control"
+                                                                name="update_measurement_name"
+                                                                value="{{ $mea_orderdetail->measurement_name }}" required>
+                                                        </div>
+
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="">ตัวเลข:</label>
+                                                            <input type="number" class="form-control"
+                                                                name="update_measurement_number"
+                                                                value="{{ $mea_orderdetail->measurement_number }}"
+                                                                step="0.01" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="">สถานะ:</label>
+                                                            <select class="form-control" name="update_measurement_unit"
+                                                                required>
+                                                                <option
+                                                                    value="นิ้ว"{{ $mea_orderdetail->measurement_unit == 'นิ้ว' ? 'selected' : '' }}>
+                                                                    นิ้ว</option>
+                                                                <option
+                                                                    value="เซนติเมตร"{{ $mea_orderdetail->measurement_unit == 'เซนติเมตร' ? 'selected' : '' }}>
+                                                                    เซนติเมตร</option>
+                                                                <option
+                                                                    value="มิลลิเมตร"{{ $mea_orderdetail->measurement_unit == 'มิลลิเมตร' ? 'selected' : '' }}>
+                                                                    มิลลิเมตร</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-dismiss="modal">ยกเลิก</button>
+                                                            <button type="submit"
+                                                                class="btn btn-secondary">ยืนยัน</button>
+                                                        </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -637,15 +803,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="card shadow mb-5">
-                    <div class="card-header bg-secondary text-white">
-                        <h4 class="mb-0"><i class="bi bi-image-fill me-2"></i>รูปภาพก่อนเช่าชุด</h4>
-                    </div>
-                    
-                    
-                </div>
-            </div>
+
         </div>
 
 
@@ -663,7 +821,7 @@
 
 
 
-        
+
     </div>
 
     </div>
@@ -764,6 +922,84 @@
         </div>
     </div>
 
+    {{-- modalเพิ่มข้อมูลการวัด --}}
+    <div class="modal fade" id="modaladdmeaorderdetail" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    เพิ่มข้อมูลการวัด
+                </div>
+                <form action="{{ route('employee.actionaddmeaorderdetail', ['id' => $orderdetail->id]) }}"
+                    method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4"><strong>ชื่อการวัด:</strong></div>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="add_measurement_name" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4"><strong>ตัวเลข:</strong></div>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="add_measurement_number" required
+                                    step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4"><strong>หน่วยวัด:</strong></div>
+                            <div class="col-md-8">
+                                <select class="form-control" name="add_measurement_unit" required>
+                                    <option value="นิ้ว">
+                                        นิ้ว</option>
+                                    <option value="เซนติเมตร">
+                                        เซนติเมตร</option>
+                                    <option value="มิลลิเมตร">
+                                        มิลลิเมตร</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
+                        <button class="btn btn-secondary" type="submit">ยืนยัน</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- modalเพิ่มรูปภาพ --}}
+    <div class="modal fade" id="modaladdimagerent" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    เพิ่มรูปภาพ
+                </div>
+                <form action="{{ route('employee.actionaddimagerent', ['id' => $orderdetail->id]) }}" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4"><strong>แนบรูปภาพ:</strong></div>
+                            <div class="col-md-8">
+                                <input type="file" class="form-control" name="add_image" required>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
+                        <button class="btn btn-secondary" type="submit">ยืนยัน</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 

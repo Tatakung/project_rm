@@ -143,5 +143,10 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::delete('/employee/ordertotal/detail/show/deletecost/{id}', [OrderController::class, 'actiondeletecost'])->name('employee.actiondeletecost'); //
     Route::post('/employee/ordertotal/detail/show/adddecoration/{id}', [OrderController::class, 'actionadddecoration'])->name('employee.actionadddecoration'); //
+    Route::post('/employee/ordertotal/detail/show/updatemeadress/{id}', [OrderController::class, 'actionupdatemeadress'])->name('employee.actionupdatemeadress'); //
+    Route::post('/employee/ordertotal/detail/show/addmeaorderdetail/{id}', [OrderController::class, 'actionaddmeaorderdetail'])->name('employee.actionaddmeaorderdetail'); //
+    Route::post('/employee/ordertotal/detail/show/updatemeaorderdetail/{id}', [OrderController::class, 'actionupdatemeaorderdetail'])->name('employee.actionupdatemeaorderdetail'); //
+    Route::delete('/employee/ordertotal/detail/show/deletemeaorderdetail/{id}', [OrderController::class, 'actiondeletemeaorderdetail'])->name('employee.actiondeletemeaorderdetail'); //
+    Route::post('/employee/ordertotal/detail/show/addimagerent/{id}', [OrderController::class, 'actionaddimagerent'])->name('employee.actionaddimagerent'); //
 
 });

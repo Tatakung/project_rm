@@ -581,7 +581,7 @@ class EmployeeController extends Controller
                 $create_orderdetail_status->status = "จองชุด";
                 $create_orderdetail_status->save();
                 //ตารางorderdetail
-                $check->status_detail = "จองชุดแล้ว";
+                $check->status_detail = "จองชุด";
                 $check->save();
                 // ตารางfinancial
                 $status_payment = $check->status_payment;
@@ -614,7 +614,7 @@ class EmployeeController extends Controller
                 $create_orderdetail_status->status = "จองเครื่องประดับ";
                 $create_orderdetail_status->save();
                 //ตารางorderdetail
-                $check->status_detail = "จองเครื่องประดับแล้ว";
+                $check->status_detail = "จองเครื่องประดับ";
                 $check->save();
                 // ตารางfinancial
                 $status_payment = $check->status_payment;

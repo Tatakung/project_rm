@@ -148,5 +148,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/ordertotal/detail/show/updatemeaorderdetail/{id}', [OrderController::class, 'actionupdatemeaorderdetail'])->name('employee.actionupdatemeaorderdetail'); //
     Route::delete('/employee/ordertotal/detail/show/deletemeaorderdetail/{id}', [OrderController::class, 'actiondeletemeaorderdetail'])->name('employee.actiondeletemeaorderdetail'); //
     Route::post('/employee/ordertotal/detail/show/addimagerent/{id}', [OrderController::class, 'actionaddimagerent'])->name('employee.actionaddimagerent'); //
+    Route::post('/employee/ordertotal/detail/show/updatestatusrentdress/{id}', [OrderController::class, 'actionupdatestatusrentdress'])->name('employee.actionupdatestatusrentdress'); //อัปเดตสถานะเช่าชุด
+    Route::post('/employee/ordertotal/detail/show/updatedecoration/{id}', [OrderController::class, 'actionupdatedecoration'])->name('employee.actionupdatedecoration'); //
+    Route::delete('/employee/ordertotal/detail/show/deletedecoration/{id}', [OrderController::class, 'actiondeletedecoration'])->name('employee.actiondeletedecoration'); //
+
+
+
+    
+    Route::post('/employee/ordertotal/detail/show/updatestatusrentjewelry/{id}', [OrderController::class, 'actionupdatestatusrentjewelry'])->name('employee.actionupdatestatusrentjewelry'); //อัปเดตสถานะเช่าเครื่องประดับ
 
 });

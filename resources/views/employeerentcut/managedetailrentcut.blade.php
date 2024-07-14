@@ -41,7 +41,7 @@
         <!-- กล่องแรก: ข้อมูลการเช่าชุด -->
         <div class="card shadow mb-5">
             <div class="card-header bg-secondary text-white">
-                <h4 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>ข้อมูลการเช่าชุด</h4>
+                <h4 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>ข้อมูลการเช่าตัดชุด</h4>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -59,10 +59,10 @@
                             <span><strong>ชุด:</strong></span>
                             <span>{{ $orderdetail->dress_id }}</span>
                         </li> --}}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{-- <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span><strong>หมายเลขชุด:</strong></span>
                                 <span>{{ $dress->dress_code_new }}{{ $dress->dress_code }}</span>
-                            </li>
+                            </li> --}}
                             {{-- <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span><strong>พนักงานรับออเดอร์:</strong></span>
                             <span>คุณ{{ $customer->name }}&nbsp;{{ $customer->lname }}</span>
@@ -103,7 +103,7 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span><strong>ประเภทออเดอร์:</strong></span>
-                                <span>เช่าชุด</span>
+                                <span>เช่าตัดชุด</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span><strong>จำนวนชุดที่เช่า:</strong></span>
@@ -154,13 +154,13 @@
                         <h4 class="mb-0"><i class="bi bi-check-circle-fill me-2"></i>สถานะออเดอร์</h4>
                         <div style="display: block ; " id="button_status_pickup">
                             <button class="btn btn-warning" data-toggle="modal" data-target="#modalupdatestatusrentdress">
-                                อัพเดตสถานะ(มารับชุด)
+                                อัพเดตสถานะ(กำลังตัด)
                             </button>
                         </div>
-                        <div style="display: block ;" id="button_status_return">
+                        <div style="display: none ;" id="button_status_return">
                             <button class="btn btn-warning" data-toggle="modal"
                                 data-target="#modalupdatestatusrentdresstwo">
-                                อัพเดตสถานะ(คืนชุด)
+                                อัพเดตสถานะคืนชุด
                             </button>
                         </div>
 
@@ -681,7 +681,7 @@
             <div class="col-md-6">
                 <div class="card shadow mb-5">
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="bi bi-image-fill me-2"></i>รูปภาพก่อนเช่าชุด</h4>
+                        <h4 class="mb-0"><i class="bi bi-image-fill me-2"></i>รูปภาพอื่นๆที่เกี่ยวข้อง</h4>
 
                         <button class="btn btn-warning" data-toggle="modal" data-target="#modaladdimagerent"
                             id="button_add_image">
@@ -737,74 +737,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($mea_dress as $mea_dress)
-                                <tr>
-                                    <td>{{ $mea_dress->measurement_dress_name }}</td>
-                                    <td>{{ $mea_dress->measurement_dress_number }}</td>
-                                    <td>{{ $mea_dress->measurement_dress_unit }}</td>
-                                    <td>
-                                        <button type="button" data-toggle="modal"
-                                            data-target="#modaleditmeadress{{ $mea_dress->id }}">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                    </td>
-                                    {{-- modalแก้ไขข้อมูลชุด --}}
-                                    <div class="modal fade" id="modaleditmeadress{{ $mea_dress->id }}" tabindex="-1"
-                                        role="dialog" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">ข้อมูลการวัด</h5>
-                                                </div>
-                                                <form
-                                                    action="{{ route('employee.actionupdatemeadress', ['id' => $mea_dress->id]) }}"method="POST">
-                                                    @csrf
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label class="form-label" for="">ชื่อการวัด:
-                                                                {{ $mea_dress->measurement_dress_name }}</label>
-                                                        </div>
-
-
-                                                        <div class="mb-3">
-                                                            <label class="form-label"
-                                                                for="update_measurement_dress_number">ตัวเลข:</label>
-                                                            <input type="number" class="form-control"
-                                                                name="update_measurement_dress_number"
-                                                                value="{{ $mea_dress->measurement_dress_number }}"
-                                                                step="0.01" required>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label class="form-label"
-                                                                for="update_measurement_dress_unit">สถานะ:</label>
-                                                            <select class="form-control"
-                                                                name="update_measurement_dress_unit" required>
-                                                                <option
-                                                                    value="นิ้ว"{{ $mea_dress->measurement_dress_unit == 'นิ้ว' ? 'selected' : '' }}>
-                                                                    นิ้ว</option>
-                                                                <option
-                                                                    value="เซนติเมตร"{{ $mea_dress->measurement_dress_unit == 'เซนติเมตร' ? 'selected' : '' }}>
-                                                                    เซนติเมตร</option>
-                                                                <option
-                                                                    value="มิลลิเมตร"{{ $mea_dress->measurement_dress_unit == 'มิลลิเมตร' ? 'selected' : '' }}>
-                                                                    มิลลิเมตร</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-danger"
-                                                                data-dismiss="modal">ยกเลิก</button>
-                                                            <button type="submit"
-                                                                class="btn btn-secondary">ยืนยัน</button>
-                                                        </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-                                </tr>
-                            @endforeach
                             @foreach ($mea_orderdetail as $mea_orderdetail)
                                 <tr>
                                     <td>{{ $mea_orderdetail->measurement_name }}</td>
@@ -1193,44 +1125,7 @@
 
 
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var button_status_pickup = document.getElementById('button_status_pickup'); //ปุ่มอัพเดตสถาะนะรับชุด
-            var button_status_return = document.getElementById('button_status_return'); //ปุ่มอัพเดตสถาะนะคืนชุด
-            var button_add_fitting = document.getElementById('button_add_fitting'); //ปุ่มเพิ่มวันนัดรับชุด
-            var button_add_decoration = document.getElementById('button_add_decoration'); //ปุ่มเพิ่มเติมอื่นๆ
-            var button_edit_date = document.getElementById('button_edit_date'); //ปุ่มแก้ไขวันที่
-            var button_add_image = document.getElementById('button_add_image'); //ปุ่มเพิ่มรูปภาพ
-            var botton_add_mea = document.getElementById('botton_add_mea'); //ปุ่มเพิ่มข้อมูลการวัด
-
-            // var button_delete_fitting = document.getElementById('button_delete_fitting'); //ปุ่มลบวันนัดลองชุด
-            // var bonton_action_mea = document.getElementById('bonton_action_mea'); //ปุ่ม actionของ การวัด
-            // var botton_action_decoration = document.getElementById('botton_action_decoration'); //ปุ่ม action ของ อื่นๆ
-
-            var check_status = "{{ $valuestatus }}"; //รับค่ามาเช็ค
-
-            if(check_status === "จองชุด"){
-                button_status_return.style.display = 'none' ; 
-            }
-            if (check_status === "กำลังเช่า") {
-                button_status_pickup.style.display = 'none';
-                button_add_fitting.style.display = 'none' ;   
-                button_add_decoration.style.display = 'none' ; 
-                button_edit_date.style.display = 'none' ; 
-                button_add_image.style.display = 'none' ; 
-                botton_add_mea.style.display = 'none' ; 
-            }
-            if(check_status ==== 'คืนชุดแล้ว'){
-                button_status_pickup.style.display = 'none';
-                button_add_fitting.style.display = 'none' ;   
-                button_add_decoration.style.display = 'none' ; 
-                button_edit_date.style.display = 'none' ; 
-                button_add_image.style.display = 'none' ; 
-                botton_add_mea.style.display = 'none' ; 
-            }
-
-        });
-    </script>
+    
 
 
 

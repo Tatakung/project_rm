@@ -8,7 +8,6 @@
                         <div class="card">
                             <div class="card-body text-center">
                                 <!-- ใช้ text-center เพื่อจัดให้เนื้อหาภายในการ์ดอยู่ตรงกลาง -->
-                                <h5 class="card-title">{{ $item->dress_title_name}}</h5>
                                 <p class="card-title">รหัสชุด&nbsp;{{ $item->dress_code_new }}{{ $item->dress_code }}</p>
                                 
                                 @if ($item->dressimages->isNotEmpty())

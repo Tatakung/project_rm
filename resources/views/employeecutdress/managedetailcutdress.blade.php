@@ -41,7 +41,7 @@
         <!-- กล่องแรก: ข้อมูลการเช่าชุด -->
         <div class="card shadow mb-5">
             <div class="card-header bg-secondary text-white">
-                <h4 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>ข้อมูลการเช่าตัดชุด</h4>
+                <h4 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>ข้อมูลการตัดชุด</h4>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -55,10 +55,7 @@
                                 <span><strong>รายการ:</strong></span>
                                 <span>{{ $orderdetail->title_name }}</span>
                             </li>
-                            {{-- <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span><strong>ชุด:</strong></span>
-                            <span>{{ $orderdetail->dress_id }}</span>
-                        </li> --}}
+
                             {{-- <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span><strong>หมายเลขชุด:</strong></span>
                                 <span>{{ $dress->dress_code_new }}{{ $dress->dress_code }}</span>
@@ -75,10 +72,7 @@
                                 <span><strong>ราคามัดจำ/ชุด:</strong></span>
                                 <span>{{ number_format($orderdetail->deposit, 2) }} บาท</span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>ค่าบริการขยายเวลาเช่าชุด:</strong></span>
-                                <span>{{ number_format($orderdetail->late_charge, 2) }} บาท</span>
-                            </li>
+
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span><strong>วันที่นัดรับชุด:</strong></span>
                                 <span>
@@ -87,12 +81,16 @@
                                 </span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>วันที่นัดคืนชุด:</strong></span>
+                                <span><strong>ผ้า:</strong></span>
                                 <span>
-                                    {{ \Carbon\Carbon::parse($orderdetail->return_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($orderdetail->return_date)->year + 543 }}
+                                    @if ($orderdetail->cloth == 1)
+                                        ลูกค้านำผ้ามาเอง
+                                    @else
+                                        ทางร้านหาผ้าให้
+                                    @endif
                                 </span>
                             </li>
+
                             {{-- <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span><strong>ประเภทชุด:</strong></span>
                             <span>{{ $orderdetail->type_dress }}</span>
@@ -103,10 +101,10 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span><strong>ประเภทออเดอร์:</strong></span>
-                                <span>เช่าตัดชุด</span>
+                                <span>ตัดชุด</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>จำนวนชุดที่เช่า:</strong></span>
+                                <span><strong>จำนวนชุดที่ตัด:</strong></span>
                                 <span>{{ $orderdetail->amount }}&nbsp;ชุด</span>
                             </li>
 
@@ -114,10 +112,7 @@
                                 <span><strong>สีของชุด:</strong></span>
                                 <span>{{ $orderdetail->color }}</span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>ค่าประกันความเสียหาย:</strong></span>
-                                <span>{{ number_format($orderdetail->damage_insurance, 2) }} บาท</span>
-                            </li>
+
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span><strong>สถานะออเดอร์:(ล่าสุด)</strong></span>
                                 <span
@@ -128,9 +123,9 @@
                                 <span
                                     class="badge bg-{{ $orderdetail->status_payment == 'ชำระแล้ว' ? 'success' : 'danger' }}">
                                     @if ($orderdetail->status_payment == 1)
-                                        จ่ายมัดจำแล้ว({{number_format($orderdetail->deposit,2)}})
+                                        จ่ายมัดจำแล้ว({{ number_format($orderdetail->deposit, 2) }})
                                     @else
-                                        จ่ายเต็มจำนวนแล้ว({{number_format($orderdetail->price,2)}})
+                                        จ่ายเต็มจำนวนแล้ว({{ number_format($orderdetail->price, 2) }})
                                     @endif
 
                                 </span>
@@ -152,17 +147,12 @@
                 <div class="card shadow mb-5">
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0"><i class="bi bi-check-circle-fill me-2"></i>สถานะออเดอร์</h4>
-                        <div style="display: block ; " id="button_status_pickup">
-                            <button class="btn btn-warning" data-toggle="modal" data-target="#modalupdatestatusrentcut">
+                        <div id="button_status_pickup" @if($orderdetail->status_detail == "มารับชุดแล้ว") style="display:none;"@endif>
+                            <button class="btn btn-warning" data-toggle="modal" data-target="#modalupdatestatuscutdress">
                                 อัพเดตสถานะ({{$orderdetail->status_detail}})
                             </button>
                         </div>
-                        <div style="display: block ;" id="button_status_return">
-                            <button class="btn btn-warning" data-toggle="modal"
-                                data-target="#modalupdatestatusrentcuttwo">
-                                อัพเดตสถานะคืนชุด
-                            </button>
-                        </div>
+                        
 
 
                     </div>
@@ -197,12 +187,11 @@
                 <div class="card shadow mb-5">
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0"><i class="bi bi-calendar-event-fill me-2"></i>วันที่นัดลองชุด</h4>
-                        <div>
+                        <div @if($orderdetail->status_detail == "มารับชุดแล้ว") style="display:none;"@endif>
                             <button class="btn btn-warning" data-toggle="modal" data-target="#modaladdfitting"
                                 id="button_add_fitting">
                                 เพิ่มวันนัดลองชุด
                             </button>
-
                         </div>
                     </div>
 
@@ -360,9 +349,10 @@
             <div class="col-md-6">
                 <div class="card shadow mb-5">
                     <div class="card-header bg-secondary text-dark d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="bi bi-brush-fill me-2"></i>เพิ่มเติมอื่นๆ</h4>
+                        <h4 class="mb-0"><i class="bi bi-brush-fill me-2"></i>เพิ่มเติมอื่นๆ(หากมี)</h4>
+    
                         <button class="btn btn-warning" data-toggle="modal" data-target="#modaladddecoration"
-                            id="button_add_decoration">
+                            id="button_add_decoration" @if($orderdetail->status_detail == "มารับชุดแล้ว") style="display:none;"@endif>
                             เพิ่มข้อมูลเติมอื่นๆ
                         </button>
                     </div>
@@ -381,11 +371,12 @@
                                     <tr>
                                         <td>{{ $decoration->decoration_description }}</td>
                                         <td>{{ $decoration->decoration_price }}</td>
-                                        <td id="botton_action_decoration1" >
-                                            <button type="button" data-toggle="modal" data-target="#modalupdatedecoration{{ $decoration->id }}"
-                                                @if($orderdetail->status_detail == "กำลังเช่า") style="display: none;" @endif>
+                                        <td id="botton_action_decoration1">
+                                            <button type="button" data-toggle="modal"
+                                                data-target="#modalupdatedecoration{{ $decoration->id }}"
+                                                @if ($orderdetail->status_detail == 'กำลังเช่า') style="display: none;" @endif>
                                                 <i class="bi bi-pencil"></i>
-                                            </button>                                            <button type="submit" data-toggle="modal"
+                                            </button> <button type="submit" data-toggle="modal"
                                                 data-target="#modaldeletedecotaion{{ $decoration->id }}">
                                                 <i class="bi bi-trash-fill"></i>
                                             </button>
@@ -645,7 +636,7 @@
                 <div class="card shadow mb-5">
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0"><i class="bi bi-calendar-fill me-2"></i>วันที่</h4>
-                        <button class="btn btn-warning" id="button_edit_date">
+                        <button class="btn btn-warning" id="button_edit_date" @if($orderdetail->status_detail == "มารับชุดแล้ว") style="display:none;"@endif>
                             แก้ไขวันที่
                         </button>
                     </div>
@@ -653,8 +644,6 @@
                         <thead>
                             <tr>
                                 <th>วันที่นัดรับชุด</th>
-                                <th>วันที่นัดคืนชุด</th>
-                                <th>ค่าบริการขยายเวลาเช่าชุด</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -663,13 +652,6 @@
                                     <td>
                                         {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                    </td>
-                                    <td>
-                                        {{ \Carbon\Carbon::parse($date->return_date)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($date->return_date)->year + 543 }}
-                                    </td>
-                                    <td>0.00
-                                        บาท
                                     </td>
                                 </tr>
                             @endforeach
@@ -681,10 +663,10 @@
             <div class="col-md-6">
                 <div class="card shadow mb-5">
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="bi bi-image-fill me-2"></i>รูปภาพอื่นๆที่เกี่ยวข้อง</h4>
+                        <h4 class="mb-0"><i class="bi bi-image-fill me-2"></i>รูปภาพประกอบ/อื่นๆที่เกี่ยวข้อง</h4>
 
                         <button class="btn btn-warning" data-toggle="modal" data-target="#modaladdimagerent"
-                            id="button_add_image">
+                            id="button_add_image" @if($orderdetail->status_detail == "มารับชุดแล้ว") style="display:none;"@endif>
                             เพิ่มรูปภาพ
                         </button>
                     </div>
@@ -723,7 +705,7 @@
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0"><i class="bi bi-calendar-fill me-2"></i>ข้อมูลการวัด</h4>
                         <button class="btn btn-warning" data-toggle="modal" data-target="#modaladdmeaorderdetail"
-                            id="botton_add_mea">
+                            id="botton_add_mea" @if($orderdetail->status_detail == "มารับชุดแล้ว") style="display:none;"@endif>
                             เพิ่มข้อมูลการวัด
                         </button>
                     </div>
@@ -737,6 +719,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                        
                             @foreach ($mea_orderdetail as $mea_orderdetail)
                                 <tr>
                                     <td>{{ $mea_orderdetail->measurement_name }}</td>
@@ -1057,18 +1040,18 @@
     </div>
 
 
-    {{-- modalอัปเดตสถานะของเช่าตัดชุด --}}
-    <div class="modal fade" id="modalupdatestatusrentcut" role="dialog" aria-hidden="true">
+    {{-- modalอัปเดตสถานะของเช่าชุด --}}
+    <div class="modal fade" id="modalupdatestatuscutdress" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form action="{{ route('employee.actionupdatestatusrentcut', ['id' => $orderdetail->id]) }}"
+                <form action="{{ route('employee.actionupdatestatuscutdress', ['id' => $orderdetail->id]) }}"
                     method="POST">
                     @csrf
                     <div class="modal-header">
                         อัปเดตสถานะ
                     </div>
                     <div class="modal-body">
-                        ต้องการจะอัพเดตสถานะของลูกค้า
+                        ต้องการจะอัพเดตสถานะของชุดที่ตัด
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
@@ -1079,53 +1062,49 @@
         </div>
     </div>
 
-    {{-- modalอัปเดตสถานะของเช่าชุด --}}
-    <div class="modal fade" id="modalupdatestatusrentcuttwo" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form action="{{ route('employee.actionupdatestatusrentcut', ['id' => $orderdetail->id]) }}"
-                    method="POST">
-                    @csrf
-                    <div class="modal-header">
-                        <h5 class="modal-title">อัปเดตสถานะ</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="damage_insurance">ประกันที่จ่าย</label>
-                            <p>{{ number_format($orderdetail->damage_insurance, 2) }} บาท </p>
-                        </div>
-                        <div class="form-group">
-                            <label for="damage_insurance">หักเงินประกันจริง</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" name="total_damage_insurance"
-                                    id="total_damage_insurance" value="0" step="0.01" required>
-                                <div class="input-group-append">
-                                    <span class="input-group-text">บาท</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="why">เหตุผล</label>
-                            <input type="text" class="form-control" name="cause_for_insurance"
-                                id="cause_for_insurance" placeholder="เหตุผลในการหัก" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
-                        <button class="btn btn-primary" type="submit">ยืนยัน</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-
-
     
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var button_status_pickup = document.getElementById('button_status_pickup'); //ปุ่มอัพเดตสถาะนะรับชุด
+            var button_status_return = document.getElementById('button_status_return'); //ปุ่มอัพเดตสถาะนะคืนชุด
+            var button_add_fitting = document.getElementById('button_add_fitting'); //ปุ่มเพิ่มวันนัดรับชุด
+            var button_add_decoration = document.getElementById('button_add_decoration'); //ปุ่มเพิ่มเติมอื่นๆ
+            var button_edit_date = document.getElementById('button_edit_date'); //ปุ่มแก้ไขวันที่
+            var button_add_image = document.getElementById('button_add_image'); //ปุ่มเพิ่มรูปภาพ
+            var botton_add_mea = document.getElementById('botton_add_mea'); //ปุ่มเพิ่มข้อมูลการวัด
+
+            // var button_delete_fitting = document.getElementById('button_delete_fitting'); //ปุ่มลบวันนัดลองชุด
+            // var bonton_action_mea = document.getElementById('bonton_action_mea'); //ปุ่ม actionของ การวัด
+            // var botton_action_decoration = document.getElementById('botton_action_decoration'); //ปุ่ม action ของ อื่นๆ
+
+            var check_status = "{{ $valuestatus }}"; //รับค่ามาเช็ค
+
+            if (check_status === "จองชุด") {
+                button_status_return.style.display = 'none';
+            }
+            if (check_status === "กำลังเช่า") {
+                button_status_pickup.style.display = 'none';
+                button_add_fitting.style.display = 'none';
+                button_add_decoration.style.display = 'none';
+                button_edit_date.style.display = 'none';
+                button_add_image.style.display = 'none';
+                botton_add_mea.style.display = 'none';
+            }
+            if (check_status === = 'คืนชุดแล้ว') {
+                button_status_pickup.style.display = 'none';
+                button_add_fitting.style.display = 'none';
+                button_add_decoration.style.display = 'none';
+                button_edit_date.style.display = 'none';
+                button_add_image.style.display = 'none';
+                botton_add_mea.style.display = 'none';
+            }
+
+        });
+    </script>
 
 
 

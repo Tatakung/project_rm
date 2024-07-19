@@ -12,6 +12,8 @@ class Dressmeasurement extends Model
     use SoftDeletes;
     protected $fillable = [
         'dress_id',
+        'shirtitems_id',
+        'skirtitems_id',
         'measurement_dress_name',
         'measurement_dress_number',
         'measurement_dress_unit',

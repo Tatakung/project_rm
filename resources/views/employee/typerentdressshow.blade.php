@@ -16,11 +16,11 @@
                                 <h6>รหัสชุด: {{ $item->dress_code_new }}{{ $item->dress_code }}</h6>
                                 <h6 style="color: red ; ">สถานะชุด: {{ $item->dress_status }}</h6>
                                 <h6 style="color: red ; ">จำนวนชุด: {{ $item->dress_count }} ชุด</h6>
-                                <p>ไอดีของชุด:{{ $item->id }}</p>
+                                {{-- <p>ไอดีของชุด:{{ $item->id }}</p> --}}
                                 <p>ราคาชุด:{{ $item->dress_price }}</p>
                                 <p>ราคามัดจำ:{{ $item->dress_deposit }}</p>
-                                <p>ประเภทชุด:{{ $type_dress_name->type_dress_name }}</p>
-                                <p>หมายเลขชุด:{{$item->dress_code_new}}{{ $item->dress_code }}</p>
+                                {{-- <p>ประเภทชุด:{{ $type_dress_name->type_dress_name }}</p> --}}
+                                {{-- <p>หมายเลขชุด:{{$item->dress_code_new}}{{ $item->dress_code }}</p> --}}
 
                             </div>
                             <div class="card-footer text-center">

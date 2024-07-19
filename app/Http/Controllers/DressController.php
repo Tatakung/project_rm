@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Dress;
 use App\Models\Dressimage;
 use App\Models\Dressmeasurement;
+use App\Models\Dressmeasurementnow;
 use App\Models\Expense;
+use App\Models\Shirtitem;
+use App\Models\Skirtitem;
 use App\Models\Typedress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +29,7 @@ class DressController extends Controller
 
     public function savedress(Request $request)
     {
+
         $dressCount = $request->input('dress_count');
         $dressCodes = [];
         //เพิ่มประเภทชุดใหม่
@@ -58,19 +62,17 @@ class DressController extends Controller
         else {
             $TYPE_ID = $request->input('type_dress_id'); //เก็บid  typedress เพื่อนำไปใส่ในตาราง dress
             $maxDressCode = Dress::where('type_dress_id', $request->input('type_dress_id'))->max('dress_code');
-            
-            if($maxDressCode){
+
+            if ($maxDressCode) {
                 //ถ้ามี
                 $newDressCode = $maxDressCode + 1; //กำหนดให้หมายเลขชุดที่มี + 1 เพิ่มขึ้นไปเรื่อยๆ 
-            }
-            else{
+            } else {
                 //ถ้าไม่มีก็ให้เริ่มที่ 1 
-                $newDressCode = 1 ; 
+                $newDressCode = 1;
             }
 
             $unique_character = Typedress::where('id', $request->input('type_dress_id'))->value('specific_letter');
             $name_for_session = Typedress::where('id', $request->input('type_dress_id'))->value('type_dress_name');
-            
         }
 
 
@@ -80,23 +82,19 @@ class DressController extends Controller
             $dress->type_dress_id = $TYPE_ID;
             $dress->dress_code = $newDressCode; //หมายเลขชุด
             $dress->dress_code_new = $unique_character;
-            $dress->dress_title_name = $request->input('dress_title_name');
-            $dress->dress_color = $request->input('dress_color');
-
-
-            if($request->input('dress_deposit') > $request->input('dress_price') ){
-                return redirect()->back()->with('fail',"ราคาชุดจะต้องมีการค่ามากกว่าราคามัดจำ !") ; 
-            }
-            else{
+            // $dress->dress_title_name = $request->input('dress_title_name');
+            // $dress->dress_color = $request->input('dress_color');
+            if ($request->input('dress_deposit') > $request->input('dress_price')) {
+                return redirect()->back()->with('fail', "ราคาชุดจะต้องมีการค่ามากกว่าราคามัดจำ !");
+            } else {
                 $dress->dress_price = $request->input('dress_price');
-                $dress->dress_deposit = $request->input('dress_deposit');    
+                $dress->dress_deposit = $request->input('dress_deposit');
             }
-
-
-            $dress->dress_count = 1 ; 
+            $dress->dress_count = 1;
             $dress->dress_status = "พร้อมให้เช่า";
             $dress->dress_description = $request->input('dress_description');
             $dress->dress_rental = 0;
+            $dress->separable = $request->input('separable'); //1แยกไม่ได้ 2 แยกได้
             $dress->save();
 
             // เก็บ dress_code ที่ถูกสร้างไว้ใน list
@@ -107,16 +105,16 @@ class DressController extends Controller
             $mea_dress_number = $request->input('measurement_dress_number_');
             $mea_dress_unit = $request->input('measurement_dress_unit_');
 
-            foreach ($mea_dress_name as $index => $mea) {
-                $addmea = new Dressmeasurement;
-                $addmea->dress_id  = $dress->id;
-                $addmea->measurement_dress_name = $mea;
-                $addmea->measurement_dress_number = $mea_dress_number[$index];
-                $addmea->measurement_dress_unit = $mea_dress_unit[$index];
-                $addmea->save();
-            }
+            // foreach ($mea_dress_name as $index => $mea) {
+            //     $addmea = new Dressmeasurement;
+            //     $addmea->dress_id  = $dress->id;
+            //     $addmea->measurement_dress_name = $mea;
+            //     $addmea->measurement_dress_number = $mea_dress_number[$index];
+            //     $addmea->measurement_dress_unit = $mea_dress_unit[$index];
+            //     $addmea->save();
+            // }
 
-        
+
             //รูปภาพ
             if ($request->hasFile('imagerent_')) {
                 $images = $request->file('imagerent_');
@@ -128,8 +126,127 @@ class DressController extends Controller
                     $additionalImage->save();
                 }
             }
+
+
+            //ส่วนการแยกได้กับแยกไม่ได้
+
+            if ($request->input('separable') == 1) {
+                //แยกไม่ได้
+
+                //ตารางเริ่มต้นdressmeasurement
+                if ($request->input('no_shirt_measurement_dress_name_') != null) {
+                    $no_shirt_measurement_dress_name = $request->input('no_shirt_measurement_dress_name_');
+                    $no_shirt_measurement_dress_number = $request->input('no_shirt_measurement_dress_number_');
+                    $no_shirt_measurement_dress_unit = $request->input('no_shirt_measurement_dress_unit_');
+                    foreach ($no_shirt_measurement_dress_name as $index => $no_shirt_meas_dress_name) {
+                        $addmea = new Dressmeasurement;
+                        $addmea->dress_id  = $dress->id;
+                        $addmea->measurement_dress_name = $no_shirt_meas_dress_name;
+                        $addmea->measurement_dress_number = $no_shirt_measurement_dress_number[$index];
+                        $addmea->measurement_dress_unit = $no_shirt_measurement_dress_unit[$index];
+                        $addmea->save();
+                    }
+                }
+
+
+                // ตาราง dressmeasurementnow
+                if ($request->input('no_shirt_measurement_dress_name_') != null) {
+                    $no_shirt_measurement_dress_name = $request->input('no_shirt_measurement_dress_name_');
+                    $no_shirt_measurement_dress_number = $request->input('no_shirt_measurement_dress_number_');
+                    $no_shirt_measurement_dress_unit = $request->input('no_shirt_measurement_dress_unit_');
+                    $max = Dressmeasurementnow::max('count');
+                    $max = $max + 1;
+                    foreach ($no_shirt_measurement_dress_name as $index => $no_shirt_meas_dress_name) {
+                        $addmea = new Dressmeasurementnow();
+                        $addmea->dress_id  = $dress->id;
+                        $addmea->measurementnow_dress_name = $no_shirt_meas_dress_name;
+                        $addmea->measurementnow_dress_number = $no_shirt_measurement_dress_number[$index];
+                        $addmea->measurementnow_dress_unit = $no_shirt_measurement_dress_unit[$index];
+                        $addmea->count = $max;
+                        $addmea->save();
+                    }
+                }
+            } elseif ($request->input('separable') == 2) {
+                //แยกได้
+
+                //ตารางshirtitem
+                $add_shirtitem = new Shirtitem();
+                $add_shirtitem->dress_id = $dress->id;
+                $add_shirtitem->shirtitem_price = $request->input('shirt_price');
+                $add_shirtitem->shirtitem_deposit = $request->input('shirt_deposit');
+                $add_shirtitem->shirtitem_status = "พร้อมให้เช่า";
+                $add_shirtitem->shirtitem_rental = 0;
+                $add_shirtitem->save();
+
+                //ตารางskirtitem
+                $add_skirtitem = new Skirtitem();
+                $add_skirtitem->dress_id = $dress->id;
+                $add_skirtitem->skirtitem_price = $request->input('shirt_price');
+                $add_skirtitem->skirtitem_deposit = $request->input('shirt_deposit');
+                $add_skirtitem->skirtitem_status = "พร้อมให้เช่า";
+                $add_skirtitem->skirtitem_rental = 0;
+                $add_skirtitem->save();
+
+
+                //เสื้อตารางdressmeasurement
+                $yes_shirt_measurement_dress_name = $request->input('yes_shirt_measurement_dress_name_');
+                $yes_shirt_measurement_dress_number = $request->input('yes_shirt_measurement_dress_number_');
+                $yes_shirt_measurement_dress_unit = $request->input('yes_shirt_measurement_dress_unit_');
+                foreach ($yes_shirt_measurement_dress_name as $index => $yes_shirt_mea_dress_name) {
+                    $add_item_shiry = new Dressmeasurement();
+                    $add_item_shiry->shirtitems_id = $add_shirtitem->id;
+                    $add_item_shiry->measurement_dress_name = $yes_shirt_mea_dress_name;
+                    $add_item_shiry->measurement_dress_number = $yes_shirt_measurement_dress_number[$index];
+                    $add_item_shiry->measurement_dress_unit = $yes_shirt_measurement_dress_unit[$index];
+                    $add_item_shiry->save();
+                }
+                //เสื้อตารางdressmeasurementnow
+                $yes_shirt_measurement_dress_name = $request->input('yes_shirt_measurement_dress_name_');
+                $yes_shirt_measurement_dress_number = $request->input('yes_shirt_measurement_dress_number_');
+                $yes_shirt_measurement_dress_unit = $request->input('yes_shirt_measurement_dress_unit_');
+                $max = Dressmeasurementnow::max('count');
+                $max = $max + 1;
+                foreach ($yes_shirt_measurement_dress_name as $index => $yes_shirt_mea_dress_name) {
+                    $add_item_shiry = new Dressmeasurementnow();
+                    $add_item_shiry->shirtitems_id = $add_shirtitem->id;
+                    $add_item_shiry->measurementnow_dress_name = $yes_shirt_mea_dress_name;
+                    $add_item_shiry->measurementnow_dress_number = $yes_shirt_measurement_dress_number[$index];
+                    $add_item_shiry->measurementnow_dress_unit = $yes_shirt_measurement_dress_unit[$index];
+                    $add_item_shiry->count = $max;
+                    $add_item_shiry->save();
+                }
+
+
+                //กระโปรงตารางdressmeasurement
+                $yes_skirt_measurement_dress_name = $request->input('yes_skirt_measurement_dress_name_');
+                $yes_skirt_measurement_dress_number = $request->input('yes_skirt_measurement_dress_number_');
+                $yes_skirt_measurement_dress_unit = $request->input('yes_skirt_measurement_dress_unit_');
+                foreach ($yes_skirt_measurement_dress_name as $index => $yes_skirt_mea_dress_name) {
+                    $add_item_skiry = new Dressmeasurement();
+                    $add_item_skiry->skirtitems_id = $add_skirtitem->id;
+                    $add_item_skiry->measurement_dress_name = $yes_skirt_mea_dress_name;
+                    $add_item_skiry->measurement_dress_number = $yes_skirt_measurement_dress_number[$index];
+                    $add_item_skiry->measurement_dress_unit = $yes_skirt_measurement_dress_unit[$index];
+                    $add_item_skiry->save();
+                }
+                //กระโปรงตารางdressmeasurementnow
+                $yes_skirt_measurement_dress_name = $request->input('yes_skirt_measurement_dress_name_');
+                $yes_skirt_measurement_dress_number = $request->input('yes_skirt_measurement_dress_number_');
+                $yes_skirt_measurement_dress_unit = $request->input('yes_skirt_measurement_dress_unit_');
+                $max = Dressmeasurementnow::max('count');
+                $max = $max + 1;
+                foreach ($yes_skirt_measurement_dress_name as $index => $yes_skirt_mea_dress_name) {
+                    $add_item_skiry = new Dressmeasurementnow();
+                    $add_item_skiry->skirtitems_id = $add_skirtitem->id;
+                    $add_item_skiry->measurementnow_dress_name = $yes_skirt_mea_dress_name;
+                    $add_item_skiry->measurementnow_dress_number = $yes_skirt_measurement_dress_number[$index];
+                    $add_item_skiry->measurementnow_dress_unit = $yes_skirt_measurement_dress_unit[$index];
+                    $add_item_skiry->count = $max;
+                    $add_item_skiry->save();
+                }
+            }
         }
-        return redirect()->back()->with('dressCodes',$dressCodes);
+        return redirect()->back()->with('dressCodes', $dressCodes);
     }
 
 
@@ -155,7 +272,16 @@ class DressController extends Controller
 
     public function dresstotal()
     {
-        $showtype = Typedress::all();
+        // $showtype = Typedress::all();
+        $showtype = TypeDress::all();
+        foreach ($showtype as $item) {
+            $dress = Dress::where('type_dress_id', $item->id)->inRandomOrder()->first();
+            if ($dress) {
+                $item->image = Dressimage::where('dress_id', $dress->id)->inRandomOrder()->value('dress_image');
+            } else {
+                $item->image = null;
+            }
+        }
         return view('admin.dresstotal', compact('showtype'));
     }
 
@@ -248,26 +374,22 @@ class DressController extends Controller
 
 
     //บันทึกค่าใช้จ่าย
-    public function expense(){
+    public function expense()
+    {
         // $dataexpense = Expense::all() ; 
-        $dataexpense = Expense::orderBy('date','desc')->get() ; 
-        return view('admin.expense',compact('dataexpense')) ; 
+        $dataexpense = Expense::orderBy('date', 'desc')->get();
+        return view('admin.expense', compact('dataexpense'));
     }
-    public function saveexpense(Request $request){
+    public function saveexpense(Request $request)
+    {
         // $test = Auth::user()->id ; 
         // dd($test) ; 
-        $save = new Expense() ; 
-        $save->date = $request->input('expense_date') ;
-        $save->expense_type = $request->input('expense_type') ; 
-        $save->expense_value = $request->input('expense_value') ; 
-        $save->employee_id = Auth::user()->id ; 
-        $save->save() ; 
-        return redirect()->back()->with('success',"เพิ่มค่าใช้จ่ายสำเร็จ !") ; 
+        $save = new Expense();
+        $save->date = $request->input('expense_date');
+        $save->expense_type = $request->input('expense_type');
+        $save->expense_value = $request->input('expense_value');
+        $save->employee_id = Auth::user()->id;
+        $save->save();
+        return redirect()->back()->with('success', "เพิ่มค่าใช้จ่ายสำเร็จ !");
     }
-
-
-
-
-
-
 }

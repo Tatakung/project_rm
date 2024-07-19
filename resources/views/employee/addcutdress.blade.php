@@ -33,7 +33,7 @@
         @if (session('success'))
             setTimeout(function() {
                 $('#showsuccess').modal('show');
-            },500);
+            }, 500);
         @endif
     </script>
 
@@ -95,8 +95,6 @@
                         <input type="number" class="form-control" id="amount" name="amount" value="1"
                             min="1" required>
                     </div>
-
-
                 </div>
                 <div class="row mb-3">
                     <label for="price" class="col-sm-2 col-form-label">ราคาเต็ม/ชุด</label>
@@ -183,9 +181,6 @@
                             placeholder="ใส่รายละเอียดเพิ่มเติมที่เกี่ยวข้อง"></textarea>
                     </div>
                 </div>
-
-
-
             </div>
 
 

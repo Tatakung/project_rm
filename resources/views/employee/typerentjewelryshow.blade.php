@@ -2,6 +2,9 @@
 @section('content')
 
 <div class="container mt-4">
+    <h2 class="text-center my-4" style="font-weight: bold; color: #5a5a5a;">
+        {{ $type_jewelry_name->specific_letter }}-{{ $type_jewelry_name->type_jewelry_name }}</h2>
+
     <div class="row">
         @foreach ($jewelry as $item)
         @if($item->jewelry_status == "พร้อมให้เช่า")
@@ -10,10 +13,12 @@
                 <div class="card-body">
                     <img src="{{asset('storage/' .$item->jewelryimages->first()->jewelry_image)}}" alt="" width="50px;">
                     <h5 class="card-title text-primary font-weight-bold mt-2 mb-3">{{ $item->jewelry_title_name }}</h5>
-                    <p class="card-text text-muted"><strong>รหัสชุด:</strong> {{ $item->jewelry_code_new }}{{ $item->jewelry_code }}</p>
-                    <p class="card-text text-muted"><strong>สถานะชุด:</strong> {{ $item->jewelry_status }}</p>
-                    <p class="card-text text-muted"><strong>ไอดีของชุด:</strong> {{ $item->id }}</p>
+                    <p class="card-text text-muted"><strong>รหัสเครื่องประดับ:</strong> {{ $item->jewelry_code_new }}{{ $item->jewelry_code }}</p>
+                    <p class="card-text text-muted"><strong>สถานะ:</strong> {{ $item->jewelry_status }}</p>
+                    {{-- <p class="card-text text-muted"><strong>ไอดีของชุด:</strong> {{ $item->id }}</p> --}}
                     <p class="card-text text-muted"><strong>ราคา:</strong> {{ number_format($item->jewelry_price, 2) }} บาท</p>
+                    <p class="card-text text-muted"><strong>ราคามัดจำ:</strong> {{ number_format($item->jewelry_deposit, 2) }} บาท</p>
+
                 </div>
                 <div class="card-footer text-center">
                     <form action="{{route('employee.addrentjewelrycart')}}" method="POST">

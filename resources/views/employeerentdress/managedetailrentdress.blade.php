@@ -152,7 +152,7 @@
                 <div class="card shadow mb-5">
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0"><i class="bi bi-check-circle-fill me-2"></i>สถานะออเดอร์</h4>
-                        <div style="display: block ; " id="button_status_pickup">
+                        <div id="button_status_pickup" >
                             <button class="btn btn-warning" data-toggle="modal" data-target="#modalupdatestatusrentdress">
                                 อัพเดตสถานะ(มารับชุด)
                             </button>

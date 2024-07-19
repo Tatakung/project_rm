@@ -17,6 +17,8 @@ use App\Models\Orderdetail;
 use App\Models\Orderdetailstatus;
 use App\Models\Paymentstatus;
 use App\Models\Typedress;
+use App\Models\Customer;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -530,18 +532,28 @@ class EmployeeController extends Controller
     //ยืนยันการเพิ่มออเดอร์
     public function confirmorder(Request $request, $id)
     {
+
         $order_id = $id;
         $order_detail_id = json_decode($request->input('order_detail_id'), true);
+
+        //สร้างตารางcutomer
+        $create_customer = new Customer() ; 
+        $create_customer->customer_fname = $request->input('firstName');
+        $create_customer->customer_lname = $request->input('lastName');
+        $create_customer->customer_phone = $request->input('phone');
+        $create_customer->save() ; 
+        $CUSTOMER_ID = $create_customer->id ; 
 
         //อัปเดตตารางorder เป็ฯ 1 เสร็จแล้ว
         $update_order_status = Order::find($id) ; 
         $update_order_status->order_status = 1 ;
+        $update_order_status->customer_id = $CUSTOMER_ID ; 
         $update_order_status->save() ; 
-
-
+        
 
         foreach ($order_detail_id as $id_for_orderdetail) {
 
+            
             $check = Orderdetail::find($id_for_orderdetail);
             if ($check->type_order == 1) {
 
@@ -672,6 +684,7 @@ class EmployeeController extends Controller
                 $create_financial->save();
             }
         }
-        return redirect()->back()->with('success', 'ทำรายการแล้ว !');
+        // return redirect()->back()->with('success', 'ทำรายการแล้ว !');
+        return redirect()->route('employee.ordertotaldetail',['id'=>$id]) ; 
     }
 }

@@ -4,8 +4,8 @@
 <div class="container mt-5">
     <h3 class="text-center mb-4">ออเดอร์บิลที่ {{$order_id}}</h3>
     <div class="d-flex justify-content-between mb-3">
-        <button class="btn btn-danger">พิมพ์บิลรวม</button>
-        <button class="btn btn-danger">พิมพ์สัญญาเช่าชุด/เครื่องประดับ(กรณีเช่า)</button>
+        {{-- <button class="btn btn-danger">พิมพ์บิลรวม</button>
+        <button class="btn btn-danger">พิมพ์สัญญาเช่าชุด/เครื่องประดับ(กรณีเช่า)</button> --}}
     </div>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
@@ -41,7 +41,7 @@
                     </td>
                     <td>
                         @if($orderdetail->return_date)
-                        {{ \Carbon\Carbon::parse($orderdetail->return_date)->locale('th')->isoFormat('D MMMM') }}
+                        {{ \Carbon\Carbon::parse($orderdetail->return_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($orderdetail->return_date)->year + 543 }}
                         @else
                         -

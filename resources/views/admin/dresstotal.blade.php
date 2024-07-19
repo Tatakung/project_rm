@@ -9,7 +9,14 @@
                         <div class="card-body">
 
                             <a href="{{ route('admin.typedress', ['id' => $item->id]) }}">
-                                <h5 class="card-title">{{ $item->specific_letter }}-{{ $item->type_dress_name }}</h5>
+                                <h5 class="card-title">{{ $item->type_dress_name }}</h5>
+                                @if ($item->image)
+                                    <img src="{{ asset('storage/' . $item->image) }}" alt="" style="max-height: 300px; width: auto; margin: auto; display: block;">
+                                @else
+                                    <p>No image available</p>
+                                @endif
+
+
                             </a>
                         </div>
                     </div>

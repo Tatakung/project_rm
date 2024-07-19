@@ -6,18 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Dressimage extends Model
+class Dressmeasurementnow extends Model
 {
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
         'dress_id',
-        'dress_image',
+        'shirtitems_id' , 
+        'skirtitems_id' , 
+        'measurementnow_dress_name',
+        'measurementnow_dress_number',
+        'measurementnow_dress_unit',
+        'count',
     ];
-
-    // dressimage เป็น M - 1 ของ dress
-    public function dress()
-    {
-        return $this->belongsTo(Dress::class, 'dress_id');
-    }
 }

@@ -156,5 +156,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     
     Route::post('/employee/ordertotal/detail/show/updatestatusrentjewelry/{id}', [OrderController::class, 'actionupdatestatusrentjewelry'])->name('employee.actionupdatestatusrentjewelry'); //อัปเดตสถานะเช่าเครื่องประดับ
+    Route::post('/employee/ordertotal/detail/show/updatestatusrentcut/{id}', [OrderController::class, 'actionupdatestatusrentcut'])->name('employee.actionupdatestatusrentcut'); //อัปเดตสถานะเช่าตัดชุด
+    Route::post('/employee/ordertotal/detail/show/updatestatuscutdress/{id}', [OrderController::class, 'actionupdatestatuscutdress'])->name('employee.actionupdatestatuscutdress'); //อัปเดตสถานะตัดชุด
 
 });

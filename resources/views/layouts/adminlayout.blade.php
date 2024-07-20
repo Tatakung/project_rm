@@ -12,6 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
     <script src="main.js"></script> --}}
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -292,13 +294,11 @@
         {{-- แอดมิน --}}
         <nav class="d-flex shadow-sm">
 
-            <!-- close sidebar -->
             <button class="btn py-0 d-lg-none" id="open-sidebar">
                 <span class="bi bi-list text-primary h3"></span>
             </button>
 
             @if(Auth::user() && Auth::user()->is_admin == 0 )
-            <!-- ปุ่มตะกร้า -->
             <button class="btn py-0 ml-auto" id="cart-button">
                 <span class="bi bi-cart text-primary h4">
                     <a href="{{route('employee.cart')}}">ตะกร้า {{ App\Models\Order::where('user_id',Auth::user()->id)
@@ -315,13 +315,12 @@
                     <span class="bi bi-person text-primary h4"></span>
                     <span class="bi bi-chevron-down ml-1 mb-2 small text-white"></span>
                 </button>
+                
 
                 <div class="dropdown-menu dropdown-menu-right border-0 shadow-sm" aria-labelledby="logout-dropdown">
 
-                    {{-- จัดการโปรไฟล์ --}}
                     <li><a class="dropdown-item" href="{{ route('admin.adminprofile') }}">profile</a></li>
 
-                    {{-- ออกจากระบบ --}}
                     <li><a class="dropdown-item" href="{{ route('logout') }}"
                             onclick="event.preventDefault();
                                   document.getElementById('logout-form').submit();">

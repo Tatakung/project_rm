@@ -10,6 +10,7 @@ use App\Models\Expense;
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
 use App\Models\Typedress;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -288,31 +289,88 @@ class DressController extends Controller
 
     public function typedress($id)
     {
-
+        $type_dress_id = $id;
+        $typedress = Typedress::find($id);
+        $status = null; //กำหนดให้ตอนแรกมันว่างก่อนสิ
         $data = Dress::where('type_dress_id', $id)->with('dressimages')->get();
-        return view('admin.typedress', compact('data'));
+        return view('admin.typedress', compact('data', 'type_dress_id', 'status'));
     }
 
     //รายละเอียดชุด ละเอียดที่สุดแล้ว
-    public function dressdetail($id)
+    public function dressdetail(Request $request, $id)
+    {
+        $separable = $request->input('separable');
+
+        if ($separable == 1) {
+            return $this->dressdetailno($id);
+        } elseif ($separable == 2) {
+            return $this->dressdetailyes($id);
+        }
+    }
+    private function dressdetailno($id)
     {
         $datadress = Dress::find($id);
         $name_type = Typedress::where('id', $datadress->type_dress_id)->value('type_dress_name');
-        $measument = Dressmeasurement::where('dress_id', $id)->get();
-
         $imagedata = Dressimage::where('dress_id', $id)->get();
-        return view('admin.dressdetail', compact('datadress', 'imagedata', 'name_type', 'measument'));
+        $maxcount = Dressmeasurementnow::where('dress_id', $id)->max('count');
+        $measument_no_separate = Dressmeasurement::where('dress_id', $id)->get();
+        $measument_no_separate_now = Dressmeasurementnow::where('dress_id', $id)
+            ->where('count', $maxcount)->get();
+        $measument_no_separate_now_modal = Dressmeasurementnow::where('dress_id', $id)
+            ->where('count', $maxcount)->get();
+        return view('admin.dressdetail', compact('datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal'));
+    }
+    private function dressdetailyes($id)
+    {
+        dd($id);
+        // $datadress = Dress::find($id);
+        // $name_type = Typedress::where('id', $datadress->type_dress_id)->value('type_dress_name');
+        // $imagedata = Dressimage::where('dress_id', $id)->get();
+        // $maxcount = Dressmeasurementnow::where('dress_id', $id)->max('count');
+        // $measument_no_separate = Dressmeasurement::where('dress_id', $id)->get();
+        // $measument_no_separate_now = Dressmeasurementnow::where('dress_id', $id)
+        //     ->where('count', $maxcount)->get();
+        // $measument_no_separate_now_modal = Dressmeasurementnow::where('dress_id', $id)
+        //     ->where('count', $maxcount)->get();
+        // return view('admin.dressdetail', compact('datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now','measument_no_separate_now_modal'));
     }
 
-    //อัปเดตชุด
-    public function updatedress(Request $request, $id)
+
+    //อัปเดตชุดno
+    public function updatedressno(Request $request, $id)
     {
-        $savedata = Dress::find($id);
-        $savedata->dress_title_name = $request->input('update_dress_title_name');
-        $savedata->dress_color = $request->input('update_dress_color');
-        $savedata->dress_description = $request->input('update_dress_description');
-        $savedata->save();
-        return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
+        DB::beginTransaction();
+        try {
+            //ตารางdress
+            $update_dress = Dress::find($id);
+            if ($request->input('update_dress_deposit') > $request->input('update_dress_price')) {
+                DB::rollback();
+                return redirect()->back()->with('fail', 'ราคาชุดต้องมากกว่าราคามัดจำ');
+            }
+            $update_dress->dress_price = $request->input('update_dress_price');
+            $update_dress->dress_deposit = $request->input('update_dress_deposit');
+            $update_dress->dress_status = $request->input('update_dress_status');
+            $update_dress->dress_description = $request->input('update_dress_description');
+            $update_dress->save();
+
+            if ($request->input('mea_now_id_') != null) {
+                $mea_now_id = $request->input('mea_now_id_');
+                $mea_now_name = $request->input('mea_now_name_');
+                $mea_now_number = $request->input('mea_now_number_');
+                $mea_now_unit = $request->input('mea_now_unit_');
+                foreach ($mea_now_id as $index => $mea_now_id) {
+                    $update_mea_now = Dressmeasurementnow::find($mea_now_id);
+                    $update_mea_now->measurementnow_dress_number = $mea_now_number[$index];
+                    $update_mea_now->measurementnow_dress_unit = $mea_now_unit[$index];
+                    $update_mea_now->save();
+                }
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
+        } catch (\Exception $e) {
+            DB::rollback();
+        }
     }
 
     //อีปเดตราคา
@@ -331,17 +389,44 @@ class DressController extends Controller
         }
     }
 
-    //เพิ่มข้อมูลการวัด
-    public function addmeasument(Request $request, $id)
+    //เพิ่มข้อมูลการวัดno
+    public function addmeasumentno(Request $request, $id)
     {
-        $savemeasument = new Dressmeasurement;
-        $savemeasument->dress_id = $id;
-        $savemeasument->measurement_dress_name = $request->input('measurement_dress_name');
-        $savemeasument->measurement_dress_number = $request->input('measurement_dress_number');
-        $savemeasument->measurement_dress_unit = $request->input('measurement_dress_unit');
-        $savemeasument->save();
+        $max = Dressmeasurementnow::where('dress_id',$id)->max('count') ; 
+        //ตาราง dressmeasurement
+        $add_mea_now_name = $request->input('add_mea_now_name_');
+        $add_mea_now_number = $request->input('add_mea_now_number_');
+        $add_mea_now_unit = $request->input('add_mea_now_unit_');
+        foreach ($add_mea_now_name as $index => $add_mea_now_name) {
+            $add_save_measument = new Dressmeasurement;
+            $add_save_measument->dress_id = $id;
+            $add_save_measument->measurement_dress_name = $add_mea_now_name ; 
+            $add_save_measument->measurement_dress_number = $add_mea_now_number[$index] ; 
+            $add_save_measument->measurement_dress_unit = $add_mea_now_unit[$index] ; 
+            $add_save_measument->save();
+        }
+
+
+        //ตาราง dressmeasurementnow
+        $add_mea_now_name = $request->input('add_mea_now_name_');
+        $add_mea_now_number = $request->input('add_mea_now_number_');
+        $add_mea_now_unit = $request->input('add_mea_now_unit_');
+        foreach ($add_mea_now_name as $index => $add_mea_now_name) {
+            $add_mea_now = new Dressmeasurementnow;
+            $add_mea_now->dress_id  = $id;
+            $add_mea_now->measurementnow_dress_name = $add_mea_now_name ; 
+            $add_mea_now->measurementnow_dress_number = $add_mea_now_number[$index] ; 
+            $add_mea_now->measurementnow_dress_unit = $add_mea_now_unit[$index] ; 
+            $add_mea_now->count = $max ;  
+            $add_mea_now->save();
+        }
         return redirect()->back()->with('success', 'เพิ่มข้อมูลการวัดสำเร็จ !');
     }
+
+
+
+
+
 
     //อัปเดตข้อมูลการวัด
     public function updatemeasument(Request $request, $id)
@@ -391,5 +476,51 @@ class DressController extends Controller
         $save->employee_id = Auth::user()->id;
         $save->save();
         return redirect()->back()->with('success', "เพิ่มค่าใช้จ่ายสำเร็จ !");
+    }
+
+
+    // public function testtest(){
+    //     $users = User::all() ; 
+    //     return view('admin.test',compact('users')) ; 
+    // }
+
+    // public function search(Request $request)
+    // {
+
+    //     $nameSearch = $request->input('name');
+    //     $lnameSearch = $request->input('lname');
+
+    //     $query = User::query() ; 
+
+    //     if($nameSearch){
+    //         $query->where('name','LIKE','%' . $nameSearch . '%') ; 
+    //     }
+    //     if($lnameSearch){
+    //         $query->where('lname','LIKE','%' . $lnameSearch . '%') ; 
+    //     }
+
+    //     $users = $query->get() ; 
+    //     return view('admin.test', compact('users'));
+    // }
+
+    public function searchstatusdress(Request $request)
+    {
+        $status = $request->input('search_status_of_dress');
+        $type_dress_id = $request->input('type_dress_id');
+
+
+        if ($status == "พร้อมให้เช่า") {
+            $data = Dress::where('type_dress_id', $type_dress_id)
+                ->where('dress_status', $status)->get();
+        }
+        if ($status == "ถูกจองแล้ว") {
+            $data = Dress::where('type_dress_id', $type_dress_id)
+                ->where('dress_status', $status)->get();
+        }
+        if ($status == "ทั้งหมด") {
+            $data = Dress::where('type_dress_id', $type_dress_id)->get();
+            return $this->typedress($type_dress_id);
+        }
+        return view('admin.typedress', compact('data', 'type_dress_id', 'status'));
     }
 }

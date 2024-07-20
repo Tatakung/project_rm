@@ -1,44 +1,29 @@
-@extends('layouts.adminlayout')
+{{-- @extends('layouts.adminlayout')
 @section('content')
     <style>
         .table-container {
             height: 400px;
-            /* กำหนดความสูงของตาราง */
             overflow-y: scroll;
-            /* แสดงแถวเลื่อนแนวนอน */
         }
 
         .table::-webkit-scrollbar {
             width: 10px;
-            /* กำหนดความกว้างของลูกกลิ้ง */
             height: 8px;
-            /* กำหนดความสูงของลูกกลิ้ง */
         }
 
         .table::-webkit-scrollbar-thumb {
             background: #888;
-            /* กำหนดสีพื้นหลังของลูกกลิ้ง */
             border-radius: 5px;
-            /* กำหนดมุมโค้งมนของลูกกลิ้ง */
         }
 
         .table::-webkit-scrollbar-track {
             background: #ccc;
-            /* กำหนดสีพื้นหลังของแถบเลื่อน */
         }
     </style>
     <div class="container d-flex justify-content-start">
 
 
-        {{-- @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if (session('fail'))
-            {{ session('fail') }}
-        @endif --}}
+      
 
         <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
             <div class="modal-dialog custom-modal-dialog" role="document">
@@ -99,14 +84,6 @@
 
 
 
-
-
-
-
-
-
-
-
         <div class="table-responsive text-start" style="width: 100%;">
 
 
@@ -121,7 +98,7 @@
             <button class="btn btn-secondary" type="button" data-toggle="modal"
                 data-target="#modaladdimage">เพิ่มรูปภาพ</button>
 
-            {{-- modalเพิ่มรูปภาพ --}}
+            <!-- modalเพิ่มรูปภาพ -->
             <div class="modal fade" id="modaladdimage" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -214,12 +191,7 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-                {{-- modalแก้ไขชุด --}}
+                <!-- modalแก้ไขชุด -->
                 <div class="modal fade" id="showeditdress" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
@@ -275,7 +247,6 @@
                                             name="update_dress_title_name" value="{{ $datadress->dress_title_name }}"
                                             required>
                                     </div>
-
                                     <div class="mb-3">
                                         <label class="form-label" for="update_dress_color">สี:</label>
                                         <select class="form-control" id="update_dress_color" name="update_dress_color">
@@ -336,16 +307,8 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-                
             </div>
-
-
-            {{-- modalแก้ไขราคา --}}
+            <!-- modalแก้ไขราคา -->
             <div class="modal fade" id="showeditprice" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -380,8 +343,6 @@
                 <button type="button" class="btn btn-success" data-toggle="modal"
                     data-target="#showmodaladdmea">เพิ่มข้อมูลการวัด</button>
             </div>
-
-
             <div class="table-container">
                 <table class="table table-bordered table-hover text-start">
                     <thead>
@@ -412,7 +373,7 @@
                                             height="25">
                                     </button>
                                 </td>
-                                {{-- modalแก้ไขข้อมูลการวัด --}}
+                                <!-- modalแก้ไขข้อมูลการวัด -->
                                 <div class="modal fade" id="showmodaleditmea{{ $show->id }}" role="dialog"
                                     aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -473,9 +434,7 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-                                {{-- modalลบข้อมูลการวัด --}}
+                                <!-- modalลบข้อมูลการวัด -->
                                 <div class="modal fade" id="showmodaldeletemea{{ $show->id }}" role="dialog"
                                     aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -524,15 +483,7 @@
                     </tbody>
                 </table>
             </div>
-
-
-
-
-
-
-
-
-            {{-- modalเพิ่มข้อมูลการวัด --}}
+            <!-- modalเพิ่มข้อมูลการวัด -->
             <div class="modal fade" id="showmodaladdmea" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -584,4 +535,432 @@
 
 
 
-        @endsection
+        @endsection --}}
+@extends('layouts.adminlayout')
+@section('content')
+    <style>
+        .table-container {
+            height: 400px;
+            overflow-y: scroll;
+        }
+
+        .table::-webkit-scrollbar {
+            width: 10px;
+            height: 8px;
+        }
+
+        .table::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+
+        .table::-webkit-scrollbar-track {
+            background: #ccc;
+        }
+
+        .modal-dialog.custom-modal-dialog {
+            max-width: 300px;
+            margin: auto;
+        }
+
+        .modal-content.custom-modal-content {
+            height: 50px;
+            width: 100%;
+            background-color: #53b007;
+        }
+
+        .modal-content.custom-modal-content.fail {
+            background-color: #db430c;
+        }
+
+        .modal-body {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+    </style>
+
+    <div class="container my-5">
+        {{-- @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+                @if (session('fail'))
+                    <div class="alert alert-danger">{{ session('fail') }}</div>
+                @endif --}}
+
+        <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-info-circle"></i>ภาพชุด
+                <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#modaladdimage">
+                    <i class="bi bi-plus-square text-primary"></i>เพิ่มรูปภาพ</i>
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap">
+                    @foreach ($imagedata as $image)
+                        <div class="p-2">
+                            <img src="{{ asset('storage/' . $image->dress_image) }}" alt=""
+                                style="max-height: 200px; width: auto;">
+                        </div>
+                    @endforeach
+                </div>
+                {{-- <button class="btn btn-secondary mt-3" type="button" data-toggle="modal"
+                    data-target="#modaladdimage">เพิ่มรูปภาพ</button> --}}
+            </div>
+        </div>
+
+
+
+
+        <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-info-circle"></i>รายละเอียดชุด
+                <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal">
+                    <i class="bi bi-pencil-square text-primary">แก้ไข</i>
+                </button>
+            </div>
+
+
+
+            <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">แก้ไขข้อมูลชุด</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <!-- ข้อมูลชุด -->
+                                <h5 class="mb-4">ข้อมูลชุด</h5>
+
+                                <form action="{{ route('admin.updatedressno', ['id' => $datadress->id]) }}" method="POST">
+                                    @csrf
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label for="update_dress_price">ราคา</label>
+                                            <input type="number" class="form-control" name="update_dress_price"
+                                                id="update_dress_price" value="{{ $datadress->dress_price }}"
+                                                placeholder="กรุณากรอกราคา">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label for="update_dress_deposit">ราคามัดจำ</label>
+                                            <input type="number" class="form-control" name="update_dress_deposit"
+                                                id="update_dress_deposit" value="{{ $datadress->dress_deposit }}"
+                                                placeholder="กรุณากรอกราคามัดจำ">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label for="dress_status">สถานะชุด</label>
+                                            <select name="update_dress_status" id="update_dress_status"
+                                                class="form-control">
+                                                <option value="พร้อมให้เช่า"
+                                                    {{ $datadress->dress_status == 'พร้อมให้เช่า' ? 'selected' : '' }}>
+                                                    พร้อมให้เช่า</option>
+                                                <option value="ถูกจองแล้ว"
+                                                    {{ $datadress->dress_status == 'ถูกจองแล้ว' ? 'selected' : '' }}>จองแล้ว
+                                                </option>
+                                                <option value="กำลังเช่า"
+                                                    {{ $datadress->dress_status == 'กำลังเช่า' ? 'selected' : '' }}>
+                                                    กำลังเช่า</option>
+                                                <option value="ส่งทำความสะอาด"
+                                                    {{ $datadress->dress_status == 'ส่งทำความสะอาด' ? 'selected' : '' }}>
+                                                    ส่งทำความสะอาด</option>
+                                                <option value="ซ่อมแซม"
+                                                    {{ $datadress->dress_status == 'ซ่อมแซม' ? 'selected' : '' }}>ซ่อมแซม
+                                                </option>
+                                                <option value="เลิกให้เช่า"
+                                                    {{ $datadress->dress_status == 'เลิกให้เช่า' ? 'selected' : '' }}>
+                                                    เลิกให้เช่า</option>
+                                                <option value="สูญหาย"
+                                                    {{ $datadress->dress_status == 'สูญหาย' ? 'selected' : '' }}>สูญหาย
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <label for="dress_description">คำอธิบายชุด</label>
+                                            <textarea name="update_dress_description" id="update_dress_description" class="form-control" rows="3"
+                                                placeholder="กรุณากรอกคำอธิบาย">{{ $datadress->dress_description }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <!-- ข้อมูลการวัด -->
+                                    <h5 class="mb-4">ขนาดของชุด</h5>
+
+                                    @foreach ($measument_no_separate_now_modal as $measument_no_separate_now_modal)
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <input type="hidden" name="mea_now_id_[]"
+                                                    value="{{ $measument_no_separate_now_modal->id }}">
+                                                <input type="text" class="form-control" name="mea_now_name_[]"
+                                                    value="{{ $measument_no_separate_now_modal->measurementnow_dress_name }}"
+                                                    placeholder="ชื่อการวัด" readonly>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="number" class="form-control" name="mea_now_number_[]"
+                                                    value="{{ $measument_no_separate_now_modal->measurementnow_dress_number }}"
+                                                    placeholder="หมายเลขการวัด">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select class="form-control" name="mea_now_unit_[]">
+                                                    <option value="นิ้ว">นิ้ว</option>
+                                                    <option value="เซนติเมตร">เซนติเมตร</option>
+                                                    <option value="มิลลิเมตร">มิลลิเมตร</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                            <button type="submit" class="btn btn-primary">บันทึก</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
+                        <p><strong>รหัสชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</p>
+                        <p><strong>ราคา:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
+                        <p>
+                            <strong>ราคามัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท
+                            {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#editStatusModal">
+                                <i class="bi bi-pencil-square text-primary"></i>
+                            </button> --}}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
+                        <p>
+                            <strong>สถานะชุด:</strong>
+                            <span style="color: red;">{{ $datadress->dress_status }}</span>
+
+                            <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#editStatusModal">
+                                <i class="bi bi-pencil-square text-primary"></i>
+                            </button>
+                        </p>
+                        <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง</p>
+                        <p><strong>ชุด:</strong>
+                            @if ($datadress->separable == 1)
+                                <i class="bi bi-x-circle-fill text-danger"></i> ไม่สามารถเช่าแยกได้
+                            @elseif($datadress->separable == 2)
+                                <i class="bi bi-check-circle-fill text-success"></i> สามารถเช่าแยกได้
+                            @endif
+                        </p>
+                        <p><strong>คำอธิบายชุด:</strong>
+                            ชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดา{{ $datadress->dress_description }}
+                            {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#editStatusModal">
+                                <i class="bi bi-pencil-square text-primary"></i>
+                            </button> --}}
+                        </p>
+                    </div>
+                </div>
+
+                {{-- ข้อมูลการวัดของชุดเริ่มต้น --}}
+                <h5 class="mt-4">ขนาดของชุดเริ่มต้น</h5>
+                <div>
+                    @foreach ($measument_no_separate as $measument_no_separate)
+                        {{ $measument_no_separate->measurement_dress_name }}&nbsp;{{ $measument_no_separate->measurement_dress_number }}&nbsp;{{ $measument_no_separate->measurement_dress_unit }}
+                    @endforeach
+                </div>
+
+                {{-- ข้อมูลการวัดของชุดล่าสุด --}}
+                <h5 class="mt-4">ขนาดของชุดล่าสุด
+                    <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea">
+                        <i class="bi bi-plus-square text-primary"></i> เพิ่มข้อมูลการวัด
+                    </button>
+
+                </h5>
+                <div>
+                    @foreach ($measument_no_separate_now as $measument_no_separate_now)
+                        {{ $measument_no_separate_now->measurementnow_dress_name }}&nbsp;{{ $measument_no_separate_now->measurementnow_dress_number }}&nbsp;{{ $measument_no_separate_now->measurementnow_dress_unit }}
+                    @endforeach
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal for adding images --}}
+    <div class="modal fade" id="modaladdimage" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">เพิ่มรูปภาพ</div>
+                <form action="{{ route('admin.addimage', ['id' => $datadress->id]) }}" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="addimage">รูปภาพ:</label>
+                            <input type="file" class="form-control" name="addimage" id="addimage" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    {{-- modalเพิ่มข้อมูลการวัด --}}
+    <div class="modal fade" id="add_mea" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form action="{{ route('admin.addmeasumentno', ['id' => $datadress->id]) }}" method="POST">
+                    @csrf
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">เพิ่มข้อมูลการวัด</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="mb-0"><i class="bi bi-pencil-square text-primary"></i>ข้อมูลการวัด</h5>
+                                <button class="btn btn-outline-secondary" type="button" id="add_measurement">
+                                    <i class="bi bi-plus"></i> เพิ่มการวัด
+                                </button>
+                            </div>
+
+                            <div id="aria_show_add_mea_input">
+
+                                <div class="row mb-3" id>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" name="add_mea_now_name_[1]"
+                                            placeholder="ชื่อการวัด">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control" name="add_mea_now_number_[1]"
+                                            placeholder="หมายเลขการวัด">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-control" name="add_mea_now_unit_[1]">
+                                            <option value="นิ้ว" selected>นิ้ว</option>
+                                            <option value="เซนติเมตร">เซนติเมตร</option>
+                                            <option value="มิลลิเมตร">มิลลิเมตร</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">บันทึก</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var add_measurement = document.getElementById('add_measurement');
+        var aria_show_add_mea_input = document.getElementById('aria_show_add_mea_input');
+        var count_add_mea = 1;
+        add_measurement.addEventListener('click', function() {
+            count_add_mea++;
+
+            var div = document.createElement('div');
+            div.className = 'row mb-3';
+            div.id = 'row_add_measurement' + count_add_mea;
+
+
+            input =
+
+
+                '<div class="col-md-3">' +
+                '<input type="text" class="form-control" name="add_mea_now_name_[' + count_add_mea +
+                ']" placeholder="ชื่อการวัด">' +
+                '</div>' +
+                '<div class="col-md-3">' +
+                '<input type="number" class="form-control" name="add_mea_now_number_[' + count_add_mea +
+                ']" placeholder="หมายเลขการวัด">' +
+                '</div>' +
+                '<div class="col-md-3">' +
+                '<select class="form-control" name="add_mea_now_unit_[' + count_add_mea + ']">' +
+                '<option value="นิ้ว" selected>นิ้ว</option>' +
+                '<option value="เซนติเมตร">เซนติเมตร</option>' +
+                '<option value="มิลลิเมตร">มิลลิเมตร</option>' +
+                '</select>' +
+                '</div>' +
+                '<div class="input-group-append">' +
+                '<button class="btn btn-danger remove-measurement" onclick="remove_add_mea_now(' + count_add_mea +
+                ')" type="button"><i class="bi bi-trash"></i>ลบ</button>' +
+                '</div>';
+            div.innerHTML = input;
+            aria_show_add_mea_input.appendChild(div);
+        });
+
+        function remove_add_mea_now(count_add_mea) {
+            var delete_add_mea_now = document.getElementById('row_add_measurement' + count_add_mea);
+            delete_add_mea_now.remove();
+        }
+    </script>
+
+
+
+
+
+
+
+
+    {{-- Modals for success and failure messages --}}
+    <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog">
+            <div class="modal-content custom-modal-content">
+                <div class="modal-body">{{ session('success') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog">
+            <div class="modal-content custom-modal-content fail">
+                <div class="modal-body">{{ session('fail') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        @if (session('success'))
+            setTimeout(function() {
+                $('#showsuccessss').modal('show');
+                setTimeout(function() {
+                    $('#showsuccessss').modal('hide');
+                }, 6000);
+            }, 500);
+        @endif
+        @if (session('fail'))
+            setTimeout(function() {
+                $('#showfail').modal('show');
+                setTimeout(function() {
+                    $('#showfail').modal('hide');
+                }, 6000);
+            }, 500);
+        @endif
+    </script>
+@endsection

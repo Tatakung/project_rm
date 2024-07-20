@@ -1,84 +1,45 @@
 @extends('layouts.adminlayout')
 
 @section('content')
-    <div class="container">
-        <h2>เพิ่มชุดใหม่</h2>
-
-        @if (session('dressCodes'))
-            <div class="alert alert-info">
-                <strong>กรุณานำรหัสชุดเหล่านี้ไปติดไว้ กำกับกับชุดที่ท่านได้เพิ่ม:</strong>
-                <ul>
-                    @foreach (session('dressCodes') as $code)
-                        <li>{{ $code }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        
+    {{-- <form action="" method="GET" class="flex items-center">
+    <input type="text" name="search" placeholder="ค้นหา" class="border border-gray-300 p-2 rounded-lg">
+    <button type="submit" class="ml-2 p-2 bg-blue-500 text-white rounded-lg">ค้นหา</button>
+</form> --}}
 
 
+<form action="{{route('admin.search')}}" method="GET" class="mb-4">
+    @csrf
+    <div class="form-group">
+        <label for="name">ชื่อ</label>
+        <input type="text" class="form-control" id="name" name="name" placeholder="ค้นหาชื่อ" >
+    </div>
+    <div class="form-group">
+        <label for="name">นามสกุล</label>
+        <input type="text" class="form-control" id="lname" name="lname" placeholder="ค้นหานามสกุล" >
+    </div>
+    <button type="submit" class="btn btn-primary">ค้นหา</button>
+</form>
 
 
-        <form action="{{ route('dresses.store') }}" method="POST">
-            @csrf
-            <div class="form-group">
-                <label for="type_dress_id">ประเภทชุด</label>
-                <select name="type_dress_id" id="type_dress_id" class="form-control">
-                    @foreach($typeDresses as $typeDress)
-                        <option value="{{ $typeDress->id }}">{{ $typeDress->type_dress_name }}</option>
-                    @endforeach
-                    <option value="select_other">อื่นๆ</option>
-                </select>
-            </div>
-
-            
-            
-            <div class="col-12">
-                <div style="display: none" id="showinputother">
-                    <label class="form-label" for="inputother">อื่นๆโปรดระบุ</label>
-                    <input type="text" name="inputother" id="inputother">
-                </div>
-            </div> {{-- script สำหรับ แสดงช่อง input --}}
-            <script>
-                var selectdresstype = document.getElementById('type_dress_id'); //เลือกประเภทชุด
-                var showshowinputother = document.getElementById('showinputother'); //แสดงกล่องสำหรับinput เพิ่ทใหม่ 
-                selectdresstype.addEventListener('click', function() {
-
-                    if (selectdresstype.value == "select_other") {
-                        showshowinputother.style.display = "block";
-                    } else {
-                        showshowinputother.style.display = "none";
-                        value = '';
-                    }
-                });
-            </script>
-
-    
-            <div class="form-group">
-                <label for="dress_title_name">ชื่อชุด</label>
-                <input type="text" name="dress_title_name" id="dress_title_name" class="form-control" required>
-            </div>
-    
-            <div class="form-group">
-                <label for="dress_price">ราคา</label>
-                <input type="number" name="dress_price" id="dress_price" class="form-control" required>
-            </div>
-    
-            <div class="form-group">
-                <label for="dress_count">จำนวนชุด</label>
-                <input type="number" name="dress_count" id="dress_count" class="form-control" required>
-            </div>
-           
-    
-            <div class="form-group">
-                <label for="dress_description">รายละเอียด</label>
-                <textarea name="dress_description" id="dress_description" class="form-control" required></textarea>
-            </div>
-    
-            <button type="submit" class="btn btn-primary">เพิ่มชุดใหม่</button>
-        </form>
-        
-        
-    
+    <div class="container my-5">
+        <h2 class="mb-4">รายการผู้ใช้</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ชื่อ</th>
+                    <th>นามสกุล</th>
+                    <th>อีเมล</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($users as $user)
+                    <tr>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->lname }}</td>
+                        <td>{{ $user->email }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 @endsection

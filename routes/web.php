@@ -46,15 +46,13 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/dresstotal', [DressController::class, 'dresstotal'])->name('admin.dresstotal'); //ชุดทั้งหมด
     Route::get('/admin/typedress/{id}', [DressController::class, 'typedress'])->name('admin.typedress'); //หลังจากแยกประเภทชุด
     Route::get('/admin/typedress/dressdetail/{id}', [DressController::class, 'dressdetail'])->name('admin.dressdetail'); //รายะลเอียดย่อย
-    Route::post('/admin/typedress/dressdetail/updatedress/{id}', [DressController::class, 'updatedress'])->name('admin.updatedress'); //อัปเดตชุด
-    Route::post('/admin/typedress/dressdetail/updateprice/{id}', [DressController::class, 'updateprice'])->name('admin.updateprice'); //อัปเดตราคา
-    Route::post('/admin/typedress/dressdetail/addmeasument/{id}', [DressController::class, 'addmeasument'])->name('admin.addmeasument'); //เพิ่มการวัด
+    Route::post('/admin/typedress/dressdetail/updatedressno/{id}', [DressController::class, 'updatedressno'])->name('admin.updatedressno'); //อัปเดตชุดno
+    // Route::post('/admin/typedress/dressdetail/updateprice/{id}', [DressController::class, 'updateprice'])->name('admin.updateprice'); //อัปเดตราคา
+    Route::post('/admin/typedress/dressdetail/addmeasumentno/{id}', [DressController::class, 'addmeasumentno'])->name('admin.addmeasumentno'); //เพิ่มการวัด
     Route::post('/admin/typedress/dressdetail/updatemeasument/{id}', [DressController::class, 'updatemeasument'])->name('admin.updatemeasument'); //อัปเดตข้อมูลการวัด
     Route::delete('/admin/typedress/dressdetail/deletemeasument/{id}', [DressController::class, 'deletemeasument'])->name('admin.deletemeasument'); //อัปเดตข้อมูลการวัด
     Route::post('/admin/typedress/dressdetail/addimage/{id}', [DressController::class, 'addimage'])->name('admin.addimage'); //เพิ่มรูปภาพ
 
-    // Route::get('/dresses/create', [DressController::class, 'create'])->name('dresses.create');
-    // Route::post('/dresses', [DressController::class, 'store'])->name('dresses.store');    
 
     //กลุ่มเครื่องประดับ
     Route::get('/admin/addjewelry-form', [JewelryController::class, 'formaddjewelry'])->name('admin.formaddjewelry'); //แบบฟอร์มเพิ่มเครื่องประดับ
@@ -76,6 +74,18 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     Route::get('/admin/expense', [DressController::class, 'expense'])->name('admin.expense'); //บันทึกค่าใช้จ่าย
     Route::post('/admin/saveexpense', [DressController::class, 'saveexpense'])->name('admin.saveexpense'); //บันทึกค่าใช้จ่าย
+
+
+
+
+    //ทดสอบ
+    Route::get('/admin/testtest', [DressController::class, 'testtest'])->name('admin.testtest');
+    Route::get('/admin/search', [DressController::class, 'search'])->name('admin.search');
+
+    Route::get('/admin/searchstatusdress', [DressController::class, 'searchstatusdress'])->name('admin.searchstatusdress');
+
+
+
 });
 
 

@@ -614,9 +614,6 @@
             </div>
         </div>
 
-
-
-
         <div class="card mb-4">
             <div class="card-header"><i class="bi bi-info-circle"></i>รายละเอียดชุด
                 <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal">
@@ -624,6 +621,7 @@
                 </button>
             </div>
 
+            
 
 
             <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true">
@@ -640,14 +638,14 @@
                                 <!-- ข้อมูลชุด -->
                                 <h5 class="mb-4">ข้อมูลชุด</h5>
 
-                                <form action="{{ route('admin.updatedressno', ['id' => $datadress->id]) }}" method="POST">
+                                <form action="{{ route('admin.updatedressnoyes', ['id' => $datadress->id]) }}" method="POST">
                                     @csrf
                                     <div class="row mb-3">
                                         <div class="col-12">
                                             <label for="update_dress_price">ราคา</label>
                                             <input type="number" class="form-control" name="update_dress_price"
                                                 id="update_dress_price" value="{{ $datadress->dress_price }}"
-                                                placeholder="กรุณากรอกราคา">
+                                                placeholder="กรุณากรอกราคา" required min="1">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -655,7 +653,15 @@
                                             <label for="update_dress_deposit">ราคามัดจำ</label>
                                             <input type="number" class="form-control" name="update_dress_deposit"
                                                 id="update_dress_deposit" value="{{ $datadress->dress_deposit }}"
-                                                placeholder="กรุณากรอกราคามัดจำ">
+                                                placeholder="กรุณากรอกราคามัดจำ" required min="1">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label for="update_dress_deposit">ราคาประกันค่าเสียหาย</label>
+                                            <input type="number" class="form-control" name="update_damage_insurance"
+                                                id="update_damage_insurance" value="{{ $datadress->damage_insurance }}"
+                                                placeholder="กรุณากรอกราคาประกันค่าเสียหาย" min="0">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -667,7 +673,7 @@
                                                     {{ $datadress->dress_status == 'พร้อมให้เช่า' ? 'selected' : '' }}>
                                                     พร้อมให้เช่า</option>
                                                 <option value="ถูกจองแล้ว"
-                                                    {{ $datadress->dress_status == 'ถูกจองแล้ว' ? 'selected' : '' }}>จองแล้ว
+                                                    {{ $datadress->dress_status == 'ถูกจองแล้ว' ? 'selected' : '' }}>ถูกจองแล้ว
                                                 </option>
                                                 <option value="กำลังเช่า"
                                                     {{ $datadress->dress_status == 'กำลังเช่า' ? 'selected' : '' }}>
@@ -695,6 +701,7 @@
                                         </div>
                                     </div>
 
+                                   
                                     <!-- ข้อมูลการวัด -->
                                     <h5 class="mb-4">ขนาดของชุด</h5>
 
@@ -740,12 +747,9 @@
                         <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                         <p><strong>รหัสชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</p>
                         <p><strong>ราคา:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
-                        <p>
-                            <strong>ราคามัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท
-                            {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#editStatusModal">
-                                <i class="bi bi-pencil-square text-primary"></i>
-                            </button> --}}
-                        </p>
+                        <p><strong>ราคามัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
+                        <p><strong>ราคาประกันค่าเสียหาย:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท</p>
+
                     </div>
                     <div class="col-md-6">
                         <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
@@ -753,9 +757,7 @@
                             <strong>สถานะชุด:</strong>
                             <span style="color: red;">{{ $datadress->dress_status }}</span>
 
-                            <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#editStatusModal">
-                                <i class="bi bi-pencil-square text-primary"></i>
-                            </button>
+                            
                         </p>
                         <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง</p>
                         <p><strong>ชุด:</strong>
@@ -765,16 +767,11 @@
                                 <i class="bi bi-check-circle-fill text-success"></i> สามารถเช่าแยกได้
                             @endif
                         </p>
-                        <p><strong>คำอธิบายชุด:</strong>
-                            ชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดาชุดไทยจิตรลดา{{ $datadress->dress_description }}
-                            {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#editStatusModal">
-                                <i class="bi bi-pencil-square text-primary"></i>
-                            </button> --}}
-                        </p>
+                        <p><strong>คำอธิบายชุด:</strong>{{ $datadress->dress_description }}</p>
                     </div>
                 </div>
 
-                {{-- ข้อมูลการวัดของชุดเริ่มต้น --}}
+                <!-- ข้อมูลการวัดของชุดเริ่มต้น -->
                 <h5 class="mt-4">ขนาดของชุดเริ่มต้น</h5>
                 <div>
                     @foreach ($measument_no_separate as $measument_no_separate)
@@ -782,7 +779,7 @@
                     @endforeach
                 </div>
 
-                {{-- ข้อมูลการวัดของชุดล่าสุด --}}
+                <!-- ข้อมูลการวัดของชุดล่าสุด -->
                 <h5 class="mt-4">ขนาดของชุดล่าสุด
                     <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea">
                         <i class="bi bi-plus-square text-primary"></i> เพิ่มข้อมูลการวัด
@@ -800,7 +797,7 @@
         </div>
     </div>
 
-    {{-- Modal for adding images --}}
+    <!--modal เพิ่มรูปภาพ-->
     <div class="modal fade" id="modaladdimage" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -824,7 +821,7 @@
     </div>
 
 
-    {{-- modalเพิ่มข้อมูลการวัด --}}
+    <!-- modalเพิ่มข้อมูลการวัด -->
     <div class="modal fade" id="add_mea" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -928,7 +925,7 @@
 
 
 
-    {{-- Modals for success and failure messages --}}
+    <!-- Modals for success and failure messages -->
     <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog">
             <div class="modal-content custom-modal-content">

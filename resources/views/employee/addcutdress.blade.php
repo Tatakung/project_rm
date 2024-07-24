@@ -1,6 +1,7 @@
 @extends('layouts.adminlayout')
 
 @section('content')
+
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
             <div class="modal-content custom-modal-content"
@@ -39,20 +40,17 @@
 
 
 
-
-
-
-
-
     <form action="{{ route('employee.savecutdress') }}" method="POST" enctype="multipart/form-data">
         <div class="container mt-4">
             <!-- กล่องแรก: ฟอร์มเพิ่มออเดอร์ -->
-            <div class="shadow p-4 mb-5 bg-white rounded">
-                <h4 class="mb-4">ข้อมูลตัดชุด</h4>
+            <h4 class="mb-4" style="text-align: center ; ">ข้อมูลตัดชุด</h4>
+
+            <div class="shadow p-4 mb-5  rounded" style="background-color: #EEEEEE">
                 @csrf
                 <div class="row mb-3">
-                    <label for="dressType" class="col-sm-2 col-form-label">ประเภทชุดที่ตัด</label>
-                    <div class="col-sm-3">
+
+                    <div class="col-md-3">
+                        <label for="dressType" class="form-label">ประเภทชุดที่ตัด</label>
                         <select class="form-control" id="type_dress" name="type_dress" required>
                             <option value="" selected disabled>เลือกรายการ</option>
                             @foreach ($type_dress as $dressType)
@@ -61,7 +59,8 @@
                             <option value="other_type">อื่นๆ</option>
                         </select>
                     </div>
-                    <div class="col-sm-3" style="display: none;" id="showinput">
+                    <div class="col-md-3" style="display: none;" id="showinput">
+                        <label for="" class="form-label">กรอกประเภทชุด อื่นๆ</label>
                         <input type="text" class="form-control" id="other_input" name="other_input"
                             placeholder="กรอกประเภทชุด">
                     </div>
@@ -80,40 +79,41 @@
                             }
                         });
                     </script>
-
                 </div>
 
                 <div class="row mb-3">
-                    <label for="pickup_date" class="col-sm-2 col-form-label">วันที่นัดรับชุด</label>
-                    <div class="col-sm-3">
-                        <input type="date" class="form-control" id="pickup_date" name="pickup_date" required>
+                    <div class="col-md-3">
+                        <label for="pickup_date" class="form-label">วันที่นัดรับชุด</label>
+                        @php
+                            $today = \Carbon\Carbon::today()->toDateString();
+                        @endphp
+                        <input type="date" class="form-control" id="pickup_date" name="pickup_date"
+                            min="{{ $today }}" required>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="amount" class="col-sm-2 col-form-label">จำนวนชุด</label>
-                    <div class="col-sm-3">
+                    <div class="col-md-3">
+                        <label for="amount" class="form-label">จำนวนชุด</label>
                         <input type="number" class="form-control" id="amount" name="amount" value="1"
                             min="1" required>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="price" class="col-sm-2 col-form-label">ราคาเต็ม/ชุด</label>
-                    <div class="col-sm-3">
-                        <input type="number" class="form-control" id="price" name="price" placeholder="ใส่ตัวเลข"
+                    <div class="col-md-3">
+                        <label for="price" class="form-label">ราคาเต็ม/ชุด</label>
+                        <input type="number" class="form-control" id="price" name="price" placeholder="กรอกราคา"
                             min="1" step="0.01" required>
                     </div>
 
-                </div>
-                <div class="row mb-3">
-                    <label for="deposit" class="col-sm-2 col-form-label">ราคามัดจำ/ชุด</label>
-                    <div class="col-sm-3">
-                        <input type="number" class="form-control" id="deposit" name="deposit" placeholder="ใส่ตัวเลข"
+                    <div class="col-md-3">
+                        <label for="deposit" class="form-label">ราคามัดจำ/ชุด</label>
+                        <input type="number" class="form-control" id="deposit" name="deposit" placeholder="กรอกคารา"
                             min="1" step="0.01" required>
                     </div>
+
+
                 </div>
+
+
                 <div class="row mb-3">
-                    <label class="col-sm-2 col-form-label">ผ้า</label>
-                    <div class="col-sm-10">
+                    <div class="col-md-3">
+                        <label class="form-label">ผ้า</label>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="cloth" id="cloth1" value="1">
                             <label class="form-check-label" for="cloth1">
@@ -121,42 +121,17 @@
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="cloth" id="cloth2" value="2">
+                            <input class="form-check-input" type="radio" name="cloth" id="cloth2"
+                                value="2">
                             <label class="form-check-label" for="cloth2">
                                 ทางร้านหาผ้าให้
                             </label>
                         </div>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="color" class="col-sm-2 col-form-label">สีของชุด</label>
-                    <div class="col-sm-3">
-                        <select class="form-control" id="color" name="color" required>
-                            <option value="" disabled selected>--สี--</option>
-                            <option value="ขาว">ขาว</option>
-                            <option value="ครีม">ครีม</option>
-                            <option value="ชมพู">ชมพู</option>
-                            <option value="ดำ">ดำ</option>
-                            <option value="ทอง">ทอง</option>
-                            <option value="น้ำตาล">น้ำตาล</option>
-                            <option value="น้ำเงิน">น้ำเงิน</option>
-                            <option value="บานเย็น">บานเย็น</option>
-                            <option value="พิ้งค์โกลด์">พิ้งค์โกลด์</option>
-                            <option value="ฟ้า">ฟ้า</option>
-                            <option value="ม่วง">ม่วง</option>
-                            <option value="ส้ม">ส้ม</option>
-                            <option value="เขียว">เขียว</option>
-                            <option value="เทา">เทา</option>
-                            <option value="เหลือง">เหลือง</option>
-                            <option value="แดง">แดง</option>
-                            <option value="ไม่ระบุ">ไม่ระบุ</option>
-                        </select>
-                    </div>
-                </div>
 
-                <div class="row mb-3">
-                    <label class="col-sm-2 col-form-label">การจ่ายเงิน</label>
-                    <div class="col-sm-10">
+
+                    <div class="col-md-3">
+                        <label class="form-label">การจ่ายเงิน</label>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="status_payment" id="status_payment1"
                                 value="1" checked>
@@ -172,36 +147,44 @@
                             </label>
                         </div>
                     </div>
+
+                    <div class="col-md-6">
+                        <label for="note" class="form-label">รายละเอียดอื่นๆ</label>
+                        <textarea class="form-control" id="note" name="note" rows="4"
+                            placeholder="ใส่รายละเอียดเพิ่มเติม(หากมี)"></textarea>
+                    </div>
+
+
+
+
+
+
                 </div>
 
-                <div class="row mb-3">
-                    <label for="note" class="col-sm-2 col-form-label">รายละเอียดอื่นๆ</label>
-                    <div class="col-sm-10">
-                        <textarea class="form-control" id="note" name="note" rows="4"
-                            placeholder="ใส่รายละเอียดเพิ่มเติมที่เกี่ยวข้อง"></textarea>
-                    </div>
-                </div>
+
+
             </div>
 
 
 
             {{-- กล่องที่สอง --}}
-            <div class="shadow p-4 mb-5 bg-white rounded">
+            <div class="shadow p-4 mb-5  rounded" style="background-color: #EEEEEE">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-0">ข้อมูลการวัดสำหรับตัดชุด</h4>
-                    <button type="button" class="btn btn-primary" id="addMeasurementField">+ เพิ่มการวัด</button>
+                    <h4 class="mb-0"><i class="bi bi-rulers"></i>บันทึกการวัดตัว</h4>
+                    <button type="button" class="btn btn-primary" id="addMeasurementField"><i
+                            class="bi bi-plus"></i>เพิ่มการวัด</button>
                 </div>
 
                 <div id="aria_show_measurement">
                     <div class="row mb-3" id="showmea0">
                         <div class="col-sm-3">
                             <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
-                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก">
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="ยาวหน้า">
                         </div>
 
                         <div class="col-sm-3">
                             <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
-                                placeholder="ใส่ตัวเลข">
+                                placeholder="ค่า" step="0.01">
                         </div>
 
                         <div class="col-sm-3">
@@ -215,6 +198,486 @@
                             <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
                         </div>
                     </div>
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="ยาวหลัง">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="ไหล่กว้าง">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="บ่าหน้า">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="บ่าหลัง">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="รอบคอ">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="รักแร้">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="รอบอก">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="อกห่าง">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="อกสูง">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="รอบเอว">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="สะโพกเล็ก">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="สะโพก">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="กระโปรงยาว">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="แขนยาว">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="แขนกว้าง">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div>
+
+
+
+                    {{-- <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="ต้นขา">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ใส่ตัวเลข" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div> --}}
+
+
+
+                    {{-- <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="ปลายขา">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ใส่ตัวเลข" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div> --}}
+
+
+
+                    {{-- <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="เอวข้อเท้า">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ใส่ตัวเลข" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div> --}}
+
+
+
+
+                    {{-- <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="รอบข้อเท้า">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ใส่ตัวเลข" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div> --}}
+
+
+
+
+                    {{-- <div class="row mb-3" id="showmea0">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="mea_name0" name="mea_name_[0]"
+                                placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="เป้า">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="mea_number0" name="mea_number_[0]"
+                                placeholder="ค่า" step="0.01">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" name="mea_unit_[0]" id="mea_unit0">
+                                <option value="นิ้ว">นิ้ว</option>
+                                <option value="เซนติเมตร">เซนติเมตร</option>
+                                <option value="มิลลิเมตร">มิลลิเมตร</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control btn btn-danger" type="button" onclick="remove(0)">ลบ</button>
+                        </div>
+                    </div> --}}
+
+
+
+
+
+
                 </div>
                 <script>
                     var aria_show_measurement = document.getElementById('aria_show_measurement');
@@ -233,12 +696,12 @@
 
                             '<div class="col-sm-3">' +
                             '<input type="text" class="form-control" id="mea_name' + count_mea +
-                            ' " name="mea_name_[' + count_mea + ']" placeholder="เพิ่มชื่อการวัดเช่น รอบอก" required >' +
+                            ' " name="mea_name_[' + count_mea + ']" placeholder="ชื่อการวัด" required >' +
                             '</div>' +
 
                             '<div class="col-sm-3">' +
                             '<input type="number" class="form-control" id="mea_number' + count_mea +
-                            ' " name="mea_number_[' + count_mea + ']" placeholder="ใส่ตัวเลข" required >' +
+                            ' " name="mea_number_[' + count_mea + ']" placeholder="ค่า" required >' +
                             '</div>' +
 
                             '<div class="col-sm-3">' +
@@ -271,8 +734,9 @@
             {{-- กล่องที่สอง --}}
             <div class="shadow p-4 mb-5 bg-white rounded">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-0">ข้อมูลการนัดลูกค้าลองชุด</h4>
-                    <button type="button" class="btn btn-primary" id="addfitting">+ เพิ่มวันนัดลองชุด</button>
+                    <h4 class="mb-0">นัดลูกค้าลองชุด(หากมี)</h4>
+                    <button type="button" class="btn btn-primary" id="addfitting">
+                        <i class="bi bi-plus"></i>เพิ่มวันนัดลองชุด</button>
                 </div>
 
 
@@ -292,6 +756,10 @@
                     </div>
                 </div>   --}}
                 </div>
+
+                @php
+                    $past = \Carbon\Carbon::today()->toDateString();
+                @endphp
 
 
                 <script>
@@ -314,7 +782,7 @@
 
                             '<div class="col-sm-3">' +
                             '<input type="date" class="form-control" id="fitting_date' + count_fitting +
-                            '" name="fitting_date_[' + count_fitting + ']">' +
+                            '" name="fitting_date_[' + count_fitting + ']" min="{{ $past }}">' +
                             '</div>' +
 
                             '<div class="col-sm-3">' +
@@ -345,84 +813,12 @@
             </div>
 
 
-            <!-- กล่องที่สาม: ฟอร์มรูปภาพ -->
-            <div class="shadow p-4 mb-5 bg-white rounded">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-4">รูปภาพประกอบ / รูปภาพตัวแบบ / อื่นๆที่เกี่ยวข้อง</h4>
-                    <button type="button" class="btn btn-primary" id="addimage">+ เพิ่มรูปภาพ</button>
-                </div>
-
-                <div id="aria_show_input_of_image">
 
 
-                    {{-- <div class="row mb-3" id="image1">
-                    <label for="image1" class="col-sm-2 col-form-label">อัปโหลดรูปภาพ</label>
-                    <div class="col-sm-7">
-                        <input type="file" class="form-control" id="image1" name="image_[1]">
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="form-control btn btn-danger" type="button" onclick="removeimage('image1')">ลบ</button>
-                    </div>
-                </div> --}}
-
-                </div>
-
-                <script>
-                    var aria_show_input_of_image = document.getElementById('aria_show_input_of_image');
-                    var button_add_image = document.getElementById('addimage');
-                    var count_index = 1;
-                    button_add_image.addEventListener('click', function() {
-                        count_index++;
-
-                        var divbig = document.createElement('div');
-                        divbig.id = 'image' + count_index;
-                        divbig.className = 'row mb-3';
-
-                        var label = document.createElement('label');
-                        label.htmlFor = 'image' + count_index;
-                        label.className = 'col-sm-2 col-form-label';
-                        label.innerHTML = 'อัปโหลดรูปภาพ';
 
 
-                        var div_one = document.createElement('div');
-                        div_one.className = 'col-sm-7';
-
-                        var input_one = document.createElement('input');
-                        input_one.type = 'file';
-                        input_one.className = 'form-control';
-                        input_one.id = 'image' + count_index;
-                        input_one.name = 'image_[' + count_index + ']';
-
-                        div_one.appendChild(input_one);
 
 
-                        var div_two = document.createElement('div');
-                        div_two.className = 'col-sm-2';
-
-                        var button = document.createElement('button');
-                        button.className = 'form-control btn btn-danger';
-                        button.type = 'button';
-                        button.innerHTML = 'ลบ';
-
-                        div_two.appendChild(button);
-
-                        divbig.appendChild(label);
-                        divbig.appendChild(div_one);
-                        divbig.appendChild(div_two);
-
-                        aria_show_input_of_image.appendChild(divbig);
-
-                        button.addEventListener('click', function() {
-                            removeimage(divbig);
-                        });
-                    });
-
-                    function removeimage(divbig) {
-                        divbig.remove();
-                    }
-                </script>
-
-            </div>
             <!-- ปุ่มยืนยัน -->
             <div class="text-center">
                 <button type="submit" class="btn btn-primary btn-block">เพิ่มลงในตะกร้า</button>

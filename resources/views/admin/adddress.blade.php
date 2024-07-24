@@ -492,6 +492,11 @@
             </div>
             <div class="row mb-3">
                 <div class="col-md-3">
+                    <label for="dress_count">ประกันค่าเสียหายชุด</label>
+                    <input type="number" name="damage_insurance" id="damage_insurance" class="form-control" placeholder="จำนวนบาท"
+                        required min="0">
+                </div>
+                <div class="col-md-3">
                     <label for="dress_count">จำนวนชุด</label>
                     <input type="number" name="dress_count" id="dress_count" class="form-control" required min="1"
                         value="1">
@@ -511,7 +516,7 @@
                         <input class="form-check-input" type="radio" name="separable" id="separate_rent_no"
                             value="1">
                         <label class="form-check-label" for="separate_rent_no">
-                            ไม่สามารถเช่าแยกได้
+                            ไม่สามารถเช่าแยกได้(เช่าเป็นชุด)
                         </label>
                     </div>
                     <div class="form-check">
@@ -758,14 +763,19 @@
                                 เพิ่มการวัดเสื้อ</button>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="">ราคาเสื้อ</label>
                                 <input type="number" name="shirt_price" id="shirt_price" class="form-control"
                                     placeholder="ราคา" min="1">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="">มัดจำราคาเสื้อ</label>
                                 <input type="number" name="shirt_deposit" id="shirt_deposit" class="form-control"
+                                    placeholder="ราคา" min="1">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="">ประกันค่าเสียหาย</label>
+                                <input type="number" name="shirt_damage_insurance" id="shirt_damage_insurance" class="form-control"
                                     placeholder="ราคา" min="1">
                             </div>
                         </div>
@@ -874,14 +884,19 @@
                                 เพิ่มการวัดกระโปรง</button>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="skirt_price">ราคากระโปรง/กางเกง</label>
                                 <input type="number" name="skirt_price" id="skirt_price" class="form-control"
                                     placeholder="ราคา" min="1">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="skirt_deposit">มัดจำราคากระโปรง/กางเกง</label>
                                 <input type="number" name="skirt_deposit" id="skirt_deposit" class="form-control"
+                                    placeholder="ราคา" min="1">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="">ประกันค่าเสียหาย&nbsp;</label>
+                                <input type="number" name="skirt_damage_insurance" id="skirt_damage_insurance" class="form-control"
                                     placeholder="ราคา" min="1">
                             </div>
                         </div>

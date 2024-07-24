@@ -18,6 +18,7 @@ class IsAdmin
         if (auth()->check() && auth()->user()->is_admin == 1) {
             return $next($request);
         }
-        return redirect('/')->with('error', "คุณไม่มีสิทธิ์การเข้าถึงของผู้ดูแลระบบ");
+        // return redirect('/')->with('error', "คุณไม่มีสิทธิ์การเข้าถึงของผู้ดูแลระบบ");
+        return redirect()->back()->with('error','คุณไม่มีสิทธิ์การเข้าถึงของผู้ดูแลระบบ');  
     }
 }

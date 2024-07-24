@@ -46,13 +46,25 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/dresstotal', [DressController::class, 'dresstotal'])->name('admin.dresstotal'); //ชุดทั้งหมด
     Route::get('/admin/typedress/{id}', [DressController::class, 'typedress'])->name('admin.typedress'); //หลังจากแยกประเภทชุด
     Route::get('/admin/typedress/dressdetail/{id}', [DressController::class, 'dressdetail'])->name('admin.dressdetail'); //รายะลเอียดย่อย
-    Route::post('/admin/typedress/dressdetail/updatedressno/{id}', [DressController::class, 'updatedressno'])->name('admin.updatedressno'); //อัปเดตชุดno
+    Route::post('/admin/typedress/dressdetail/updatedressnoyes/{id}', [DressController::class, 'updatedressnoyes'])->name('admin.updatedressnoyes'); //อัปเดตชุดnoyes
+    Route::post('/admin/typedress/dressdetail/updatedressyesshirt/{id}', [DressController::class, 'updatedressyesshirt'])->name('admin.updatedressyesshirt'); //อัปเดตชุดyesshirt
+    Route::post('/admin/typedress/dressdetail/updatedressyesskirt/{id}', [DressController::class, 'updatedressyesskirt'])->name('admin.updatedressyesskirt'); //อัปเดตชุดyesskirt
+
     // Route::post('/admin/typedress/dressdetail/updateprice/{id}', [DressController::class, 'updateprice'])->name('admin.updateprice'); //อัปเดตราคา
-    Route::post('/admin/typedress/dressdetail/addmeasumentno/{id}', [DressController::class, 'addmeasumentno'])->name('admin.addmeasumentno'); //เพิ่มการวัด
+    Route::post('/admin/typedress/dressdetail/addmeasumentno/{id}', [DressController::class, 'addmeasumentno'])->name('admin.addmeasumentno'); //เพิ่มการวัดno
+    Route::post('/admin/typedress/dressdetail/addmeasumentyesshirt/{id}', [DressController::class, 'addmeasumentyesshirt'])->name('admin.addmeasumentyesshirt'); //เพิ่มการวัดyesshirt
+    Route::post('/admin/typedress/dressdetail/addmeasumentyesskirt/{id}', [DressController::class, 'addmeasumentyesskirt'])->name('admin.addmeasumentyesskirt'); //เพิ่มการวัดyesskirt
+
+
     Route::post('/admin/typedress/dressdetail/updatemeasument/{id}', [DressController::class, 'updatemeasument'])->name('admin.updatemeasument'); //อัปเดตข้อมูลการวัด
     Route::delete('/admin/typedress/dressdetail/deletemeasument/{id}', [DressController::class, 'deletemeasument'])->name('admin.deletemeasument'); //อัปเดตข้อมูลการวัด
     Route::post('/admin/typedress/dressdetail/addimage/{id}', [DressController::class, 'addimage'])->name('admin.addimage'); //เพิ่มรูปภาพ
 
+
+
+
+
+    
 
     //กลุ่มเครื่องประดับ
     Route::get('/admin/addjewelry-form', [JewelryController::class, 'formaddjewelry'])->name('admin.formaddjewelry'); //แบบฟอร์มเพิ่มเครื่องประดับ
@@ -116,7 +128,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/typerentdress', [ManageorderController::class, 'typerentdress'])->name('employee.typerentdress'); //เช่าชุดหน้าเลือกประเภทชุด
     Route::get('/employee/typerentdress/show/{id}', [ManageorderController::class, 'typerentdressshow'])->name('employee.typerentdressshow');//หลังจากที่เลือกประเภทชุดแล้ว
     Route::post('/employee/typerentdress/show/addrentdresscart', [ManageorderController::class, 'addrentdresscart'])->name('employee.addrentdresscart'); //เช่าชุดเพิ่มลงในตะกร้า
-    
+    Route::get('/employee/show/filtermea', [ManageorderController::class, 'filtermea'])->name('employee.filtermea');//
+
 
     Route::post('/employee/manageitem/savemanageitemcutdress/{id}', [ManageorderController::class, 'savemanageitemcutdress'])->name('employee.savemanageitemcutdress'); //บันทึกของตัดชุด item
     Route::post('/employee/manageitem/savemanageitemrentdress/{id}', [ManageorderController::class, 'savemanageitemrentdress'])->name('employee.savemanageitemrentdress'); //บันทึกของเช่าชุด item
@@ -168,5 +181,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/ordertotal/detail/show/updatestatusrentjewelry/{id}', [OrderController::class, 'actionupdatestatusrentjewelry'])->name('employee.actionupdatestatusrentjewelry'); //อัปเดตสถานะเช่าเครื่องประดับ
     Route::post('/employee/ordertotal/detail/show/updatestatusrentcut/{id}', [OrderController::class, 'actionupdatestatusrentcut'])->name('employee.actionupdatestatusrentcut'); //อัปเดตสถานะเช่าตัดชุด
     Route::post('/employee/ordertotal/detail/show/updatestatuscutdress/{id}', [OrderController::class, 'actionupdatestatuscutdress'])->name('employee.actionupdatestatuscutdress'); //อัปเดตสถานะตัดชุด
+
+
+
+
+    Route::get('/testtab', function () {
+        return view('testtab');
+    });
+
 
 });

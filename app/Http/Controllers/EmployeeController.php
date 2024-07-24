@@ -125,7 +125,7 @@ class EmployeeController extends Controller
             }
 
             $orderdetail->cloth = $request->input('cloth');
-            $orderdetail->color = $request->input('color');
+            // $orderdetail->color = $request->input('color');
             $orderdetail->status_payment = $request->input('status_payment');
             $orderdetail->note = $request->input('note');
             $orderdetail->save();
@@ -141,28 +141,7 @@ class EmployeeController extends Controller
             $datedate->order_detail_id = $orderdetail->id;
             $datedate->pickup_date = $request->input('pickup_date');
             $datedate->save();
-
-            // ตาราง financial
-            // $financial = new Financial();
-            // $financial->order_detail_id = $orderdetail->id;
-            // $financial->type_order = 1;
-            // if ($request->input('status_payment') == 1) {
-            //     $amount_of_money = $request->input('deposit') * $request->input('amount');
-            //     $text = "จ่ายมัดจำ";
-            // } else {
-            //     $amount_of_money = $request->input('price') * $request->input('amount');
-            //     $text = "จ่ายเต็ม";
-            // }
-            // $financial->item_name = $text . "(ตัดชุด)";
-            // $financial->financial_income = $amount_of_money;
-            // $financial->financial_expenses = 0;
-            // $financial->save();
-
-            // ตารางorderdetailstatuses
-            // $orderdetailstatus = new Orderdetailstatus();
-            // $orderdetailstatus->order_detail_id = $orderdetail->id;
-            // $orderdetailstatus->status = "รอตัด";
-            // $orderdetailstatus->save();
+   
 
             // บันทึกข้อมูลในตาราง Measurementorderdetail
             $mea_name = $request->input('mea_name_');
@@ -192,16 +171,7 @@ class EmployeeController extends Controller
                 }
             }
 
-            //ตารางimage
-            if ($request->hasFile('image_')) {
-                $imf_loop = $request->file('image_');
-                foreach ($imf_loop as $index => $img) {
-                    $image_save = new Imagerent();
-                    $image_save->order_detail_id = $orderdetail->id;
-                    $image_save->image = $img->store('rent_images', 'public');
-                    $image_save->save();
-                }
-            }
+            
             DB::commit();
             return redirect()->back()->with('success', 'เพิ่มลงตะกร้าแล้ว !');
         } catch (\Exception $e) {

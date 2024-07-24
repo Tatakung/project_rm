@@ -22,7 +22,6 @@
             @foreach ($data as $index => $item)
                 <div class="col-md-3 mb-4">
                     <a href="{{ route('admin.dressdetail', ['id' => $item->id , 'separable' => $item->separable]) }}">
-                        {{-- <input type="text" value="{{$item->separable}}"> --}}
                         <div class="card">
                             <div class="card-body text-center">
                                 <p class="card-title">รหัสชุด&nbsp;{{ $item->dress_code_new }}{{ $item->dress_code }}</p>

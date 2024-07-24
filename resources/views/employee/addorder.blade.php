@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <!-- Card 3 -->
-                <div class="col-md-3">
+                {{-- <div class="col-md-3">
                     <div class="card h-100">
                         <div class="card-body text-center d-flex flex-column justify-content-between">
                             <div>
@@ -46,7 +46,7 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <!-- Card 4 -->
                 <div class="col-md-3">
                     <div class="card h-100">

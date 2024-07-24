@@ -23,6 +23,7 @@ class Dress extends Model
         'dress_rental',
         'dress_code_new' , 
         'separable' , 
+        'damage_insurance',
     ];
 
     // dress เป็น M - 1 ของ type
@@ -35,14 +36,25 @@ class Dress extends Model
         return $this->hasMany(Dressimage::class,'dress_id') ; 
     }
 
-    // dress เป็น 1 - M ของ dressme
+    // dress เป็น 1 - M ของ dressmeasurement
     public function dressmeasurements(){
         return $this->hasMany(Dressmeasurement::class,'dress_id') ; 
     }
     
+      // dress เป็น 1 - M ของ dressmeasurement
+      public function dressmeasurementnows(){
+        return $this->hasMany(Dressmeasurementnow::class,'dress_id') ; 
+    }
+
+
+
     // dress เป็น 1 - M ของ shirtitem
     public function shirtitems(){
         return $this->hasMany(Shirtitem::class,'dress_id')  ; 
+    }
+
+    public function skirtitems(){
+        return $this->hasMany(Skirtitem::class,'dress_id')  ; 
     }
 
 

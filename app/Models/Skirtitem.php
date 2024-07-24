@@ -16,6 +16,7 @@ class Skirtitem extends Model
         'skirtitem_deposit',
         'skirtitem_status',
         'skirtitem_rental',
+        'skirt_damage_insurance',
     ];
 
     // skirtitem เป็น M - 1 ของ dress

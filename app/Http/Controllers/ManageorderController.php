@@ -25,23 +25,44 @@ use Illuminate\Support\Facades\DB;
 
 class ManageorderController extends Controller
 {
-    //หน้าเพิ่มออเดอร์เช่าชุด เลือกประเภทชุด
-    public function typerentdress()
+
+    public function selectdatesuccess(Request $request)
     {
+        $startDate = $request->input('startDate'); //วันที่รับชุด
+        $endDate = $request->input('endDate'); //วันที่คืนชุด
+        $totalDay = $request->input('totalDay');
         $typedress = Typedress::all();
-        return view('Employee.typerentdress', compact('typedress'));
+        return view('employee.typerentdress', compact('typedress', 'startDate', 'endDate', 'totalDay'));
     }
 
+
+    //หน้าเพิ่มออเดอร์เช่าชุด เลือกประเภทชุด
+    // public function typerentdress()
+    // {
+    //     $typedress = Typedress::all();
+    //     return view('Employee.typerentdress', compact('typedress'));
+    // }
+
+
     //หน้าเพิ่มออเดอร์เช่าชุด หลังจากที่เลือกประเภทชุดแล้ว
-    public function typerentdressshow($id)
+    public function typerentdressshow(Request $request, $id)
     {
+
+
+
+
+        $selectstartDate = $request->input('startDate');
+        $selectendDate = $request->input('endDate');
+        $selecttotalDay = $request->input('totalDay');
+
+
         $type_dress_id = $id;
         $type_dress_name = Typedress::where('id', $id)->select('type_dress_name', 'specific_letter')->first();
         $search_separable = null;
         // $dress = Dress::where('type_dress_id', $id)->with('dressimages')->get();
         $dress = Dress::where('type_dress_id', $id)->with(['dressimages', 'dressmeasurements', 'dressmeasurementnows', 'shirtitems', 'skirtitems'])->get();
         // dd($dress) ; 
-        return view('Employee.typerentdressshow', compact('dress', 'type_dress_name', 'type_dress_id', 'search_separable'));
+        return view('Employee.typerentdressshow', compact('dress', 'type_dress_name', 'type_dress_id', 'search_separable', 'selectstartDate', 'selectendDate', 'selecttotalDay'));
 
 
         // $shirtitems_id  = App\Models\Shirtitem::where('dress_id',$item->id)->value('id') ;  //3 
@@ -174,6 +195,17 @@ class ManageorderController extends Controller
         $dress_code = $request->input('dress_code');
         $separable = $request->input('separable');  // 1 แยกไม่ได้ 2 แยกได
 
+
+        //วันที่นัดรับ-คืน-จำนวนวัน
+        $selectstartDate = $request->input('selectstartDate');
+        $selectendDate = $request->input('selectendDate');
+        $selecttotalDay = $request->input('selecttotalDay');
+
+
+
+
+
+
         //เสื้อ
         $shirtitem_id = $request->input('shirtitem_id');
         $shirtitem_price = $request->input('shirtitem_price');
@@ -199,7 +231,6 @@ class ManageorderController extends Controller
                 $update_cart->total_price = $addcheckorder->total_price + $price_dress;
                 $update_cart->total_deposit = $addcheckorder->total_deposit + $deposit_dress;
                 $update_cart->save();
-
                 //สร้างตารางorderdetail
                 $create_order = new Orderdetail();
                 $create_order->order_id = $addcheckorder->id;
@@ -212,6 +243,15 @@ class ManageorderController extends Controller
                 $create_order->price = $price_dress;
                 $create_order->deposit = $deposit_dress;
                 $create_order->damage_insurance = $damage_insurance_dress;
+                $create_order->pickup_date = $selectstartDate;
+                $create_order->return_date = $selectendDate;
+                if ($selecttotalDay > 3) {
+                    $over = $selecttotalDay - 3;
+                    $price_service_fee = ($price_dress * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                    $create_order->late_charge = $price_service_fee;
+                } else {
+                    $create_order->late_charge = 0;
+                }
                 $create_order->save();
                 //อัปเดตตาราง dress
                 $update_dress = Dress::find($dress_id);
@@ -219,42 +259,6 @@ class ManageorderController extends Controller
                 $update_dress->save();
             } elseif ($separable == 2) {
                 //แยกได้
-
-                //ทั้งชุด
-                if ($dress_id) {
-                    $update_cart = Order::find($addcheckorder->id);
-                    $update_cart->total_quantity = $addcheckorder->total_quantity + 1;
-                    $update_cart->total_price = $addcheckorder->total_price + $price_dress;
-                    $update_cart->total_deposit = $addcheckorder->total_deposit + $deposit_dress;
-                    $update_cart->save();
-                    //สร้างตารางorderdetail
-                    $create_order = new Orderdetail();
-                    $create_order->order_id = $addcheckorder->id;
-                    $create_order->employee_id = $id_employee;
-                    $create_order->dress_id = $dress_id;
-                    $create_order->title_name = 'เช่า' . $type_dress_name . ' ' . $dress_code;
-                    $create_order->type_dress = $type_dress_name;
-                    $create_order->type_order = 2; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4.เช่าตัด
-                    $create_order->amount = 1;
-                    $create_order->price = $price_dress;
-                    $create_order->deposit = $deposit_dress;
-                    $create_order->damage_insurance = $damage_insurance_dress;
-                    $create_order->save();
-                    //อัปเดตตาราง dress
-                    $update_dress = Dress::find($dress_id);
-                    $update_dress->dress_status = "อยู่ในตะกร้าทั้งหมด";
-                    $update_dress->save();
-                    // ตาราง shirt
-                    $update_id_shirt = Shirtitem::where('dress_id',$dress_id)->value('id') ; 
-                    $update_shirt = Shirtitem::find($update_id_shirt) ; 
-                    $update_shirt->shirtitem_status = "อยู่ในตะกร้า" ; 
-                    $update_shirt->save() ; 
-                    // ตารางskirt
-                    $update_id_skirt = Skirtitem::where('dress_id',$dress_id)->value('id') ; 
-                    $update_skirt = Skirtitem::find($update_id_skirt) ; 
-                    $update_skirt->skirtitem_status = "อยู่ในตะกร้า" ;
-                    $update_skirt->save() ; 
-                }
 
                 //เสื้อ
                 if ($shirtitem_id) {
@@ -277,6 +281,18 @@ class ManageorderController extends Controller
                     $create_order->price = $shirtitem_price;
                     $create_order->deposit = $shirtitem_deposit;
                     $create_order->damage_insurance = $shirt_damage_insurance;
+
+                    $create_order->pickup_date = $selectstartDate;
+                    $create_order->return_date = $selectendDate;
+                    if ($selecttotalDay > 3) {
+                        $over = $selecttotalDay - 3;
+                        $price_service_fee = ($shirtitem_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                        $create_order->late_charge = $price_service_fee;
+                    } else {
+                        $create_order->late_charge = 0;
+                    }
+
+
                     $create_order->save();
                     // อัปเดตตารางshirt
                     $update_shirt = Shirtitem::find($shirtitem_id);
@@ -286,17 +302,16 @@ class ManageorderController extends Controller
                     $check = Skirtitem::where('dress_id', $dress_id)->value('skirtitem_status');
                     if ($check == "พร้อมให้เช่า") {
                         $update_dress = Dress::find($dress_id);
-                        $update_dress->dress_status = "อยู่ในตะกร้าบางส่วน";
+                        $update_dress->dress_status = "ไม่พร้อมให้เช่า";
                         $update_dress->save();
                     } else {
                         $update_dress = Dress::find($dress_id);
-                        $update_dress->dress_status = "อยู่ในตะกร้าทั้งหมด";
+                        $update_dress->dress_status = "ไม่พร้อมให้เช่า";
                         $update_dress->save();
                     }
                 }
-
                 //กระโปรง
-                if ($skirtitem_id) {
+                elseif ($skirtitem_id) {
                     //ตารางorder
                     $update_cart = Order::find($addcheckorder->id);
                     $update_cart->total_quantity = $addcheckorder->total_quantity + 1;
@@ -316,6 +331,18 @@ class ManageorderController extends Controller
                     $create_order->price = $skirtitem_price;
                     $create_order->deposit = $skirtitem_deposit;
                     $create_order->damage_insurance = $skirt_damage_insurance;
+
+                    $create_order->pickup_date = $selectstartDate;
+                    $create_order->return_date = $selectendDate;
+                    if ($selecttotalDay > 3) {
+                        $over = $selecttotalDay - 3;
+                        $price_service_fee = ($skirtitem_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                        $create_order->late_charge = $price_service_fee;
+                    } else {
+                        $create_order->late_charge = 0;
+                    }
+
+
                     $create_order->save();
 
                     // อัปเดตตารางskirt
@@ -326,13 +353,57 @@ class ManageorderController extends Controller
                     $check = Shirtitem::where('dress_id', $dress_id)->value('shirtitem_status');
                     if ($check == "พร้อมให้เช่า") {
                         $update_dress = Dress::find($dress_id);
-                        $update_dress->dress_status = "อยู่ในตะกร้าบางส่วน";
+                        $update_dress->dress_status = "ไม่พร้อมให้เช่า";
                         $update_dress->save();
                     } else {
                         $update_dress = Dress::find($dress_id);
-                        $update_dress->dress_status = "อยู่ในตะกร้าทั้งหมด";
+                        $update_dress->dress_status = "ไม่พร้อมให้เช่า";
                         $update_dress->save();
                     }
+                }
+                //ทั้งชุด
+                else {
+                    $update_cart = Order::find($addcheckorder->id);
+                    $update_cart->total_quantity = $addcheckorder->total_quantity + 1;
+                    $update_cart->total_price = $addcheckorder->total_price + $price_dress;
+                    $update_cart->total_deposit = $addcheckorder->total_deposit + $deposit_dress;
+                    $update_cart->save();
+                    //สร้างตารางorderdetail
+                    $create_order = new Orderdetail();
+                    $create_order->order_id = $addcheckorder->id;
+                    $create_order->employee_id = $id_employee;
+                    $create_order->dress_id = $dress_id;
+                    $create_order->title_name = 'เช่า' . $type_dress_name . ' ' . $dress_code;
+                    $create_order->type_dress = $type_dress_name;
+                    $create_order->type_order = 2; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4.เช่าตัด
+                    $create_order->amount = 1;
+                    $create_order->price = $price_dress;
+                    $create_order->deposit = $deposit_dress;
+                    $create_order->damage_insurance = $damage_insurance_dress;
+                    $create_order->pickup_date = $selectstartDate;
+                    $create_order->return_date = $selectendDate;
+                    if ($selecttotalDay > 3) {
+                        $over = $selecttotalDay - 3;
+                        $price_service_fee = ($price_dress * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                        $create_order->late_charge = $price_service_fee;
+                    } else {
+                        $create_order->late_charge = 0;
+                    }
+                    $create_order->save();
+                    //อัปเดตตาราง dress
+                    $update_dress = Dress::find($dress_id);
+                    $update_dress->dress_status = "อยู่ในตะกร้า";
+                    $update_dress->save();
+                    // ตาราง shirt
+                    $update_id_shirt = Shirtitem::where('dress_id', $dress_id)->value('id');
+                    $update_shirt = Shirtitem::find($update_id_shirt);
+                    $update_shirt->shirtitem_status = "อยู่ในตะกร้า";
+                    $update_shirt->save();
+                    // ตารางskirt
+                    $update_id_skirt = Skirtitem::where('dress_id', $dress_id)->value('id');
+                    $update_skirt = Skirtitem::find($update_id_skirt);
+                    $update_skirt->skirtitem_status = "อยู่ในตะกร้า";
+                    $update_skirt->save();
                 }
             }
         }
@@ -360,50 +431,22 @@ class ManageorderController extends Controller
                 $create_order->price = $price_dress;
                 $create_order->deposit = $deposit_dress;
                 $create_order->damage_insurance = $damage_insurance_dress;
+                $create_order->pickup_date = $selectstartDate;
+                $create_order->return_date = $selectendDate;
+                if ($selecttotalDay > 3) {
+                    $over = $selecttotalDay - 3;
+                    $price_service_fee = ($price_dress * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                    $create_order->late_charge = $price_service_fee;
+                } else {
+                    $create_order->late_charge = 0;
+                }
                 $create_order->save();
                 //อัปเดตตาราง dress
                 $update_dress = Dress::find($dress_id);
                 $update_dress->dress_status = "อยู่ในตะกร้า";
                 $update_dress->save();
             } elseif ($separable == 2) {
-                //แยกได้
-                //ทั้งชุด
-                if ($dress_id) {
-                    $create_cart = new Order();
-                    $create_cart->user_id = $id_employee;
-                    $create_cart->total_quantity = 1;
-                    $create_cart->total_price = $price_dress;
-                    $create_cart->total_deposit = $deposit_dress;
-                    $create_cart->order_status = 0;
-                    $create_cart->save();
-                    //สร้างตารางorderdetail
-                    $create_order = new Orderdetail();
-                    $create_order->order_id = $create_cart->id;
-                    $create_order->employee_id = $id_employee;
-                    $create_order->dress_id = $dress_id;
-                    $create_order->title_name = 'เช่า' . $type_dress_name . ' ' . $dress_code;
-                    $create_order->type_dress = $type_dress_name;
-                    $create_order->type_order = 2; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4.เช่าตัด
-                    $create_order->amount = 1;
-                    $create_order->price = $price_dress;
-                    $create_order->deposit = $deposit_dress;
-                    $create_order->damage_insurance = $damage_insurance_dress;
-                    $create_order->save();
-                    //อัปเดตตาราง dress
-                    $update_dress = Dress::find($dress_id);
-                    $update_dress->dress_status = "อยู่ในตะกร้าทั้งหมด";
-                    $update_dress->save();
-                    // ตาราง shirt
-                    $update_id_shirt = Shirtitem::where('dress_id',$dress_id)->value('id') ; 
-                    $update_shirt = Shirtitem::find($update_id_shirt) ; 
-                    $update_shirt->shirtitem_status = "อยู่ในตะกร้า" ; 
-                    $update_shirt->save() ; 
-                    // ตารางskirt
-                    $update_id_skirt = Skirtitem::where('dress_id',$dress_id)->value('id') ; 
-                    $update_skirt = Skirtitem::find($update_id_skirt) ; 
-                    $update_skirt->skirtitem_status = "อยู่ในตะกร้า" ;
-                    $update_skirt->save() ; 
-                }
+                //แยกได้                
                 //เสื้อ
                 if ($shirtitem_id) {
                     //ตารางorder
@@ -427,6 +470,15 @@ class ManageorderController extends Controller
                     $create_order->price = $shirtitem_price;
                     $create_order->deposit = $shirtitem_deposit;
                     $create_order->damage_insurance = $shirt_damage_insurance;
+                    $create_order->pickup_date = $selectstartDate;
+                    $create_order->return_date = $selectendDate;
+                    if ($selecttotalDay > 3) {
+                        $over = $selecttotalDay - 3;
+                        $price_service_fee = ($shirtitem_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                        $create_order->late_charge = $price_service_fee;
+                    } else {
+                        $create_order->late_charge = 0;
+                    }
                     $create_order->save();
                     // อัปเดตตารางshirt
                     $update_shirt = Shirtitem::find($shirtitem_id);
@@ -436,15 +488,16 @@ class ManageorderController extends Controller
                     $check = Skirtitem::where('dress_id', $dress_id)->value('skirtitem_status');
                     if ($check == "พร้อมให้เช่า") {
                         $update_dress = Dress::find($dress_id);
-                        $update_dress->dress_status = "อยู่ในตะกร้าบางส่วน";
+                        $update_dress->dress_status = "ไม่พร้อมให้เช่า";
                         $update_dress->save();
                     } else {
                         $update_dress = Dress::find($dress_id);
-                        $update_dress->dress_status = "อยู่ในตะกร้าทั้งหมด";
+                        $update_dress->dress_status = "ไม่พร้อมให้เช่า";
                         $update_dress->save();
                     }
                 }
-                if ($skirtitem_id) {
+                //กางเกง
+                elseif ($skirtitem_id) {
                     //ตารางorder
                     $create_cart = new Order();
                     $create_cart->user_id = $id_employee;
@@ -466,8 +519,16 @@ class ManageorderController extends Controller
                     $create_order->price = $skirtitem_price;
                     $create_order->deposit = $skirtitem_deposit;
                     $create_order->damage_insurance = $skirt_damage_insurance;
+                    $create_order->pickup_date = $selectstartDate;
+                    $create_order->return_date = $selectendDate;
+                    if ($selecttotalDay > 3) {
+                        $over = $selecttotalDay - 3;
+                        $price_service_fee = ($skirtitem_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                        $create_order->late_charge = $price_service_fee;
+                    } else {
+                        $create_order->late_charge = 0;
+                    }
                     $create_order->save();
-
                     // อัปเดตตารางskirt
                     $update_skirt = Skirtitem::find($skirtitem_id);
                     $update_skirt->skirtitem_status = "อยู่ในตะกร้า";
@@ -476,13 +537,57 @@ class ManageorderController extends Controller
                     $check = Shirtitem::where('dress_id', $dress_id)->value('shirtitem_status');
                     if ($check == "พร้อมให้เช่า") {
                         $update_dress = Dress::find($dress_id);
-                        $update_dress->dress_status = "อยู่ในตะกร้าบางส่วน";
+                        $update_dress->dress_status = "ไม่พร้อมให้เช่า";
                         $update_dress->save();
                     } else {
                         $update_dress = Dress::find($dress_id);
-                        $update_dress->dress_status = "อยู่ในตะกร้าทั้งหมด";
+                        $update_dress->dress_status = "ไม่พร้อมให้เช่า";
                         $update_dress->save();
                     }
+                } else {
+                    $create_cart = new Order();
+                    $create_cart->user_id = $id_employee;
+                    $create_cart->total_quantity = 1;
+                    $create_cart->total_price = $price_dress;
+                    $create_cart->total_deposit = $deposit_dress;
+                    $create_cart->order_status = 0;
+                    $create_cart->save();
+                    //สร้างตารางorderdetail
+                    $create_order = new Orderdetail();
+                    $create_order->order_id = $create_cart->id;
+                    $create_order->employee_id = $id_employee;
+                    $create_order->dress_id = $dress_id;
+                    $create_order->title_name = 'เช่า' . $type_dress_name . ' ' . $dress_code;
+                    $create_order->type_dress = $type_dress_name;
+                    $create_order->type_order = 2; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4.เช่าตัด
+                    $create_order->amount = 1;
+                    $create_order->price = $price_dress;
+                    $create_order->deposit = $deposit_dress;
+                    $create_order->damage_insurance = $damage_insurance_dress;
+                    $create_order->pickup_date = $selectstartDate;
+                    $create_order->return_date = $selectendDate;
+                    if ($selecttotalDay > 3) {
+                        $over = $selecttotalDay - 3;
+                        $price_service_fee = ($price_dress * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                        $create_order->late_charge = $price_service_fee;
+                    } else {
+                        $create_order->late_charge = 0;
+                    }
+                    $create_order->save();
+                    //อัปเดตตาราง dress
+                    $update_dress = Dress::find($dress_id);
+                    $update_dress->dress_status = "อยู่ในตะกร้า";
+                    $update_dress->save();
+                    // ตาราง shirt
+                    $update_id_shirt = Shirtitem::where('dress_id', $dress_id)->value('id');
+                    $update_shirt = Shirtitem::find($update_id_shirt);
+                    $update_shirt->shirtitem_status = "อยู่ในตะกร้า";
+                    $update_shirt->save();
+                    // ตารางskirt
+                    $update_id_skirt = Skirtitem::where('dress_id', $dress_id)->value('id');
+                    $update_skirt = Skirtitem::find($update_id_skirt);
+                    $update_skirt->skirtitem_status = "อยู่ในตะกร้า";
+                    $update_skirt->save();
                 }
             }
         }

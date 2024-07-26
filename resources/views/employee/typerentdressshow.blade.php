@@ -1,22 +1,22 @@
 @extends('layouts.adminlayout')
 @section('content')
-<div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
-    <div class="modal-dialog custom-modal-dialog" role="document">
-        <div class="modal-content custom-modal-content"
-            style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
-            <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
+    <div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content custom-modal-content"
+                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
+                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                    <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script>
-    @if (session('success'))
-        setTimeout(function() {
-            $('#showsuccess').modal('show');
-        }, 500);
-    @endif
-</script>
+    <script>
+        @if (session('success'))
+            setTimeout(function() {
+                $('#showsuccess').modal('show');
+            }, 500);
+        @endif
+    </script>
     <div class="container">
 
 
@@ -56,6 +56,12 @@
             </div>
         </form>
 
+        {{-- {{$selectstartDate}}
+        {{$selectendDate}}
+
+        {{$selecttotalDay}} --}}
+
+
         <div class="row" style="margin-top: 15px;">
             @foreach ($dress as $index => $item)
                 {{-- @if ($item->dress_status == 'พร้อมให้เช่า') --}}
@@ -70,7 +76,6 @@
                                 class="card-img-top img-fluid" alt="Dress Image"
                                 style="max-height: 300px; object-fit: contain;">
                             <div class="card-body d-flex flex-column">
-                                {{ $item->id }}
                                 <h5 class="card-title">{{ $item->dress_title_name }}</h5>
                                 <h6>รหัสชุด: {{ $item->dress_code_new }}{{ $item->dress_code }}</h6>
                                 <h6>จำนวนชุด: {{ $item->dress_count }} ชุด</h6>
@@ -94,8 +99,16 @@
                                 </h6> --}}
                                 <!--ถ้ามันแยกได้ค่อยแสดงผลนะ-->
                                 @if ($item->separable == 2)
-                                    <h6>สถานะเสื้อ:<i style="color: darkred">{{ $shirtStatus }}</i></h6>
-                                    <h6>สถานะกระโปรง/กางเกง:<i style="color: darkred">{{ $skirtStatus }}</i></h6>
+                                    <h6>สถานะเสื้อ:<i
+                                            @if ($shirtStatus == 'พร้อมให้เช่า') style="color: #39d628"
+                                            @else
+                                            style="color: red" @endif>{{ $shirtStatus }}</i>
+                                    </h6>
+                                    <h6>สถานะกระโปรง/กางเกง:<i
+                                            @if ($skirtStatus == 'พร้อมให้เช่า') style="color: #39d628"
+                                            @else
+                                            style="color: red" @endif>{{ $skirtStatus }}</i>
+                                    </h6>
                                 @endif
 
                             </div>
@@ -108,7 +121,6 @@
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        dress_id คือ{{ $item->id }}
 
                                         {{-- @foreach ($item->shirtitems as $shirtitem)
                                         {{ $item->dress_code_new }}{{ $item->dress_code }}
@@ -170,20 +182,14 @@
                                                         <div class="col-md-6">
                                                             <p><strong>จำนวนชุด:</strong> {{ $item->dress_count }} ชุด</p>
 
-                                                            <p><strong>สถานะชุด:</strong>
-                                                                @if ($item->separable == 1)
+                                                            <p>
+                                                                <strong>สถานะชุด:</strong>
+                                                                <span
+                                                                    @if ($item->dress_status == 'พร้อมให้เช่า') style="color: #39d628" @else style="color: red" @endif>
                                                                     {{ $item->dress_status }}
-                                                                @elseif($item->separable == 2)
-                                                                    @if ($shirtStatus != 'พร้อมให้เช่า')
-                                                                        {{ $item->dress_status }}(กางเกง)
-                                                                    @elseif($skirtStatus != 'พร้อมให้เช่า')
-                                                                        {{ $item->dress_status }}(เสื้อ)
-                                                                    @else
-                                                                        {{ $item->dress_status }}(เสื้อ+กระโปรง/กางเกง)
-                                                                    @endif
-                                                                @endif
-
+                                                                </span>
                                                             </p>
+
 
 
 
@@ -218,28 +224,37 @@
 
 
 
-                                                    <form action="{{ route('employee.addrentdresscart') }}" method="POST">
+                                                    <form action="{{ route('employee.addrentdresscart') }}"
+                                                        method="POST">
                                                         @csrf
-                                                        <input type="text" name="dress_id"
+                                                        <input type="hidden" name="dress_id"
                                                             value="{{ $item->id }}">
-                                                        <input type="text" name="price_dress"
+                                                        <input type="hidden" name="price_dress"
                                                             value="{{ $item->dress_price }}">
-                                                        <input type="text" name="deposit_dress"
+                                                        <input type="hidden" name="deposit_dress"
                                                             value="{{ $item->dress_deposit }}">
-                                                        <input type="text" name="damage_insurance_dress"
+                                                        <input type="hidden" name="damage_insurance_dress"
                                                             value="{{ $item->damage_insurance }}">
-                                                        <input type="text" name="type_dress_name"
+                                                        <input type="hidden" name="type_dress_name"
                                                             value="{{ $type_dress_name->type_dress_name }}">
-                                                        <input type="text" name="separable"
+                                                        <input type="hidden" name="separable"
                                                             value="{{ $item->separable }}">
-                                                        <input type="text" name="dress_code"
+                                                        <input type="hidden" name="dress_code"
                                                             value="{{ $item->dress_code_new }}{{ $item->dress_code }}">
+
+                                                        <input type="hidden" name="selectstartDate"
+                                                            value="{{ $selectstartDate }}">
+                                                        <input type="hidden" name="selectendDate"
+                                                            value="{{ $selectendDate }}">
+                                                        <input type="hidden" name="selecttotalDay"
+                                                            value="{{ $selecttotalDay }}">
 
                                                         <button type="submit" class="btn btn-success"
                                                             @if ($item->separable == 1) @if ($item->dress_status != 'พร้อมให้เช่า')
                                                             disabled @endif
                                                         @elseif($item->separable == 2)
-                                                            @if ($shirtStatus != 'พร้อมให้เช่า' || $skirtStatus != 'พร้อมให้เช่า') disabled @endif @endif>
+                                                            @if ($shirtStatus != 'พร้อมให้เช่า' || $skirtStatus != 'พร้อมให้เช่า') disabled @endif
+                                                            @endif>
                                                             เพิ่มลงตะกร้า</button>
                                                     </form>
 
@@ -272,8 +287,10 @@
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <p><strong>จำนวนเสื้อ:</strong> 1 ตัว</p>
-                                                                <p><strong>สถานะเสื้อ:</strong> <span
-                                                                        style="color: red;">{{ $shirtitem->shirtitem_status }}</span>
+                                                                <p><strong>สถานะเสื้อ:</strong><span
+                                                                        @if ($shirtitem->shirtitem_status == 'พร้อมให้เช่า') style="color: #39d628" 
+                                                                    @else
+                                                                    style="color: red" @endif>{{ $shirtitem->shirtitem_status }}</span>
                                                                 </p>
                                                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong>
                                                                     {{ $shirtitem->shirtitem_rental }} ครั้ง</p>
@@ -303,21 +320,37 @@
                                                 </div>
 
                                                 <div class="d-flex justify-content-end">
-                                                    @if($item->separable == 2)
-                                                    <form action="{{ route('employee.addrentdresscart') }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        <input type="text" name="dress_id" value="{{ $item->id }}">
-                                                        <input type="text" name="shirtitem_id" value="{{ $shirtitem_id }}">
-                                                        <input type="text" name="shirtitem_price" value="{{ $shirtitem_price }}">
-                                                        <input type="text" name="shirtitem_deposit" value="{{ $shirtitem_deposit }}">
-                                                        <input type="text" name="shirt_damage_insurance" value="{{ $shirt_damage_insurance }}">
-                                                        <input type="text" name="type_dress_name" value="{{ $type_dress_name->type_dress_name }}">
-                                                        <input type="text" name="separable" value="{{ $item->separable }}">
-                                                        <input type="text" name="dress_code" value="{{ $item->dress_code_new }}{{ $item->dress_code }}">
-                                                        <button type="submit" class="btn btn-success"
-                                                            @if ($shirtStatus != 'พร้อมให้เช่า') disabled @endif>เพิ่มลงตะกร้า</button>
-                                                    </form>
+                                                    @if ($item->separable == 2)
+                                                        <form action="{{ route('employee.addrentdresscart') }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            <input type="hidden" name="dress_id"
+                                                                value="{{ $item->id }}">
+                                                            <input type="hidden" name="shirtitem_id"
+                                                                value="{{ $shirtitem_id }}">
+                                                            <input type="hidden" name="shirtitem_price"
+                                                                value="{{ $shirtitem_price }}">
+                                                            <input type="hidden" name="shirtitem_deposit"
+                                                                value="{{ $shirtitem_deposit }}">
+                                                            <input type="hidden" name="shirt_damage_insurance"
+                                                                value="{{ $shirt_damage_insurance }}">
+                                                            <input type="hidden" name="type_dress_name"
+                                                                value="{{ $type_dress_name->type_dress_name }}">
+                                                            <input type="hidden" name="separable"
+                                                                value="{{ $item->separable }}">
+                                                            <input type="hidden" name="dress_code"
+                                                                value="{{ $item->dress_code_new }}{{ $item->dress_code }}">
+                                                            <input type="hidden" name="selectstartDate"
+                                                                value="{{ $selectstartDate }}">
+                                                            <input type="hidden" name="selectendDate"
+                                                                value="{{ $selectendDate }}">
+                                                            <input type="hidden" name="selecttotalDay"
+                                                                value="{{ $selecttotalDay }}">
+
+
+                                                            <button type="submit" class="btn btn-success"
+                                                                @if ($shirtStatus != 'พร้อมให้เช่า') disabled @endif>เพิ่มลงตะกร้า</button>
+                                                        </form>
                                                     @endif
                                                 </div>
                                             </div>
@@ -347,7 +380,9 @@
                                                             <div class="col-md-6">
                                                                 <p><strong>จำนวนกระโปรง/กางเกง:</strong> 1 ตัว</p>
                                                                 <p><strong>สถานะกระโปรง/กางเกง:</strong> <span
-                                                                        style="color: red;">{{ $skirtitem->skirtitem_status }}</span>
+                                                                        @if ($skirtitem->skirtitem_status == 'พร้อมให้เช่า') style="color: #39d628" 
+                                                                    @else
+                                                                    style="color: red" @endif>{{ $skirtitem->skirtitem_status }}</span>
                                                                 </p>
                                                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong>
                                                                     {{ $skirtitem->skirtitem_rental }} ครั้ง</p>
@@ -356,7 +391,8 @@
                                                                 $skirtitem_id = $skirtitem->id;
                                                                 $skirtitem_price = $skirtitem->skirtitem_price;
                                                                 $skirtitem_deposit = $skirtitem->skirtitem_deposit;
-                                                                $skirt_damage_insurance = $skirtitem->skirt_damage_insurance;
+                                                                $skirt_damage_insurance =
+                                                                    $skirtitem->skirt_damage_insurance;
                                                             @endphp
                                                         @endforeach
                                                     </div>
@@ -371,22 +407,37 @@
                                                     @endforeach
                                                 </div>
                                                 <div class="d-flex justify-content-end">
-                                                    @if($item->separable == 2)
-                                                    <form action="{{ route('employee.addrentdresscart') }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    <input type="text" name="dress_id" value="{{ $item->id }}">
-                                                    <input type="text" name="skirtitem_id" value="{{ $skirtitem_id }}">
-                                                    <input type="text" name="skirtitem_price" value="{{ $skirtitem_price }}">
-                                                    <input type="text" name="skirtitem_deposit" value="{{ $skirtitem_deposit }}">
-                                                    <input type="text" name="skirt_damage_insurance" value="{{ $skirt_damage_insurance }}">
-                                                    <input type="text" name="type_dress_name" value="{{ $type_dress_name->type_dress_name }}">
-                                                    <input type="text" name="separable" value="{{ $item->separable }}">
-                                                    <input type="text" name="dress_code" value="{{ $item->dress_code_new }}{{ $item->dress_code }}">
+                                                    @if ($item->separable == 2)
+                                                        <form action="{{ route('employee.addrentdresscart') }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            <input type="hidden" name="dress_id"
+                                                                value="{{ $item->id }}">
+                                                            <input type="hidden" name="skirtitem_id"
+                                                                value="{{ $skirtitem_id }}">
+                                                            <input type="hidden" name="skirtitem_price"
+                                                                value="{{ $skirtitem_price }}">
+                                                            <input type="hidden" name="skirtitem_deposit"
+                                                                value="{{ $skirtitem_deposit }}">
+                                                            <input type="hidden" name="skirt_damage_insurance"
+                                                                value="{{ $skirt_damage_insurance }}">
+                                                            <input type="hidden" name="type_dress_name"
+                                                                value="{{ $type_dress_name->type_dress_name }}">
+                                                            <input type="hidden" name="separable"
+                                                                value="{{ $item->separable }}">
+                                                            <input type="hidden" name="dress_code"
+                                                                value="{{ $item->dress_code_new }}{{ $item->dress_code }}">
+                                                            <input type="hidden" name="selectstartDate"
+                                                                value="{{ $selectstartDate }}">
+                                                            <input type="hidden" name="selectendDate"
+                                                                value="{{ $selectendDate }}">
+                                                            <input type="hidden" name="selecttotalDay"
+                                                                value="{{ $selecttotalDay }}">
 
-                                                    <button type="submit" class="btn btn-success"
-                                                        @if ($skirtStatus != 'พร้อมให้เช่า') disabled @endif>เพิ่มลงตะกร้า</button>
-                                                    </form>
+
+                                                            <button type="submit" class="btn btn-success"
+                                                                @if ($skirtStatus != 'พร้อมให้เช่า') disabled @endif>เพิ่มลงตะกร้า</button>
+                                                        </form>
                                                     @endif
                                                 </div>
                                             </div>

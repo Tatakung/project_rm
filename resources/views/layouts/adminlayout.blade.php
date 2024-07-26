@@ -87,32 +87,32 @@
         }
 
         nav {
-            background-color: #EEEEEE;
-            color: #FFFFFF;
+            background-color: #A7545E;
+            color: #A7545E;
             padding: 7mm;
             width: 100%;
         }
 
         /* เพิ่ม */
         .list-group-item.active {
-            background-color: #868686;
+            background-color: #A7545E;
             color: #f4e8e8;
         }
 
 
         #test {
-            background-color: #868686;
+            background-color: #A7545E;
             color: #f4e8e8;
 
         }
 
         #d {
-            background-color: #868686;
-            color: #f4e8e8;
+            background-color: #EBE5AE;
+            color: #000000;
         }
 
         #d1 {
-            background-color: #868686;
+            background-color: #A7545E;
             color: #f4e8e8;
         }
 
@@ -146,6 +146,21 @@
 </head>
 
 <body>
+    {{-- เพิ่มเข้ามาใหม่ล่าสุดของการเลือกวันที่ --}}
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+
+    {{-- สิ้นสุด --}}
+
+
+
+
+
 
     <div id="sidebar-overlay" class="overlay w-100 vh-100 position-fixed d-none"></div>
 
@@ -153,7 +168,7 @@
         <!-- sidebar -->
         <div class="col-md-3 col-lg-2 px-0 position-fixed h-100 shadow-sm sidebar" id="sidebar">
             <h1 class="logo-container">
-                <img src="{{ asset('images/logo123456.jpg') }}" alt="logo" width="70" height="70">
+                <img src="{{ asset('images/logo4.jpg') }}" alt="logo" width="70" height="70">
             </h1>
             <div class="list-group rounded-0">
                 <a href="#"
@@ -192,11 +207,11 @@
                 </a>
 
 
-                <a href="{{ route('admin.jewelrytotal') }}"
+                {{-- <a href="{{ route('admin.jewelrytotal') }}"
                     class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                     <span class="bi bi-box"></span>
                     <span class="ml-2">จัดการเครื่องประดับ</span>
-                </a>
+                </a> --}}
 
                 <a href="{{ route('employeetotal') }}"
                     class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
@@ -220,7 +235,7 @@
         <!-- sidebar -->
         <div class="col-md-3 col-lg-2 px-0 position-fixed h-100 shadow-sm sidebar" id="sidebar">
             <h1 class="logo-container">
-                <img src="{{ asset('images/logo123456.jpg') }}" alt="logo" width="70" height="70">
+                <img src="{{ asset('images/logo4.jpg') }}" alt="logo" width="70" height="70">
             </h1>
             <div class="list-group rounded-0">
                 <a href="#"
@@ -300,8 +315,8 @@
 
             @if(Auth::user() && Auth::user()->is_admin == 0 )
             <button class="btn py-0 ml-auto" id="cart-button">
-                <span class="bi bi-cart text-primary h4">
-                    <a href="{{route('employee.cart')}}">ตะกร้า {{ App\Models\Order::where('user_id',Auth::user()->id)
+                <span class="bi bi-cart text-white h4">
+                    <a style="color: #ffffff" href="{{route('employee.cart')}}">ตะกร้า {{ App\Models\Order::where('user_id',Auth::user()->id)
                         ->where('order_status',0)
                         ->value('total_quantity') ?? 0 }}</a>
                 </span>

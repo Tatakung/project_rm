@@ -16,7 +16,11 @@ use App\Models\Order;
 use App\Models\Orderdetail;
 use App\Models\Orderdetailstatus;
 use App\Models\Paymentstatus;
+use App\Models\Shirtitem;
+use App\Models\Skirtitem;
+
 use App\Models\Typedress;
+
 use App\Models\Customer;
 
 use Illuminate\Http\Request;
@@ -36,6 +40,16 @@ class EmployeeController extends Controller
     {
         return view('Employee.addorder');
     }
+
+    public function selectdate(){
+        return view('employee.seletedate') ; 
+    }
+
+    
+
+
+
+
     //หน้าformเพิ่มตัดชุด
     public function addcutdress()
     {
@@ -141,7 +155,7 @@ class EmployeeController extends Controller
             $datedate->order_detail_id = $orderdetail->id;
             $datedate->pickup_date = $request->input('pickup_date');
             $datedate->save();
-   
+
 
             // บันทึกข้อมูลในตาราง Measurementorderdetail
             $mea_name = $request->input('mea_name_');
@@ -171,7 +185,7 @@ class EmployeeController extends Controller
                 }
             }
 
-            
+
             DB::commit();
             return redirect()->back()->with('success', 'เพิ่มลงตะกร้าแล้ว !');
         } catch (\Exception $e) {
@@ -338,27 +352,12 @@ class EmployeeController extends Controller
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //ตะกร้าสินค้า
     public function cart()
     {
         $order = Order::where('user_id', Auth::user()->id)
             ->where('order_status', 0)
+            ->with('order_one_many_orderdetails')
             ->first();
 
         return view('Employee.cart', compact('order'));
@@ -368,14 +367,72 @@ class EmployeeController extends Controller
     public function deletelist($id)
     {
         $delete_orderdetail = Orderdetail::find($id);
-        $delete_orderdetail->delete();
+        // $delete_orderdetail->delete();
 
+        //กรณีเช่าชุด
         if ($delete_orderdetail->type_order == 2) { //เช่าชุด เปลี่ยนสถานะของชุดให้เป็นเหมือนเดิม เพราะลบออกจากรายการ
-            // $dress = Dress::where('id',$delete_orderdetail->dress_id); 
             $edit_dress = Dress::find($delete_orderdetail->dress_id);
-            $edit_dress->dress_status = "พร้อมให้เช่า";
-            $edit_dress->save();
+
+            if ($edit_dress->separable == 1) {
+                $edit_dress->dress_status = "พร้อมให้เช่า";
+                $edit_dress->save();
+            }
+            elseif($edit_dress->separable == 2 ){
+                //เช้คว่าลบเสื้อ
+                if($delete_orderdetail->shirtitems_id){
+                    //ถ้ามีข้อมูล
+                    $edit_status_shirt = Shirtitem::find($delete_orderdetail->shirtitems_id) ; 
+                    $edit_status_shirt->shirtitem_status = "พร้อมให้เช่า" ; 
+                    $edit_status_shirt->save() ; 
+                    $check_status_skirt = Skirtitem::where('dress_id',$delete_orderdetail->dress_id)->first() ; 
+                    if($check_status_skirt->skirtitem_status == "พร้อมให้เช่า"){
+                        $edit_dress_status = Dress::find($delete_orderdetail->dress_id) ; 
+                        $edit_dress_status->dress_status = "พร้อมให้เช่า" ; 
+                        $edit_dress_status->save() ; 
+                    }
+                    else{
+                        $edit_dress_status = Dress::find($delete_orderdetail->dress_id) ; 
+                        $edit_dress_status->dress_status = "ไม่พร้อมให้เช่า" ; 
+                        $edit_dress_status->save() ; 
+                    }
+                }
+                //เช็คว่าลบกระโปรง
+                elseif($delete_orderdetail->skirtitems_id){
+                    //ถ้ามีข้อมูล
+                    $edit_status_skirt = Skirtitem::find($delete_orderdetail->skirtitems_id) ; 
+                    $edit_status_skirt->skirtitem_status = "พร้อมให้เช่า" ; 
+                    $edit_status_skirt->save() ; 
+                    $check_status_shirt = Shirtitem::where('dress_id',$delete_orderdetail->dress_id)->first() ; 
+                    if($check_status_shirt->shirtitem_status == "พร้อมให้เช่า"){
+                        $edit_dress_status = Dress::find($delete_orderdetail->dress_id) ; 
+                        $edit_dress_status->dress_status = "พร้อมให้เช่า" ; 
+                        $edit_dress_status->save() ; 
+                    }
+                    else{
+                        $edit_dress_status = Dress::find($delete_orderdetail->dress_id) ; 
+                        $edit_dress_status->dress_status = "ไม่พร้อมให้เช่า" ; 
+                        $edit_dress_status->save() ; 
+                    }
+                }
+                else{
+                    // dd('ลบทั้งชุด') ; 
+                    $edit_dress = Dress::find($delete_orderdetail->dress_id) ; 
+                    $edit_dress->dress_status = "พร้อมให้เช่า" ; 
+                    $edit_dress->save() ; 
+                    //เปลี่ยนสถานะของตารางshirt
+                    $id_shirt = Shirtitem::where('dress_id',$edit_dress->id)->first() ; 
+                    $edit_status_shirt = Shirtitem::find($id_shirt->id) ; 
+                    $edit_status_shirt->shirtitem_status = "พร้อมให้เช่า" ; 
+                    $edit_status_shirt->save() ; 
+                    //เปลีย่นสถานะของตารางskirt
+                    $id_skirt = Skirtitem::where('dress_id',$edit_dress->id)->first() ; 
+                    $edit_status_skirt = Skirtitem::find($id_skirt->id) ; 
+                    $edit_status_skirt->skirtitem_status = "พร้อมให้เช่า" ; 
+                    $edit_status_skirt->save() ; 
+                }
+            }
         }
+        // กรณีเช่าเครื่องประดับ
         if ($delete_orderdetail->type_order == 3) { //เช่าเครื่องประดับ เปลี่ยนสถานะของเครื่องประดับให้เป็นเหมือนเดิม เพราะลบออกจากรายการ
             $edit_jewelry = Jewelry::find($delete_orderdetail->jewelry_id);
             $edit_jewelry->jewelry_status = "พร้อมให้เช่า";
@@ -403,6 +460,7 @@ class EmployeeController extends Controller
         if ($update_order->total_quantity == 0) {
             $update_order->delete();
         }
+
         return redirect()->back();
     }
 
@@ -499,31 +557,55 @@ class EmployeeController extends Controller
 
 
 
+
+    public function confirmorder($id){
+        $order_id = $id ; 
+
+        $orderdetail = Orderdetail::where('order_id',$id)->get() ; 
+
+        return view('employee.confirmorder',compact('orderdetail','order_id')) ; 
+        
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //ยืนยันการเพิ่มออเดอร์
-    public function confirmorder(Request $request, $id)
+    public function confirmorderwait(Request $request, $id)
     {
 
         $order_id = $id;
         $order_detail_id = json_decode($request->input('order_detail_id'), true);
 
         //สร้างตารางcutomer
-        $create_customer = new Customer() ; 
+        $create_customer = new Customer();
         $create_customer->customer_fname = $request->input('firstName');
         $create_customer->customer_lname = $request->input('lastName');
         $create_customer->customer_phone = $request->input('phone');
-        $create_customer->save() ; 
-        $CUSTOMER_ID = $create_customer->id ; 
+        $create_customer->save();
+        $CUSTOMER_ID = $create_customer->id;
 
         //อัปเดตตารางorder เป็ฯ 1 เสร็จแล้ว
-        $update_order_status = Order::find($id) ; 
-        $update_order_status->order_status = 1 ;
-        $update_order_status->customer_id = $CUSTOMER_ID ; 
-        $update_order_status->save() ; 
-        
+        $update_order_status = Order::find($id);
+        $update_order_status->order_status = 1;
+        $update_order_status->customer_id = $CUSTOMER_ID;
+        $update_order_status->save();
+
 
         foreach ($order_detail_id as $id_for_orderdetail) {
 
-            
+
             $check = Orderdetail::find($id_for_orderdetail);
             if ($check->type_order == 1) {
 
@@ -573,10 +655,10 @@ class EmployeeController extends Controller
 
                 if ($status_payment == 1) {
                     $text = 'จ่ายมัดจำ(เช่าชุด)';
-                    $income = $deposit *$amount;
+                    $income = $deposit * $amount;
                 } elseif ($status_payment == 2) {
                     $text = 'จ่ายเต็ม(เช่าชุด)';
-                    $income = $price *$amount;
+                    $income = $price * $amount;
                 }
                 $create_financial = new Financial();
                 $create_financial->order_detail_id = $id_for_orderdetail;
@@ -606,7 +688,7 @@ class EmployeeController extends Controller
 
                 if ($status_payment == 1) {
                     $text = 'จ่ายมัดจำ(เช่าเครื่องประดับ)';
-                    $income = $deposit * $amount ;
+                    $income = $deposit * $amount;
                 } elseif ($status_payment == 2) {
                     $text = 'จ่ายเต็ม(เช่าเครื่องประดับ)';
                     $income = $price * $amount;
@@ -650,11 +732,11 @@ class EmployeeController extends Controller
                 $create_financial->type_order = $check->type_order;
                 $create_financial->item_name = $text;
                 $create_financial->financial_income = $income;
-                $create_financial->financial_expenses = 0 ;
+                $create_financial->financial_expenses = 0;
                 $create_financial->save();
             }
         }
         // return redirect()->back()->with('success', 'ทำรายการแล้ว !');
-        return redirect()->route('employee.ordertotaldetail',['id'=>$id]) ; 
+        return redirect()->route('employee.ordertotaldetail', ['id' => $id]);
     }
 }

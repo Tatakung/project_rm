@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <!-- Card 2 -->
-                <div class="col-md-3">
+                <div class="col-md-3" >
                     <div class="card h-100">
                         <div class="card-body text-center d-flex flex-column justify-content-between">
                             <div>
@@ -28,7 +28,8 @@
                                 <h5 class="card-title mt-3">เช่าชุด</h5>
                             </div>
                             <button class="btn btn-primary mt-3">
-                                <a href="{{route('employee.typerentdress')}}" style="color: rgb(255, 255, 255)">เพิ่มออเดอร์</a>
+                                {{-- <a href="{{route('employee.typerentdress')}}" style="color: rgb(255, 255, 255)">เพิ่มออเดอร์</a> --}}
+                                <a href="{{route('employee.selectdate')}}" style="color: rgb(255, 255, 255)">เพิ่มออเดอร์</a>
                             </button>
                         </div>
                     </div>

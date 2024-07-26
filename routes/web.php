@@ -111,6 +111,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     // Route::get('/homepage', [HomeController::class, 'homepage'])->name('homepage'); // หน้าแรก
     Route::get('/employee/homepage', [EmployeeController::class, 'homepage'])->name('employee.homepage'); // หน้าแรก
     Route::get('/employee/addorder', [EmployeeController::class, 'addorder'])->name('employee.addorder'); 
+    Route::get('/employee/selectdate', [EmployeeController::class, 'selectdate'])->name('employee.selectdate'); 
+
     Route::get('/employee/addcutdress', [EmployeeController::class, 'addcutdress'])->name('employee.addcutdress'); //เพิ่มตัดชุด
     Route::post('/employee/addcutdress/savecutdress', [EmployeeController::class, 'savecutdress'])->name('employee.savecutdress'); 
 
@@ -125,6 +127,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     //เพิ่มเช่าชุดลงในตะกร้า
+    Route::get('/employee/selectdate/success', [ManageorderController::class, 'selectdatesuccess'])->name('employee.selectdatesuccess'); //เช่าวันที่เช่าชุด
     Route::get('/employee/typerentdress', [ManageorderController::class, 'typerentdress'])->name('employee.typerentdress'); //เช่าชุดหน้าเลือกประเภทชุด
     Route::get('/employee/typerentdress/show/{id}', [ManageorderController::class, 'typerentdressshow'])->name('employee.typerentdressshow');//หลังจากที่เลือกประเภทชุดแล้ว
     Route::post('/employee/typerentdress/show/addrentdresscart', [ManageorderController::class, 'addrentdresscart'])->name('employee.addrentdresscart'); //เช่าชุดเพิ่มลงในตะกร้า
@@ -146,7 +149,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/addcutrent', [EmployeeController::class, 'addcutrent'])->name('employee.addcutrent'); //เพิ่มเช่าตัด
     Route::post('/employee/addcutrent/savecutrent', [EmployeeController::class, 'savecutrent'])->name('employee.savecutrent'); //บันทึกเช่าตัดลงในตะกร้า
     Route::post('/employee/manageitem/savemanageitemcutrent/{id}', [ManageorderController::class, 'savemanageitemcutrent'])->name('employee.savemanageitemcutrent'); //บันทึกของเช่าตัดชุด item
-    Route::post('/employee/cart/confirmorder/{id}', [EmployeeController::class, 'confirmorder'])->name('employee.confirmorder'); //ยืนยันออเดอร์ทั้งหมด
+    // Route::post('/employee/cart/confirmorder/{id}', [EmployeeController::class, 'confirmorder'])->name('employee.confirmorder'); //ยืนยันออเดอร์ทั้งหมด
+    Route::get('/employee/cart/confirmorder/{id}', [EmployeeController::class, 'confirmorder'])->name('employee.confirmorder'); //ยืนยันออเดอร์ทั้งหมด
 
 
 

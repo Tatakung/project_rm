@@ -1,7 +1,13 @@
 @extends('layouts.adminlayout')
 @section('content')
     <div class="container mt-5">
-        <a href="{{ route('admin.formadddress') }}">เพิ่มชุด</a>
+        {{-- <a href="{{ route('admin.formadddress') }}">เพิ่มชุด</a> --}}
+
+        <button class="btn btn-success">
+            <a href="{{ route('admin.formadddress') }}" style="color: aliceblue">เพิ่มชุด</a>
+
+        </button>
+
         <div class="row">
             <div class="col-md-12">
                     <h3 style="text-align: center ; ">หมวดหมู่ชุด</h3>

@@ -29,7 +29,11 @@
                                     <img src="{{ asset('storage/' . $item->dressimages->first()->dress_image) }}"
                                         alt="" style="max-height: 300px; width: auto; margin: auto; display: block;">
                                 @endif
-                                <p>สถานะชุด: {{$item->dress_status}}</p>
+                                <p @if($item->dress_status == "พร้อมให้เช่า") style="color: green" 
+                                    @else
+                                    style="color: red" 
+                                    @endif
+                                >สถานะชุด: {{$item->dress_status}}</p>
                                 @if($item->separable == 1)
                                 <p><i class="bi bi-x-circle-fill text-danger"></i> ไม่สามารถเช่าแยกได้</p>
                                 @elseif($item->separable == 2)

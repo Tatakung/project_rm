@@ -117,8 +117,8 @@
                             </div>
                             <div class="col-md-6">
                                 <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
-                                <p><strong>สถานะชุด:</strong> <span
-                                        style="color: red;">{{ $datadress->dress_status }}</span></p>
+                                <p><strong>สถานะชุด:</strong> <span @if($datadress->dress_status) style="color: green;" @else style="color: red;" @endif>
+                                    {{ $datadress->dress_status }}</span></p>
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง</p>
                                 <p><strong>ชุด:</strong>
                                     @if ($datadress->separable == 1)
@@ -151,9 +151,16 @@
 
                             </div>
                             <div class="col-md-6">
-                                <p><strong>จำนวนเสื้อ:</strong> 1 ตัว</p>
-                                <p><strong>สถานะเสื้อ:</strong> <span
-                                        style="color: red;">{{ $shirtitem->shirtitem_status }}</span></p>
+                                <p><strong >จำนวนเสื้อ:</strong> 1 ตัว</p>
+                                <p>
+                                    <strong>สถานะเสื้อ:</strong> 
+                                    <span @if($shirtitem->shirtitem_status == "พร้อมให้เช่า") style="color: green" @else style="color: red" @endif>
+                                        {{ $shirtitem->shirtitem_status }}
+                                    </span>
+                                </p>
+                                
+
+
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $shirtitem->shirtitem_rental }} ครั้ง</p>
                             </div>
                         </div>
@@ -198,7 +205,7 @@
                             <div class="col-md-6">
                                 <p><strong>จำนวนกระโปรง/กางเกง:</strong> 1 ตัว</p>
                                 <p><strong>สถานะกระโปรง/กางเกง:</strong> <span
-                                        style="color: red;">{{ $skirtitem->skirtitem_status }}</span></p>
+                                    @if($skirtitem->skirtitem_status == "พร้อมให้เช่า") style="color: green" @else style="color: red" @endif>{{ $skirtitem->skirtitem_status }}</span></p>
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $skirtitem->skirtitem_rental }} ครั้ง</p>
                             </div>
                         </div>

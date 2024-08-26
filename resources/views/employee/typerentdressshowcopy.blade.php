@@ -31,7 +31,35 @@
     <div class="container">
 
 
-       
+        {{-- <form action="{{ route('employee.filtermea') }}" method="GET" class="p-3 border rounded shadow-sm bg-light">
+            @csrf
+            <div class="row g-3">
+                
+                <div class="col-md-2">
+                    <label for="bust" class="form-label">ขนาดอก(นิ้ว)</label>
+                    <input type="number" name="chest" class="form-control">
+
+                </div>
+                <div class="col-md-2">
+                    <label for="waist" class="form-label">ขนาดเอว(นิ้ว)</label>
+                    <input type="number" name="waist" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <label for="hip" class="form-label">ขนาดสะโพก(นิ้ว)</label>
+                    <input type="number" name="hip" class="form-control">
+
+                </div>
+                <input type="hidden" name="type_dress_id" value="{{ $type_dress_id }}">
+
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i>ค้นหา
+                    </button>
+                </div>
+            </div>
+        </form> --}}
+
         {{-- {{$selectstartDate}}
         {{$selectendDate}}
 
@@ -48,23 +76,17 @@
                 @endphp
                 <div class="col-md-3 mb-4">
                     <div class="card h-100">
-                        <button data-toggle="modal" data-target="#showmodal{{ $item->id }}" style="background: white ; border: -0">
+                        <button data-toggle="modal" data-target="#showmodal{{ $item->id }}">
                             <img src="{{ asset('storage/' . $item->dressimages->first()->dress_image) }}"
                                 class="card-img-top img-fluid" alt="Dress Image"
-                                style="max-height: 300px; object-fit: contain; margin-top: 10px;">
+                                style="max-height: 300px; object-fit: contain;">
                             <div class="card-body d-flex flex-column">
                                 {{-- dress_idคือ {{ $item->id }} --}}
                                 <h5 class="card-title">{{ $item->dress_title_name }}</h5>
                                 <h6>รหัสชุด: {{ $item->dress_code_new }}{{ $item->dress_code }}</h6>
                                 <h6>จำนวนชุด: {{ $item->dress_count }} ชุด</h6>
                                 <h6>ราคาเช่า:{{ number_format($item->dress_price, 2) }}&#3647;</h6>
-                                <h6>สถานะชุด: 
-                                    @if($item->dress_status == "พร้อมให้เช่า")
-                                    <span style="color: #39d628">{{$item->dress_status}}</span>
-                                    @else
-                                    <span style="color: red">{{$item->dress_status}}</span>
-                                    @endif
-                                </h6>
+
 
                                 <!--ถ้ามันแยกได้ค่อยแสดงผลนะ-->
                                 @if ($item->separable == 2)
@@ -73,7 +95,7 @@
                                             @else
                                             style="color: red" @endif>{{ $shirtStatus }}</i>
                                     </h6>
-                                    <h6>สถานะกระโปรง:<i
+                                    <h6>สถานะกระโปรง/กางเกง:<i
                                             @if ($skirtStatus == 'พร้อมให้เช่า') style="color: #39d628"
                                             @else
                                             style="color: red" @endif>{{ $skirtStatus }}</i>
@@ -123,7 +145,7 @@
                                                 @if ($item->separable == 1) style="display:none;" @endif>
                                                 <a class="nav-link" id="pants-tab" data-toggle="tab"
                                                     href="#pants{{ $item->id }}" role="tab" aria-controls="pants"
-                                                    aria-selected="false">ข้อมูลกระโปรง</a>
+                                                    aria-selected="false">ข้อมูลกางเกง</a>
                                             </li>
                                         </ul>
 
@@ -150,7 +172,7 @@
 
                                                         </div>
                                                         <div class="col-md-6">
-                                                            {{-- <p><strong>จำนวนชุด:</strong> {{ $item->dress_count }} ชุด</p> --}}
+                                                            <p><strong>จำนวนชุด:</strong> {{ $item->dress_count }} ชุด</p>
 
                                                             <p>
                                                                 <strong>สถานะชุด:</strong>
@@ -179,13 +201,13 @@
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    {{-- <h5 class="mt-4">ขนาดของชุดเริ่มต้น<i>(ปรับแก้ ขยาย ลด ไม่เกิน 3
+                                                    <h5 class="mt-4">ขนาดของชุดเริ่มต้น<i>(ปรับแก้ ขยาย ลด ไม่เกิน 3
                                                             นิ้ว)</i></h5>
                                                     @foreach (App\Models\Dressmeasurement::where('dress_id', $item->id)->get() as $measument_no_separate)
                                                         {{ $measument_no_separate->measurement_dress_name }}&nbsp;{{ $measument_no_separate->measurement_dress_number }}&nbsp;{{ $measument_no_separate->measurement_dress_unit }}
-                                                    @endforeach --}}
+                                                    @endforeach
 
-                                                    <h5 class="mt-4">ขนาดของชุด</h5>
+                                                    <h5 class="mt-4">ขนาดของชุดล่าสุดอันนี้</h5>
 
                                                     @php
                                                         $check_separable = App\Models\Dress::where(
@@ -367,12 +389,12 @@
 
 
 
-                                                    {{-- <h5 class="mt-4">ขนาดของเสื้อเริ่มต้น<i>(ปรับแก้ ขยาย ลด ไม่เกิน 3
+                                                    <h5 class="mt-4">ขนาดของเสื้อเริ่มต้น<i>(ปรับแก้ ขยาย ลด ไม่เกิน 3
                                                             นิ้ว)</i></h5>
                                                     @foreach (App\Models\Dressmeasurement::where('shirtitems_id', App\Models\Shirtitem::where('dress_id', $item->id)->value('id'))->get() as $measument_yes_separate_shirt)
                                                         {{ $measument_yes_separate_shirt->measurement_dress_name }}&nbsp;{{ $measument_yes_separate_shirt->measurement_dress_number }}&nbsp;{{ $measument_yes_separate_shirt->measurement_dress_unit }}
-                                                    @endforeach --}}
-                                                    <h5 class="mt-4">ขนาดของเสื้อ</h5>
+                                                    @endforeach
+                                                    <h5 class="mt-4">ขนาดของเสื้อล่าสุด</h5>
                                                     @php
                                                         $maxdress_shirt = App\Models\Dressmeasurementnow::where(
                                                             'shirtitems_id',
@@ -490,11 +512,11 @@
                                                             @endphp
                                                         @endforeach
                                                     </div>
-                                                    {{-- <h5 class="mt-4">ขนาดของกระโปรง/กางเกงเริ่มต้น<i>(ปรับแก้ ขยาย ลด
+                                                    <h5 class="mt-4">ขนาดของกระโปรง/กางเกงเริ่มต้น<i>(ปรับแก้ ขยาย ลด
                                                             ไม่เกิน 3 นิ้ว)</i></h5>
                                                     @foreach (App\Models\Dressmeasurement::where('skirtitems_id', App\Models\Skirtitem::where('dress_id', $item->id)->value('id'))->get() as $measument_yes_separate_skirt)
                                                         {{ $measument_yes_separate_skirt->measurement_dress_name }}&nbsp;{{ $measument_yes_separate_skirt->measurement_dress_number }}&nbsp;{{ $measument_yes_separate_skirt->measurement_dress_unit }}
-                                                    @endforeach --}}
+                                                    @endforeach
                                                     <h5 class="mt-4">ขนาดของกระโปรง/กางเกงล่าสุด</h5>
                                                     @php
                                                         $maxdress_skirt = App\Models\Dressmeasurementnow::where(

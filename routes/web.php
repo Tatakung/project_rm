@@ -21,13 +21,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
 
@@ -64,7 +64,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
-    
+
 
     //กลุ่มเครื่องประดับ
     Route::get('/admin/addjewelry-form', [JewelryController::class, 'formaddjewelry'])->name('admin.formaddjewelry'); //แบบฟอร์มเพิ่มเครื่องประดับ
@@ -95,9 +95,6 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/search', [DressController::class, 'search'])->name('admin.search');
 
     Route::get('/admin/searchstatusdress', [DressController::class, 'searchstatusdress'])->name('admin.searchstatusdress');
-
-
-
 });
 
 
@@ -110,11 +107,21 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 Route::middleware(['web', 'auth'])->group(function () {
     // Route::get('/homepage', [HomeController::class, 'homepage'])->name('homepage'); // หน้าแรก
     Route::get('/employee/homepage', [EmployeeController::class, 'homepage'])->name('employee.homepage'); // หน้าแรก
-    Route::get('/employee/addorder', [EmployeeController::class, 'addorder'])->name('employee.addorder'); 
-    Route::get('/employee/selectdate', [EmployeeController::class, 'selectdate'])->name('employee.selectdate'); 
+    Route::get('/employee/addorder', [EmployeeController::class, 'addorder'])->name('employee.addorder');
+    Route::get('/employee/selectdate', [EmployeeController::class, 'selectdate'])->name('employee.selectdate');
+    Route::get('/employee/clean', [EmployeeController::class, 'clean'])->name('employee.clean');
+    Route::get('/employee/repair', [EmployeeController::class, 'repair'])->name('employee.repair');
+
+
+    Route::post('/employee/clean/update-status', [EmployeeController::class, 'cleanupdatestatus'])->name('employee.cleanupdatestatus');
+
+
+
+
+    Route::get('/employee/reserve-dress', [EmployeeController::class, 'reservedress'])->name('employee.reservedress');
 
     Route::get('/employee/addcutdress', [EmployeeController::class, 'addcutdress'])->name('employee.addcutdress'); //เพิ่มตัดชุด
-    Route::post('/employee/addcutdress/savecutdress', [EmployeeController::class, 'savecutdress'])->name('employee.savecutdress'); 
+    Route::post('/employee/addcutdress/savecutdress', [EmployeeController::class, 'savecutdress'])->name('employee.savecutdress');
 
     Route::get('/employee/cart', [EmployeeController::class, 'cart'])->name('employee.cart'); //ตะกร้าสินค้า
     Route::post('/employee/cart/deletelist/{id}', [EmployeeController::class, 'deletelist'])->name('employee.deletelist'); //ลบรายการในตะกร้า
@@ -129,19 +136,20 @@ Route::middleware(['web', 'auth'])->group(function () {
     //เพิ่มเช่าชุดลงในตะกร้า
     Route::get('/employee/selectdate/success', [ManageorderController::class, 'selectdatesuccess'])->name('employee.selectdatesuccess'); //เช่าวันที่เช่าชุด
     Route::get('/employee/typerentdress', [ManageorderController::class, 'typerentdress'])->name('employee.typerentdress'); //เช่าชุดหน้าเลือกประเภทชุด
-    Route::get('/employee/typerentdress/show/{id}', [ManageorderController::class, 'typerentdressshow'])->name('employee.typerentdressshow');//หลังจากที่เลือกประเภทชุดแล้ว
+    Route::get('/employee/typerentdress/show/{id}', [ManageorderController::class, 'typerentdressshow'])->name('employee.typerentdressshow'); //หลังจากที่เลือกประเภทชุดแล้ว
     Route::post('/employee/typerentdress/show/addrentdresscart', [ManageorderController::class, 'addrentdresscart'])->name('employee.addrentdresscart'); //เช่าชุดเพิ่มลงในตะกร้า
-    Route::get('/employee/show/filtermea', [ManageorderController::class, 'filtermea'])->name('employee.filtermea');//
+    Route::get('/employee/show/filtermea', [ManageorderController::class, 'filtermea'])->name('employee.filtermea'); //
 
 
     Route::post('/employee/manageitem/savemanageitemcutdress/{id}', [ManageorderController::class, 'savemanageitemcutdress'])->name('employee.savemanageitemcutdress'); //บันทึกของตัดชุด item
     Route::post('/employee/manageitem/savemanageitemrentdress/{id}', [ManageorderController::class, 'savemanageitemrentdress'])->name('employee.savemanageitemrentdress'); //บันทึกของเช่าชุด item
     Route::post('/employee/manageitem/savemanageitemrentjewelry/{id}', [ManageorderController::class, 'savemanageitemrentjewelry'])->name('employee.savemanageitemrentjewelry'); //บันทึกของเช่าเครื่องประดับ item
+    Route::post('/employee/manageitem/savemanageitemrentdress/editdate/{id}', [ManageorderController::class, 'editdateitem'])->name('employee.editdateitem'); //แก้ไขวันที่นัดคืนของเช่าชุด item
 
 
     //เพิ่มเครื่องประดับลงตะกร้า
     Route::get('/employee/typerentjewelry', [ManageorderController::class, 'typerentjewelry'])->name('employee.typerentjewelry'); //เช่าเครื่องประดับหน้าเลือกประเภทเครื่องประดับ
-    Route::get('/employee/typerentjewelry/show/{id}', [ManageorderController::class, 'typerentjewelryshow'])->name('employee.typerentjewelryshow');//หลังจากที่เลือกประเภทเครื่องประดับแล้ว
+    Route::get('/employee/typerentjewelry/show/{id}', [ManageorderController::class, 'typerentjewelryshow'])->name('employee.typerentjewelryshow'); //หลังจากที่เลือกประเภทเครื่องประดับแล้ว
     Route::post('/employee/typerentjewelry/show/addrentjewelrycart', [ManageorderController::class, 'addrentjewelrycart'])->name('employee.addrentjewelrycart'); //เช่าเครื่องประดับเพิ่มลงในตะกร้า
 
 
@@ -151,11 +159,17 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/manageitem/savemanageitemcutrent/{id}', [ManageorderController::class, 'savemanageitemcutrent'])->name('employee.savemanageitemcutrent'); //บันทึกของเช่าตัดชุด item
     // Route::post('/employee/cart/confirmorder/{id}', [EmployeeController::class, 'confirmorder'])->name('employee.confirmorder'); //ยืนยันออเดอร์ทั้งหมด
     Route::get('/employee/cart/confirmorder/{id}', [EmployeeController::class, 'confirmorder'])->name('employee.confirmorder'); //ยืนยันออเดอร์ทั้งหมด
+    Route::post('/employee/cart/confirmorder/save{id}', [EmployeeController::class, 'confirmordersave'])->name('employee.confirmordersave'); //ยืนยันออเดอร์ทั้งหมด
 
 
 
     //หน้าแสดงออเดอร์ทั้งหมด
     Route::get('/employee/ordertotal', [OrderController::class, 'ordertotal'])->name('employee.ordertotal'); //ออเดอร์ทั้งหมด
+
+    Route::get('/employee/searchordertotal', [OrderController::class, 'searchordertotal'])->name('employee.searchordertotal'); //ออเดอร์ทั้งหมด
+
+
+
     Route::get('/employee/ordertotal/detail/{id}', [OrderController::class, 'ordertotaldetail'])->name('employee.ordertotaldetail'); //ออเดอร์detail แยก
 
     Route::get('/employee/ordertotal/detail/show/{id}', [OrderController::class, 'ordertotaldetailshow'])->name('employee.ordertotaldetailshow'); //ออเดอร์orderdetail_id เลย
@@ -176,22 +190,26 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/employee/ordertotal/detail/show/deletemeaorderdetail/{id}', [OrderController::class, 'actiondeletemeaorderdetail'])->name('employee.actiondeletemeaorderdetail'); //
     Route::post('/employee/ordertotal/detail/show/addimagerent/{id}', [OrderController::class, 'actionaddimagerent'])->name('employee.actionaddimagerent'); //
     Route::post('/employee/ordertotal/detail/show/updatestatusrentdress/{id}', [OrderController::class, 'actionupdatestatusrentdress'])->name('employee.actionupdatestatusrentdress'); //อัปเดตสถานะเช่าชุด
+    Route::post('/employee/ordertotal/detail/show/updatestatusadjustdress/{id}', [OrderController::class, 'actionupdatestatusadjustdress'])->name('employee.actionupdatestatusadjustdress'); //อัปเดต
+
     Route::post('/employee/ordertotal/detail/show/updatedecoration/{id}', [OrderController::class, 'actionupdatedecoration'])->name('employee.actionupdatedecoration'); //
     Route::delete('/employee/ordertotal/detail/show/deletedecoration/{id}', [OrderController::class, 'actiondeletedecoration'])->name('employee.actiondeletedecoration'); //
 
 
 
-    
+
     Route::post('/employee/ordertotal/detail/show/updatestatusrentjewelry/{id}', [OrderController::class, 'actionupdatestatusrentjewelry'])->name('employee.actionupdatestatusrentjewelry'); //อัปเดตสถานะเช่าเครื่องประดับ
     Route::post('/employee/ordertotal/detail/show/updatestatusrentcut/{id}', [OrderController::class, 'actionupdatestatusrentcut'])->name('employee.actionupdatestatusrentcut'); //อัปเดตสถานะเช่าตัดชุด
     Route::post('/employee/ordertotal/detail/show/updatestatuscutdress/{id}', [OrderController::class, 'actionupdatestatuscutdress'])->name('employee.actionupdatestatuscutdress'); //อัปเดตสถานะตัดชุด
+    Route::post('/employee/ordertotal/detail/show/updatedatecutdress/{id}', [OrderController::class, 'actionupdatedatecutdress'])->name('employee.actionupdatedatecutdress'); //อัปเดตวันที่ตัดชุด
+    Route::post('/employee/ordertotal/detail/show/updatenotecutdress/{id}', [OrderController::class, 'actionupdatenotecutdress'])->name('employee.actionupdatenotecutdress'); //อัปเดต
 
 
 
 
-    Route::get('/testtab', function () {
-        return view('testtab');
-    });
-
+    // Route::get('/testtab', function () {
+    //     return view('testtab');
+    // });
+    Route::get('/testtab', [DressController::class, 'testtab']); 
 
 });

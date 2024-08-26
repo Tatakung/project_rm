@@ -33,15 +33,26 @@
 
         }
 
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
     </style>
 
 
+    </style>
 
 
-    <ol class="breadcrumb" style="background-color: #00000000;">
-        <li class="breadcrumb-item"><a style="color: #AA9367" href="{{ route('employeetotal') }}">จัดการพนักงาน</a></li>
-        <li class="breadcrumb-item active" aria-current="page">รายละเอียด</li>
+    <ol class="breadcrumb" style="background: white ; ">
+        <li class="breadcrumb-item">
+            <a href="{{ route('employeetotal') }}" style="color: black ; ">จัดการพนักงาน</a>
+        </li>
+        <li class="breadcrumb-item active">
+            รายละเอียดของพนักงาน
+        </li>
     </ol>
+
+
 
 
     <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
@@ -78,57 +89,74 @@
     {{-- @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
-        </div>
-    @endif --}}
-    <div class="container d-flex justify-content-start">
-        <div class="table-responsive text-start" style="width: 100%;">
-            <h2 class="text text-start py-4">รายละเอียดของพนักงาน</h2>
+</div>
+@endif --}}
 
-            <div class="d-flex align-items-start">
+    <div class="container">
+        <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-info-circle"></i> รายละเอียดของพนักงาน</div>
 
-                <div id="image-container">
-                    {{-- รูปภาพ --}}
-                    {{-- <img src="{{asset('storage/' .$employeefind->image)}}" alt="รูปภาพ" style="width: 250px; height: 300px;"> --}}
-                    <img src="{{ asset('storage/' . $data->image) }}" alt="รูปภาพ" style="width: 250px; height: 300px;">
 
-                </div>
-                <div class="card-body">
-                    <p class="card-text">
-                        <span style="font-weight: bold;">รหัสพนักงาน: </span> {{ $data->id }}
-                    </p>
-                    <p class="card-text">
-                        <span style="font-weight: bold;">ชื่อ-สกุล: </span> {{ $data->name . ' ' . $data->lname }}
-                    </p>
-                    <p class="card-text">
-                        <span style="font-weight: bold;">อีเมล: </span> {{ $data->email }}
-                    </p>
-                    <p class="card-text">
-                        <span style="font-weight: bold; color: #f30808;">สถานะ: </span>
-                        @if ($data->status == 1)
-                            เป็นพนักงาน
-                        @else
-                            ไม่ได้เป็นพนักงาน
-                        @endif
-                    </p>
-                    <p class="card-text">
-                        <span style="font-weight: bold;">เบอร์ติดต่อ: </span> {{ $data->phone }}
-                    </p>
-                    <p class="card-text">
-                        <span style="font-weight: bold;">วันที่เริ่มทำงาน: </span> {{ $data->start_date }}
-                    </p>
-                    <p class="card-text">
-                        <span style="font-weight: bold;">วันเกิด: </span> {{ $data->birthday }}
-                    </p>
-                    <p class="card-text">
-                        <span style="font-weight: bold;">ที่อยู่: </span> {{ $data->address }}
-                    </p>
-                    <button id="changeStatusBtn" class="btn btn-danger" data-toggle="modal"
-                        data-target="#confirmModal">เปลี่ยนสถานะ</button>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        <img src="{{ asset('storage/' . $data->image) }}" alt="รูปภาพ"
+                            style="width: 250px; height: 350px;">
+                    </div>
+                    <div class="col-mb-4">
+                        <p><strong>รหัสพนักงาน: </strong> {{ $data->id }}</p>
+                        <p><strong>ชื่อ-สกุล: </strong> {{ $data->name . ' ' . $data->lname }}</p>
+                        <p><strong>อีเมล: </strong> {{ $data->email }}</p>
+                        <p><strong>สถานะ: </strong>
+                            @if ($data->status == 1)
+                                เป็นพนักงาน
+                            @else
+                                ไม่ได้เป็นพนักงาน
+                            @endif
+                        </p>
+                        <p><strong>เบอร์ติดต่อ: </strong> {{ $data->phone }}</p>
+                        <p><strong>วันที่เริ่มทำงาน: </strong> {{ $data->start_date }}</p>
+                        <p><strong>วันเกิด: </strong> {{ $data->birthday }}</p>
+                        <p><strong>ที่อยู่: </strong> {{ $data->address }}</p>
+                        <button id="changeStatusBtn" class="btn btn-danger" data-toggle="modal"
+                            data-target="#confirmModal">เปลี่ยนสถานะ</button>
+                        <!-- <span style="font-weight: bold;">รหัสพนักงาน: </span> {{ $data->id }}
+                        </p>
+                        <p class="card-text">
+                            <span style="font-weight: bold;">ชื่อ-สกุล: </span> {{ $data->name . ' ' . $data->lname }}
+                        </p>
+                        <p class="card-text">
+                            <span style="font-weight: bold;">อีเมล: </span> {{ $data->email }}
+                        </p>
+                        <p class="card-text">
+                            <span style="font-weight: bold;">สถานะ: </span>
+                            @if ($data->status == 1)
+    เป็นพนักงาน
+@else
+    ไม่ได้เป็นพนักงาน
+    @endif
+                        </p>
+                        <p class="card-text">
+                            <span style="font-weight: bold;">เบอร์ติดต่อ: </span> {{ $data->phone }}
+                        </p>
+                        <p class="card-text">
+                            <span style="font-weight: bold;">วันที่เริ่มทำงาน: </span> {{ $data->start_date }}
+                        </p>
+                        <p class="card-text">
+                            <span style="font-weight: bold;">วันเกิด: </span> {{ $data->birthday }}
+                        </p>
+                        <p class="card-text">
+                            <span style="font-weight: bold;">ที่อยู่: </span> {{ $data->address }}
+                        </p>  -->
+
+                    </div>
+
+
                 </div>
             </div>
+
         </div>
     </div>
-
 
     {{-- modal --}}
     <div class="modal fade" id="confirmModal" role="dialog" aria-hidden="true">
@@ -147,7 +175,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-                        <button type="submit" class="btn btn-danger">ยืนยัน</button>
+                        <button type="submit" class="btn btn-success">ยืนยัน</button>
                     </div>
                 </form>
             </div>

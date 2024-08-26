@@ -1,47 +1,73 @@
 @extends('layouts.adminlayout')
 @section('content')
-    <div class="container mt-5">
-        <!-- เริ่มต้นแถบค้นหา -->
-        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            <form action="{{ route('admin.searchstatusdress') }}" method="GET" id="searchForm">
-                @csrf
-                <div class="form-group">
-                    <label for="search_status_of_dress" class="form-label">เลือกสถานะชุด</label>
-                    <select name="search_status_of_dress" id="search_status_of_dress" class="form-select">
-                        <option value="ทั้งหมด" {{ $status == 'ทั้งหมด' ? 'selected' : '' }}>ทั้งหมด</option>
-                        <option value="พร้อมให้เช่า" {{ $status == 'พร้อมให้เช่า' ? 'selected' : '' }}>พร้อมให้เช่า</option>
-                        <option value="ถูกจองแล้ว" {{ $status == 'ถูกจองแล้ว' ? 'selected' : '' }}>ถูกจองแล้ว</option>
-                    </select>
-                </div>
-                <input type="hidden" name="type_dress_id" value="{{ $type_dress_id }}">
-            </form>
-        </div>
-        <!-- สิ้นสุดแถบค้นหา -->
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        .card-custom {
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .card-custom:hover {
+            transform: translateY(-10px);
 
+        }
+        .card-title {
+            text-align: center;
+            color: black;
+            margin-bottom: 15px;
+        }
+        .card-img {
+            max-height: 350px;
+            width: 200px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin: auto;
+        }
+        body {
+            font-family: "Prompt", sans-serif;
+        }
+    </style>
+</head>
+</html>
+<body>
+<div class="row">
+        <div class="col">
+            <h2 class="py-4" style="text-align: center">ประเภท{{$typedress->type_dress_name}}</h2>
+        </div>
+    </div>
+    <div class="container">
+
+        
+
+
+       
         <div class="row">
             @foreach ($data as $index => $item)
-                <div class="col-md-3 mb-4">
+                <div class="card card-custom mt-5 col-3">
                     <a href="{{ route('admin.dressdetail', ['id' => $item->id , 'separable' => $item->separable]) }}">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <p class="card-title">รหัสชุด&nbsp;{{ $item->dress_code_new }}{{ $item->dress_code }}</p>
-                                @if ($item->dressimages->isNotEmpty())
+                        <div class="card-body">
+                            
+                            <div class="card-body">
+                                    @if ($item->dressimages->isNotEmpty())
                                     <img src="{{ asset('storage/' . $item->dressimages->first()->dress_image) }}"
-                                        alt="" style="max-height: 300px; width: auto; margin: auto; display: block;">
+                                        alt=""  class="card-img mb-3">
                                 @endif
-                                <p @if($item->dress_status == "พร้อมให้เช่า") style="color: green" 
+                                
+                                <h6 @if($item->dress_status == "พร้อมให้เช่า") style="color: green" 
                                     @else
                                     style="color: red" 
                                     @endif
-                                >สถานะชุด: {{$item->dress_status}}</p>
+                                >{{$item->dress_status}}</h6>
                                 @if($item->separable == 1)
-                                <p><i class="bi bi-x-circle-fill text-danger"></i> ไม่สามารถเช่าแยกได้</p>
+                                <h6 style="color: black;"> ทั้งชุด</h6>
                                 @elseif($item->separable == 2)
-                                <p><i class="bi bi-check-circle-fill text-success"></i> สามารถเช่าแยกได้</p>
+                                <h6 style="color: black;"> ชุดแยก: เสื้อและกระโปรง</h6>
                                 @endif
+                                <h6 style="color: black;">ราคาเช่า: {{ number_format($item->dress_price, 2) }} บาท</h6>
                             </div>
                         </div>
-                    {{-- </a> --}}
                 </div>
                 @if (($index + 1) % 4 == 0)
         </div>
@@ -56,4 +82,5 @@
             document.getElementById('searchForm').submit();
         });
     </script>
+    </body>
 @endsection

@@ -109,4 +109,84 @@
             </div>
         </div>
     </div>
+    <br>
+    @php
+        $status = "เอฟ" ; 
+    @endphp
+
+    <div class="container">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a href="#o" class="nav-link @if($status == "จอย") active @endif " data-toggle="tab"  
+
+                   >หน้าแรก</a>
+            </li>
+            <li class="nav-item">
+                <a href="#t" class="nav-link @if($status == "เอฟ") active @endif" data-toggle="tab">หน้าสอง</a>
+            </li>
+            <li class="nav-item">
+                <a href="#th" class="nav-link" data-toggle="tab">หน้าที่สาม</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane" id="o">
+                แรก
+            </div>
+            <div class="tab-pane @if($status == "เอฟ") active @endif" id="t">
+                สอง
+            </div>
+            <div class="tab-pane" id="th">
+                สาม
+            </div>
+        </div>
+
+    </div>
+    
+
+    <div class="container">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a href="#one" class="nav-link active" data-toggle="tab">หน้าแรก</a>
+            </li>
+            <li class="nav nav-item">
+                <a href="#two" class="nav-link" data-toggle="tab">หน้าสอง</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="one">
+                หน้าแรก
+            </div>
+            <div class="tab-pane" id="two">
+                หนาที่สอง
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded',function(){
+            
+
+
+        }) ; 
+    </script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
 @endsection

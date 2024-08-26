@@ -8,14 +8,14 @@
     .card-body textarea,
     .card-body .invalid-feedback,
     .card-body button {
-        color: #64615c;
+        color: #000000;
     }
 </style>
     <div class="container" style="margin-top : 10px ;">
-        <div class="row justify-content-center">
+        <div class="row">
             <div class="col-md-12">
                 <div class="card ">
-                    <div class="card-header" style="font-size: 24px; color: #AA9367;">
+                    <div class="card-header text-center" style="font-size: 24px;">
                         {{ __('เพิ่มบัญชีพนักงาน') }}
                     </div>
                     
@@ -121,6 +121,9 @@
                                 </div>
                             </div>
 
+                            @php
+                                $todays = \Carbon\Carbon::today()->toDateString();  
+                            @endphp
 
                             <div class="row mb-3">
                                 <label for="start_date"
@@ -129,7 +132,7 @@
                                 <div class="col-md-6">
                                     <input id="start_date" type="date"
                                         class="form-control @error('start_date') is-invalid @enderror shadow-sm p-3 mb-2 bg-body-tertiary rounded"
-                                        name="start_date" value="{{ old('start_date') }}" required>
+                                        name="start_date" value="{{ old('start_date') }}" min="{{$todays}}" required>
 
                                     @error('start_date')
                                         <span class="invalid-feedback" role="alert">
@@ -176,11 +179,6 @@
                                 </div>
                             </div>
 
-
-
-
-
-
                             <div class="row mb-3">
                                 <label for="image"
                                     class="col-md-4 col-form-label text-md-end">{{ __('รูปประจำตัว') }}</label>
@@ -197,9 +195,9 @@
                             </div>
 
 
-                            <div class="row mb-0">
-                                <div class="col-md-6 offset-md-4">
-                                    <button type="submit" class="btn" style="color: #ffffff; background-color: #AA9367;">
+                            <div class="row justify-content-end">
+                                <div class="col-md-3">
+                                    <button type="submit" class="btn btn-success" style="color: #ffffff;">
                                         {{ __('ยืนยัน') }}
                                     </button>
                                     

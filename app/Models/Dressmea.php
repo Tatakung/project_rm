@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Clean extends Model
+class Dressmea extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -14,8 +14,8 @@ class Clean extends Model
         'dress_id',
         'shirtitems_id',
         'skirtitems_id',
-        'clean_description',
-        'clean_status',
-        'reservation_id' , 
+        'mea_dress_name',
+        'initial_mea',
+        'current_mea',
     ];
 }

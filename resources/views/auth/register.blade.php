@@ -133,7 +133,6 @@
                                     <input id="start_date" type="date"
                                         class="form-control @error('start_date') is-invalid @enderror shadow-sm p-3 mb-2 bg-body-tertiary rounded"
                                         name="start_date" value="{{ old('start_date') }}" min="{{$todays}}" required>
-
                                     @error('start_date')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

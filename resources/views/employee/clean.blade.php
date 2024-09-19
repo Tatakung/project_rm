@@ -1,9 +1,5 @@
 @extends('layouts.adminlayout')
 @section('content')
-    
-
-
-
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
             <div class="modal-content custom-modal-content"
@@ -36,7 +32,7 @@
 
         <!-- Status Summary Cards -->
         <div class="row mb-4">
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 mb-3">
                 <div class="card bg-danger text-white">
                     <div class="card-body">
                         <h5 class="card-title">รอดำเนินการ</h5>
@@ -44,7 +40,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 mb-3">
                 <div class="card bg-warning text-white">
                     <div class="card-body">
                         <h5 class="card-title">กำลังส่งซัก</h5>
@@ -52,14 +48,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <h5 class="card-title">ซักเสร็จแล้ว</h5>
-                        <p class="card-text display-4">{{ $countsuccess }} รายการ</p>
-                    </div>
-                </div>
-            </div>
+
+        </div>
+        <div class="alert alert-info text-center" role="alert">
+            การซักชุดทุกชุดควรเสร็จภายใน 7 วันหลังจากลูกค้านำชุดมาคืน เพื่อให้สามารถตรวจสอบและซ่อมแซมชุดได้ทันท่วงที
+            รวมถึงเตรียมพร้อมสำหรับการให้เช่าครั้งต่อไป
         </div>
 
         <!-- Laundry List -->
@@ -69,107 +62,485 @@
                 รายการชุดที่รอดำเนินการ/กำลังซัก
             </div>
 
-            <div class="card-body">
-                <form action="{{ route('employee.cleanupdatestatus') }}" method="POST">
-                    @csrf
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>เลือก</th>
-                                    <th>รายการ</th>
-                                    <th>สถานะการซัก</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($clean as $clean)
+
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a href="#one" class="nav-link active" data-toggle="tab">รอดำเนินการ ({{ $countwait }})</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#two" class="nav-link" data-toggle="tab">กำลังส่งซัก ({{ $countdoing }})</a>
+                </li>
+            </ul>
+
+
+            <div class="tab-content">
+                {{-- หน้าที่หนึ่ง --}}
+                <div class="tab-pane active" id="one">
+                    <div class="card-body">
+                        <form action="{{ route('employee.cleanupdatestatus') }}" method="POST">
+                            @csrf
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>เลือก</th>
+                                            <th>รายการซัก</th>
+                                            <th>สถานะ</th>
+
+                                            <th>คิวเช่าต่อไป </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($clean as $clean)
+                                            @if ($clean->clean_status != 'ซักเสร็จแล้ว' && $clean->clean_status != 'กำลังส่งซัก')
+                                                <tr>
+
+                                                    <td>
+                                                        <input type="checkbox" name="select_item_[]"
+                                                            value="{{ $clean->id }}" class="select-item-class"
+                                                            data-status="{{ $clean->clean_status }}"
+                                                            onclick="updatecheck()">
+                                                    </td>
+                                                    <script>
+                                                        function updatecheck() {
+                                                            var alldata = document.getElementsByClassName('select-item-class');
+                                                            var check_status = null;
+                                                            var list_clean_id = [];
+                                                            var buttonupdate = document.getElementById('buttonupdate');
+                                                            for (var i = 0; i < alldata.length; i++) {
+                                                                if (alldata[i].checked) {
+                                                                    check_status = alldata[i].getAttribute('data-status');
+                                                                    list_clean_id.push(alldata[i].value);
+                                                                }
+                                                            }
+                                                            if (check_status == null) {
+                                                                buttonupdate.disabled = true;
+                                                            } else {
+                                                                buttonupdate.disabled = false;
+                                                            }
+                                                        }
+                                                    </script>
+
+
+                                                    <td>
+                                                        @php
+                                                            $reservation = App\Models\Reservation::find(
+                                                                $clean->reservation_id,
+                                                            );
+                                                            $dress_id = $reservation->dress_id;
+                                                            $dress = App\Models\Dress::find($dress_id);
+                                                            $type_name = App\Models\Typedress::where(
+                                                                'id',
+                                                                $dress->type_dress_id,
+                                                            )->value('type_dress_name');
+                                                        @endphp
+                                                        {{ $type_name }}
+                                                        {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+
+                                                        @php
+                                                            $nearest = App\Models\Reservation::whereNot(
+                                                                'id',
+                                                                $clean->reservation_id,
+                                                            )
+                                                                ->where('dress_id', $reservation->dress_id)
+                                                                ->where('status', 'ถูกจอง')
+                                                                ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                                ->first();
+                                                            //วันที่นัดรับชุดที่ใกล้ที่สุดที่จะมีคนมารับชุดนี้ต่อ
+                                                        @endphp
+                                                        @if ($reservation->shirtitems_id)
+                                                            (เสื้อ)
+                                                        @elseif($reservation->skirtitems_id)
+                                                            (กระโปรง/ผ้าถุง)
+                                                        @else
+                                                            (ทั้งชุด)
+                                                        @endif
+                                                    </td>
+
+                                                    <td style="color: #a22222 ; ">{{ $clean->clean_status }}</td>
+
+                                                    <td>
+                                                        @php
+                                                            $nearest = App\Models\Reservation::whereNot(
+                                                                'id',
+                                                                $clean->reservation_id,
+                                                            )
+                                                                ->where('dress_id', $reservation->dress_id)
+                                                                ->where('status', 'ถูกจอง')
+                                                                ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                                ->first();
+                                                            //วันที่นัดรับชุดที่ใกล้ที่สุดที่จะมีคนมารับชุดนี้ต่อ
+                                                        @endphp
+                                                        @if ($reservation->shirtitems_id)
+                                                            <span id="showday{{ $clean->id }}" style="color: #852323 ;">
+                                                                @if ($nearest != null)
+                                                                    <script>
+                                                                        var start_date = new Date("{{ $nearest->start_date }}");
+                                                                        var now = new Date();
+                                                                        var day = start_date - now;
+                                                                        var total = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                                                        document.getElementById('showday{{ $clean->id }}').innerHTML =
+                                                                            'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                                    </script>
+                                                                @elseif($nearest == null)
+                                                                    <span style="color: green ; ">ไม่มีคิวจองต่อ</span>
+                                                                @endif
+                                                            </span>
+                                                        @elseif($reservation->skirtitems_id)
+                                                            <span id="showday{{ $clean->id }}" style="color: #852323 ;">
+                                                                @if ($nearest != null)
+                                                                    <script>
+                                                                        var start_date = new Date("{{ $nearest->start_date }}");
+                                                                        var now = new Date();
+                                                                        var day = start_date - now;
+                                                                        var total = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                                                        document.getElementById('showday{{ $clean->id }}').innerHTML =
+                                                                            'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                                    </script>
+                                                                @elseif($nearest == null)
+                                                                    <span style="color: green ; ">ไม่มีคิวจองต่อ</span>
+                                                                @endif
+                                                            </span>
+                                                        @else
+                                                            <span id="showday{{ $clean->id }}" style="color: #852323 ;">
+                                                                @if ($nearest != null)
+                                                                    <script>
+                                                                        var start_date = new Date("{{ $nearest->start_date }}");
+                                                                        var now = new Date();
+                                                                        var day = start_date - now;
+                                                                        var total = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                                                        document.getElementById('showday{{ $clean->id }}').innerHTML =
+                                                                            'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                                    </script>
+                                                                @elseif($nearest == null)
+                                                                    <span style="color: green ; ">ไม่มีคิวจองต่อ</span>
+                                                                @endif
+                                                            </span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="btn btn-danger" type="button" data-toggle="modal"
+                                data-target="#showmodalwait">อัพเดตสถานะ</button>
+                            <div class="row mt-3">
+                                <div class="modal fade" id="showmodalwait" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                <p>หัว</p>
+                                            </div>
+                                            <div class="modal-body" id="statusChangeMessage">
+                                                <p>ยืนยันว่าจะเปลี่ยนสถานะจาก <span
+                                                        style="color: #EE4E4E ; ">'รอดำเนินการ'</span>เป็น <span
+                                                        style="color: rgb(24, 15, 206) ; ">'กำลังส่งซัก'</span></p>
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger"
+                                                    data-dismiss="modal">ยกเลิก</button>
+                                                <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+
+
+
+                {{-- หน้าที่สอง --}}
+                <div class="tab-pane" id="two">
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <input type="checkbox" name="select_item_[]" value="{{ $clean->id }}"
-                                                class="select-item">
-                                        </td>
-                                        <td>
-                                            @php
-                                                $dress = App\Models\Dress::find($clean->dress_id);
-                                                $typedress = App\Models\Typedress::find($dress->type_dress_id);
-                                            @endphp
-                                            {{ $typedress->type_dress_name }}&nbsp;{{ $dress->dress_code_new }}{{ $dress->dress_code }}
-                                            @if ($clean->shirtitems_id)
-                                                (เสื้อ)
-                                            @elseif($clean->skirtitems_id)
-                                                (กระโปรง)
-                                            @else
-                                                (ทั้งชุด)
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($clean->clean_status == 'รอดำเนินการ')
-                                                <span class="badge bg-warning">{{ $clean->clean_status }}</span>
-                                            @else
-                                                <span class="badge bg-success">{{ $clean->clean_status }}</span>
-                                            @endif
-                                        </td>
+                                        <th>เลือก</th>
+                                        <th>รายการซัก</th>
+                                        <th>สถานะ</th>
+
+                                        <th>คิวเช่าต่อไป </th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-12 d-flex justify-content-end">
-                            <button type="submit" id="buttonupdate" class="btn btn-primary"
-                                style="background: #A7567F; border: #A7567F">อัพเดตสถานะ</button>
+                                </thead>
+                                <tbody>
+                                    @foreach ($cleans as $clean)
+                                        @if ($clean->clean_status != 'ซักเสร็จแล้ว' && $clean->clean_status != 'รอดำเนินการ')
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" name="select_item_[]"
+                                                        value="{{ $clean->id }}" class="select-item-class"
+                                                        data-status="{{ $clean->clean_status }}"
+                                                        onclick="updatecheckdoingwash()">
+                                                </td>
+                                                <script>
+                                                    function updatecheckdoingwash() {
+
+                                                        var alldata = document.getElementsByClassName('select-item-class');
+                                                        var check_status = null;
+                                                        var list_clean_id = [];
+                                                        var buttonupdate = document.getElementById('buttonupdate');
+                                                        for (var i = 0; i < alldata.length; i++) {
+                                                            if (alldata[i].checked) {
+                                                                check_status = alldata[i].getAttribute('data-status');
+                                                                list_clean_id.push(alldata[i].value);
+                                                            }
+                                                        }
+
+                                                        for (var i = 0; i < alldata.length; i++) {
+                                                            if (check_status != null) {
+
+                                                                if (check_status == alldata[i].getAttribute('data-status')) {
+                                                                    alldata[i].disabled = false;
+                                                                } else {
+                                                                    alldata[i].disabled = true;
+                                                                }
+                                                            } else if (check_status == null) {
+                                                                alldata[i].disabled = false;
+                                                            }
+                                                        }
+                                                        var showmeaasage_doing_wash = document.getElementById('showmeaasage_doing_wash');
+                                                        if (check_status == "กำลังส่งซัก") {
+                                                            showmeaasage_doing_wash.innerHTML =
+                                                            'ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังส่งซัก" เป็นเสร็จแล้ว(พร้อมให้เช่าต่อ)' + 
+                                                                '<input type="hidden" name="ID_for_clean" value="' + list_clean_id + '">';
+                                                        }
+                                                    }
+                                                </script>
+
+
+                                                <td>
+                                                    @php
+                                                        $reservation = App\Models\Reservation::find(
+                                                            $clean->reservation_id,
+                                                        );
+                                                        $dress_id = $reservation->dress_id;
+                                                        $dress = App\Models\Dress::find($dress_id);
+                                                        $type_name = App\Models\Typedress::where(
+                                                            'id',
+                                                            $dress->type_dress_id,
+                                                        )->value('type_dress_name');
+                                                    @endphp
+                                                    {{ $type_name }}
+                                                    {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+
+                                                    @php
+                                                        $nearest = App\Models\Reservation::whereNot(
+                                                            'id',
+                                                            $clean->reservation_id,
+                                                        )
+                                                            ->where('dress_id', $reservation->dress_id)
+                                                            ->where('status', 'ถูกจอง')
+                                                            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                            ->first();
+                                                        //วันที่นัดรับชุดที่ใกล้ที่สุดที่จะมีคนมารับชุดนี้ต่อ
+                                                    @endphp
+                                                    @if ($reservation->shirtitems_id)
+                                                        (เสื้อ)
+                                                    @elseif($reservation->skirtitems_id)
+                                                        (กระโปรง/ผ้าถุง)
+                                                    @else
+                                                        (ทั้งชุด)
+                                                    @endif
+                                                </td>
+
+                                                <td style="color: #a22222 ; ">{{ $clean->clean_status }}</td>
+
+                                                <td>
+                                                    @php
+                                                        $nearest = App\Models\Reservation::whereNot(
+                                                            'id',
+                                                            $clean->reservation_id,
+                                                        )
+                                                            ->where('dress_id', $reservation->dress_id)
+                                                            ->where('status', 'ถูกจอง')
+                                                            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                            ->first();
+                                                        //วันที่นัดรับชุดที่ใกล้ที่สุดที่จะมีคนมารับชุดนี้ต่อ
+                                                    @endphp
+                                                    @if ($reservation->shirtitems_id)
+                                                        <span id="showday{{ $clean->id }}" style="color: #852323 ;">
+                                                            @if ($nearest != null)
+                                                                <script>
+                                                                    var start_date = new Date("{{ $nearest->start_date }}");
+                                                                    var now = new Date();
+                                                                    var day = start_date - now;
+                                                                    var total = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                                                    document.getElementById('showday{{ $clean->id }}').innerHTML =
+                                                                        'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                                </script>
+                                                            @elseif($nearest == null)
+                                                                <span style="color: green ; ">ไม่มีคิวจองต่อ</span>
+                                                            @endif
+                                                        </span>
+                                                    @elseif($reservation->skirtitems_id)
+                                                        <span id="showday{{ $clean->id }}" style="color: #852323 ;">
+                                                            @if ($nearest != null)
+                                                                <script>
+                                                                    var start_date = new Date("{{ $nearest->start_date }}");
+                                                                    var now = new Date();
+                                                                    var day = start_date - now;
+                                                                    var total = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                                                    document.getElementById('showday{{ $clean->id }}').innerHTML =
+                                                                        'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                                </script>
+                                                            @elseif($nearest == null)
+                                                                <span style="color: green ; ">ไม่มีคิวจองต่อ</span>
+                                                            @endif
+                                                        </span>
+                                                    @else
+                                                        <span id="showday{{ $clean->id }}" style="color: #852323 ;">
+                                                            @if ($nearest != null)
+                                                                <script>
+                                                                    var start_date = new Date("{{ $nearest->start_date }}");
+                                                                    var now = new Date();
+                                                                    var day = start_date - now;
+                                                                    var total = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                                                    document.getElementById('showday{{ $clean->id }}').innerHTML =
+                                                                        'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                                </script>
+                                                            @elseif($nearest == null)
+                                                                <span style="color: green ; ">ไม่มีคิวจองต่อ</span>
+                                                            @endif
+                                                        </span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $clean->reservation_id }}</td>
+                                                <td>
+                                                    <button class="btn btn-danger" type="button" data-toggle="modal"
+                                                        data-target="#need_to_repair{{ $clean->id }}">ต้องซ่อม</button>
+                                                </td>
+
+                                                @php
+                                                    $reservation = App\Models\Reservation::find($clean->reservation_id) ; 
+                                                    $dress_id = $reservation->dress_id ; 
+                                                    $shirt_id = $reservation->shirtitems_id ; 
+                                                    $skirt_id = $reservation->skirtitems_id ;
+                                                @endphp
+
+                                
+                                                <div class="modal fade" id="need_to_repair{{ $clean->id }}"
+                                                    role="dialog" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg" role="document">
+                                                        <div class="modal-content">
+                                                            <form action="{{ route('employee.afterwashtorepair') }}"
+                                                                method="POST">
+                                                                @csrf
+                                                                <div class="modal-header">
+                                                                    ซักเสร็จแล้ว (ต้องซ่อมเนื่องจากเสียหาย)
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    {{ $clean->id }}
+                                                                    รายละเอียดของการซ่อม
+                                                                    <select name="typerepair">
+                                                                        <option value="10" id="type_total_dress{{$clean->id}}">ทั้งชุด</option>
+                                                                        <option value="20" id="type_shirt{{$clean->id}}">เสื้อ</option>
+                                                                        <option value="30" id="type_skirt{{$clean->id}}">ผ้าถุง</option>
+                                                                    </select>
+                                                                    <input type="hidden" name="clean_id" value="{{ $clean->id }}">
+                                                                    <textarea name="repair_detail" cols="60" rows="4" class="form-control"
+                                                                        placeholder="กรุณากรอกรายละเอียดของการซ่อมที่ต้องการ..."></textarea>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-danger"
+                                                                        data-dismiss="modal">ยกเลิก</button>
+                                                                    <button type="submit"
+                                                                        class="btn btn-secondary">ยืนยัน</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <script>
+                                                    var type_total_dress = document.getElementById('type_total_dress{{$clean->id}}') ; 
+                                                    var type_shirt = document.getElementById('type_shirt{{$clean->id}}') ; 
+                                                    var type_skirt = document.getElementById('type_skirt{{$clean->id}}') ; 
+                                                    var dress_id = '{{$dress_id}}' ; 
+                                                    var shirt_id = '{{$shirt_id}}' ; 
+                                                    var skirt_id = '{{$skirt_id}}' ; 
+                                                    if(shirt_id){
+                                                        type_total_dress.style.display = 'none' ; 
+                                                        type_skirt.style.display = 'none' ; 
+                                                        type_shirt.selected = true ; 
+                                                    }
+                                                    else if(skirt_id){
+                                                        type_total_dress.style.display = 'none' ; 
+                                                        type_shirt.style.display = 'none' ; 
+                                                        type_skirt.selected = true ; 
+                                                    }
+                                                    else{
+                                                        type_total_dress.style.display = 'block' ; 
+                                                        type_shirt.style.disabled = 'block' ; 
+                                                        type_skirt.style.disabled = 'block' ; 
+                                                        type_total_dress.selected = true ; 
+                                                    }
+                                                    
+
+
+
+                                                </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
-
-
-                    {{-- <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            var buttonupdate = document.getElementById('buttonupdate');
-                    
-                            function updateButtonState() {
-                                var checkedCount = document.querySelectorAll('.select-item:checked').length;
-                                buttonupdate.disabled = checkedCount === 0;
-                            }
-                    
-                            // เรียกใช้ฟังก์ชันเพื่อตรวจสอบสถานะปุ่มเมื่อมีการเปลี่ยนแปลง checkbox
-                            document.addEventListener('change', function(event) {
-                                // ตรวจสอบว่า event target เป็น checkbox หรือไม่
-                                if (event.target.classList.contains('select-item')) {
-                                    updateButtonState();
-                                }
-                            });
-                    
-                            // ตรวจสอบสถานะปุ่มเริ่มต้น
-                            updateButtonState();
-                        });
-                    </script> --}}
 
 
 
 
-
-
-                    {{-- <div class="modal fade" role="dialog" id="updateclean{{$clean->id}}" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
+                        <button class="btn btn-danger" type="button" data-toggle="modal"
+                            data-target="#showmodalwash">อัพเดตสถานะ</button>
+                        <div class="row mt-3">
+                            <div class="modal fade" id="showmodalwash" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <form action="{{ route('employee.cleanupdatestatuspagetwo') }}" method="POST">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <p>หัว</p>
+                                            </div>
+                                            <div class="modal-body" id="showmeaasage_doing_wash">
+                                                ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังส่งซัก" เป็น' ซักเสร็จแล้ว (พร้อมให้เช่าต่อ)
+                                                <br><br>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger"
+                                                    data-dismiss="modal">ยกเลิก</button>
+                                                <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="modal-body">
-                                {{$clean->id}}
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                                <button type="submit" class="btn btn-success">บันทึก</button>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
-
-
-
-
-                </form>
+                        </div>                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 @endsection

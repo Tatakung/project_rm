@@ -110,10 +110,17 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/addorder', [EmployeeController::class, 'addorder'])->name('employee.addorder');
     Route::get('/employee/selectdate', [EmployeeController::class, 'selectdate'])->name('employee.selectdate');
     Route::get('/employee/clean', [EmployeeController::class, 'clean'])->name('employee.clean');
+    Route::get('/employee/dressadjust', [EmployeeController::class, 'dressadjust'])->name('employee.dressadjust');
+
     Route::get('/employee/repair', [EmployeeController::class, 'repair'])->name('employee.repair');
+    Route::get('/employee/calendar', [EmployeeController::class, 'calendar'])->name('employee.calendar');
 
 
     Route::post('/employee/clean/update-status', [EmployeeController::class, 'cleanupdatestatus'])->name('employee.cleanupdatestatus');
+    Route::post('/employee/clean/update-statustwo', [EmployeeController::class, 'cleanupdatestatuspagetwo'])->name('employee.cleanupdatestatuspagetwo');
+
+    Route::post('/employee/repair/update-status', [EmployeeController::class, 'repairupdatestatus'])->name('employee.repairupdatestatus');
+    Route::post('/employee/clean/afterwashtorepair', [EmployeeController::class, 'afterwashtorepair'])->name('employee.afterwashtorepair');
 
 
 
@@ -144,7 +151,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/manageitem/savemanageitemcutdress/{id}', [ManageorderController::class, 'savemanageitemcutdress'])->name('employee.savemanageitemcutdress'); //บันทึกของตัดชุด item
     Route::post('/employee/manageitem/savemanageitemrentdress/{id}', [ManageorderController::class, 'savemanageitemrentdress'])->name('employee.savemanageitemrentdress'); //บันทึกของเช่าชุด item
     Route::post('/employee/manageitem/savemanageitemrentjewelry/{id}', [ManageorderController::class, 'savemanageitemrentjewelry'])->name('employee.savemanageitemrentjewelry'); //บันทึกของเช่าเครื่องประดับ item
-    Route::post('/employee/manageitem/savemanageitemrentdress/editdate/{id}', [ManageorderController::class, 'editdateitem'])->name('employee.editdateitem'); //แก้ไขวันที่นัดคืนของเช่าชุด item
 
 
     //เพิ่มเครื่องประดับลงตะกร้า
@@ -211,5 +217,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     //     return view('testtab');
     // });
     Route::get('/testtab', [DressController::class, 'testtab']); 
+
+
+    Route::get('/employee/adddresstocart', [OrderController::class, 'adddresstocart'])->name('adddresstocart'); 
+    Route::get('/employee/searchadddresstocart', [OrderController::class, 'searchadddresstocart'])->name('searchadddresstocart'); 
+    Route::post('/employee/addtocart', [OrderController::class, 'addtocart'])->name('addtocart'); //เพิ่มชุด/เสื้อ/กระโปรง/ผผ้าถุง ลงบนตะกร้า 
+
+
+
 
 });

@@ -13,6 +13,8 @@ class Orderdetailstatus extends Model
     protected $fillable = [
         'order_detail_id',
         'status',
+        'clean_id' , 
+        'repair_id' , 
     ];
 
     //ตารางorderdetailstatus เป็น M - 1 ของตาราง orderdetail

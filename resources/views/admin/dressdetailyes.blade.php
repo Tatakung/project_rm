@@ -84,10 +84,18 @@
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
-                                                            </p> -->
+                                                                </p> -->
                                 <p><strong>สถานะชุด:</strong> <span
                                         @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
                                         {{ $datadress->dress_status }}</span></p>
+
+
+                                <p><strong>สถานะปัจจุบันของชุด</strong></p>
+                                <ul>
+                                    <li>เสื้อ : {{$text_check_status_shirt}}</li>
+                                    <li>ผ้าถุง : {{$text_check_status_skirt}}</li>
+                                </ul>
+                                
                                 <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
                                 <p><strong>ราคา:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
                                 <p><strong>ราคามัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
@@ -98,11 +106,97 @@
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง</p>
                                 <p><strong>คำอธิบายชุด:</strong> {{ $datadress->dress_description }}</p>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-5">
+                                <p>
+                                    <strong>ขนาดของชุด</strong> (ปรับแก้ ขยาย/ลด ไม่เกิน 4 นิ้ว):
+                                <div class=" ">
+                                    @php
+                                        $list_check_name_shirt = [];
+                                    @endphp
+                                    <table class="table table-bordered-0">
+                                        @foreach ($dress_mea_totaldress as $dress_mea_totaldress)
+                                            <tr>
+                                                <td>{{ $dress_mea_totaldress->mea_dress_name }}<span
+                                                        style="font-size: 12px; color: rgb(197, 21, 21)">(ปรับได้
+                                                        {{ $dress_mea_totaldress->initial_mea - 4 }}-{{ $dress_mea_totaldress->initial_mea + 4 }})</span>
+                                                </td>
+                                                <td col-1>{{ $dress_mea_totaldress->current_mea }} </td>
+                                                <td col-1>นิ้ว</td>
+                                            </tr>
+                                            {{-- @php
+                                                $list_check_name_shirt[] = $item->measurementnow_dress_name;
+                                            @endphp --}}
+                                        @endforeach
+                                    </table>
 
+                                </div>
+                                </p>
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="container">
+                        <h3>คิวการเช่า</h3>
+                        @if ($reservation_dress->count() > 0)
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ลำดับคิว</th>
+                                        <th>ชื่อลูกค้า</th>
+                                        <th>วันที่นัดรับ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($reservation_dress as $index => $reservation_dress)
+                                        <tr>
+                                            <td>คิวที่ {{ $index + 1 }} </td>
+                                            <td>
+                                                @php
+                                                    $order_id = App\Models\Orderdetail::where(
+                                                        'reservation_id',
+                                                        $reservation_dress->id,
+                                                    )->value('order_id');
+                                                    $customer_id = App\Models\Order::where('id', $order_id)->value(
+                                                        'customer_id',
+                                                    );
+                                                    $customer = App\Models\Customer::find($customer_id);
+                                                @endphp
+                                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($reservation_dress->start_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($reservation_dress->start_date)->year + 543 }}
+                                                <span style="color: red ; "
+                                                    id="showday{{ $reservation_dress->id }}"></span>
+                                            </td>
+
+
+                                            <script>
+                                                var now = new Date();
+                                                var start_date = new Date("{{ $reservation_dress->start_date }}");
+                                                var day = start_date - now;
+
+                                                var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
+
+                                                document.getElementById('showday{{ $reservation_dress->id }}').innerHTML = 'เหลืออีก ' + totalday + ' วัน !';
+                                            </script>
+
+
+
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <h6 style="text-align: center ; ">ไม่มีคิวการเช่าชุดนี้ !</h6>
+                        @endif
+                    </div>
+
+
+
+
                 </div>
 
                 <!-- ข้อมูลเสื้อ -->
@@ -126,10 +220,10 @@
                             </div>
                             <div class="col-md-4">
                                 <p>
-                                    <strong>สถานะเสื้อ:</strong>
+                                    <strong>สถานะเสื้อปัจุบัน:</strong>
                                     <span
-                                        @if ($shirtitem->shirtitem_status == 'พร้อมให้เช่า') style="color: green" @else style="color: red" @endif>
-                                        {{ $shirtitem->shirtitem_status }}
+                                        >
+                                        {{ $text_check_status_shirt }}
                                     </span>
                                 </p>
                                 <p><strong>จำนวนเสื้อ:</strong> 1 ตัว</p>
@@ -141,7 +235,6 @@
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $shirtitem->shirtitem_rental }} ครั้ง</p>
                             </div>
                             <div class="col-md-5">
-
                                 <p>
                                     <strong>ขนาดของเสื้อ</strong> (ปรับแก้ ขยาย/ลด ไม่เกิน 4 นิ้ว):
                                     <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea_shirt">
@@ -152,19 +245,18 @@
                                         $list_check_name_shirt = [];
                                     @endphp
                                     <table class="table table-bordered-0">
-                                        @foreach ($measument_yes_separate_now_shirt as $item)
+                                        @foreach ($dress_mea_shirt as $dress_mea_shirt)
                                             <tr>
-                                                <td>{{ $item->measurementnow_dress_name }}<span
+                                                <td>{{ $dress_mea_shirt->mea_dress_name }}<span
                                                         style="font-size: 12px; color: rgb(197, 21, 21)">(ปรับได้
-                                                        {{ $item->measurementnow_dress_number_start - 4 }}-{{ $item->measurementnow_dress_number_start + 4 }})</span>
+                                                        {{ $dress_mea_shirt->initial_mea - 4 }}-{{ $dress_mea_shirt->initial_mea + 4 }})</span>
                                                 </td>
-                                                
-                                                <td col-1>{{ $item->measurementnow_dress_number }} </td>
-                                                <td col-1>{{ $item->measurementnow_dress_unit }}</td>
+                                                <td col-1>{{ $dress_mea_shirt->current_mea }} </td>
+                                                <td col-1>นิ้ว</td>
                                             </tr>
-                                            @php
+                                            {{-- @php
                                                 $list_check_name_shirt[] = $item->measurementnow_dress_name;
-                                            @endphp
+                                            @endphp --}}
                                         @endforeach
                                     </table>
 
@@ -172,25 +264,73 @@
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="container">
+                        <h3>คิวการเช่า</h3>
+                        @if ($reservation_shirt->count() > 0)
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ลำดับคิว</th>
+                                        <th>ชื่อลูกค้า</th>
+                                        <th>วันที่นัดรับ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($reservation_shirt as $index => $reservation_shirt)
+                                        <tr>
+                                            <td>คิวที่ {{ $index + 1 }} </td>
+                                            <td>
+                                                @php
+                                                    $order_id = App\Models\Orderdetail::where(
+                                                        'reservation_id',
+                                                        $reservation_shirt->id,
+                                                    )->value('order_id');
+                                                    $customer_id = App\Models\Order::where('id', $order_id)->value(
+                                                        'customer_id',
+                                                    );
+                                                    $customer = App\Models\Customer::find($customer_id);
+                                                @endphp
+                                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($reservation_shirt->start_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($reservation_shirt->start_date)->year + 543 }}
+                                                <span style="color: red ; "
+                                                    id="showday{{ $reservation_shirt->id }}"></span>
+                                            </td>
 
 
-                        <!-- ข้อมูลการวัดของชุดเริ่มต้น -->
-                        <!-- <h5 class="mt-4">ขนาดของเสื้อเริ่มต้น</h5>
-                                                        <div>
-                                                            @foreach ($measument_yes_separate_shirt as $measument_yes_separate_shirt)
-    {{ $measument_yes_separate_shirt->measurement_dress_name }}&nbsp;{{ $measument_yes_separate_shirt->measurement_dress_number }}&nbsp;{{ $measument_yes_separate_shirt->measurement_dress_unit }}
-    @endforeach
-                                                        </div> -->
-                        <!-- ข้อมูลการวัดของชุดล่าสุด -->
+                                            <script>
+                                                var now = new Date();
+                                                var start_date = new Date("{{ $reservation_shirt->start_date }}");
+                                                var day = start_date - now;
 
+                                                var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
+
+                                                document.getElementById('showday{{ $reservation_shirt->id }}').innerHTML = 'เหลืออีก ' + totalday + ' วัน !';
+                                            </script>
+
+
+
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <h6 style="text-align: center ; ">ไม่มีคิวการเช่าชุดนี้ !</h6>
+                        @endif
                     </div>
                 </div>
 
                 <!-- ข้อมูลกางเกง -->
                 <div class="tab-pane fade" id="pants" role="tabpanel" aria-labelledby="pants-tab">
                     <div class="card-header">
-                        <i class="bi bi-info-circle"></i> รายละเอียดกระโปรง/กางเกง
-                        <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotalskirt">
+                        <i class="bi bi-info-circle"></i> รายละเอียดกระโปรง/ผ้าถุง
+                        <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal"
+                            data-target="#edittotalskirt">
                             <i class="bi bi-pencil-square text-dark
                             "></i>
                         </button>
@@ -208,8 +348,8 @@
                                 @endforeach
                             </div>
                             <div class="col-md-4">
-                                <p><strong>สถานะกระโปรง/กางเกง:</strong> <span
-                                        @if ($skirtitem->skirtitem_status == 'พร้อมให้เช่า') style="color: green" @else style="color: red" @endif>{{ $skirtitem->skirtitem_status }}</span>
+                                <p><strong>สถานะผ้าถุงตอนนี้:</strong> <span
+                                        >{{ $text_check_status_skirt }}</span>
                                 </p>
                                 <p><strong>จำนวนกระโปรง/กางเกง:</strong> 1 ตัว</p>
                                 <p><strong>ราคา:</strong> {{ number_format($skirtitem->skirtitem_price, 2) }} บาท</p>
@@ -231,22 +371,22 @@
                                         $list_check_name_skirt = [];
                                     @endphp
                                     <table class="table table-bordered-0">
-                                        @foreach ($measument_yes_separate_now_skirt as $measument_yes_separate_now_skirt)
+                                        @foreach ($dress_mea_skirt as $dress_mea_skirt)
                                             <tr>
-                                                <td>{{ $measument_yes_separate_now_skirt->measurementnow_dress_name }}<span
+                                                <td>{{ $dress_mea_skirt->mea_dress_name }}<span
                                                         style="font-size: 12px; color: rgb(197, 21, 21)">(ปรับได้
-                                                        {{ $measument_yes_separate_now_skirt->measurementnow_dress_number_start - 4 }}-{{ $measument_yes_separate_now_skirt->measurementnow_dress_number_start + 4 }})</span>
+                                                        {{ $dress_mea_skirt->initial_mea - 4 }}-{{ $dress_mea_skirt->initial_mea + 4 }})</span>
                                                 </td>
-                                                
+
                                                 </td>
-                                                <td>{{ $measument_yes_separate_now_skirt->measurementnow_dress_number }}
+                                                <td>{{ $dress_mea_skirt->current_mea }}
                                                 </td>
-                                                <td>{{ $measument_yes_separate_now_skirt->measurementnow_dress_unit }}</td>
+                                                <td>นิ้ว</td>
                                             </tr>
-                                            @php
+                                            {{-- @php
                                                 $list_check_name_skirt[] =
                                                     $measument_yes_separate_now_skirt->measurementnow_dress_name;
-                                            @endphp
+                                            @endphp --}}
                                         @endforeach
                                     </table>
 
@@ -258,6 +398,63 @@
 
 
                         </div>
+                    </div>
+                    <div class="container">
+                        <h3>คิวการเช่า</h3>
+                        @if ($reservation_skirt->count() > 0)
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ลำดับคิว</th>
+                                        <th>ชื่อลูกค้า</th>
+                                        <th>วันที่นัดรับ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($reservation_skirt as $index => $reservation_skirt)
+                                        <tr>
+                                            <td>คิวที่ {{ $index + 1 }} </td>
+                                            <td>
+                                                @php
+                                                    $order_id = App\Models\Orderdetail::where(
+                                                        'reservation_id',
+                                                        $reservation_skirt->id,
+                                                    )->value('order_id');
+                                                    $customer_id = App\Models\Order::where('id', $order_id)->value(
+                                                        'customer_id',
+                                                    );
+                                                    $customer = App\Models\Customer::find($customer_id);
+                                                @endphp
+                                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($reservation_skirt->start_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($reservation_skirt->start_date)->year + 543 }}
+                                                <span style="color: red ; "
+                                                    id="showday{{ $reservation_skirt->id }}"></span>
+                                            </td>
+
+
+                                            <script>
+                                                var now = new Date();
+                                                var start_date = new Date("{{ $reservation_skirt->start_date }}");
+                                                var day = start_date - now;
+
+                                                var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
+
+                                                document.getElementById('showday{{ $reservation_skirt->id }}').innerHTML = 'เหลืออีก ' + totalday + ' วัน !';
+                                            </script>
+
+
+
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <h6 style="text-align: center ; ">ไม่มีคิวการเช่าชุดนี้ !</h6>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -627,7 +824,7 @@
                             <div class="container-fluid">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class=" "><i class="bi bi-pencil-square text-dark"></i>ข้อมูลการวัด</h5>
-                                    
+
                                     <button class="btn btn-success" type="button" id="add_measurement_shirt">
                                         <i class="bi bi-plus"></i> เพิ่มการวัด
                                     </button>
@@ -795,7 +992,8 @@
                                                     @if (in_array('รอบเอว', $list_check_name_skirt)) style="display: none;" @endif>รอบเอว
                                                 </option>
                                                 <option value="รอบสะโพก"
-                                                    @if (in_array('รอบสะโพก', $list_check_name_skirt)) style="display: none;" @endif>รอบสะโพก
+                                                    @if (in_array('รอบสะโพก', $list_check_name_skirt)) style="display: none;" @endif>
+                                                    รอบสะโพก
                                                 </option>
                                                 <option value="กระโปรงยาว"
                                                     @if (in_array('กระโปรงยาว', $list_check_name_skirt)) style="display: none;" @endif>

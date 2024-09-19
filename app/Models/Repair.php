@@ -16,6 +16,9 @@ class Repair extends Model
         'skirtitems_id',
         'repair_description',
         'repair_status',
+        'repair_type' , 
+        'reservation_id' ,
+        'clean_id' , 
         
     ];
 }

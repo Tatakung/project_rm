@@ -23,8 +23,14 @@ use App\Models\Dressmeasurementnow;
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
 use App\Models\Clean;
+use App\Models\Reservation;
+use App\Models\Typedress;
 use App\Models\Dressimage;
+use App\Models\Dressmeaadjustment;
+use App\Models\Dressmea;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class OrderController extends Controller
@@ -60,41 +66,6 @@ class OrderController extends Controller
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public function room(Request $request)
-    {
-        $search = $request->input('search');
-        if ($search) {
-            $rooms = Dress::where('room_name', 'LIKE', "%{$search}%")
-                ->orWhere('room_description', 'LIKE', "%{$search}%")
-                ->get();
-        } else {
-            $rooms = $this->getAllRooms();
-        }
-        return view('owner.room', compact('rooms', 'search'));
-    }
-
-
-
-
-
-
-
-
-
     //ออเดอร์ดีเทล
     public function ordertotaldetail($id)
     {
@@ -125,10 +96,7 @@ class OrderController extends Controller
     private function managedetailrentdress($id)
     {
 
-
-
         $orderdetail = Orderdetail::find($id);
-        // dd($orderdetail->dress_id) ; 
         $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
         $customer_id = Order::where('id', $orderdetail->order_id)->value('customer_id');
         $customer = Customer::find($customer_id);
@@ -143,12 +111,24 @@ class OrderController extends Controller
         $mea_orderdetail_for_adjust = Measurementorderdetail::where('order_detail_id', $id)->get();
         $dressimage = Dressimage::where('dress_id', $orderdetail->dress_id)->first();
 
+        $dress_mea_adjust = Dressmeaadjustment::where('order_detail_id', $id)->get();
+        $dress_mea_adjust_button = Dressmeaadjustment::where('order_detail_id', $id)->get();
+
+        $dress_mea_adjust_modal = Dressmeaadjustment::where('order_detail_id', $id)->get();
+
+
+
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
         $valuestatus = $orderdetail->status_detail;
         $valuestatus = Orderdetailstatus::where('order_detail_id', $id)
             ->latest('created_at')
             ->value('status');
-        return view('employeerentdress.managedetailrentdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage'));
+
+        $status_if_dress = Reservation::where('dress_id', $orderdetail->dress_id)
+            ->where('status_completed', 0)
+            ->orderByRaw(" STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+            ->first();
+        return view('employeerentdress.managedetailrentdress', compact('status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button'));
     }
 
     //จัดการเช่าเครื่องประดับ
@@ -213,17 +193,6 @@ class OrderController extends Controller
             ->value('status');
         return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit'));
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     //เพิ่มข้อมูลการวัดfitting
@@ -387,35 +356,10 @@ class OrderController extends Controller
             $create_status->status = "กำลังเช่า";
             $create_status->save();
 
-            if ($orderdetail->shirtitems_id) {
-                $update_shirt = Shirtitem::find($orderdetail->shirtitems_id);
-                $update_shirt->shirtitem_status = "กำลังถูกเช่า";
-                $update_shirt->save();
-            } elseif ($orderdetail->skirtitems_id) {
-                $update_skirt = Skirtitem::find($orderdetail->skirtitems_id);
-                $update_skirt->skirtitem_status = "กำลังถูกเช่า";
-                $update_skirt->save();
-            } elseif (($orderdetail->shirtitems_id == null && $orderdetail->skirtitems_id == null) && $orderdetail->dress_id) {
-                $dress = Dress::find($orderdetail->dress_id);
-                if ($dress->separable == 1) {
-                    $dress->dress_status = 'กำลังถูกเช่า';
-                    $dress->save();
-                } elseif ($dress->separable == 2) {
-                    $datashirt = Shirtitem::where('dress_id', $dress->id)->first();
-                    $shirt = Shirtitem::find($datashirt->id);
-                    $shirt->shirtitem_status = 'กำลังถูกเช่า';
-                    $shirt->save();
-
-                    $dataskirt = Skirtitem::where('dress_id', $dress->id)->first();
-                    $skirt = Skirtitem::find($dataskirt->id);
-                    $skirt->skirtitem_status = 'กำลังถูกเช่า';
-                    $skirt->save();
-
-                    $update_dress_status = Dress::find($dress->id);
-                    $update_dress_status->dress_status = 'กำลังถูกเช่า';
-                    $update_dress_status->save();
-                }
-            }
+            //ตารางreservation 
+            $reservation = Reservation::find($orderdetail->reservation_id);
+            $reservation->status = 'กำลังเช่า';
+            $reservation->save();
 
             //ตารางfinancila
             $create_total_damage_insurance = new Financial();
@@ -446,12 +390,13 @@ class OrderController extends Controller
                 $create_price->financial_expenses = 0;
                 $create_price->save();
             }
-        } elseif ($status == "กำลังเช่า") {
+        }
+        elseif ($status == "กำลังเช่า") {
             //ตารางfinancial
             if ($request->input('total_damage_insurance') > 0) {
                 $create_total_damage_insurance = new Financial();
                 $create_total_damage_insurance->order_detail_id = $id;
-                $create_total_damage_insurance->item_name = "คินเงินประกันลูกค้า";
+                $create_total_damage_insurance->item_name = "คืนเงินประกันลูกค้า";
                 $create_total_damage_insurance->type_order = $orderdetail->type_order;
                 $create_total_damage_insurance->financial_income = 0;
                 $create_total_damage_insurance->financial_expenses = $orderdetail->damage_insurance -  $request->input('total_damage_insurance');
@@ -478,132 +423,115 @@ class OrderController extends Controller
             $create_status->status = "คืนชุดแล้ว";
             $create_status->save();
 
-
-            if ($request->input('return_status') == "ส่งซัก") {
-                if ($orderdetail->shirtitems_id) {
+            //+1จำนวนคราั้งที่ถูกเช่า
+            $dress = Dress::where('id', $orderdetail->dress_id)->first();
+            if ($dress->separable == 1) {
+                $update_dress = Dress::find($dress->id);
+                $update_dress->dress_rental = $update_dress->dress_rental + 1; //จำนวนครั้งที่ถูกเช่า
+                $update_dress->save();
+            } elseif ($dress->separable == 2) {
+                if ($orderdetail->shirtitems_id != null) {
+                    //เช่าแค่เสื้อ
                     $update_shirt = Shirtitem::find($orderdetail->shirtitems_id);
-                    $update_shirt->shirtitem_status = "ส่งซัก";
-                    $update_shirt->shirtitem_rental = $update_shirt->shirtitem_rental + 1;
+                    $update_shirt->shirtitem_rental =  $update_shirt->shirtitem_rental  + 1;
                     $update_shirt->save();
-                } elseif ($orderdetail->skirtitems_id) {
+                } elseif ($orderdetail->skirtitems_id != null) {
+                    //เช่าแค่ผ้าถุง
                     $update_skirt = Skirtitem::find($orderdetail->skirtitems_id);
-                    $update_skirt->skirtitem_status = "ส่งซัก";
-                    $update_skirt->skirtitem_rental = $update_skirt->skirtitem_rental + 1;
+                    $update_skirt->skirtitem_rental =  $update_skirt->skirtitem_rental  + 1;
                     $update_skirt->save();
-                } elseif (($orderdetail->shirtitems_id == null && $orderdetail->skirtitems_id == null) && $orderdetail->dress_id) {
-                    $dress = Dress::find($orderdetail->dress_id);
-                    if ($dress->separable == 1) {
-                        $dress->dress_status = 'ส่งซัก';
-                        $dress->dress_rental = $dress->dress_rental + 1;
-                        $dress->save();
-                    } elseif ($dress->separable == 2) {
-                        $datashirt = Shirtitem::where('dress_id', $dress->id)->first();
-                        $shirt = Shirtitem::find($datashirt->id);
-                        $shirt->shirtitem_status = 'ส่งซัก';
-                        $shirt->shirtitem_rental = $shirt->shirtitem_rental + 1;
-                        $shirt->save();
-
-                        $dataskirt = Skirtitem::where('dress_id', $dress->id)->first();
-                        $skirt = Skirtitem::find($dataskirt->id);
-                        $skirt->skirtitem_status = 'ส่งซัก';
-                        $skirt->skirtitem_rental = $skirt->skirtitem_rental + 1;
-                        $skirt->save();
-
-                        $update_dress_status = Dress::find($dress->id);
-                        $update_dress_status->dress_status = 'ส่งซัก';
-                        $update_dress_status->dress_rental = $update_dress_status->dress_rental + 1;
-                        $update_dress_status->save();
-                    }
-                }
-                //ตารางClean
-                $create_clean = new Clean();
-                $create_clean->dress_id = $orderdetail->dress_id;
-                $create_clean->shirtitems_id  = $orderdetail->shirtitems_id;
-                $create_clean->skirtitems_id   = $orderdetail->skirtitems_id;
-                $create_clean->clean_status = 'รอดำเนินการ';
-                $create_clean->save();
-            } elseif ($request->input('return_status') == "ต้องซ่อมแซม") {
-                if ($orderdetail->shirtitems_id) {
-                    $update_shirt = Shirtitem::find($orderdetail->shirtitems_id);
-                    $update_shirt->shirtitem_status = "ต้องซ่อมแซม";
-                    $update_shirt->shirtitem_rental = $update_shirt->shirtitem_rental + 1;
+                } elseif ($orderdetail->skirtitems_id == null &&  $orderdetail->shirtitems_id == null) {
+                    //เช่าทั้งชุด
+                    // +1ชุด
+                    $update_dress = Dress::find($dress->id);
+                    $update_dress->dress_rental = $update_dress->dress_rental + 1; //จำนวนครั้งที่ถูกเช่า
+                    $update_dress->save();
+    
+                    $shirt_id = Shirtitem::where('dress_id', $update_dress->id)->value('id');
+                    $skirt_id = Skirtitem::where('dress_id', $update_dress->id)->value('id');
+                    // +1เสื้อ
+                    $update_shirt = Shirtitem::find($shirt_id);
+                    $update_shirt->shirtitem_rental =  $update_shirt->shirtitem_rental  + 1;
                     $update_shirt->save();
-                } elseif ($orderdetail->skirtitems_id) {
-                    $update_skirt = Skirtitem::find($orderdetail->skirtitems_id);
-                    $update_skirt->skirtitem_status = "ต้องซ่อมแซม";
-                    $update_skirt->skirtitem_rental = $update_skirt->skirtitem_rental + 1;
+                    // +1ผ้าถุง
+                    $update_skirt = Skirtitem::find($skirt_id);
+                    $update_skirt->skirtitem_rental =  $update_skirt->skirtitem_rental  + 1;
                     $update_skirt->save();
-                } elseif (($orderdetail->shirtitems_id == null && $orderdetail->skirtitems_id == null) && $orderdetail->dress_id) {
-                    $dress = Dress::find($orderdetail->dress_id);
-                    if ($dress->separable == 1) {
-                        $dress->dress_status = 'ต้องซ่อมแซม';
-                        $dress->dress_rental = $dress->dress_rental + 1;
-                        $dress->save();
-                    } elseif ($dress->separable == 2) {
-                        $datashirt = Shirtitem::where('dress_id', $dress->id)->first();
-                        $shirt = Shirtitem::find($datashirt->id);
-                        $shirt->shirtitem_status = 'ต้องซ่อมแซม';
-                        $shirt->shirtitem_rental = $shirt->shirtitem_rental + 1;
-                        $shirt->save();
-
-                        $dataskirt = Skirtitem::where('dress_id', $dress->id)->first();
-                        $skirt = Skirtitem::find($dataskirt->id);
-                        $skirt->skirtitem_status = 'ต้องซ่อมแซม';
-                        $skirt->skirtitem_rental = $skirt->skirtitem_rental + 1;
-                        $skirt->save();
-
-                        $update_dress_status = Dress::find($dress->id);
-                        $update_dress_status->dress_status = 'ต้องซ่อมแซม';
-                        $update_dress_status->dress_rental = $update_dress_status->dress_rental + 1;
-                        $update_dress_status->save();
-                    }
-                }
-                //ตารางreqpari
-                $create_repair = new Repair();
-                $create_repair->dress_id = $orderdetail->dress_id;
-                $create_repair->shirtitems_id  = $orderdetail->shirtitems_id;
-                $create_repair->skirtitems_id   = $orderdetail->skirtitems_id;
-                $create_repair->repair_description = $request->input('repair_details');
-                $create_repair->clean_status = 'รอดำเนินการ';
-                $create_repair->save();
-            } elseif ($request->input('return_status') == "ไม่สามารถให้เช่าต่อได้") {
-
-                if ($orderdetail->shirtitems_id) {
-                    $update_shirt = Shirtitem::find($orderdetail->shirtitems_id);
-                    $update_shirt->shirtitem_status = "ไม่สามารถให้เช่าต่อได้";
-                    $update_shirt->shirtitem_rental = $update_shirt->shirtitem_rental + 1;
-                    $update_shirt->save();
-                } elseif ($orderdetail->skirtitems_id) {
-                    $update_skirt = Skirtitem::find($orderdetail->skirtitems_id);
-                    $update_skirt->skirtitem_status = "ไม่สามารถให้เช่าต่อได้";
-                    $update_skirt->skirtitem_rental = $update_skirt->skirtitem_rental + 1;
-                    $update_skirt->save();
-                } elseif (($orderdetail->shirtitems_id == null && $orderdetail->skirtitems_id == null) && $orderdetail->dress_id) {
-                    $dress = Dress::find($orderdetail->dress_id);
-                    if ($dress->separable == 1) {
-                        $dress->dress_status = 'ไม่สามารถให้เช่าต่อได้';
-                        $dress->dress_rental = $dress->dress_rental + 1;
-                        $dress->save();
-                    } elseif ($dress->separable == 2) {
-                        $datashirt = Shirtitem::where('dress_id', $dress->id)->first();
-                        $shirt = Shirtitem::find($datashirt->id);
-                        $shirt->shirtitem_status = 'ไม่สามารถให้เช่าต่อได้';
-                        $shirt->shirtitem_rental = $shirt->shirtitem_rental + 1;
-                        $shirt->save();
-
-                        $dataskirt = Skirtitem::where('dress_id', $dress->id)->first();
-                        $skirt = Skirtitem::find($dataskirt->id);
-                        $skirt->skirtitem_status = 'ไม่สามารถให้เช่าต่อได้';
-                        $skirt->skirtitem_rental = $skirt->skirtitem_rental + 1;
-                        $skirt->save();
-
-                        $update_dress_status = Dress::find($dress->id);
-                        $update_dress_status->dress_status = 'ไม่สามารถให้เช่าต่อได้';
-                        $update_dress_status->dress_rental = $update_dress_status->dress_rental + 1;
-                        $update_dress_status->save();
-                    }
                 }
             }
+
+
+
+
+            if ($request->input('return_status') == "ส่งซัก") {
+                $text_for_reservation = "รอดำเนินการส่งซัก";
+                // ตารางclean
+                $create_clean = new Clean();
+                $create_clean->reservation_id = $orderdetail->reservation_id;
+                $create_clean->clean_status = "รอดำเนินการ";
+                $create_clean->save();
+                //ตารางstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->status = "รอดำเนินการ";
+                $create_status->clean_id = $create_clean->id;
+                $create_status->save();
+            } elseif ($request->input('return_status') == "ต้องซ่อมแซม") {
+                $text_for_reservation = "รอดำเนินการซ่อม";
+                //ตารางreqpair 
+                $create_repair = new Repair();
+                $create_repair->reservation_id = $orderdetail->reservation_id;
+                $create_repair->repair_description = $request->input('repair_details');
+                $create_repair->repair_status = 'รอดำเนินการ';
+                $create_repair->repair_type = $request->input('repair_type') ; //10ทั้งชุด 20เสื้อ 30ผ้าถุง
+                $create_repair->save();
+                //ตารางstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->status = "รอดำเนินการ";
+                $create_status->repair_id = $create_repair->id;
+                $create_status->save();
+            }
+            //ตารางreservation 
+            $reservation = Reservation::find($orderdetail->reservation_id);
+            $reservation->status = $text_for_reservation;
+            $reservation->save();
+            // elseif ($request->input('return_status') == "ไม่สามารถให้เช่าต่อได้") {
+
+            //     if ($orderdetail->shirtitems_id) {
+            //         $update_shirt = Shirtitem::find($orderdetail->shirtitems_id);
+            //         $update_shirt->shirtitem_status = "ไม่สามารถให้เช่าต่อได้";
+            //         $update_shirt->shirtitem_rental = $update_shirt->shirtitem_rental + 1;
+            //         $update_shirt->save();
+            //     } elseif ($orderdetail->skirtitems_id) {
+            //         $update_skirt = Skirtitem::find($orderdetail->skirtitems_id);
+            //         $update_skirt->skirtitem_status = "ไม่สามารถให้เช่าต่อได้";
+            //         $update_skirt->skirtitem_rental = $update_skirt->skirtitem_rental + 1;
+            //         $update_skirt->save();
+            //     } elseif (($orderdetail->shirtitems_id == null && $orderdetail->skirtitems_id == null) && $orderdetail->dress_id) {
+            //         $dress = Dress::find($orderdetail->dress_id);
+            //         if ($dress->separable == 1) {
+            //             $dress->dress_status = 'ไม่สามารถให้เช่าต่อได้';
+            //             $dress->dress_rental = $dress->dress_rental + 1;
+            //             $dress->save();
+            //         } elseif ($dress->separable == 2) {
+            //             $datashirt = Shirtitem::where('dress_id', $dress->id)->first();
+            //             $shirt = Shirtitem::find($datashirt->id);
+            //             $shirt->shirtitem_status = 'ไม่สามารถให้เช่าต่อได้';
+            //             $shirt->shirtitem_rental = $shirt->shirtitem_rental + 1;
+            //             $shirt->save();
+
+            //             $dataskirt = Skirtitem::where('dress_id', $dress->id)->first();
+            //             $skirt = Skirtitem::find($dataskirt->id);
+            //             $skirt->skirtitem_status = 'ไม่สามารถให้เช่าต่อได้';
+            //             $skirt->skirtitem_rental = $skirt->skirtitem_rental + 1;
+            //             $skirt->save();
+
+            //             $update_dress_status = Dress::find($dress->id);
+            //             $update_dress_status->dress_status = 'ไม่สามารถให้เช่าต่อได้';
+            //             $update_dress_status->dress_rental = $update_dress_status->dress_rental + 1;
+            //             $update_dress_status->save();
+            //         }
+            //     }
+            // }
         }
         return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ !');
     }
@@ -889,38 +817,727 @@ class OrderController extends Controller
 
     public function actionupdatestatusadjustdress(Request $request, $id)
     {
-
-        $orderdetail = Orderdetail::find($id);
-        $orderdetail->status_fix_measurement = 'แก้ไขแล้ว';
-        $orderdetail->save();
-        $id_for_mea = $request->input('id_for_mea_');
-        foreach ($id_for_mea as $index => $id_for_mea) {
-            $update_statsu_adjust = Measurementorderdetail::find($id_for_mea);
-            $update_statsu_adjust->status_measurement = "แก้ไขแล้ว";
-            $update_statsu_adjust->save();
+        $dressmea_id = $request->input('dressmea_id_');
+        $new_size = $request->input('new_size_');
+        foreach ($dressmea_id as $index => $dress_mea_id) {
+            $update_mea = Dressmea::find($dress_mea_id);
+            $update_mea->current_mea = $new_size[$index];
+            $update_mea->save();
         }
-        // //บันทึกการวัดค่าใหม่ลงในตาราง meanow
-        $mea_name = $request->input('mea_name_');
-        $mea_number = $request->input('mea_number_');
-        $mea_number_start = $request->input('mea_number_start_');
-        $dress_id = $request->input('dress_id_');
-        $item_shirt_id = $request->input('item_shirt_id_');
-        $item_skirt_id = $request->input('item_skirt_id_');
-        $max = Dressmeasurementnow::max('count');
-        $max_count = $max + 1;
-        foreach ($mea_name as $index => $mea_name) {
-            $create_now = new Dressmeasurementnow();
-            $create_now->dress_id = $dress_id[$index];
-            $create_now->shirtitems_id = $item_shirt_id[$index];
-            $create_now->skirtitems_id = $item_skirt_id[$index];
-            $create_now->measurementnow_dress_name = $mea_name;
-            $create_now->measurementnow_dress_number = $mea_number[$index];
-            $create_now->measurementnow_dress_number_start = $mea_number_start[$index];
-            $create_now->measurementnow_dress_unit = 'นิ้ว';
-            $create_now->count = $max_count;
-            $create_now->save();
-        }
-
         return redirect()->back()->with('อัพเดตสถานะของแก้ไขการวัดสำเร็จ');
+    }
+
+    public function adddresstocart()
+    {
+        $dress = null;
+        $dress_type = null;
+        $typedress = Typedress::all();
+        $avalable_rent_pass = null;
+        $textcharacter = null;
+        $text_startDate = null;
+        $text_endDate = null;
+        $text_totalDay = null;
+
+        return view('employeerentdress.adddresstocart', compact('typedress', 'dress', 'dress_type', 'avalable_rent_pass', 'textcharacter', 'text_startDate', 'text_endDate', 'text_totalDay'));
+    }
+
+
+    public function searchadddresstocart(Request $request)
+    {
+        $character = $request->input('character');
+        // 10คือทั้งชุด 20เสื้อ 30 กระโปรงหรือผ้าถุง 
+        if ($character == 10) {
+            return $this->searchadddresstocarttotaldress($request);
+        } elseif ($character == 20) {
+            return $this->searchadddresstocartshirt($request);
+        } elseif ($character == 30) {
+            return $this->searchadddresstocartskirt($request);
+        }
+    }
+
+    //ทั้งชุด
+    public function searchadddresstocarttotaldress(Request $request)
+    {
+        $text_startDate = $request->input('startDate');
+        $text_endDate = $request->input('endDate');
+        $text_totalDay = $request->input('totalDay');
+        $typedress = Typedress::all();
+        $dress_type = $request->input('dress_type');
+        $dress_type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
+
+        $dress = Dress::where('type_dress_id', $dress_type_id)->get();
+        $pickupdate = Carbon::parse($request->input('startDate'));
+        $returndate = Carbon::parse($request->input('endDate'));
+        $list_dress_id_pass = [];
+
+        foreach ($dress as $index) {
+            //แยกไม่ได้
+            if ($index->separable == 1) {
+                $reservation = Reservation::where('dress_id', $index->id)
+                    ->where('status_completed', 0)->get();
+                $past_7_day_start = $pickupdate->copy()->subDays(7);
+                $past_7_day_end = $pickupdate->copy()->subDays(1);
+                $pickup_day_start = $pickupdate;
+                $return_day_end = $returndate;
+                $future_7_day_start = $returndate->copy()->addDays(1);
+                $future_7_day_end = $returndate->copy()->addDays(7);
+                $is_avalable = true;
+                if ($reservation->isNotEmpty()) {
+                    foreach ($reservation as $re) {
+
+                        $reservation_start = Carbon::parse($re->start_date);
+                        $reservation_end = Carbon::parse($re->end_date);
+
+                        //เงื่อนไขหน้า
+                        if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
+                            $is_avalable = false;
+                            break;
+                        }
+                        if ($reservation_start->between($pickup_day_start, $return_day_end) || $reservation_end->between($pickup_day_start, $return_day_end)) {
+                            $is_avalable = false;
+                            break;
+                        }
+                        if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
+                            $is_avalable = false;
+                            break;
+                        }
+                    }
+                }
+                if ($is_avalable) {
+                    $list_dress_id_pass[] = $index->id;
+                }
+            }
+
+
+            //แยกได้
+            elseif ($index->separable == 2) {
+
+                $is_avalable = true;
+                //เช็คเสื้อ
+                $shirt = Shirtitem::where('dress_id', $index->id)->first();
+                $reservation_shirt = Reservation::where('shirtitems_id', $shirt->id)
+                    ->where('status_completed', 0)
+                    ->get();
+                $past_7_day_start = $pickupdate->copy()->subDays(7);
+                $past_7_day_end = $pickupdate->copy()->subDays(1);
+                $pickup_day_start = $pickupdate;
+                $return_day_end = $returndate;
+                $future_7_day_start = $returndate->copy()->addDays(1);
+                $future_7_day_end = $returndate->copy()->addDays(7);
+
+                foreach ($reservation_shirt as $check) {
+                    $reservation_start = Carbon::parse($check->start_date);
+                    $reservation_end = Carbon::parse($check->end_date);
+                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                }
+                //เช็คกระโปรง/ผ้าถุง
+                $skirt = Skirtitem::where('dress_id', $index->id)->first();
+                $reservation_skirt = Reservation::where('skirtitems_id', $skirt->id)
+                    ->where('status_completed', 0)
+                    ->get();
+                foreach ($reservation_skirt as $check) {
+                    $reservation_start = Carbon::parse($check->start_date);
+                    $reservation_end = Carbon::parse($check->end_date);
+                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                }
+
+                //เช็คชุดเดี่ยว เช้คแค่คอลัมน์ dress_id อย่างเดียว เพราะบางทีเช่าทั้งชุดก็จริงแต่ว่า  ตอนเช่าทั้งชุดถึงแม้ว่าจะชุดจะแยกได้ มันระบุแค่ dress_id ฉะนั้น เราต้องเช้คด้วย
+                $reservation_dress = Reservation::where('dress_id', $index->id)
+                    ->where('status_completed', 0)
+                    ->get();
+                foreach ($reservation_dress as $check) {
+                    $reservation_start = Carbon::parse($check->start_date);
+                    $reservation_end = Carbon::parse($check->end_date);
+                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                }
+
+                if ($is_avalable) {
+                    $list_dress_id_pass[] = $index->id;
+                }
+            }
+        }
+        $character = $request->input('character');
+
+        if ($character === "10") {
+            $textcharacter = "ทั้งชุด";
+        } elseif ($character === "20") {
+            $textcharacter = "เสื้อ";
+        } elseif ($character === "30") {
+            $textcharacter = 'กระโปรง/ผ้าถุง';
+        }
+
+        $avalable_rent_pass = Dress::whereIn('id', $list_dress_id_pass)->get();
+        return view('employeerentdress.adddresstocart', compact('typedress', 'dress', 'dress_type', 'avalable_rent_pass', 'textcharacter', 'text_startDate', 'text_endDate', 'text_totalDay'));
+    }
+
+
+
+
+
+    //เสื้อ
+    public function searchadddresstocartshirt(Request $request)
+    {
+        $text_startDate = $request->input('startDate');
+        $text_endDate = $request->input('endDate');
+        $text_totalDay = $request->input('totalDay');
+
+        $typedress = Typedress::all();
+        $dress_type = $request->input('dress_type');
+        $dress_type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
+        $dress = Dress::where('type_dress_id', $dress_type_id)
+            ->where('separable', 2)
+            ->get();
+        $pickupdate = Carbon::parse($request->input('startDate'));
+        $returndate = Carbon::parse($request->input('endDate'));
+        $list_dress_id_pass = [];
+        foreach ($dress as $index) {
+            //เช็คเสื้อก่อนติดไหม 
+            $shirt = Shirtitem::where('dress_id', $index->id)->first();
+            $reservation = Reservation::where('shirtitems_id', $shirt->id)
+                ->where('status_completed', 0)
+                ->get();
+            $past_7_day_start = $pickupdate->copy()->subDays(7);
+            $past_7_day_end = $pickupdate->copy()->subDays(1);
+            $pickup_day_start = $pickupdate;
+            $return_day_end = $returndate;
+            $future_7_day_start = $returndate->copy()->addDays(1);
+            $future_7_day_end = $returndate->copy()->addDays(7);
+            $is_avalable = true;
+            if ($reservation->isNotEmpty()) {
+                foreach ($reservation as $check) {
+                    $reservation_start = Carbon::parse($check->start_date);
+                    $reservation_end = Carbon::parse($check->end_date);
+
+                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+
+                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+
+                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                }
+            }
+            //เช็คทั้งชุดด้วย เพราะจะเช่าแค่เสื้อได้ ต้องเช็คชุดก่อนว่ามันติดจองทั้งชุดไหม นึกออกปะ 
+            $reservation_dress = Reservation::where('dress_id', $index->id)
+                ->where('status_completed', 0)
+                ->get();
+            if ($reservation_dress->isNotEmpty()) {
+                foreach ($reservation_dress as $check) {
+                    $reservation_start = Carbon::parse($check->start_date);
+                    $reservation_end = Carbon::parse($check->end_date);
+
+                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+
+                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+
+                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                }
+            }
+            if ($is_avalable) {
+                $list_dress_id_pass[] = $index->id;
+            }
+        }
+
+
+        $avalable_rent_pass = Dress::whereIn('id', $list_dress_id_pass)->get();
+
+        $character = $request->input('character');
+
+        if ($character === "10") {
+            $textcharacter = "ทั้งชุด";
+        } elseif ($character === "20") {
+            $textcharacter = "เสื้อ";
+        } elseif ($character === "30") {
+            $textcharacter = 'กระโปรง/ผ้าถุง';
+        }
+
+        return view('employeerentdress.adddresstocart', compact('typedress', 'dress', 'dress_type', 'avalable_rent_pass', 'textcharacter', 'text_startDate', 'text_endDate', 'text_totalDay'));
+    }
+
+    //กระโปรง/ผ้าถุง
+    public function searchadddresstocartskirt(Request $request)
+    {
+        $text_startDate = $request->input('startDate');
+        $text_endDate = $request->input('endDate');
+        $text_totalDay = $request->input('totalDay');
+
+        $typedress = Typedress::all();
+        $dress_type = $request->input('dress_type');
+        $dress_type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
+        $dress = Dress::where('type_dress_id', $dress_type_id)
+            ->where('separable', 2)
+            ->get();
+        $pickupdate = Carbon::parse($request->input('startDate'));
+        $returndate = Carbon::parse($request->input('endDate'));
+        $list_dress_id_pass = [];
+        foreach ($dress as $index) {
+            //เช็คแค่กระโปรงก่อน
+            $skirt = Shirtitem::where('dress_id', $index->id)->first();
+            $reservation = Reservation::where('skirtitems_id', $skirt->id)
+                ->where('status_completed', 0)
+                ->get();
+            $past_7_day_start = $pickupdate->copy()->subDays(7);
+            $past_7_day_end = $pickupdate->copy()->subDays(1);
+            $pickup_day_start = $pickupdate;
+            $return_day_end = $returndate;
+            $future_7_day_start = $returndate->copy()->addDays(1);
+            $future_7_day_end = $returndate->copy()->addDays(7);
+            $is_avalable = true;
+            if ($reservation->isNotEmpty()) {
+
+                foreach ($reservation as $check) {
+                    $reservation_start = Carbon::parse($check->start_date);
+                    $reservation_end = Carbon::parse($check->end_date);
+
+                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+
+                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+
+                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                }
+            }
+            // เช็คทั้งชุดด้วย  เพราะว่า ถ้าจะเช่ากระโปรงอะ จะไปเช็คแค่กระโปรงมันไม่ได้ มันต้องเช็คทั้งชุดก่อนว่าติดจองไหม 
+            $reservation_dress = Reservation::where('dress_id', $index->id)
+                ->where('status_completed', 0)
+                ->get();
+            if ($reservation_dress->isNotEmpty()) {
+                foreach ($reservation_dress as $check) {
+                    $reservation_start = Carbon::parse($check->start_date);
+                    $reservation_end = Carbon::parse($check->end_date);
+                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
+                        $is_avalable = false;
+                        break;
+                    }
+                }
+            }
+            if ($is_avalable) {
+                $list_dress_id_pass[] = $index->id;
+            }
+        }
+
+        $avalable_rent_pass = Dress::whereIn('id', $list_dress_id_pass)->get();
+
+        $character = $request->input('character');
+
+        if ($character === "10") {
+            $textcharacter = "ทั้งชุด";
+        } elseif ($character === "20") {
+            $textcharacter = "เสื้อ";
+        } elseif ($character === "30") {
+            $textcharacter = 'กระโปรง/ผ้าถุง';
+        }
+        $text_startDate = $request->input('startDate');
+        $text_endDate = $request->input('endDate');
+        $text_totalDay = $request->input('totalDay');
+
+        return view('employeerentdress.adddresstocart', compact('typedress', 'dress', 'dress_type', 'avalable_rent_pass', 'textcharacter', 'text_startDate', 'text_endDate', 'text_totalDay'));
+    }
+
+    //เพิ่มชุด/เสื้อ/กระโปรง/ผผ้าถุง ลงบนตะกร้า 
+    public function addtocart(Request $request)
+    {
+        $textcharacter = $request->input('textcharacter');
+        $dress_id = $request->input('dress_id');
+        $pickupdate = $request->input('pickupdate');
+        $returndate = $request->input('returndate');
+        $totalday = $request->input('totalday');
+        $shirt_id = $request->input('shirt_id');
+        $skirt_id = $request->input('skirt_id');
+        $employee_id = Auth::user()->id;
+
+        // $dress_mea = Dressmea::where('dress_id', $dress_id)->get();
+
+
+        if ($textcharacter === "ทั้งชุด") {
+            $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
+            $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
+
+            //ตารางreservation 
+            $reservation = new Reservation();
+            $reservation->dress_id = $dress_id;
+            $reservation->start_date = $pickupdate;
+            $reservation->end_date = $returndate;
+            $reservation->status = 'อยู่ในตะกร้า';
+            $reservation->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+            $reservation->save();
+
+            //ตารางorder
+            $order = Order::where('user_id', $employee_id)->where('order_status', 0)->first();
+
+            // มีorderอยู่แล้ว
+            if ($order) {
+
+                //ตารางorder
+                $update_order = Order::find($order->id);
+                $update_order->total_quantity = $update_order->total_quantity + 1;
+                $update_order->save();
+
+                //ตารางorderdetail
+                $create_order_detail = new Orderdetail();
+                $create_order_detail->dress_id = $dress_id;
+                $create_order_detail->order_id = $update_order->id;
+                $create_order_detail->employee_id = $employee_id;
+                $create_order_detail->reservation_id = $reservation->id;
+                $create_order_detail->title_name = "เช่า" . $type_dress_name . $data_dress->dress_code_new . $data_dress->dress_code . "(ทั้งชุด)";
+
+                if ($totalday > 3) {
+                    $over = $totalday - 3;
+                    $price_service_fee = ($data_dress->dress_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                    $create_order_detail->late_charge = $price_service_fee;
+                } else {
+                    $create_order_detail->late_charge = 0;
+                }
+                $create_order_detail->pickup_date = $pickupdate;
+                $create_order_detail->return_date = $returndate;
+                $create_order_detail->type_dress = $type_dress_name;
+                $create_order_detail->type_order = 2;
+                $create_order_detail->amount = 1;
+                $create_order_detail->price = $data_dress->dress_price;
+                $create_order_detail->deposit = $data_dress->dress_deposit;
+                $create_order_detail->damage_insurance = $data_dress->damage_insurance;
+                $create_order_detail->save();
+
+                $dress_mea = Dressmea::where('dress_id', $dress_id)->get();
+                foreach ($dress_mea as $data) {
+                    //ตารางdressmeaadjustments
+                    $create_dress_mea_adjust = new Dressmeaadjustment();
+                    $create_dress_mea_adjust->dressmea_id = $data->id;
+                    $create_dress_mea_adjust->order_detail_id = $create_order_detail->id;
+                    $create_dress_mea_adjust->new_size = $data->current_mea;
+                    $create_dress_mea_adjust->status = 'ไม่มีการแก้ไข';
+                    $create_dress_mea_adjust->save();
+                }
+            }
+            //ไม่มีorder
+            else {
+                //ตารางorder
+                $create_order = new Order();
+                $create_order->user_id = $employee_id;
+                $create_order->total_quantity = 1;
+                $create_order->order_status = 0;
+                $create_order->save();
+
+                //ตารางorderdetail
+                $create_order_detail = new Orderdetail();
+                $create_order_detail->dress_id = $dress_id;
+                $create_order_detail->order_id = $create_order->id;
+                $create_order_detail->employee_id = $employee_id;
+                $create_order_detail->reservation_id = $reservation->id;
+                $create_order_detail->title_name = "เช่า" . $type_dress_name . $data_dress->dress_code_new . $data_dress->dress_code . "(ทั้งชุด)";
+                if ($totalday > 3) {
+                    $over = $totalday - 3;
+                    $price_service_fee = ($data_dress->dress_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                    $create_order_detail->late_charge = $price_service_fee;
+                } else {
+                    $create_order_detail->late_charge = 0;
+                }
+                $create_order_detail->pickup_date = $pickupdate;
+                $create_order_detail->return_date = $returndate;
+                $create_order_detail->type_dress = $type_dress_name;
+                $create_order_detail->type_order = 2;
+                $create_order_detail->amount = 1;
+                $create_order_detail->price = $data_dress->dress_price;
+                $create_order_detail->deposit = $data_dress->dress_deposit;
+                $create_order_detail->damage_insurance = $data_dress->damage_insurance;
+                $create_order_detail->save();
+                $dress_mea = Dressmea::where('dress_id', $dress_id)->get();
+                foreach ($dress_mea as $data) {
+                    //ตารางdressmeaadjustments
+                    $create_dress_mea_adjust = new Dressmeaadjustment();
+                    $create_dress_mea_adjust->dressmea_id = $data->id;
+                    $create_dress_mea_adjust->order_detail_id = $create_order_detail->id;
+                    $create_dress_mea_adjust->new_size = $data->current_mea;
+                    $create_dress_mea_adjust->status = 'ไม่มีการแก้ไข';
+                    $create_dress_mea_adjust->save();
+                }
+            }
+        } elseif ($textcharacter === "เสื้อ") {
+            $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
+            $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
+            $data_shirt = Shirtitem::where('dress_id', $dress_id)->first();
+
+            //ตารางreservation 
+            $reservation = new Reservation();
+            $reservation->dress_id = $dress_id;
+            $reservation->shirtitems_id = $shirt_id;
+            $reservation->start_date = $pickupdate;
+            $reservation->end_date = $returndate;
+            $reservation->status = 'อยู่ในตะกร้า';
+            $reservation->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+            $reservation->save();
+
+            //ตารางorder
+            $order = Order::where('user_id', $employee_id)->where('order_status', 0)->first();
+            // มีorderอยู่แล้ว
+            if ($order) {
+                //ตารางorder
+                $update_order = Order::find($order->id);
+                $update_order->total_quantity = $update_order->total_quantity + 1;
+                $update_order->save();
+
+                //ตารางorderdetail
+                $create_order_detail = new Orderdetail();
+                $create_order_detail->dress_id = $dress_id;
+                $create_order_detail->shirtitems_id  = $shirt_id;
+                $create_order_detail->order_id = $update_order->id;
+                $create_order_detail->employee_id = $employee_id;
+                $create_order_detail->reservation_id  = $reservation->id;
+                $create_order_detail->title_name = "เช่า" . $type_dress_name . $data_dress->dress_code_new . $data_dress->dress_code . "(เสื้อ)";
+
+                if ($totalday > 3) {
+                    $over = $totalday - 3;
+                    $price_service_fee = ($data_shirt->shirtitem_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                    $create_order_detail->late_charge = $price_service_fee;
+                } else {
+                    $create_order_detail->late_charge = 0;
+                }
+                $create_order_detail->pickup_date = $pickupdate;
+                $create_order_detail->return_date = $returndate;
+                $create_order_detail->type_dress = $type_dress_name;
+                $create_order_detail->type_order = 2;
+                $create_order_detail->amount = 1;
+                $create_order_detail->price = $data_shirt->shirtitem_price;
+                $create_order_detail->deposit = $data_shirt->shirtitem_deposit;
+                $create_order_detail->damage_insurance = $data_shirt->shirt_damage_insurance;
+                $create_order_detail->save();
+                $dress_mea = Dressmea::where('dress_id', $dress_id)
+                    ->whereNotNull('shirtitems_id')
+                    ->get();
+                foreach ($dress_mea as $data) {
+                    //ตารางdressmeaadjustments
+                    $create_dress_mea_adjust = new Dressmeaadjustment();
+                    $create_dress_mea_adjust->dressmea_id = $data->id;
+                    $create_dress_mea_adjust->order_detail_id = $create_order_detail->id;
+                    $create_dress_mea_adjust->new_size = $data->current_mea;
+                    $create_dress_mea_adjust->status = 'ไม่มีการแก้ไข';
+                    $create_dress_mea_adjust->save();
+                }
+            }
+            //ไม่มีorder
+            else {
+                //ตารางorder
+                $create_order = new Order();
+                $create_order->user_id = $employee_id;
+                $create_order->total_quantity = 1;
+                $create_order->order_status = 0;
+                $create_order->save();
+
+                //ตารางorderdetail
+                $create_order_detail = new Orderdetail();
+                $create_order_detail->dress_id = $dress_id;
+                $create_order_detail->shirtitems_id  = $shirt_id;
+                $create_order_detail->order_id = $create_order->id;
+                $create_order_detail->employee_id = $employee_id;
+                $create_order_detail->reservation_id  = $reservation->id;
+                $create_order_detail->title_name = "เช่า" . $type_dress_name . $data_dress->dress_code_new . $data_dress->dress_code . "(เสื้อ)";
+                if ($totalday > 3) {
+                    $over = $totalday - 3;
+                    $price_service_fee = ($data_shirt->shirtitem_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                    $create_order_detail->late_charge = $price_service_fee;
+                } else {
+                    $create_order_detail->late_charge = 0;
+                }
+                $create_order_detail->pickup_date = $pickupdate;
+                $create_order_detail->return_date = $returndate;
+                $create_order_detail->type_dress = $type_dress_name;
+                $create_order_detail->type_order = 2;
+                $create_order_detail->amount = 1;
+                $create_order_detail->price = $data_shirt->shirtitem_price;
+                $create_order_detail->deposit = $data_shirt->shirtitem_deposit;
+                $create_order_detail->damage_insurance = $data_shirt->shirt_damage_insurance;
+                $create_order_detail->save();
+
+
+                $dress_mea = Dressmea::where('dress_id', $dress_id)
+                    ->whereNotNull('shirtitems_id')
+                    ->get();
+                foreach ($dress_mea as $data) {
+                    //ตารางdressmeaadjustments
+                    $create_dress_mea_adjust = new Dressmeaadjustment();
+                    $create_dress_mea_adjust->dressmea_id = $data->id;
+                    $create_dress_mea_adjust->order_detail_id = $create_order_detail->id;
+                    $create_dress_mea_adjust->new_size = $data->current_mea;
+                    $create_dress_mea_adjust->status = 'ไม่มีการแก้ไข';
+                    $create_dress_mea_adjust->save();
+                }
+            }
+        } elseif ($textcharacter === "กระโปรง/ผ้าถุง") {
+            $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
+            $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
+            $data_skirt = Skirtitem::where('dress_id', $dress_id)->first();
+
+
+
+            //ตารางreservation 
+            $reservation = new Reservation();
+            $reservation->dress_id = $dress_id;
+            $reservation->skirtitems_id = $skirt_id;
+            $reservation->start_date = $pickupdate;
+            $reservation->end_date = $returndate;
+            $reservation->status = 'อยู่ในตะกร้า';
+            $reservation->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+            $reservation->save();
+
+            //ตารางorder
+            $order = Order::where('user_id', $employee_id)->where('order_status', 0)->first();
+            // มีorderอยู่แล้ว
+            if ($order) {
+                //ตารางorder
+                $update_order = Order::find($order->id);
+                $update_order->total_quantity = $update_order->total_quantity + 1;
+                $update_order->save();
+
+                //ตารางorderdetail
+                $create_order_detail = new Orderdetail();
+                $create_order_detail->dress_id = $dress_id;
+                $create_order_detail->skirtitems_id  = $skirt_id;
+                $create_order_detail->order_id = $update_order->id;
+                $create_order_detail->employee_id = $employee_id;
+                $create_order_detail->reservation_id = $reservation->id;
+                $create_order_detail->title_name = "เช่า" . $type_dress_name . $data_dress->dress_code_new . $data_dress->dress_code . "(กระโปรง/ผ้าถุง)";
+                if ($totalday > 3) {
+                    $over = $totalday - 3;
+                    $price_service_fee = ($data_skirt->skirtitem_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                    $create_order_detail->late_charge = $price_service_fee;
+                } else {
+                    $create_order_detail->late_charge = 0;
+                }
+                $create_order_detail->pickup_date = $pickupdate;
+                $create_order_detail->return_date = $returndate;
+                $create_order_detail->type_dress = $type_dress_name;
+                $create_order_detail->type_order = 2;
+                $create_order_detail->amount = 1;
+                $create_order_detail->price = $data_skirt->skirtitem_price;
+                $create_order_detail->deposit = $data_skirt->skirtitem_deposit;
+                $create_order_detail->damage_insurance = $data_skirt->skirt_damage_insurance;
+                $create_order_detail->save();
+
+                $dress_mea = Dressmea::where('dress_id', $dress_id)
+                    ->whereNotNull('skirtitems_id')
+                    ->get();
+                foreach ($dress_mea as $data) {
+                    //ตารางdressmeaadjustments
+                    $create_dress_mea_adjust = new Dressmeaadjustment();
+                    $create_dress_mea_adjust->dressmea_id = $data->id;
+                    $create_dress_mea_adjust->order_detail_id = $create_order_detail->id;
+                    $create_dress_mea_adjust->new_size = $data->current_mea;
+                    $create_dress_mea_adjust->status = 'ไม่มีการแก้ไข';
+                    $create_dress_mea_adjust->save();
+                }
+            }
+            //ไม่มีorder
+            else {
+                //ตารางorder
+                $create_order = new Order();
+                $create_order->user_id = $employee_id;
+                $create_order->total_quantity = 1;
+                $create_order->order_status = 0;
+                $create_order->save();
+
+                //ตารางorderdetail
+                $create_order_detail = new Orderdetail();
+                $create_order_detail->dress_id = $dress_id;
+                $create_order_detail->skirtitems_id  = $skirt_id;
+                $create_order_detail->order_id = $create_order->id;
+                $create_order_detail->employee_id = $employee_id;
+                $create_order_detail->reservation_id  = $reservation->id;
+                $create_order_detail->title_name = "เช่า" . $type_dress_name . $data_dress->dress_code_new . $data_dress->dress_code . "(กระโปรง/ผ้าถุง)";
+                if ($totalday > 3) {
+                    $over = $totalday - 3;
+                    $price_service_fee = ($data_skirt->skirtitem_price * 0.2) * $over;  //จำนวนเงินค่าบริการขยายเวลาเช่าชุด
+                    $create_order_detail->late_charge = $price_service_fee;
+                } else {
+                    $create_order_detail->late_charge = 0;
+                }
+                $create_order_detail->pickup_date = $pickupdate;
+                $create_order_detail->return_date = $returndate;
+                $create_order_detail->type_dress = $type_dress_name;
+                $create_order_detail->type_order = 2;
+                $create_order_detail->amount = 1;
+                $create_order_detail->price = $data_skirt->skirtitem_price;
+                $create_order_detail->deposit = $data_skirt->skirtitem_deposit;
+                $create_order_detail->damage_insurance = $data_skirt->skirt_damage_insurance;
+                $create_order_detail->save();
+                $dress_mea = Dressmea::where('dress_id', $dress_id)
+                    ->whereNotNull('skirtitems_id')
+                    ->get();
+                foreach ($dress_mea as $data) {
+                    //ตารางdressmeaadjustments
+                    $create_dress_mea_adjust = new Dressmeaadjustment();
+                    $create_dress_mea_adjust->dressmea_id = $data->id;
+                    $create_dress_mea_adjust->order_detail_id = $create_order_detail->id;
+                    $create_dress_mea_adjust->new_size = $data->current_mea;
+                    $create_dress_mea_adjust->status = 'ไม่มีการแก้ไข';
+                    $create_dress_mea_adjust->save();
+                }
+            }
+        }
+        return redirect()->back()->with('success', 'เพิ่มลงตะกร้าสำเร็จ');
     }
 }

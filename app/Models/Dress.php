@@ -24,6 +24,7 @@ class Dress extends Model
         'dress_code_new' , 
         'separable' , 
         'damage_insurance',
+        'repair_count',
     ];
 
     // dress เป็น M - 1 ของ type

@@ -1,11 +1,12 @@
 @extends('layouts.adminlayout')
 
 @section('content')
-
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
-        <li class="breadcrumb-item"><a href="{{route('employee.ordertotal')}}">รายการออเดอร์ทั้งหมด</a></li>
-        <li class="breadcrumb-item"><a href="{{route('employee.ordertotaldetail',['id' => $orderdetail->order_id])}}">รายละเอียดออเดอร์ที่ {{$orderdetail->order_id}}</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
+        <li class="breadcrumb-item"><a
+                href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">รายละเอียดออเดอร์ที่
+                {{ $orderdetail->order_id }}</a></li>
         <li class="breadcrumb-item active">{{ $orderdetail->title_name }}</li>
     </ol>
 
@@ -85,6 +86,12 @@
         }
     </style>
 
+    {{-- ชุดแยกได้กับชุดอยกไม่ได้  --}}
+    @php
+        $dress_separable = App\Models\Dress::where('id', $orderdetail->dress_id)->value('separable');
+    @endphp
+
+
     <div class="container">
         <div class="card">
             <div class="card-header text-dark" style="background-color:#EAD8C0 ;">
@@ -99,14 +106,57 @@
                         </div> --}}
 
                         <div class="info-box">
+                            <img src="{{ asset('storage/' . $dressimage->dress_image) }}" alt="" width="120px;"
+                                height="auto">
+                            <hr>
+                            <div class="current-status">
+                                <h2>สถานะปัจจุบันของชุด</h2>
+                                <p class="status">{{ $status_if_dress->status }}</p>
 
-                            
-                            <img src="{{ asset('storage/' .$dressimage->dress_image) }}" alt="" width="120px;" height="auto">
+
+                                {{-- <p>ทั้งชุด{{$orderdetail->dress_id}}</p>
+                                    <p>เสื้อ{{$orderdetail->shirtitems_id}}</p>
+                                    <p>ผ้าภุง{{$orderdetail->skirtitems_id}}</p> --}}
+
+
+                                <p>อัพเดตล่าสุด: 18/09/2024 15:30</p>
+                            </div>
+                            <hr>
+
                             <h5 class="mt-4">ข้อมูลการเช่า</h5>
+                            <p><strong>วันที่นัดรับ:</strong>
+                                {{ \Carbon\Carbon::parse($orderdetail->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($orderdetail->pickup_date)->year + 543 }}
+                                <span class="text-danger" id="showday"></span>
+                            </p>
+                            <script>
+                                var pickup_date = new Date("{{ $orderdetail->pickup_date }}");
+                                var now = new Date(); //วันที่ปัจจุบัน
+                                var day = pickup_date - now;
+                                var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                document.getElementById('showday').innerHTML = '(ลูกค้ามารับชุดใน ' + totalday + ' วัน)';
+                            </script>
+
+                            <p><strong>วันที่นัดคืน:</strong>
+                                {{ \Carbon\Carbon::parse($orderdetail->return_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($orderdetail->return_date)->year + 543 }}
+                                <span class="text-danger" id="showdayreturn"></span>
+                            </p>
+                            <script>
+                                var pickup_date = new Date("{{ $orderdetail->return_date }}");
+                                var now = new Date(); //วันที่ปัจจุบัน
+                                var day = pickup_date - now;
+                                var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                document.getElementById('showdayreturn').innerHTML = 'อีก ' + totalday + ' วัน';
+                            </script>
+
+
+
                             <p><strong>ราคาเช่า:</strong> {{ number_format($orderdetail->price, 2) }} บาท</p>
                             <p><strong>ราคามัดจำเช่า:</strong> {{ number_format($orderdetail->deposit, 2) }} บาท
                             </p>
-                            <p><strong>ประกันค่าเสียหาย:</strong> {{ number_format($orderdetail->damage_insurance, 2) }} บาท</p>
+                            <p><strong>ประกันค่าเสียหาย:</strong> {{ number_format($orderdetail->damage_insurance, 2) }}
+                                บาท</p>
                             <p><strong>จำนวน:</strong> {{ $orderdetail->amount }} ชุด</p>
 
 
@@ -125,11 +175,20 @@
                             </p>
 
                         </div>
-                        {{-- <button class="btn btn-warning w-100 mb-3" data-bs-toggle="modal" data-bs-target="#editModal">
-                            <i class="fas fa-edit"></i> แก้ไขชุด
-                        </button> --}}
+                        {{-- เอาไว้นับเงื่อนไขของปุ่มว่ามีชุดที่ปรับแก้ไขไหมนะ  --}}
+                        @php
+                            $check_button_updatestatusadjust = false;
+                            foreach ($dress_mea_adjust_button as $dress_mea_adjust_button) {
+                                $dress_mea = App\Models\Dressmea::where(
+                                    'id',
+                                    $dress_mea_adjust_button->dressmea_id,
+                                )->first();
+                                if ($dress_mea_adjust_button->new_size != $dress_mea->current_mea) {
+                                    $check_button_updatestatusadjust = true; //แปลว่าต้องแก้
+                                }
+                            }
 
-
+                        @endphp
 
 
                     </div>
@@ -139,10 +198,7 @@
                                 <h5 style="margin-top: 10px;">สถานะออเดอร์</h5>
                             </div>
                             <div class="col-md-6 text-right"
-                                @if (
-                                    $orderdetail->status_detail == 'ถูกจอง' &&
-                                        ($orderdetail->status_fix_measurement == 'แก้ไขแล้ว' ||
-                                            $orderdetail->status_fix_measurement == 'ไม่มีการแก้ไข')) style="display: block ; "
+                                @if ($orderdetail->status_detail == 'ถูกจอง' && $check_button_updatestatusadjust == false) style="display: block ; "
                                 @else
                                 style="display: none ; " @endif>
                                 <button class="btn" style="background: #FF8343; color: #ffffff;" data-toggle="modal"
@@ -151,9 +207,7 @@
 
 
                             <div class="col-md-6 text-right"
-                                @if ($orderdetail->status_detail == 'กำลังเช่า') style="display: block ; "
-                                                            @else
-                                                            style="display: none ; " @endif>
+                                @if ($orderdetail->status_detail == 'กำลังเช่า') style="display: block ; "@else style="display: none ; " @endif>
                                 <button class="btn" style="background: #FF8343; color: #ffffff;" data-toggle="modal"
                                     data-target="#updatestatus_return">อัพเดตสถานะ</button>
                             </div>
@@ -170,13 +224,15 @@
                                     @csrf
                                     <div class="modal-content">
                                         <div class="modal-header" style="background-color: #FF8343; color: #ffffff;">
-                                            <h5 class="modal-title" style="font-weight: bold;">อัพเดตสถานะ</h5>
+                                            <h5 class="modal-title" style="font-weight: bold;">สถานะการเช่าได้รับการอัพเดต
+                                            </h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <p>ต้องการอัพเดตสถานะจาก "ถูกจอง" เป็น "กำลังเช่า" ?</p>
+                                            <p>ลูกค้าได้รับชุดแล้ว สถานะของชุดนี้ได้รับการอัพเดตเป็น 'กำลังเช่า'
+                                                เรียบร้อยแล้ว</p>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn" data-dismiss="modal"
@@ -187,6 +243,17 @@
                                 </form>
                             </div>
                         </div>
+
+
+
+
+
+
+
+
+
+
+
 
                         <div class="modal fade" id="updatestatus_return" tabindex="-1" role="dialog" aria-hidden="true"
                             data-backdrop="static">
@@ -214,23 +281,23 @@
                                                     name="total_damage_insurance" min="0"
                                                     max="{{ $orderdetail->damage_insurance }}" required>
                                             </div>
-                                            <div class="form-group" >
+                                            <div class="form-group">
                                                 <label for="cause_for_insurance">เหตุผลในการหัก()หากมี:</label>
                                                 <textarea class="form-control" id="cause_for_insurance" name="cause_for_insurance" rows="2"></textarea>
                                             </div>
 
                                             <script>
-                                                var damage_insurance = document.getElementById('damage_insurance') ; 
-                                                var total_damage_insurance = document.getElementById('total_damage_insurance') ; 
-                                                var max_damage_insurance = parseFloat(damage_insurance.textContent) ; 
-                                                total_damage_insurance.addEventListener('input',function(){
-                                                    if( parseFloat(total_damage_insurance.value) > max_damage_insurance  ){
-                                                        total_damage_insurance.value = max_damage_insurance ; 
+                                                var damage_insurance = document.getElementById('damage_insurance');
+                                                var total_damage_insurance = document.getElementById('total_damage_insurance');
+                                                var max_damage_insurance = parseFloat(damage_insurance.textContent);
+                                                total_damage_insurance.addEventListener('input', function() {
+                                                    if (parseFloat(total_damage_insurance.value) > max_damage_insurance) {
+                                                        total_damage_insurance.value = max_damage_insurance;
                                                     }
 
-                                                }) ; 
+                                                });
                                             </script>
-                            
+
 
                                             <hr>
                                             <div class="form-group">
@@ -240,13 +307,22 @@
                                                     <option value="" selected disabled>เลือกสถานะ</option>
                                                     <option value="ส่งซัก">ส่งซัก</option>
                                                     <option value="ต้องซ่อมแซม">ต้องซ่อมแซม</option>
-                                                    <option value="ไม่สามารถให้เช่าต่อได้">ไม่สามารถให้เช่าต่อได้</option>
+                                                    {{-- <option value="ไม่สามารถให้เช่าต่อได้">ไม่สามารถให้เช่าต่อได้</option> --}}
                                                 </select>
                                             </div>
+                                            
                                             <div class="form-group" id="repair_details_group" style="display: none;">
                                                 <label for="repair_details">รายละเอียดการซ่อม:</label>
+                                                <select class="form-select" id="repair_type" name="repair_type">
+                                                    <option value="10" id="type_total_dress">ทั้งชุด</option>
+                                                    <option value="20" id="type_shirt">เสื้อ</option>
+                                                    <option value="30" id="type_skirt">ผ้าถุง</option>
+                                                </select>
                                                 <textarea class="form-control" id="repair_details" name="repair_details" rows="3"></textarea>
                                             </div>
+
+
+
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn" data-dismiss="modal"
@@ -259,23 +335,59 @@
                         </div>
 
 
+
                         <script>
-                            var select_return_status = document.getElementById('return_status') ; 
-                            var repair_details_group = document.getElementById('repair_details_group') ; 
-                            var repair_details = document.getElementById('repair_details') ; 
-                            select_return_status.addEventListener('change',function(){
-                                if(select_return_status.value === 'ต้องซ่อมแซม'){
-                                    repair_details_group.style.display = 'block' ; 
-                                    repair_details.setAttribute('required','required') ; 
-                                }
-                                else{
-                                    repair_details_group.style.display = 'none' ; 
-                                    repair_details.value = '' ; 
-                                    repair_details.removeAttribute('required') ; 
+                            var select_return_status = document.getElementById('return_status');
+                            var repair_details_group = document.getElementById('repair_details_group');
+                            var repair_details = document.getElementById('repair_details');
+
+                            var dress_separable = '{{ $dress_separable }}';
+                            
+                            var type_total_dress = document.getElementById('type_total_dress');
+                            var type_shirt = document.getElementById('type_shirt');
+                            var type_skirt = document.getElementById('type_skirt');
+
+                            var dress_id = '{{ $orderdetail->dress_id }}';
+                            var shirt_id = '{{ $orderdetail->shirtitems_id }}';
+                            var skirt_id = '{{ $orderdetail->skirtitems_id }}';
+
+
+                            select_return_status.addEventListener('change', function() {
+                                if (select_return_status.value === 'ต้องซ่อมแซม') {
+                                    repair_details_group.style.display = 'block';
+                                    repair_details.setAttribute('required', 'required');
+
+                                    if(shirt_id){
+                                        console.log('เสื้อ') ; 
+                                        type_total_dress.style.display = 'none' ; 
+                                        type_skirt.style.display = 'none' ; 
+                                        type_shirt.selected = true ; 
+                                    }
+                                    else if(skirt_id){
+                                        console.log('ผ้าถุง') ; 
+                                        type_total_dress.style.display = 'none' ; 
+                                        type_shirt.style.display = 'none' ; 
+                                        type_skirt.selected = true ; 
+                                    }
+                                    else{
+                                        console.log('ทั้งชุด') ; 
+                                        type_total_dress.style.display = 'block' ; 
+                                        type_shirt.style.display = 'block' ; 
+                                        type_skirt.style.display = 'block' ; 
+                                        type_total_dress.selected = true ; 
+
+                                    }
+                                    
+
+
+                                } else {
+                                    repair_details_group.style.display = 'none';
+                                    repair_details.value = '';
+                                    repair_details.removeAttribute('required');
 
                                 }
 
-                            }) ; 
+                            });
                         </script>
 
 
@@ -329,49 +441,40 @@
 
 
 
+
+
                         <div class="row">
                             <div class="col-6">
                                 <h5 class="mt-4" style="text-align: left;">รายการปรับแก้ขนาดชุด</h5>
                             </div>
                             <div class="col-6 justify-content-end"
-                                @if (App\Models\Measurementorderdetail::where('order_detail_id', $orderdetail->id)->where('status_measurement', 'รอการแก้ไข')->first() == null) style="display: none;" @endif>
-                                <button class="btn btn-success" 
-                                    data-toggle='modal' data-target="#updatestatusadjust">เสร็จสิ้นการแก้ไข</button>
+                                @if ($check_button_updatestatusadjust == false) style="display: none;" @endif>
+                                <button class="btn btn-success" data-toggle='modal'
+                                    data-target="#updatestatusadjust">ยืนยันการปรับแก้</button>
                             </div>
+
                         </div>
 
                         <table class="table table-bordered">
-                            @foreach ($mea_orderdetail as $index => $mea_orderdetail)
+                            @foreach ($dress_mea_adjust as $index => $dress_mea_adjust)
                                 <tr>
-                                    <th>{{ $mea_orderdetail->measurement_name }}</th>
-                                    <td>{{ $mea_orderdetail->measurement_number }}</td>
-                                    @if ($mea_orderdetail->status_measurement == 'รอการแก้ไข')
-                                        <td style="color: #eb3131">
-                                            ปรับแก้:{{ $mea_orderdetail->measurement_number_old }}<i
-                                                class="bi bi-arrow-right"></i>{{ $mea_orderdetail->measurement_number }}นิ้ว
-                                            <span
-                                                style="color: #00BCD4">({{ $mea_orderdetail->status_measurement }})</span>
+                                    @php
+                                        $dress_mea = App\Models\Dressmea::where(
+                                            'id',
+                                            $dress_mea_adjust->dressmea_id,
+                                        )->first();
+                                    @endphp
+                                    <th>{{ $dress_mea->mea_dress_name }}</th>
+                                    <td>{{ $dress_mea_adjust->new_size }}</td>
+
+                                    @if ($dress_mea->current_mea != $dress_mea_adjust->new_size)
+                                        <td style="color: #eb3131 ; font-size: 14px;">
+                                            ปรับแก้:จาก{{ $dress_mea->current_mea }}<i
+                                                class="bi bi-arrow-right"></i>{{ $dress_mea_adjust->new_size }}นิ้ว
+                                            {{-- <span
+                                                style="color: #00BCD4">(ยังไม่ได้ปรับแก้)</span> --}}
                                         </td>
-                                    @elseif($mea_orderdetail->status_measurement == 'แก้ไขแล้ว')
-                                        <td style="color: #eb3131">
-                                            ปรับแก้:{{ $mea_orderdetail->measurement_number_old }}<i
-                                                class="bi bi-arrow-right"></i>{{ $mea_orderdetail->measurement_number }}นิ้ว
-                                            <span
-                                                style="color: #42a731">({{ $mea_orderdetail->status_measurement }})</span>
-                                        </td>
-                                    @elseif($mea_orderdetail->status_measurement == 'ไม่มีการแก้ไข')
-                                        {{-- <td style="color: #eb3131">
-                                            <span style="color: #161616">{{ $mea_orderdetail->status_measurement }}</span>
-                                        </td> --}}
                                     @endif
-
-
-
-
-
-
-
-
                                 </tr>
                             @endforeach
                         </table>
@@ -505,24 +608,11 @@
                     <div class="modal-body">
                         <h5>คุณได้แก้ไขขนาดชุดให้ลูกค้าเรียบร้อยแล้วใช่หรือไม่?</h5>
                         <table class="table table-bordered">
-                            @foreach ($mea_orderdetail_for_adjust as $index => $mea)
-                            <input type="hidden" name="mea_name_[]" value="{{ $mea->measurement_name }}">
-                            <input type="hidden" name="mea_number_[]" value="{{ $mea->measurement_number }}">
-                            <input type="hidden" name="mea_number_start_[]" value="{{$mea->measurement_number_start}}">
-                            <input type="hidden" name="dress_id_[]" value="{{$mea->dress_id}}">
-                            <input type="hidden" name="item_shirt_id_[]" value="{{$mea->item_shirt_id}}">
-                            <input type="hidden" name="item_skirt_id_[]" value="{{$mea->item_skirt_id}}">
-                            
-                                @if ($mea->status_measurement == 'รอการแก้ไข')
-                                    <tr>
-                                        <input type="hidden" name="id_for_mea_[]" value="{{ $mea->id }}">
-                                        <th>{{ $mea->measurement_name }}</th>
-                                        <td>{{ $mea->measurement_number }}</td>
-                                        <td style="color: #eb3131">ปรับแก้:{{ $mea->measurement_number_old }}<i
-                                                class="bi bi-arrow-right"></i>{{ $mea->measurement_number }}นิ้ว
-                                        </td>
-                                    </tr>
-                                @endif
+                            @foreach ($dress_mea_adjust_modal as $index => $dress_mea_adjust_modal)
+                                <input type="hidden" name="dressmea_id_[]"
+                                    value="{{ $dress_mea_adjust_modal->dressmea_id }}">
+                                <input type="hidden" name="new_size_[]"
+                                    value="{{ $dress_mea_adjust_modal->new_size }}">
                             @endforeach
                         </table>
                     </div>

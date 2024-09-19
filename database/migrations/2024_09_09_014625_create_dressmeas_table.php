@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('repairs', function (Blueprint $table) {
+        Schema::create('dressmeas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('dress_id')->nullable();
             $table->unsignedBigInteger('shirtitems_id')->nullable();
             $table->unsignedBigInteger('skirtitems_id')->nullable();
-            $table->text('repair_description')->nullable(); 
-            $table->string('repair_status')->nullable();
+            $table->string('mea_dress_name')->nullable();
+            $table->decimal('initial_mea', 9, 2)->nullable();
+            $table->decimal('current_mea', 9, 2)->nullable();
+            $table->timestamps();
+            $table->softDeletes();
             $table->foreign('dress_id')->references('id')->on('dresses')->onDelete('cascade');
             $table->foreign('shirtitems_id')->references('id')->on('shirtitems')->onDelete('cascade');
             $table->foreign('skirtitems_id')->references('id')->on('skirtitems')->onDelete('cascade');
-            $table->timestamps();
-            $table->softDeletes();
-
         });
     }
 
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('repairs');
+        Schema::dropIfExists('dressmeas');
     }
 };

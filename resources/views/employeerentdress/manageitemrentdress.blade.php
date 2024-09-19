@@ -86,10 +86,7 @@
                             </p>
                             <p>ค่าบริการขยายเวลาเช่าชุด : {{ number_format($orderdetail->late_charge) }} บาท</p>
                         </div>
-                        <div class="media-right">
-                            <button class="btn btn-dark" type="button" data-toggle="modal" data-target="#editdate"
-                                style="font-size: 15px ;">เปลี่ยนวันรับชุด/คืนชุด</button>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -107,31 +104,37 @@
                     <hr>
                     <div id="aria_show_mea">
                         {{-- พืน้ที่แสดงผล  --}}
-                        @foreach ($measurementorderdetail as $measurementorderdetail)
+                        @foreach ($dress_mea_adjust as $dress_mea_adjust)
                             <div class="row">
                                 <div class="col-md-4" style="text-align:center ;">
                                     {{-- <p>{{ $measurementorderdetail->measurement_name }}</p> --}}
-                                    <label for="" class="form-label"
-                                        style="font-size: 15px;margin-top: 10px;">{{ $measurementorderdetail->measurement_name }}<span
+                                    <label for="" class="form-label" style="font-size: 15px;margin-top: 10px;">
+                                        @php
+                                            $dress_mea = App\Models\Dressmea::where('id',$dress_mea_adjust->dressmea_id)->first() ; 
+                                        @endphp
+                                        {{ $dress_mea->mea_dress_name  }}
+                                        <span
                                             style="color: #c40606 ; font-size: 13px;">(ปรับได้
-                                            {{ $measurementorderdetail->measurement_number_start - 4 }}-{{ $measurementorderdetail->measurement_number_start + 4 }})</span></label>
+                                            {{ $dress_mea->initial_mea - 4  }}-{{ $dress_mea->initial_mea + 4 }} นิ้ว)</span>
+                                            
+                                        </label>
                                 </div>
 
                                 <div class="col-md-4" style="display: flex; align-items: center;">
-                                    <input type="hidden" value="{{ $measurementorderdetail->id }}"
-                                        name="mea_order_detail_id_[]">
-                                    <input type="number" name="mea_number_[]" class="form-control"
+                                    <input type="hidden" value="{{ $dress_mea_adjust->id }}"
+                                        name="dress_mea_adjust_[]">
+                                    <input type="number" name="dress_mea_adjust_number_[]" class="form-control"
                                         style="width: 50%; height: 60%; font-size: 15px; margin-right: 20px; margin-bottom: 1px;"
-                                        value="{{ $measurementorderdetail->measurement_number }}" step="0.01"
-                                        min="{{ $measurementorderdetail->measurement_number_start - 4 }}"
-                                        max="{{ $measurementorderdetail->measurement_number_start + 4 }}">
+                                        value="{{ $dress_mea_adjust->new_size }}" step="0.01"
+                                        min="{{ $dress_mea->initial_mea - 4}}"
+                                        max="{{ $dress_mea->initial_mea + 4}}">
                                     <span style="margin-left: 5px; font-size: 15px;">นิ้ว</span>
                                 </div>
                                 <div class="col-md-4" style="padding-left: 1px; margin-top: 10px;">
-                                    @if ($measurementorderdetail->status_measurement == 'รอการแก้ไข')
+                                    @if ($dress_mea->current_mea != $dress_mea_adjust->new_size )
                                         <p style="color: #eb3131">
-                                            ปรับเปลี่ยน:{{ $measurementorderdetail->measurement_number_old }}<i
-                                                class="bi bi-arrow-right"></i>{{ $measurementorderdetail->measurement_number }}นิ้ว
+                                            ปรับเปลี่ยน:{{ $dress_mea->current_mea }}<i
+                                                class="bi bi-arrow-right"></i>{{ $dress_mea_adjust->new_size }}นิ้ว
                                         </p>
                                     @endif
                                 </div>
@@ -156,68 +159,5 @@
         </form>
     </div>
 
-    <div class="modal fade" role="dialog" aria-hidden="true" id="editdate">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form action="{{ route('employee.editdateitem', ['id' => $orderdetail->id]) }}" method="POST">
-                    @csrf
-                    <div class="modal-header">
-                        {{-- เปลี่ยนวันรับชุด/คืนชุด --}}
-                    </div>
-                    <div class="modal-body">
-                        <div class="col-md-12 text-center">
-                            <p style="font-size: 20px;">เปลี่ยนวันเช่าชุด - วันคืนชุด</p>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-                                    <input class="form-control" type="text" id="datepicker"
-                                        style="width: 50%; height: 100%;">
-                                    <input type="hidden" id="startDate" name="startDate">
-                                    <input type="hidden" id="endDate" name="endDate">
-                                    <input type="hidden" id="totalDay" name="totalDay">
-                                    <input type="hidden" name="price" value="{{ $orderdetail->price }}">
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn" style="background-color: #EBE5AE; color: #000000; "
-                            data-dismiss="modal">ยกเลิก</button>
-                        <button class="btn" type="submit"
-                            style="background-color: #A7545E; color: #FFFFFF; ">ยืนยัน</button>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            flatpickr('#datepicker', {
-                dateFormat: 'Y-m-d',
-                locale: 'th',
-                mode: 'range',
-                minDate: 'today',
-                maxDate: new Date().fp_incr(10),
-                onChange: function(array, string, instance) {
-
-                    if (array.length === 2) {
-                        var startdate = array[0];
-                        var enddate = array[1];
-
-                        // เปลี่ยน oblect เป็น วัน
-                        var strstartdate = instance.formatDate(startdate, 'Y-m-d');
-                        var strenddate = instance.formatDate(enddate, 'Y-m-d');
-                        document.getElementById('startDate').value = strstartdate;
-                        document.getElementById('endDate').value = strenddate;
-                        var totaldayminli = enddate - startdate;
-                        var totalday = Math.ceil(totaldayminli / (1000 * 60 * 60 * 24));
-                        document.getElementById('totalDay').value = totalday + 1;
-                    }
-                }
-            });
-        });
-    </script>
+  
 @endsection

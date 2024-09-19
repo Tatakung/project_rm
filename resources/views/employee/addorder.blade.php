@@ -1,49 +1,7 @@
 @extends('layouts.adminlayout')
 @section('content')
 <div class="container">
-    <!-- Header Banner -->
-    <!-- <div class="row bg-gradient" style="background: linear-gradient(45deg, #A7567F, #1B365D); padding: 40px 0; margin-bottom: 40px;">
-        <div class="col-12 text-center">
-            <h1 style="color: #EBE5AE;">ระบบจัดการร้านเช่าชุดและตัดชุด</h1>
-            <p style="color: #F5F5F5;">ยินดีต้อนรับสู่แดชบอร์ดการจัดการ</p>
-        </div>
-    </div> -->
 
-    <!-- <div class="row"> -->
-    <!-- Summary Cards -->
-    <!-- <div class="col-md-4 mb-4">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <h5 class="card-title">ออเดอร์วันนี้</h5>
-                    <p class="card-text" style="font-size: 2rem;">15</p>
-                </div>
-            </div>
-        </div>
-        {{-- <div class="col-md-3 mb-4">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <h5 class="card-title">รายได้วันนี้</h5>
-                    <p class="card-text" style="font-size: 2rem;">฿25,000</p>
-                </div>
-            </div>
-        </div> --}}
-        <div class="col-md-4 mb-4">
-            <div class="card text-white bg-warning">
-                <div class="card-body">
-                    <h5 class="card-title">ชุดที่ต้องส่งคืน</h5>
-                    <p class="card-text" style="font-size: 2rem;">8</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card text-white bg-danger">
-                <div class="card-body">
-                    <h5 class="card-title">ชุดที่ต้องซ่อม</h5>
-                    <p class="card-text" style="font-size: 2rem;">3</p>
-                </div>
-            </div>
-        </div>
-    </div> -->
 
     <div class="row">
     <div class="col-12">
@@ -64,7 +22,7 @@
                 </div>
             </div>
             <!-- Card 2 -->
-            <div class="col-md-4 mb-4">
+            {{-- <div class="col-md-4 mb-4">
                 <div class="card custom-card">
                     <div class="card-body text-center d-flex flex-column justify-content-between">
                         <div>
@@ -73,6 +31,19 @@
                         </div>
                         <button class="btn custom-btn mt-3">
                             <a href="{{route('employee.selectdate')}}" class="custom-link">เพิ่มออเดอร์</a>
+                        </button>
+                    </div>
+                </div>
+            </div> --}}
+            <div class="col-md-4 mb-4">
+                <div class="card custom-card">
+                    <div class="card-body text-center d-flex flex-column justify-content-between">
+                        <div>
+                            <i class="bi bi-shop card-icon"></i>
+                            <h5 class="card-title mt-3">เช่าชุด</h5>
+                        </div>
+                        <button class="btn custom-btn mt-3">
+                            <a href="{{route('adddresstocart')}}" class="custom-link">เพิ่มออเดอร์</a>
                         </button>
                     </div>
                 </div>
@@ -91,6 +62,7 @@
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 </div>

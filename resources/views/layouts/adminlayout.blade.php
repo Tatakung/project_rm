@@ -143,7 +143,7 @@
             <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
         </h1>
         <div class="list-group ">
-            <a href="#" class="list-group-item list-group-item-action border-0 d-flex align-items-center" id="d1">
+            <a href="" class="list-group-item list-group-item-action border-0 d-flex align-items-center" id="d1">
             <i class="bi bi-calendar-week"></i>
                 <span class="ml-2 ">ปฏิทินการทำงาน</span>
             </a>
@@ -199,7 +199,7 @@
         <h1 class="logo-container">
             <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
         </h1>
-        <a href="#" class="list-group-item list-group-item-action border-0 d-flex align-items-center" id="d1">
+        <a href="{{route('employee.calendar')}}" class="list-group-item list-group-item-action border-0 d-flex align-items-center" id="d1">
             <i class="bi bi-calendar-week"></i>
                 <span class="ml-2 ">ปฏิทินการทำงาน</span>
             </a>
@@ -232,14 +232,19 @@
                     <span class="ml-2">จัดการชุดที่คืนแล้ว</span>
                 </a> --}}
 
-            <a href="" class="list-group-item @if(Route::currentRouteName() == 'employee.clean') active @endif list-group-item-action border-0 align-items-center" id="d1">
+                <a href="{{route('employee.dressadjust')}}" class="list-group-item  list-group-item-action border-0 align-items-center" id="d1">
+                    <span class="bi bi-water"></span>
+                    <span class="ml-2">จัดการคิวงานเช่าชุด</span>
+                </a>
+
+            <a href="{{route('employee.clean')}}" class="list-group-item @if(Route::currentRouteName() == 'employee.clean') active @endif list-group-item-action border-0 align-items-center" id="d1">
                 <span class="bi bi-water"></span>
-                <span class="ml-2">คิวการซัก</span>
+                <span class="ml-2">ชุดที่ต้องซัก</span>
             </a>
 
-            <a href="" class="list-group-item @if(Route::currentRouteName() == 'employee.repair') active @endif list-group-item-action border-0 align-items-center" id="d1">
+            <a href="{{route('employee.repair')}}" class="list-group-item @if(Route::currentRouteName() == 'employee.repair') active @endif list-group-item-action border-0 align-items-center" id="d1">
                 <span class="bi bi-tools"></span>
-                <span class="ml-2">คิวการซ่อม</span>
+                <span class="ml-2">ชุดที่ต้องซ่อม</span>
             </a>
 
             {{-- <a href=""
@@ -254,10 +259,10 @@
                     <span class="ml-2">รายงานปัญหา</span>
                 </a> --}}
 
-            <a href="" class="list-group-item @if(Route::currentRouteName() == 'employee.typerentdress') active @endif list-group-item-action border-0 align-items-center" id="d1">
+           ' {{-- <a href="" class="list-group-item @if(Route::currentRouteName() == 'employee.typerentdress') active @endif list-group-item-action border-0 align-items-center" id="d1">
                 <span class="bi bi-clock-history"></span>
                 <span class="ml-2">ประวัติการทำงาน</span>
-            </a>
+            </a>' --}}
         </div>
     </div>
     @endif
@@ -266,8 +271,6 @@
 
     <div class="col-md-9 col-lg-10 ml-md-auto px-0 ms-md-auto">
         <!-- top nav -->
-
-        {{-- แอดมิน --}}
         {{-- แอดมิน --}}
         <nav class="d-flex shadow-sm">
 
@@ -276,6 +279,17 @@
             </button>
 
             <div class="ml-auto d-flex">
+                <div class="d-flex align-items-center ml-3">
+                    @if(Auth::user()->is_admin == 0 )
+                    <span class="text-dark h5" style="font-size: 16px;">
+                        ผู้ใช้งาน : คุณ{{Auth::user()->name}} {{Auth::user()->lname}}
+                    </span>
+                    @else
+                    <span class="text-dark h5" style="font-size: 16px;">
+                        ผู้ใช้งาน : Admin
+                    </span>
+                    @endif
+                </div>
                 <div class="dropdown">
                     <a class="btn py-0 d-flex align-items-center" id="cart-dropdown" href="{{ route('employee.cart') }}" style="color: #000000">
                         <span class="bi bi-cart text-dark h4"></span>
@@ -304,6 +318,7 @@
                         </form>
                     </div>
                 </div>
+                
             </div>
         </nav>
 

@@ -38,6 +38,8 @@
             </div>
         </div>
 
+
+
         <div class="card mb-4">
             <div class="card-header"><i class="bi bi-info-circle"></i>รายละเอียดชุด
                 <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal">
@@ -70,6 +72,7 @@
                                                 placeholder="กรุณากรอกราคา" required min="1" required>
                                         </div>
                                     </div>
+
                                     <div class="row mb-3">
                                         <div class="col-12">
                                             <label for="update_dress_deposit">ราคามัดจำ</label>
@@ -183,9 +186,26 @@
                         <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
                         <p>
                             <strong>สถานะชุด:</strong>
-                            <span style="color: green;">{{ $datadress->dress_status }}</span>
+                            <span style="color: green;">ยังปล่อยให้เช่า</span>
 
                         </p>
+
+
+                        <p>
+                            <strong>สถานะชุดปัจจุบัน:</strong>
+                            <span style="color: rgb(163, 99, 3);">
+                                @if($dress_status_now != null)
+                                {{$dress_status_now->status}}
+                                @else
+                                ชุดอยู่ในร้าน ไม่มีคิวจอง
+                                @endif
+                            </span>
+
+                        </p>
+
+
+
+
                         <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง</p>
 
                         <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p>
@@ -204,32 +224,24 @@
                             @endphp
                         <table class="table table-bordered-0">
                             <thead>
-                                <!-- <tr>
-                                    <th>ชื่อการวัด</th>
-                                    <th>ขนาดเริ่มต้น</th>
-                                    <th>ขนาดล่าสุด</th>
-                                    <th>หน่วย</th>
-                                </tr> -->
+                                
                             </thead>
                             </p>
                             <tbody>
-                                @foreach ($measument_no_separate_now as $index => $measument_no_separate_now)
+                                @foreach ($mea_dress as $index => $mea_dress)
                                     <tr>
-                                        <td>{{ $measument_no_separate_now->measurementnow_dress_name }}<span
+                                        <td>{{ $mea_dress->mea_dress_name }}<span
                                                 style="font-size: 12px; color: rgb(197, 21, 21)">(ปรับได้
-                                                {{ $measument_no_separate_now->measurementnow_dress_number_start - 4 }}-{{ $measument_no_separate_now->measurementnow_dress_number_start + 4 }})</span>
+                                                {{ $mea_dress->initial_mea - 4 }}-{{ $mea_dress->initial_mea + 4 }})</span>
                                         </td>
 
-                                        {{-- <td>
-                                            {{ $measument_no_separate_now->measurementnow_dress_number_start }}
-
-                                        </td> --}}
-                                        <td>{{ $measument_no_separate_now->measurementnow_dress_number }}</td>
-                                        <td>{{ $measument_no_separate_now->measurementnow_dress_unit }}</td>
+                
+                                        <td>{{ $mea_dress->current_mea }}</td>
+                                        <td>นิ้ว</td>
                                     </tr>
-                                    @php
+                                    {{-- @php
                                         $list_check_mea[] = $measument_no_separate_now->measurementnow_dress_name;
-                                    @endphp
+                                    @endphp --}}
                                 @endforeach
                             </tbody>
                         </table>
@@ -247,6 +259,146 @@
             </div>
         </div>
     </div>
+
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <h3>คิวการเช่าชุด</h3>
+            </div>
+            <div class="col-md-3" style="text-align: right ; ">
+                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#reservation_history">ประวัติเช่าชุดนี้</button>
+            </div>
+        </div>
+
+        @if ($reservation->count() > 0)
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ลำดับคิว</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ชื่อผู้จอง</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">วันที่นัดรับชุด</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">เหลือเวลาอีก (วัน)</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">สถานะ</th>
+                </tr>
+            </thead>
+                <tbody>
+                    @foreach ($reservation as $index => $reservation)
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">คิวที่ {{ $index + 1 }} </td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                @php
+                                    $order_id = App\Models\Orderdetail::where(
+                                        'reservation_id',
+                                        $reservation->id,
+                                    )->value('order_id');
+                                    $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
+                                    $customer = App\Models\Customer::find($customer_id);
+                                @endphp
+                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                            </td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                {{ \Carbon\Carbon::parse($reservation->start_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($reservation->start_date)->year + 543 }}                              
+                            </td>
+
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd; color: blue;">
+                                <span id="showday{{ $reservation->id }}"></span>
+                                <script>
+                                    var now = new Date();
+                                    var start_date = new Date("{{ $reservation->start_date }}");
+                                    var day = start_date - now;
+    
+                                    var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
+    
+                                    document.getElementById('showday{{ $reservation->id }}').innerHTML = totalday + ' วัน ';
+                                </script>    
+                            </td>
+                            <td>{{$reservation->status}}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <h6 style="text-align: center ; ">ไม่มีคิวการเช่าชุดนี้ !</h6>
+        @endif
+
+
+
+    </div>
+
+
+
+    
+
+
+
+
+    <div class="modal fade" id="reservation_history" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header"><h3>ประวัติการเช่า{{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h3></div>                    
+                    <div class="modal-body">
+                        <div class="container">
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                <thead>
+                                    <tr style="background-color: #f2f2f2;">
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ลำดับ</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ชื่อผู้จอง</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">วันที่คืนชุด</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">สถานะ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($reservation_history as $index => $reservation)
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ $index + 1 }} </td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                @php
+                                    $order_id = App\Models\Orderdetail::where(
+                                        'reservation_id',
+                                        $reservation->id,
+                                    )->value('order_id');
+                                    $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
+                                    $customer = App\Models\Customer::find($customer_id);
+                                @endphp
+                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                            </td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                {{ \Carbon\Carbon::parse($reservation->start_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($reservation->start_date)->year + 543 }}                              
+                            </td>
+                            <td>รอเขียน wherIn ให้มันชัดเจนกว่านี้ก่อน</td>
+                        </tr>
+                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!--modal เพิ่มรูปภาพ-->
     <div class="modal fade" id="modaladdimage" role="dialog" aria-hidden="true">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Dress;
 use App\Models\Dressimage;
+use App\Models\Dressmea;
 use App\Models\Dressmeasurement;
 use App\Models\Dressmeasurementnow;
 use App\Models\Expense;
@@ -11,6 +12,7 @@ use App\Models\Shirtitem;
 use App\Models\Skirtitem;
 use App\Models\Typedress;
 use App\Models\User;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -77,7 +79,7 @@ class DressController extends Controller
         }
 
 
-       
+
 
 
         for ($i = 0; $i < $dressCount; $i++) {
@@ -146,7 +148,6 @@ class DressController extends Controller
 
 
             //ส่วนการแยกได้กับแยกไม่ได้
-
             if ($request->input('separable') == 1) {
                 //แยกไม่ได้
 
@@ -156,31 +157,11 @@ class DressController extends Controller
                     $no_shirt_measurement_dress_number = $request->input('no_shirt_measurement_dress_number_');
                     // $no_shirt_measurement_dress_unit = $request->input('no_shirt_measurement_dress_unit_');
                     foreach ($no_shirt_measurement_dress_name as $index => $no_shirt_meas_dress_name) {
-                        $addmea = new Dressmeasurement;
+                        $addmea = new Dressmea();
                         $addmea->dress_id  = $dress->id;
-                        $addmea->measurement_dress_name = $no_shirt_meas_dress_name;
-                        $addmea->measurement_dress_number = $no_shirt_measurement_dress_number[$index];
-                        $addmea->measurement_dress_unit = "นิ้ว";
-                        $addmea->save();
-                    }
-                }
-
-
-                // ตาราง dressmeasurementnow
-                if ($request->input('no_shirt_measurement_dress_name_') != null) {
-                    $no_shirt_measurement_dress_name = $request->input('no_shirt_measurement_dress_name_');
-                    $no_shirt_measurement_dress_number = $request->input('no_shirt_measurement_dress_number_');
-                    // $no_shirt_measurement_dress_unit = $request->input('no_shirt_measurement_dress_unit_');
-                    $max = Dressmeasurementnow::max('count');
-                    $max = $max + 1;
-                    foreach ($no_shirt_measurement_dress_name as $index => $no_shirt_meas_dress_name) {
-                        $addmea = new Dressmeasurementnow();
-                        $addmea->dress_id  = $dress->id;
-                        $addmea->measurementnow_dress_name = $no_shirt_meas_dress_name;
-                        $addmea->measurementnow_dress_number_start = $no_shirt_measurement_dress_number[$index];
-                        $addmea->measurementnow_dress_number = $no_shirt_measurement_dress_number[$index];
-                        $addmea->measurementnow_dress_unit = "นิ้ว";
-                        $addmea->count = $max;
+                        $addmea->mea_dress_name = $no_shirt_meas_dress_name;
+                        $addmea->initial_mea = $no_shirt_measurement_dress_number[$index];
+                        $addmea->current_mea = $no_shirt_measurement_dress_number[$index];
                         $addmea->save();
                     }
                 }
@@ -213,61 +194,26 @@ class DressController extends Controller
                 $yes_shirt_measurement_dress_number = $request->input('yes_shirt_measurement_dress_number_');
                 // $yes_shirt_measurement_dress_unit = $request->input('yes_shirt_measurement_dress_unit_');
                 foreach ($yes_shirt_measurement_dress_name as $index => $yes_shirt_mea_dress_name) {
-                    $add_item_shiry = new Dressmeasurement();
+                    $add_item_shiry = new Dressmea();
                     $add_item_shiry->dress_id = $dress->id;
-                    $add_item_shiry->shirtitems_id = $add_shirtitem->id;
-                    $add_item_shiry->measurement_dress_name = $yes_shirt_mea_dress_name;
-                    $add_item_shiry->measurement_dress_number = $yes_shirt_measurement_dress_number[$index];
-                    $add_item_shiry->measurement_dress_unit = "นิ้ว";
+                    $add_item_shiry->shirtitems_id  = $add_shirtitem->id;
+                    $add_item_shiry->mea_dress_name = $yes_shirt_mea_dress_name;
+                    $add_item_shiry->initial_mea = $yes_shirt_measurement_dress_number[$index];
+                    $add_item_shiry->current_mea = $yes_shirt_measurement_dress_number[$index];
                     $add_item_shiry->save();
                 }
-                //เสื้อตารางdressmeasurementnow
-                $yes_shirt_measurement_dress_name = $request->input('yes_shirt_measurement_dress_name_');
-                $yes_shirt_measurement_dress_number = $request->input('yes_shirt_measurement_dress_number_');
-                // $yes_shirt_measurement_dress_unit = $request->input('yes_shirt_measurement_dress_unit_');
-                $max = Dressmeasurementnow::max('count');
-                $max_shirt_skirt = $max + 1;
-                foreach ($yes_shirt_measurement_dress_name as $index => $yes_shirt_mea_dress_name) {
-                    $add_item_shiry = new Dressmeasurementnow();
-                    $add_item_shiry->dress_id = $dress->id;
-                    $add_item_shiry->shirtitems_id = $add_shirtitem->id;
-                    $add_item_shiry->measurementnow_dress_name = $yes_shirt_mea_dress_name;
-                    $add_item_shiry->measurementnow_dress_number_start = $yes_shirt_measurement_dress_number[$index];
-                    $add_item_shiry->measurementnow_dress_number = $yes_shirt_measurement_dress_number[$index];
-                    $add_item_shiry->measurementnow_dress_unit = "นิ้ว";
-                    $add_item_shiry->count = $max_shirt_skirt;
-                    $add_item_shiry->save();
-                }
-
 
                 //กระโปรงตารางdressmeasurement
                 $yes_skirt_measurement_dress_name = $request->input('yes_skirt_measurement_dress_name_');
                 $yes_skirt_measurement_dress_number = $request->input('yes_skirt_measurement_dress_number_');
                 // $yes_skirt_measurement_dress_unit = $request->input('yes_skirt_measurement_dress_unit_');
                 foreach ($yes_skirt_measurement_dress_name as $index => $yes_skirt_mea_dress_name) {
-                    $add_item_skiry = new Dressmeasurement();
+                    $add_item_skiry = new Dressmea();
                     $add_item_skiry->dress_id = $dress->id;
-                    $add_item_skiry->skirtitems_id = $add_skirtitem->id;
-                    $add_item_skiry->measurement_dress_name = $yes_skirt_mea_dress_name;
-                    $add_item_skiry->measurement_dress_number = $yes_skirt_measurement_dress_number[$index];
-                    $add_item_skiry->measurement_dress_unit = "นิ้ว";
-                    $add_item_skiry->save();
-                }
-                //กระโปรงตารางdressmeasurementnow
-                $yes_skirt_measurement_dress_name = $request->input('yes_skirt_measurement_dress_name_');
-                $yes_skirt_measurement_dress_number = $request->input('yes_skirt_measurement_dress_number_');
-                // $yes_skirt_measurement_dress_unit = $request->input('yes_skirt_measurement_dress_unit_');
-                // $max = Dressmeasurementnow::max('count');
-                // $max = $max + 1;
-                foreach ($yes_skirt_measurement_dress_name as $index => $yes_skirt_mea_dress_name) {
-                    $add_item_skiry = new Dressmeasurementnow();
-                    $add_item_skiry->dress_id = $dress->id;
-                    $add_item_skiry->skirtitems_id = $add_skirtitem->id;
-                    $add_item_skiry->measurementnow_dress_name = $yes_skirt_mea_dress_name;
-                    $add_item_skiry->measurementnow_dress_number_start = $yes_skirt_measurement_dress_number[$index];
-                    $add_item_skiry->measurementnow_dress_number = $yes_skirt_measurement_dress_number[$index];
-                    $add_item_skiry->measurementnow_dress_unit = "นิ้ว";
-                    $add_item_skiry->count = $max_shirt_skirt;
+                    $add_item_skiry->skirtitems_id  = $add_skirtitem->id;
+                    $add_item_skiry->mea_dress_name = $yes_skirt_mea_dress_name;
+                    $add_item_skiry->initial_mea = $yes_skirt_measurement_dress_number[$index];
+                    $add_item_skiry->current_mea = $yes_skirt_measurement_dress_number[$index];
                     $add_item_skiry->save();
                 }
             }
@@ -335,6 +281,7 @@ class DressController extends Controller
     //แยกไม่ได้
     private function dressdetailno($id)
     {
+
         $datadress = Dress::find($id);
         $name_type = Typedress::where('id', $datadress->type_dress_id)->value('type_dress_name');
         $imagedata = Dressimage::where('dress_id', $id)->get();
@@ -344,7 +291,24 @@ class DressController extends Controller
             ->where('count', $maxcount)->get();
         $measument_no_separate_now_modal = Dressmeasurementnow::where('dress_id', $id)
             ->where('count', $maxcount)->get();
-        return view('admin.dressdetail', compact('datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal'));
+        $reservation = Reservation::where('status_completed', 0)
+            ->where('dress_id', $id)
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+            ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
+            ->get();
+
+        $dress_status_now = Reservation::where('status_completed', 0)
+            ->where('dress_id', $id)
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+            ->first();
+
+        $reservation_history = Reservation::where('status_completed', 0)
+            ->where('dress_id', $id)
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+            // ->whereIn('status',['ถูกจอง','กำลังเช่า'])
+            ->get();
+        $mea_dress = Dressmea::where('dress_id', $id)->get();
+        return view('admin.dressdetail', compact('datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservation', 'mea_dress', 'reservation_history', 'dress_status_now'));
     }
     // แยกได้
     private function dressdetailyes($id)
@@ -356,16 +320,34 @@ class DressController extends Controller
         $shirtitem = Shirtitem::where('dress_id', $id)->first();
         $skirtitem = Skirtitem::where('dress_id', $id)->first();
 
+        $reservation_dress = Reservation::where('dress_id', $id)
+            ->where('shirtitems_id', null)
+            ->where('skirtitems_id', null)
+            ->where('status_completed', 0)
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+            ->get();
+        $dress_mea_totaldress = Dressmea::where('dress_id', $id)->get();
         //เสื้อ
         $maxcountshirt = Dressmeasurementnow::where('shirtitems_id', $shirtitem->id)->max('count');
         $measument_yes_separate_shirt = Dressmeasurement::where('shirtitems_id', $shirtitem->id)->get();
         $measument_yes_separate_now_shirt = Dressmeasurementnow::where('shirtitems_id', $shirtitem->id)
             ->where('count', $maxcountshirt)->get();
+        $reservation_shirt = Reservation::where('shirtitems_id', $shirtitem->id)
+
+            ->where('status_completed', 0)
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+            ->get();
+        $dress_mea_shirt = Dressmea::where('shirtitems_id', $shirtitem->id)->get();
+
         // กระโปรง
         $maxcountskirt = Dressmeasurementnow::where('skirtitems_id', $skirtitem->id)->max('count');
         $measument_yes_separate_skirt = Dressmeasurement::where('skirtitems_id', $skirtitem->id)->get();
         $measument_yes_separate_now_skirt = Dressmeasurementnow::where('skirtitems_id', $skirtitem->id)
             ->where('count', $maxcountskirt)->get();
+        $reservation_skirt = Reservation::where('skirtitems_id', $skirtitem->id)
+            ->where('status_completed', 0)
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+            ->get();
 
 
         $measument_yes_separate_now_shirt_modal = Dressmeasurementnow::where('shirtitems_id', $shirtitem->id)
@@ -373,10 +355,71 @@ class DressController extends Controller
         $measument_yes_separate_now_skirt_modal = Dressmeasurementnow::where('skirtitems_id', $skirtitem->id)
             ->where('count', $maxcountskirt)->get();
 
+        $dress_mea_skirt = Dressmea::where('skirtitems_id', $skirtitem->id)->get();
 
-        // $measument_no_separate_now_modal = Dressmeasurementnow::where('dress_id', $id)
-        //     ->where('count', $maxcount)->get();
-        return view('admin.dressdetailyes', compact('datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal'));
+
+        $check_status_dress = Reservation::where('dress_id', $id)
+            ->where('status_completed', 0)
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc ")
+            ->first();
+        $check_status_shirt = Reservation::where('shirtitems_id', $shirtitem->id)
+            ->where('status_completed', 0)
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc ")
+            ->first();
+
+        $check_status_skirt = Reservation::where('skirtitems_id', $skirtitem->id)
+            ->where('status_completed', 0)
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc ")
+            ->first();
+
+
+        //สถานะล่าสุดของเสื้อ
+        if ($check_status_dress != null && $check_status_shirt != null) {
+            $convert_dress = strtotime($check_status_dress->start_date);
+            $convert_shirt = strtotime($check_status_shirt->start_date);
+
+            if ($convert_dress < $convert_shirt) {
+                $text_check_status_shirt = $check_status_dress->status;
+            } elseif ($convert_dress > $convert_shirt) {
+                $text_check_status_shirt = $check_status_shirt->status;
+            } elseif ($convert_dress == $convert_shirt) {
+                $text_check_status_shirt = $check_status_dress->status;
+            }
+        } elseif ($check_status_dress != null && $check_status_shirt == null) {
+            $text_check_status_shirt = $check_status_dress->status;
+        } elseif ($check_status_dress == null && $check_status_shirt != null) {
+            $text_check_status_shirt =  $check_status_shirt->status;
+        } elseif ($check_status_dress == null && $check_status_shirt == null) {
+            $text_check_status_shirt = "เสื้ออยู่ในร้าน ไม่มีคิวจอง";
+        }
+
+
+        //สถานะล่าสุดของผ้าถุง
+        if ($check_status_dress != null && $check_status_skirt != null) {
+            $convert_dress = strtotime($check_status_dress->start_date);
+            $convert_skirt = strtotime($check_status_skirt->start_date);
+
+            if ($convert_dress < $convert_skirt) {
+                $text_check_status_skirt = $check_status_dress->status;
+            } elseif ($convert_dress > $convert_skirt) {
+                $text_check_status_skirt = $check_status_skirt->status;
+            } elseif ($convert_dress == $convert_skirt) {
+                $text_check_status_skirt = $check_status_dress->status;
+            }
+        } elseif ($check_status_dress != null && $check_status_skirt == null) {
+            $text_check_status_skirt = $check_status_dress->status;
+        } elseif ($check_status_dress == null && $check_status_skirt != null) {
+            $text_check_status_skirt =  $check_status_skirt->status;
+        } elseif ($check_status_dress == null && $check_status_skirt == null) {
+            $text_check_status_skirt = "ผ้าถุงอยู่ในร้าน ไม่มีคิวจอง";
+        }
+
+
+
+
+
+
+        return view('admin.dressdetailyes', compact('text_check_status_shirt','text_check_status_skirt' ,  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress'));
     }
 
 
@@ -406,7 +449,7 @@ class DressController extends Controller
             $update_dress->dress_status = $request->input('update_dress_status');
             $update_dress->dress_description = $request->input('update_dress_description');
             $update_dress->save();
-            
+
             if ($request->input('mea_now_id_') != null) {
                 $mea_now_id = $request->input('mea_now_id_');
                 $mea_now_name = $request->input('mea_now_name_');
@@ -444,7 +487,7 @@ class DressController extends Controller
             $update_shirt->shirtitem_status = $request->input('update_shirt_status');
             $update_shirt->save();
 
-            
+
             if ($request->input('mea_now_id_') != null) {
                 $mea_now_id = $request->input('mea_now_id_');
                 $mea_now_name = $request->input('mea_now_name_');
@@ -482,7 +525,7 @@ class DressController extends Controller
             $update_skirt->skirt_damage_insurance = $request->input('update_skirt_damage_insurance');
             $update_skirt->skirtitem_status = $request->input('update_skirt_status');
             $update_skirt->save();
-            
+
             if ($request->input('mea_now_id_') != null) {
                 $mea_now_id = $request->input('mea_now_id_');
                 $mea_now_name = $request->input('mea_now_name_');
@@ -579,7 +622,7 @@ class DressController extends Controller
 
 
 
-    
+
     //เพิ่มข้อมูลการวัดyesyshirt
     public function addmeasumentyesshirt(Request $request, $id)
     {

@@ -25,8 +25,8 @@
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-12 text-center">
-                <h1 class="display-4">จัดการการซ่อมชุด</h1>
-                <p class="lead">ดูและอัพเดตสถานะการซ่อมของชุด</p>
+                <h1 class="display-4">จัดการการส่งซัก</h1>
+                <p class="lead">ดูและอัพเดตสถานะการซักของชุด</p>
             </div>
         </div>
 
@@ -43,15 +43,22 @@
             <div class="col-md-6 mb-3">
                 <div class="card bg-warning text-white">
                     <div class="card-body">
-                        <h5 class="card-title">กำลังซ่อม</h5>
+                        <h5 class="card-title">กำลังส่งซัก</h5>
                         <p class="card-text display-4">{{ $countdoing }} รายการ</p>
                     </div>
                 </div>
             </div>
-
+            {{-- <div class="col-md-4 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">ซักเสร็จแล้ว</h5>
+                        <p class="card-text display-4">{{ $countsuccess }} รายการ</p>
+                    </div>
+                </div>
+            </div> --}}
         </div>
         <div class="alert alert-info text-center" role="alert">
-            การซักชุด/ซ่อมชุดทุกชุดควรเสร็จภายใน 7 วันหลังจากลูกค้านำชุดมาคืน เพื่อให้สามารถตรวจสอบและซ่อมแซมชุดได้ทันท่วงที
+            การซักชุดทุกชุดควรเสร็จภายใน 7 วันหลังจากลูกค้านำชุดมาคืน เพื่อให้สามารถตรวจสอบและซ่อมแซมชุดได้ทันท่วงที
             รวมถึงเตรียมพร้อมสำหรับการให้เช่าครั้งต่อไป
         </div>
 
@@ -59,85 +66,85 @@
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-tshirt me-1"></i>
-                รายการชุดที่รอดำเนินการ/กำลังซ่อม
+                รายการชุดที่รอดำเนินการ/กำลังซัก
             </div>
-            <div class="card-body">
 
+
+
+            <div class="card-body">
+                {{-- <form action="{{ route('employee.cleanupdatestatus') }}" method="POST">
+                    @csrf --}}
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th>เลือก</th>
-                                <th>รายการซ่อม</th>
+                                <th>รายการซัก</th>
                                 <th>สถานะ</th>
                                 <th>เหลือเวลาอีก (วัน)</th>
                                 <th>คิวเช่าต่อไป </th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($repair as $repair)
-                                @if ($repair->repair_status != 'ซ่อมเสร็จแล้ว')
+                            @foreach ($clean as $clean)
+                                @if ($clean->clean_status != 'ซักเสร็จแล้ว')
                                     <tr>
 
                                         <td>
-                                            <input type="checkbox" name="item_check" value="{{ $repair->id }}"
-                                                class="item_checkbox" data-status="{{ $repair->repair_status }}"
-                                                onclick="checkboxclick()">
+                                            <input type="checkbox" name="select_item_[]" value="{{ $clean->id }}"
+                                                class="select-item-class" data-status="{{ $clean->clean_status }}"
+                                                onclick="updatecheck()">
                                         </td>
 
                                         <script>
-                                            function checkboxclick() {
-                                                var allitem = document.getElementsByClassName('item_checkbox');
-                                                var select_checkbox = null;
-                                                var list_for_repair_id = [];
-                                                for (var i = 0; i < allitem.length; i++) {
-                                                    if (allitem[i].checked) {
-                                                        select_checkbox = allitem[i].getAttribute('data-status');
-                                                        list_for_repair_id.push(allitem[i].value); //เพิ่มrepair_id ลงในlistทั้งหมดตอนท่มันเลือก
+                                            function updatecheck() {
+                                                var alldata = document.getElementsByClassName('select-item-class');
+                                                var check_status = null;
+                                                var list_clean_id = [];
+                                                for (var i = 0; i < alldata.length; i++) {
+                                                    if (alldata[i].checked) {
+                                                        check_status = alldata[i].getAttribute('data-status');
+                                                        list_clean_id.push(alldata[i].value);
                                                     }
                                                 }
-                                                for (var i = 0; i < allitem.length; i++) {
-                                                    if (select_checkbox != null) {
-                                                        if (select_checkbox == allitem[i].getAttribute('data-status')) {
-                                                            allitem[i].disabled = false;
+                                                for (var i = 0; i < alldata.length; i++) {
+                                                    if (check_status != null) {
+
+                                                        if (check_status == alldata[i].getAttribute('data-status')) {
+                                                            alldata[i].disabled = false;
                                                         } else {
-                                                            allitem[i].disabled = true;
+                                                            alldata[i].disabled = true;
                                                         }
-                                                    } else if (select_checkbox == null) {
-                                                        allitem[i].disabled = false;
+                                                    } else if (check_status == null) {
+                                                        alldata[i].disabled = false;
                                                     }
                                                 }
 
+                                                var show_notification = document.getElementById('statusChangeMessage');
+                                                console.log(list_clean_id);
 
-                                                var aria_statusmessage = document.getElementById('statusmessage');
-
-                                                if (select_checkbox == null) {
-                                                    aria_statusmessage.innerHTML = 'กรุณาเลือกรายการที่ต้องการอัพเดต';
-                                                } else if (select_checkbox != null) {
-
-                                                    if (select_checkbox == "รอดำเนินการ") {
-                                                        aria_statusmessage.innerHTML = 'ยืนยันว่าจะเปลี่ยนสถานะจาก "รอดำเนินการ" เป็น "กำลังส่งซัก' + 
-                                                        '<input type="hidden" name="repair_id_array" value=" ' + list_for_repair_id + ' ">' ; 
-                                                    } else if (select_checkbox == "กำลังซ่อม") {
-                                                        aria_statusmessage.innerHTML = 
-                                                        'ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังส่งซัก" เป็น' + 
-                                                        '<input type="hidden" name="repair_id_array" value=" ' + list_for_repair_id + ' ">'  + 
-                                                        '<p>' + 
-                                                            '<input type="radio" name="status_select" id="test1" value="ซ่อมเสร็จแล้ว" required>' + 
-                                                            '<label for="test1">ซ่อมเสร็จแล้ว(พร้อมให้เช่าต่อ) </label>' + 
-                                                        '</p>' + 
-                                                        '<p>' + 
-                                                            '<input type="radio" name="status_select" id="test1" value="ส่งซัก" required>' + 
-                                                            '<label for="test1">ซ่อมเสร็จแล้ว(ส่่งซัก) </label>' + 
-                                                        '</p>'  ; 
-                                                    }
-
+                                                if (check_status == "รอดำเนินการ") {
+                                                    show_notification.innerHTML = 'ยืนยันว่าจะเปลี่ยนสถานะจาก "รอดำเนินการ" เป็น "กำลังส่งซัก' +
+                                                        '<input type="hidden" name="ID_for_clean" value="' + list_clean_id + '">';
+                                                } else if (check_status == "กำลังส่งซัก") {
+                                                    show_notification.innerHTML =
+                                                        'ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังส่งซัก" เป็น' +
+                                                        '<br><br>' +
+                                                        '<input type="radio" id="ready" name="next_status" value="ซักเสร็จแล้ว" required>' +
+                                                        '<input type="hidden" name="ID_for_clean" value="' + list_clean_id + '">' +
+                                                        '<label for="ready">ซักเสร็จแล้ว (พร้อมให้เช่าต่อ) </label>' +
+                                                        '<br>' +
+                                                        '<input type="radio" id="repair" name="next_status" value="ต้องซ่อม">' +
+                                                        '<label for="repair">ซักเสร็จแล้ว (ต้องซ่อม เนื่องจากเสียหาย)</label>';
                                                 }
                                             }
                                         </script>
+
+
+
                                         <td>
                                             @php
-                                                $reservation = App\Models\Reservation::find($repair->reservation_id);
+                                                $reservation = App\Models\Reservation::find($clean->reservation_id);
                                                 $dress_id = $reservation->dress_id;
                                                 $dress = App\Models\Dress::find($dress_id);
                                                 $type_name = App\Models\Typedress::where(
@@ -150,7 +157,7 @@
                                             @php
                                                 $nearest = App\Models\Reservation::whereNot(
                                                     'id',
-                                                    $repair->reservation_id,
+                                                    $clean->reservation_id,
                                                 )
                                                     ->where('dress_id', $reservation->dress_id)
                                                     ->where('status', 'ถูกจอง')
@@ -165,34 +172,27 @@
                                             @else
                                                 (ทั้งชุด)
                                             @endif
-
-                                            @if ($repair->clean_id == null)
-                                                <p style="font-size: 14px; margin-left: 10px; color: #b11515 ; ">
-                                                    -ยังไม่ได้ซัก</p>
-                                            @else
-                                                <p style="font-size: 14px; margin-left: 10px; color: rgb(62, 160, 40) ; ">
-                                                    -ซักแล้ว</p>
-                                            @endif
                                         </td>
 
-                                        <td>{{ $repair->repair_status }}
+                                        <td>{{ $clean->clean_status }}
                                         </td>
                                         <td>
-                                            <span id="ltd_seven{{ $repair->id }}"></span>
+                                            <span id="ltd_seven{{ $clean->id }}"></span>
                                             <script>
                                                 var four_end_date = new Date('{{ $reservation->end_date }}');
                                                 var four_end_date_add_seven = four_end_date.setDate(four_end_date.getDate() + 7);
+                                                console.log(four_end_date_add_seven);
                                                 var four_now = new Date();
                                                 var four_day = four_end_date_add_seven - four_now;
                                                 var four_show_day = Math.ceil(four_day / (1000 * 60 * 60 * 24));
-                                                document.getElementById('ltd_seven{{ $repair->id }}').innerHTML = four_show_day + 'วัน';
+                                                document.getElementById('ltd_seven{{ $clean->id }}').innerHTML = four_show_day + 'วัน';
                                             </script>
                                         </td>
                                         <td>
                                             @php
                                                 $nearest = App\Models\Reservation::whereNot(
                                                     'id',
-                                                    $repair->reservation_id,
+                                                    $clean->reservation_id,
                                                 )
                                                     ->where('dress_id', $reservation->dress_id)
                                                     ->where('status', 'ถูกจอง')
@@ -201,14 +201,14 @@
                                                 //วันที่นัดรับชุดที่ใกล้ที่สุดที่จะมีคนมารับชุดนี้ต่อ
                                             @endphp
                                             @if ($reservation->shirtitems_id)
-                                                <span id="showday{{ $repair->id }}" style="color: #852323 ;">
+                                                <span id="showday{{ $clean->id }}" style="color: #852323 ;">
                                                     @if ($nearest != null)
                                                         <script>
                                                             var start_date = new Date("{{ $nearest->start_date }}");
                                                             var now = new Date();
                                                             var day = start_date - now;
                                                             var total = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                                            document.getElementById('showday{{ $repair->id }}').innerHTML =
+                                                            document.getElementById('showday{{ $clean->id }}').innerHTML =
                                                                 'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
                                                         </script>
                                                     @elseif($nearest == null)
@@ -216,14 +216,14 @@
                                                     @endif
                                                 </span>
                                             @elseif($reservation->skirtitems_id)
-                                                <span id="showday{{ $repair->id }}" style="color: #852323 ;">
+                                                <span id="showday{{ $clean->id }}" style="color: #852323 ;">
                                                     @if ($nearest != null)
                                                         <script>
                                                             var start_date = new Date("{{ $nearest->start_date }}");
                                                             var now = new Date();
                                                             var day = start_date - now;
                                                             var total = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                                            document.getElementById('showday{{ $repair->id }}').innerHTML =
+                                                            document.getElementById('showday{{ $clean->id }}').innerHTML =
                                                                 'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
                                                         </script>
                                                     @elseif($nearest == null)
@@ -231,14 +231,14 @@
                                                     @endif
                                                 </span>
                                             @else
-                                                <span id="showday{{ $repair->id }}" style="color: #852323 ;">
+                                                <span id="showday{{ $clean->id }}" style="color: #852323 ;">
                                                     @if ($nearest != null)
                                                         <script>
                                                             var start_date = new Date("{{ $nearest->start_date }}");
                                                             var now = new Date();
                                                             var day = start_date - now;
                                                             var total = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                                            document.getElementById('showday{{ $repair->id }}').innerHTML =
+                                                            document.getElementById('showday{{ $clean->id }}').innerHTML =
                                                                 'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
                                                         </script>
                                                     @elseif($nearest == null)
@@ -264,12 +264,12 @@
                     <div class="modal fade" id="showmodal" role="dialog" aria-hidden="true">
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
-                                <form action="{{ route('employee.repairupdatestatus') }}" method="POST">
+                                <form action="{{ route('employee.cleanupdatestatus') }}" method="POST">
                                     @csrf
                                     <div class="modal-header">
                                         <p>หัว</p>
                                     </div>
-                                    <div class="modal-body" id="statusmessage">
+                                    <div class="modal-body" id="statusChangeMessage">
                                         {{-- พื้นที่แสดงผล --}}
                                     </div>
                                     <div class="modal-footer">
@@ -280,18 +280,10 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-
             </div>
+
         </div>
-
-
-        
-
-
-
-
 
     </div>
 @endsection

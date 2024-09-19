@@ -16,6 +16,8 @@ use App\Models\Typejewelry;
 use App\Models\Dressmeasurement;
 use App\Models\Typedress;
 use App\Models\Jewelry;
+use App\Models\Dressmeaadjustment;
+
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
 
@@ -36,27 +38,7 @@ class ManageorderController extends Controller
     }
 
 
-    //editdateitemแก้ไขวันที่นัดรับคืนชุด ในitem เช่าชุด
-    public function editdateitem(Request $request, $id)
-    {
-        $startDate = $request->input('startDate');
-        $endDate = $request->input('endDate');
-        $totalDay = $request->input('totalDay');
-        $price = $request->input('price');
-        if ($startDate != null &&  $endDate != null) {
-            $orderdetail = Orderdetail::find($id);
-            $orderdetail->pickup_date =  $startDate;
-            $orderdetail->return_date = $endDate;
-            if ($totalDay > 3) {
-                $day_over = $totalDay - 3;
-                $orderdetail->late_charge = ($price * 0.2) * $day_over;
-            } else {
-                $orderdetail->late_charge = 0;
-            }
-            $orderdetail->save();
-        }
-        return redirect()->back()->with('success', 'เปลี่ยนวันรับชุด/คืนชุดสำเร็จ');
-    }
+    
 
 
     //หน้าเพิ่มออเดอร์เช่าชุด หลังจากที่เลือกประเภทชุดแล้ว
@@ -1146,25 +1128,17 @@ class ManageorderController extends Controller
     {
         //ตาราง orderdetail
         $orderdetail = Orderdetail::find($id);
+    
+    
+        $dress_mea_adjust = $request->input('dress_mea_adjust_');
+        $dress_mea_adjust_number = $request->input('dress_mea_adjust_number_');
         
-
-
-        $mea_order_detail_id = $request->input('mea_order_detail_id_');
-        $mea_number = $request->input('mea_number_');
-
-        foreach ($mea_order_detail_id as $index => $id_for_mea) {
-            $update_mea = Measurementorderdetail::find($id_for_mea);
-
-            if ($mea_number[$index] == $update_mea->measurement_number_old) {
-                $update_mea->status_measurement = 'ไม่มีการแก้ไข';
-                $update_mea->measurement_number = $mea_number[$index];
-            } else {
-                $update_mea->status_measurement = 'รอการแก้ไข';
-                $update_mea->measurement_number = $mea_number[$index];
-                $orderdetail->status_fix_measurement = "รอการแก้ไข";
-            }
-            $update_mea->save();
+        foreach($dress_mea_adjust as $index => $mea_adjust_id){
+            $update_mea_adjust = Dressmeaadjustment::find($mea_adjust_id) ; 
+            $update_mea_adjust->new_size = $dress_mea_adjust_number[$index] ; 
+            $update_mea_adjust->save() ; 
         }
+        
         $orderdetail->note = $request->input('note');
         $orderdetail->save();
         return redirect()->back()->with('success', "บันทึกข้อมูล");

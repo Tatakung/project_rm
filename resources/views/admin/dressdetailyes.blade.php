@@ -84,7 +84,7 @@
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
-                                                                </p> -->
+                                                                        </p> -->
                                 <p><strong>สถานะชุด:</strong> <span
                                         @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
                                         {{ $datadress->dress_status }}</span></p>
@@ -92,10 +92,10 @@
 
                                 <p><strong>สถานะปัจจุบันของชุด</strong></p>
                                 <ul>
-                                    <li>เสื้อ : {{$text_check_status_shirt}}</li>
-                                    <li>ผ้าถุง : {{$text_check_status_skirt}}</li>
+                                    <li>เสื้อ : {{ $text_check_status_shirt }}</li>
+                                    <li>ผ้าถุง : {{ $text_check_status_skirt }}</li>
                                 </ul>
-                                
+
                                 <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
                                 <p><strong>ราคา:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
                                 <p><strong>ราคามัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
@@ -221,8 +221,7 @@
                             <div class="col-md-4">
                                 <p>
                                     <strong>สถานะเสื้อปัจุบัน:</strong>
-                                    <span
-                                        >
+                                    <span>
                                         {{ $text_check_status_shirt }}
                                     </span>
                                 </p>
@@ -233,11 +232,113 @@
                                 <p><strong>ราคาประกันค่าเสียหาย:</strong>
                                     {{ number_format($shirtitem->shirt_damage_insurance, 2) }} บาท</p>
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $shirtitem->shirtitem_rental }} ครั้ง</p>
+                                @php
+                                    $shirt_id = App\Models\Shirtitem::where('dress_id', $datadress->id)->value('id');
+
+                                    $list_one = [];
+                                    $list_success = [];
+                                    $reservation_find_shirt_id = App\Models\Reservation::where(
+                                        'shirtitems_id',
+                                        $shirt_id,
+                                    )->get();
+                                    $reservation_find_dress_id = App\Models\Reservation::where(
+                                        'dress_id',
+                                        $datadress->id,
+                                    )->get();
+                                    foreach ($reservation_find_shirt_id as $key => $re) {
+                                        $list_one[] = $re->id;
+                                    }
+                                    foreach ($reservation_find_dress_id as $key => $dr) {
+                                        $list_one[] = $dr->id;
+                                    }
+                                    $list_one_unique = array_unique($list_one);
+
+                                    foreach ($list_one_unique as $reservation_id) {
+                                        $repair = App\Models\Repair::where('reservation_id', $reservation_id)
+                                            ->whereIn('repair_type', ['10', '20'])
+                                            ->get();
+                                        if ($repair->isNotEmpty()) {
+                                            foreach ($repair as $key => $re_success) {
+                                                $list_success[] = $re_success->id;
+                                            }
+                                        }
+                                    }
+                                    $historyrepair_shirt = App\Models\Repair::whereIn('id', $list_success)->get();
+                                @endphp
+                                <p><strong>จำนวนครั้งที่ซ่อม:</strong> {{$historyrepair_shirt->count()}} ครั้ง
+                                    <button class="btn btn-secondary" type="button" data-toggle="modal"
+                                        data-target="#showhistory_repair_shirt">ประวัติการซ่อม</button>
+                                </p>
+
+
+                                {{-- modalประวัติการซ่อมชุด --}}
+                                <div class="modal fade" id="showhistory_repair_shirt" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">ประวัติการซ่อม</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                @if ($historyrepair_shirt->count() > 0)
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>วันที่</th>
+                                                                <th>รายการ</th>
+                                                                <th>สถานะ</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($historyrepair_shirt as $repair)
+                                                                <tr>
+                                                                    <td>{{ $repair->created_at }}</td>
+                                                                    <td>{{ $repair->repair_description }}</td>
+                                                                    <td>{{ $repair->repair_status }}</td>
+                                                                </tr>
+                                                            @endforeach
+
+
+                                                        </tbody>
+                                                    </table>
+                                                @else
+                                                    <p style="text-align: center ; ">ไม่มีรายการประวัติการซ่อม</p>
+                                                @endif
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">ปิด</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                             </div>
                             <div class="col-md-5">
                                 <p>
                                     <strong>ขนาดของเสื้อ</strong> (ปรับแก้ ขยาย/ลด ไม่เกิน 4 นิ้ว):
-                                    <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea_shirt">
+                                    <button class="btn btn-link p-0 ml-2" data-toggle="modal"
+                                        data-target="#add_mea_shirt">
                                         <i class="bi bi-plus-square text-dark"></i>
                                     </button>
                                 <div class=" ">
@@ -348,8 +449,7 @@
                                 @endforeach
                             </div>
                             <div class="col-md-4">
-                                <p><strong>สถานะผ้าถุงตอนนี้:</strong> <span
-                                        >{{ $text_check_status_skirt }}</span>
+                                <p><strong>สถานะผ้าถุงตอนนี้:</strong> <span>{{ $text_check_status_skirt }}</span>
                                 </p>
                                 <p><strong>จำนวนกระโปรง/กางเกง:</strong> 1 ตัว</p>
                                 <p><strong>ราคา:</strong> {{ number_format($skirtitem->skirtitem_price, 2) }} บาท</p>
@@ -358,6 +458,103 @@
                                 <p><strong>ราคาประกันค่าเสียหาย:</strong>
                                     {{ number_format($skirtitem->skirt_damage_insurance, 2) }} บาท</p>
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $skirtitem->skirtitem_rental }} ครั้ง</p>
+                                @php
+                                    $skirt_id = App\Models\Skirtitem::where('dress_id', $datadress->id)->value('id');
+
+                                    $list_one = [];
+                                    $list_success = [];
+                                    $reservation_find_skirt_id = App\Models\Reservation::where(
+                                        'skirtitems_id',
+                                        $skirt_id,
+                                    )->get();
+                                    $reservation_find_dress_id = App\Models\Reservation::where(
+                                        'dress_id',
+                                        $datadress->id,
+                                    )->get();
+                                    foreach ($reservation_find_skirt_id as $key => $re) {
+                                        $list_one[] = $re->id;
+                                    }
+                                    foreach ($reservation_find_dress_id as $key => $dr) {
+                                        $list_one[] = $dr->id;
+                                    }
+                                    $list_one_unique = array_unique($list_one);
+
+                                    foreach ($list_one_unique as $reservation_id) {
+                                        $repair = App\Models\Repair::where('reservation_id', $reservation_id)
+                                            ->whereIn('repair_type', ['10', '30'])
+                                            ->get();
+                                        if ($repair->isNotEmpty()) {
+                                            foreach ($repair as $key => $re_success) {
+                                                $list_success[] = $re_success->id;
+                                            }
+                                        }
+                                    }
+                                    $historyrepair_skirt = App\Models\Repair::whereIn('id', $list_success)->get();
+                                @endphp
+                                <p><strong>จำนวนครั้งที่ซ่อม:</strong> {{$historyrepair_skirt->count()}} ครั้ง
+                                    <button class="btn btn-secondary" type="button" data-toggle="modal"
+                                        data-target="#showhistory_repair_skirt">ประวัติการซ่อม</button>
+                                </p>
+
+                                    {{-- modalประวัติการซ่อมชุด --}}
+                                    <div class="modal fade" id="showhistory_repair_skirt" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">ประวัติการซ่อม</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                @if ($historyrepair_skirt->count() > 0)
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>วันที่</th>
+                                                                <th>รายการ</th>
+                                                                <th>สถานะ</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($historyrepair_skirt as $repair)
+                                                                <tr>
+                                                                    <td>{{ $repair->created_at }}</td>
+                                                                    <td>{{ $repair->repair_description }}</td>
+                                                                    <td>{{ $repair->repair_status }}</td>
+                                                                </tr>
+                                                            @endforeach
+
+
+                                                        </tbody>
+                                                    </table>
+                                                @else
+                                                    <p style="text-align: center ; ">ไม่มีรายการประวัติการซ่อม</p>
+                                                @endif
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">ปิด</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+
+
+
+
+
+
+
+
+
+
+
+
                             </div>
                             <div class="col-md-5">
                                 <p>
@@ -736,7 +933,8 @@
                                                     {{ $skirtitem->skirtitem_status == 'เลิกให้เช่า' ? 'selected' : '' }}>
                                                     เลิกให้เช่า</option>
                                                 <option value="สูญหาย"
-                                                    {{ $skirtitem->skirtitem_status == 'สูญหาย' ? 'selected' : '' }}>สูญหาย
+                                                    {{ $skirtitem->skirtitem_status == 'สูญหาย' ? 'selected' : '' }}>
+                                                    สูญหาย
                                                 </option>
                                             </select>
                                         </div>

@@ -17,7 +17,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
@@ -137,85 +139,102 @@
     <div id="sidebar-overlay" class="overlay w-100 vh-100 position-fixed d-none"></div>
 
     @if (Auth::user() && Auth::user()->is_admin == 1)
-    <!-- sidebar -->
-    <div class="col-md-3 col-lg-2 px-0 position-fixed h-100 shadow-sm sidebar" id="sidebar">
-        <h1 class="logo-container">
-            <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
-        </h1>
-        <div class="list-group ">
-            <a href="" class="list-group-item list-group-item-action border-0 d-flex align-items-center" id="d1">
-            <i class="bi bi-calendar-week"></i>
-                <span class="ml-2 ">ปฏิทินการทำงาน</span>
-            </a>
+        <!-- sidebar -->
+        <div class="col-md-3 col-lg-2 px-0 position-fixed h-100 shadow-sm sidebar" id="sidebar">
+            <h1 class="logo-container">
+                <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
+            </h1>
+            <div class="list-group ">
+                <a href="" class="list-group-item list-group-item-action border-0 d-flex align-items-center"
+                    id="d1">
+                    <i class="bi bi-calendar-week"></i>
+                    <span class="ml-2 ">ปฏิทินการทำงาน</span>
+                </a>
 
-            <button class="list-group-item list-group-item-action border-0 d-flex align-items-center" data-toggle="collapse" data-target="#sale-collapse" id="d1">
-                <div>
-                    <span class="bi bi-cart-dash"></span>
-                    <span class="ml-2">Dashboard</span>
+                <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
+                    data-toggle="collapse" data-target="#sale-collapse" id="d1">
+                    <div>
+                        <span class="bi bi-cart-dash"></span>
+                        <span class="ml-2">Dashboard</span>
+                    </div>
+                    <span class="bi bi-chevron-down small"></span>
+                </button>
+                <div class="collapse" id="sale-collapse" data-parent="#sidebar">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            สำหรับตัดชุด</a>
+                        <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            สำหรับเช่าชุด</a>
+                        <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            สำหรับเช่าเครื่องประดับ</a>
+                        <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            สำหรับเช่าตัดชุด</a>
+                    </div>
                 </div>
-                <span class="bi bi-chevron-down small"></span>
-            </button>
-            <div class="collapse" id="sale-collapse" data-parent="#sidebar">
-                <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">- สำหรับตัดชุด</a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">- สำหรับเช่าชุด</a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">- สำหรับเช่าเครื่องประดับ</a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">- สำหรับเช่าตัดชุด</a>
-                </div>
-            </div>
 
 
-            <a href="{{ route('admin.dresstotal') }}" class="list-group-item @if(Route::currentRouteName() == 'admin.dresstotal') active @endif list-group-item-action border-0 align-items-center" id="d1">
-            <i class="bi bi-kanban"></i>
-                <span class="ml-2 nav-pills">จัดการชุด</span>
-            </a>
+                <a href="{{ route('admin.dresstotal') }}"
+                    class="list-group-item @if (Route::currentRouteName() == 'admin.dresstotal') active @endif list-group-item-action border-0 align-items-center"
+                    id="d1">
+                    <i class="bi bi-kanban"></i>
+                    <span class="ml-2 nav-pills">จัดการชุด</span>
+                </a>
 
 
-            {{-- <a href="{{ route('admin.jewelrytotal') }}"
+                {{-- <a href="{{ route('admin.jewelrytotal') }}"
             class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
             <span class="bi bi-box"></span>
             <span class="ml-2">จัดการเครื่องประดับ</span>
             </a> --}}
 
-            <a href="{{ route('employeetotal') }}" class="list-group-item @if(Route::currentRouteName() == 'employeetotal') active @endif list-group-item-action border-0 align-items-center" id="d1">
+                <a href="{{ route('employeetotal') }}"
+                    class="list-group-item @if (Route::currentRouteName() == 'employeetotal') active @endif list-group-item-action border-0 align-items-center"
+                    id="d1">
 
-            <i class="bi bi-person-circle"></i>
-                <span class="ml-2">จัดการพนักงาน</span>
-            </a>
-
-
-
-            <a href="{{ route('admin.expense') }}" class="list-group-item @if(Route::currentRouteName() == 'admin.expense') active @endif list-group-item-action border-0 align-items-center" id="d1">
-            <i class="bi bi-cash-coin"></i>
-                <span class="ml-2">ค่าใช้จ่าย</span>
-            </a>
+                    <i class="bi bi-person-circle"></i>
+                    <span class="ml-2">จัดการพนักงาน</span>
+                </a>
 
 
+
+                <a href="{{ route('admin.expense') }}"
+                    class="list-group-item @if (Route::currentRouteName() == 'admin.expense') active @endif list-group-item-action border-0 align-items-center"
+                    id="d1">
+                    <i class="bi bi-cash-coin"></i>
+                    <span class="ml-2">ค่าใช้จ่าย</span>
+                </a>
+
+
+            </div>
         </div>
-    </div>
     @elseif(Auth::user() && Auth::user()->is_admin == 0)
-    <!-- sidebar -->
-    <div class="col-md-3 col-lg-2 px-0 position-fixed h-100 shadow p-1 sidebar" id="sidebar">
-        <h1 class="logo-container">
-            <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
-        </h1>
-        <a href="{{route('employee.calendar')}}" class="list-group-item list-group-item-action border-0 d-flex align-items-center" id="d1">
-            <i class="bi bi-calendar-week"></i>
+        <!-- sidebar -->
+        <div class="col-md-3 col-lg-2 px-0 position-fixed h-100 shadow p-1 sidebar" id="sidebar">
+            <h1 class="logo-container">
+                <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
+            </h1>
+            <a href="{{ route('employee.calendar') }}"
+                class="list-group-item list-group-item-action border-0 d-flex align-items-center" id="d1">
+                <i class="bi bi-calendar-week"></i>
                 <span class="ml-2 ">ปฏิทินการทำงาน</span>
             </a>
 
-        <!-- <div class="list-group rounded-0">
+            <!-- <div class="list-group rounded-0">
             <a href="" class="list-group-item border-0 align-items-center" id="d1">
                 <span class="bi bi-speedometer2"></span>
                 <span class="ml-2">Dashboard</span>
             </a> -->
 
-            <a href="{{ route('employee.ordertotal') }}" class="list-group-item @if(Route::currentRouteName() == 'employee.ordertotal') active @endif list-group-item-action border-0 align-items-center" id="d1">
+            <a href="{{ route('employee.ordertotal') }}"
+                class="list-group-item @if (Route::currentRouteName() == 'employee.ordertotal') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
                 <span class="bi bi-list-ul"></span>
                 <span class="ml-2">รายการออเดอร์ทั้งหมด</span>
             </a>
 
-            <a href="{{ route('employee.addorder') }}" class="list-group-item @if(Route::currentRouteName() == 'employee.addorder') active @endif list-group-item-action border-0 align-items-center" id="d1">
+            <a href="{{ route('employee.addorder') }}"
+                class="list-group-item @if (Route::currentRouteName() == 'employee.addorder') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
                 <span class="bi bi-plus-circle"></span>
                 <span class="ml-2">เพิ่มออเดอร์</span>
             </a>
@@ -231,20 +250,67 @@
                     <span class="bi bi-arrow-return-left"></span>
                     <span class="ml-2">จัดการชุดที่คืนแล้ว</span>
                 </a> --}}
+                <a href=""
+                class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
+                 <span class="bi bi-scissors"></span>
+                 <span class="ml-2">จัดการคิวงานตัดชุด
+                     <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                         1
+                     </span>
+                 </span>
+             </a>
+             
 
-                <a href="{{route('employee.dressadjust')}}" class="list-group-item  list-group-item-action border-0 align-items-center" id="d1">
-                    <span class="bi bi-water"></span>
-                    <span class="ml-2">จัดการคิวงานเช่าชุด</span>
-                </a>
-
-            <a href="{{route('employee.clean')}}" class="list-group-item @if(Route::currentRouteName() == 'employee.clean') active @endif list-group-item-action border-0 align-items-center" id="d1">
-                <span class="bi bi-water"></span>
-                <span class="ml-2">ชุดที่ต้องซัก</span>
+            <a href="{{ route('employee.dressadjust') }}"
+                class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
+                <span class="bi bi-calendar"></span>
+                <span class="ml-2">จัดการคิวงานเช่าชุด
+                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                        @php
+                            $count_reservations = App\Models\Reservation::where('status_completed', 0)
+                                ->where('status', 'ถูกจอง')
+                                ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                ->get();
+                        @endphp
+                        {{ $count_reservations->count() }}
+                    </span>
+                </span>
             </a>
 
-            <a href="{{route('employee.repair')}}" class="list-group-item @if(Route::currentRouteName() == 'employee.repair') active @endif list-group-item-action border-0 align-items-center" id="d1">
+
+            <a href="{{ route('employee.clean') }}"
+                class="list-group-item @if (Route::currentRouteName() == 'employee.clean') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
+                <span class="bi bi-water"></span>
+                <span class="ml-2">รายการชุดซัก
+                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                        @php
+                            $cleancount = App\Models\Clean::whereIn('clean_status', [
+                                'รอดำเนินการ',
+                                'กำลังส่งซัก',
+                            ])->count();
+                        @endphp
+                        {{ $cleancount }}
+                    </span>
+                </span>
+
+            </a>
+
+            <a href="{{ route('employee.repair') }}"
+                class="list-group-item @if (Route::currentRouteName() == 'employee.repair') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
                 <span class="bi bi-tools"></span>
-                <span class="ml-2">ชุดที่ต้องซ่อม</span>
+                <span class="ml-2">รายการซ่่อมชุด
+                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                        @php
+                            $repaircount = App\Models\Repair::whereIn('repair_status', [
+                                'รอดำเนินการ',
+                                'กำลังซ่อม',
+                            ])->count();
+                        @endphp
+                        {{ $repaircount }}
+                    </span>
+                </span>
             </a>
 
             {{-- <a href=""
@@ -259,12 +325,12 @@
                     <span class="ml-2">รายงานปัญหา</span>
                 </a> --}}
 
-           ' {{-- <a href="" class="list-group-item @if(Route::currentRouteName() == 'employee.typerentdress') active @endif list-group-item-action border-0 align-items-center" id="d1">
+            ' {{-- <a href="" class="list-group-item @if (Route::currentRouteName() == 'employee.typerentdress') active @endif list-group-item-action border-0 align-items-center" id="d1">
                 <span class="bi bi-clock-history"></span>
                 <span class="ml-2">ประวัติการทำงาน</span>
             </a>' --}}
         </div>
-    </div>
+        </div>
     @endif
 
 
@@ -280,36 +346,41 @@
 
             <div class="ml-auto d-flex">
                 <div class="d-flex align-items-center ml-3">
-                    @if(Auth::user()->is_admin == 0 )
-                    <span class="text-dark h5" style="font-size: 16px;">
-                        ผู้ใช้งาน : คุณ{{Auth::user()->name}} {{Auth::user()->lname}}
-                    </span>
+                    @if (Auth::user()->is_admin == 0)
+                        <span class="text-dark h5" style="font-size: 16px;">
+                            ผู้ใช้งาน : คุณ{{ Auth::user()->name }} {{ Auth::user()->lname }}
+                        </span>
                     @else
-                    <span class="text-dark h5" style="font-size: 16px;">
-                        ผู้ใช้งาน : Admin
-                    </span>
+                        <span class="text-dark h5" style="font-size: 16px;">
+                            ผู้ใช้งาน : Admin
+                        </span>
                     @endif
                 </div>
                 <div class="dropdown">
-                    <a class="btn py-0 d-flex align-items-center" id="cart-dropdown" href="{{ route('employee.cart') }}" style="color: #000000">
+                    <a class="btn py-0 d-flex align-items-center" id="cart-dropdown"
+                        href="{{ route('employee.cart') }}" style="color: #000000">
                         <span class="bi bi-cart text-dark h4"></span>
                         <span class=" mb-2 small text-dark">
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 {{ App\Models\Order::where('user_id', Auth::user()->id)->where('order_status', 0)->value('total_quantity') ?? 0 }}
                             </span>
                     </a>
                 </div>
 
                 <div class="dropdown ml-2">
-                    <button class="btn py-0 d-flex" id="logout-dropdown" data-toggle="dropdown" aria-expanded="false">
+                    <button class="btn py-0 d-flex" id="logout-dropdown" data-toggle="dropdown"
+                        aria-expanded="false">
                         <span class="bi bi-person text-dark h4"></span>
                         <span class="bi bi-chevron-down ml-1 mb-2 small text-dark"></span>
                     </button>
 
-                    <div class="dropdown-menu dropdown-menu-right border-0 shadow-sm" aria-labelledby="logout-dropdown">
+                    <div class="dropdown-menu dropdown-menu-right border-0 shadow-sm"
+                        aria-labelledby="logout-dropdown">
                         <li><a class="dropdown-item" href="{{ route('admin.adminprofile') }}">profile</a></li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <a class="dropdown-item" href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 {{ __('Logout') }}
                             </a>
                         </li>
@@ -318,7 +389,7 @@
                         </form>
                     </div>
                 </div>
-                
+
             </div>
         </nav>
 

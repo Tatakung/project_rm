@@ -11,6 +11,7 @@ use App\Models\Expense;
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
 use App\Models\Typedress;
+use App\Models\Orderdetail;
 use App\Models\User;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
@@ -281,7 +282,6 @@ class DressController extends Controller
     //แยกไม่ได้
     private function dressdetailno($id)
     {
-
         $datadress = Dress::find($id);
         $name_type = Typedress::where('id', $datadress->type_dress_id)->value('type_dress_name');
         $imagedata = Dressimage::where('dress_id', $id)->get();
@@ -291,24 +291,36 @@ class DressController extends Controller
             ->where('count', $maxcount)->get();
         $measument_no_separate_now_modal = Dressmeasurementnow::where('dress_id', $id)
             ->where('count', $maxcount)->get();
-        $reservation = Reservation::where('status_completed', 0)
-            ->where('dress_id', $id)
+           
+        $reservations = Reservation::where('dress_id', $id)
+            ->where('status_completed', 0)
             ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
-            ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
+            ->whereIn('status',['ถูกจอง',"กำลังเช่า"])
             ->get();
+
 
         $dress_status_now = Reservation::where('status_completed', 0)
             ->where('dress_id', $id)
             ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
             ->first();
 
-        $reservation_history = Reservation::where('status_completed', 0)
-            ->where('dress_id', $id)
-            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
-            // ->whereIn('status',['ถูกจอง','กำลังเช่า'])
-            ->get();
+        // $reservation_history = Reservation::where('status_completed', 0)
+        //     ->where('dress_id', $id)
+        //     ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+        //     // ->whereIn('status',['ถูกจอง','กำลังเช่า'])
+        //     ->get();
+        
+
+        $history_reservation = Orderdetail::where('dress_id',$id)
+                ->where('status_detail','คืนชุดแล้ว')
+                ->get() ; 
+        
+
+
+
+
         $mea_dress = Dressmea::where('dress_id', $id)->get();
-        return view('admin.dressdetail', compact('datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservation', 'mea_dress', 'reservation_history', 'dress_status_now'));
+        return view('admin.dressdetail', compact('datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now','history_reservation'));
     }
     // แยกได้
     private function dressdetailyes($id)

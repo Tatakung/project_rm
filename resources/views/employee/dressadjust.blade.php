@@ -2,29 +2,44 @@
 
 @section('content')
     <h1 class="text-center my-4" style="color: #3d3d3d; font-family: 'Prompt', sans-serif; font-weight: 600;">
-        รายการเช่าชุดที่ลูกค้าต้องมารับในเร็วๆนี้ !
+        "คิวการจัดเตรียมชุดสำหรับลูกค้า"
     </h1>
+
+    <div class="alert alert-info" role="alert" style="font-family: 'Prompt', sans-serif;">
+        <h4 class="alert-heading">คำแนะนำสำหรับพนักงาน</h4>
+        <p>รายการนี้แสดงลำดับคิวการจัดเตรียมชุดสำหรับลูกค้า โดยเรียงตามวันที่ลูกค้าจะมารับ</p>
+        <hr>
+        <p class="mb-0">กรุณาจัดเตรียมชุดตามลำดับคิว <strong>คิวที่ 1 <span style="color: red;">&#9733;</span>
+                มีความสำคัญสูงสุดและต้องจัดเตรียมก่อน</strong></p>
+    </div>
 
     <table class="table shadow-sm" style="width: 100%; background-color: #ffffff; border-collapse: collapse;">
         <thead>
             <tr style="background-color: #f2f2f2;">
+                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ลำดับคิว</th>
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชุด</th>
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชื่อลูกค้า</th>
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">วันที่นัดรับ</th>
+                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ตำแหน่งชุด</th>
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ดูรายละเอียด</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($reservation as $reservation)
+            @foreach ($reservations as $index => $reservation)
                 @php
                     $orderdetail = App\Models\Orderdetail::where('reservation_id', $reservation->id)->first();
                     $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
                     $customer = App\Models\Customer::find($customer_id);
-                    $dress_mea_adjust = App\Models\Dressmeaadjustment::where('order_detail_id', $orderdetail->id)->get();
+                    $dress_mea_adjust = App\Models\Dressmeaadjustment::where(
+                        'order_detail_id',
+                        $orderdetail->id,
+                    )->get();
 
                     $validate = false;
                     foreach ($dress_mea_adjust as $index => $dressmeaadjust) {
-                        $dressmea = App\Models\Dressmea::where('id', $dressmeaadjust->dressmea_id)->value('current_mea');
+                        $dressmea = App\Models\Dressmea::where('id', $dressmeaadjust->dressmea_id)->value(
+                            'current_mea',
+                        );
                         if ($dressmea != $dressmeaadjust->new_size) {
                             $validate = true;
                         }
@@ -35,6 +50,61 @@
                 @endphp
 
                 <tr style="border-bottom: 1px solid #e6e6e6;">
+                    <td>
+                        @if ($reservation->shirtitems_id)
+                            @php
+                                $find = App\Models\Reservation::where('status_completed', 0)
+                                    ->where('status', 'ถูกจอง')
+                                    ->where('shirtitems_id', $reservation->shirtitems_id)
+                                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                    ->get();
+                                foreach ($find as $index_dress => $item) {
+                                    if ($item->id == $reservation->id) {
+                                        $number = $index_dress + 1;
+                                        break;
+                                    }
+                                }
+                            @endphp
+                        @elseif($reservation->skirtitems_id)
+                            @php
+                                $find = App\Models\Reservation::where('status_completed', 0)
+                                    ->where('status', 'ถูกจอง')
+                                    ->where('skirtitems_id', $reservation->skirtitems_id)
+                                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                    ->get();
+                                foreach ($find as $index_dress => $item) {
+                                    if ($item->id == $reservation->id) {
+                                        $number = $index_dress + 1;
+                                        break;
+                                    }
+                                }
+                            @endphp
+                        @else
+                            @php
+                                $find = App\Models\Reservation::where('status_completed', 0)
+                                    ->where('dress_id', $reservation->dress_id)
+                                    ->where('status', 'ถูกจอง')
+                                    ->whereNull('shirtitems_id')
+                                    ->whereNull('skirtitems_id')
+                                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                    ->get();
+                                foreach ($find as $index_dress => $item) {
+                                    if ($item->id == $reservation->id) {
+                                        $number = $index_dress + 1;
+                                        break;
+                                    }
+                                }
+                            @endphp
+                        @endif
+
+                        @if ($number == 1)
+                            คิวที่ {{ $number }} <span style="color: red; margin-left: 5px;">&#9733;</span>
+                        @else
+                            คิวที่ {{ $number }}
+                        @endif
+
+                    </td>
+
                     <td style="padding: 16px;">
                         เช่า {{ $type_dress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
                         <span>
@@ -72,9 +142,46 @@
                             document.getElementById('showday{{ $reservation->id }}').innerHTML = "เหลืออีก " + totalday + ' วัน !';
                         </script>
                     </td>
+                    <td style="width: 200px;">
+
+                        @if ($reservation->shirtitems_id)
+                            @php
+                                $check_status_dress_now = null;
+                            @endphp
+                        @elseif($reservation->skirtitems_id)
+                            @php
+                                $check_status_dress_now = null;
+                            @endphp
+                        @else
+                            @if ($number == 1)
+                                @php
+                                    $check_status_dress_now = App\Models\Reservation::where('status_completed', 0)
+                                        ->where('dress_id', $reservation->dress_id)
+                                        ->whereNull('shirtitems_id')
+                                        ->whereNull('skirtitems_id')
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc")
+                                        ->first();
+                                @endphp
+
+                                @if ($check_status_dress_now->status == 'กำลังเช่า')
+                                    กำลังถูกเช่าโดยลูกค้าท่านก่อน(คืน{{ \Carbon\Carbon::parse($check_status_dress_now->start_date)->locale('th')->isoFormat('D MMM') }})
+                                @elseif($check_status_dress_now->status == 'ถูกจอง')
+                                    อยู่ในร้าน
+                                @else
+                                    {{ $check_status_dress_now->status }}
+                                @endif
+                            @else
+                            รอคิว
+                            @endif
+                        @endif
+
+
+
+                    </td>
 
                     <td style="padding: 16px;">
-                        <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}" class="btn btn-primary" style="padding: 6px 12px;">
+                        <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
+                            class="btn btn-primary" style="padding: 6px 12px;">
                             ดูรายละเอียด
                         </a>
                     </td>

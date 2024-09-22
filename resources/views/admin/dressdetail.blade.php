@@ -194,10 +194,10 @@
                         <p>
                             <strong>สถานะชุดปัจจุบัน:</strong>
                             <span style="color: rgb(163, 99, 3);">
-                                @if($dress_status_now != null)
-                                {{$dress_status_now->status}}
+                                @if ($dress_status_now != null)
+                                    {{ $dress_status_now->status }}
                                 @else
-                                ชุดอยู่ในร้าน ไม่มีคิวจอง
+                                    ชุดอยู่ในร้าน ไม่มีคิวจอง
                                 @endif
                             </span>
 
@@ -209,6 +209,88 @@
                         <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง</p>
 
                         <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p>
+                        {{-- สำหรับแสดงประวัติการซ่อม --}}
+                        @php
+                            $reservation = App\Models\Reservation::where('dress_id', $datadress->id)->get();
+                            $list_one = [];
+                            $list_two = [];
+                            foreach ($reservation as $re) {
+                                $list_one[] = $re->id;
+                            }
+                            foreach ($list_one as $reservation_id) {
+                                $repair = App\Models\Repair::where('reservation_id', $reservation_id)
+                                    ->where('repair_status', 'ซ่อมเสร็จแล้ว')
+                                    ->get();
+                                if ($repair->isNotEmpty()) {
+                                    foreach ($repair as $index) {
+                                        $list_two[] = $index->id;
+                                    }
+                                }
+                            }
+
+                            $historyrepair = App\Models\Repair::whereIn('id', $list_two)->get();
+                        @endphp
+                        <p><strong>จำนวนครั้งที่ซ่อม</strong>
+                            {{ $historyrepair->count() }} ครั้ง
+                            <span><button class="btn btn-secondary" type="button" data-toggle="modal"
+                                    data-target="#showhistory_repair">ประวัติการซ่อม</button></span>
+                        </p>
+                        {{-- modalประวัติการซ่อมชุด --}}
+                        <div class="modal fade" id="showhistory_repair" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">ประวัติการซ่อม</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        @if ($historyrepair->count() > 0)
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>วันที่</th>
+                                                        <th>รายการ</th>
+                                                        <th>สถานะ</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($historyrepair as $repair)
+                                                        <tr>
+                                                            <td>{{ $repair->created_at }}</td>
+                                                            <td>{{ $repair->repair_description }}</td>
+                                                            <td>{{ $repair->repair_status }}</td>
+                                                        </tr>
+                                                    @endforeach
+
+
+                                                </tbody>
+                                            </table>
+                                        @else
+                                            <p style="text-align: center ; ">ไม่มีรายการประวัติการซ่อม</p>
+                                        @endif
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">ปิด</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
 
                     </div>
                     <div class="col-md-5">
@@ -224,7 +306,7 @@
                             @endphp
                         <table class="table table-bordered-0">
                             <thead>
-                                
+
                             </thead>
                             </p>
                             <tbody>
@@ -235,7 +317,7 @@
                                                 {{ $mea_dress->initial_mea - 4 }}-{{ $mea_dress->initial_mea + 4 }})</span>
                                         </td>
 
-                
+
                                         <td>{{ $mea_dress->current_mea }}</td>
                                         <td>นิ้ว</td>
                                     </tr>
@@ -268,26 +350,28 @@
                 <h3>คิวการเช่าชุด</h3>
             </div>
             <div class="col-md-3" style="text-align: right ; ">
-                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#reservation_history">ประวัติเช่าชุดนี้</button>
+                <button class="btn btn-primary" type="button" data-toggle="modal"
+                    data-target="#reservation_history">ประวัติเช่าชุดนี้</button>
             </div>
         </div>
 
-        @if ($reservation->count() > 0)
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-            <thead>
-                <tr style="background-color: #f2f2f2;">
-                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ลำดับคิว</th>
-                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ชื่อผู้จอง</th>
-                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">วันที่นัดรับชุด</th>
-                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">เหลือเวลาอีก (วัน)</th>
-                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">สถานะ</th>
-                </tr>
-            </thead>
+
+        @if ($reservations->count() > 0)
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th>ลำดับคิว</th>
+                        <th>ชื่อผู้จอง</th>
+                        <th>วันที่นัดรับชุด</th>
+                        <th>เหลือเวลาอีก (วัน)</th>
+                        <th>สถานะ</th>
+                    </tr>
+                </thead>
                 <tbody>
-                    @foreach ($reservation as $index => $reservation)
+                    @foreach ($reservations as $index => $reservation)
                         <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">คิวที่ {{ $index + 1 }} </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                            <td>คิวที่ {{ $index + 1 }} </td>
+                            <td>
                                 @php
                                     $order_id = App\Models\Orderdetail::where(
                                         'reservation_id',
@@ -298,24 +382,29 @@
                                 @endphp
                                 คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
                             </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                            <td>
                                 {{ \Carbon\Carbon::parse($reservation->start_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($reservation->start_date)->year + 543 }}                              
+                                {{ \Carbon\Carbon::parse($reservation->start_date)->year + 543 }}
                             </td>
-
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd; color: blue;">
+                            <td>
                                 <span id="showday{{ $reservation->id }}"></span>
                                 <script>
                                     var now = new Date();
                                     var start_date = new Date("{{ $reservation->start_date }}");
                                     var day = start_date - now;
-    
+
                                     var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
-    
+
                                     document.getElementById('showday{{ $reservation->id }}').innerHTML = totalday + ' วัน ';
-                                </script>    
+                                </script>
                             </td>
-                            <td>{{$reservation->status}}</td>
+                            <td>
+                                @if ($index == 0)
+                                    <span style="color: rgb(158, 41, 41)">{{ $reservation->status }}</span>
+                                @else
+                                    <span>{{ $reservation->status }}</span>
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -330,7 +419,7 @@
 
 
 
-    
+
 
 
 
@@ -338,54 +427,92 @@
     <div class="modal fade" id="reservation_history" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <div class="modal-header"><h3>ประวัติการเช่า{{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h3></div>                    
-                    <div class="modal-body">
-                        <div class="container">
-                            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                                <thead>
-                                    <tr style="background-color: #f2f2f2;">
-                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ลำดับ</th>
-                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ชื่อผู้จอง</th>
-                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">วันที่คืนชุด</th>
-                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">สถานะ</th>
+                <div class="modal-header">
+                    <h3>ประวัติการเช่า{{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        @if($history_reservation->count() > 0 )
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th>ลำดับ</th>
+                                    <th>ชื่อลูกค้า</th>
+                                    <th>วันที่รับ</th>
+                                    <th>วันที่คืน</th>
+                                    <th>วันที่คืนจริง</th>
+                                    <th>สถานะการคืน</th>
+                                    <th>ค่าปรับ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($history_reservation as $index => $history)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>
+                                            @php
+                                                $customer_id = App\Models\Order::where('id', $history->order_id)->value(
+                                                    'customer_id',
+                                                );
+                                                $customer = App\Models\Customer::find($customer_id);
+                                            @endphp
+                                            คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                                        </td>
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($history->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($history->pickup_date)->year + 543 }}
+                                        </td>
+                                        {{-- คอลัมน?์ วันัดคืน --}}
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($history->return_date)->locale('th')->isoFormat('D MMMM') }}
+                                            {{ \Carbon\Carbon::parse($history->return_date)->year + 543 }}
+                                        </td>
+                                        {{-- คอลัมน์วันนัดคืนจริง --}}
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($history->real_return_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($history->real_return_date)->year + 543 }}
+                                        </td>
+                                        <td>
+                                            @php
+                                                $return = \Carbon\Carbon::parse($history->return_date);
+                                                $returnreal = \Carbon\Carbon::parse($history->real_return_date);
+                                                $text = null;
+                                                if ($returnreal->gt($return)) {
+                                                    $text = 'คืนล่าช้า';
+                                                } elseif ($returnreal->eq($return)) {
+                                                    $text = 'คืนตรงเวลา';
+                                                } else {
+                                                    $text = 'คืนก่อนกำหนด';
+                                                }
+                                            @endphp
+                                        {{$text}}
+                                        </td>
+                                        <td>
+                                            @if ($history->total_damage_insurance == 0)
+                                                -
+                                            @else
+                                                {{ $history->total_damage_insurance }}
+                                            @endif
+                                        </td>
+                                        
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($reservation_history as $index => $reservation)
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ $index + 1 }} </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-                                @php
-                                    $order_id = App\Models\Orderdetail::where(
-                                        'reservation_id',
-                                        $reservation->id,
-                                    )->value('order_id');
-                                    $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
-                                    $customer = App\Models\Customer::find($customer_id);
-                                @endphp
-                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-                                {{ \Carbon\Carbon::parse($reservation->start_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($reservation->start_date)->year + 543 }}                              
-                            </td>
-                            <td>รอเขียน wherIn ให้มันชัดเจนกว่านี้ก่อน</td>
-                        </tr>
-                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        
+                                @endforeach
+                            </tbody>
+                        </table>
+                        @endif
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
-                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
+                </div>
                 </form>
             </div>
         </div>
     </div>
 
-   
+
 
 
 

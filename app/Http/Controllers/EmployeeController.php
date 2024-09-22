@@ -60,11 +60,11 @@ class EmployeeController extends Controller
 
     public function dressadjust()
     {
-        $reservation = Reservation::where('status_completed', 0)
+        $reservations = Reservation::where('status_completed', 0)
             ->where('status', 'ถูกจอง')
             ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
             ->get();
-        return view('employee.dressadjust', compact('reservation'));
+        return view('employee.dressadjust', compact('reservations'));
     }
 
 
@@ -179,7 +179,8 @@ class EmployeeController extends Controller
         $create_repair = new Repair();
         $create_repair->clean_id = $clean->id;
         $create_repair->repair_status = 'รอดำเนินการ';
-        $create_repair->repair_type = $request->input('typerepair') ;   //10ทั้งชุด 20เสื้อ 30ผ้าถุง
+        $create_repair->repair_type = $request->input('typerepair');   //10ทั้งชุด 20เสื้อ 30ผ้าถุง
+        $create_repair->repair_description = $request->input('repair_detail');
         $create_repair->reservation_id =  $clean->reservation_id;
         $create_repair->save();
         //ตารางstatus
@@ -204,36 +205,149 @@ class EmployeeController extends Controller
 
     public function repairupdatestatus(Request $request)
     {
-
-        $status_select = $request->input('status_select'); //ซักเสร็จแล้ว  /  ส่งซ่อม 
-        $repair_id_array = $request->input('repair_id_array');
-        $separate_repair_id = explode(',', $repair_id_array);
-        foreach ($separate_repair_id as $index => $repair_id) {
+        $item_check = $request->input('item_check_');
+        foreach ($item_check as $index => $repair_id) {
             $repair = Repair::find($repair_id);
             if ($repair->repair_status == "รอดำเนินการ") {
                 //ตารางrepair
                 $repair->repair_status = "กำลังซ่อม";
                 $repair->save();
-            } elseif ($repair->repair_status == "กำลังซ่อม") {
-                if ($status_select == "ซ่อมเสร็จแล้ว") {
-                    //ตาราclean
-                    $repair->repair_status = "ซ่อมเสร็จแล้ว";
-                    $repair->save();
-                    //ตารางreservation 
-                    $reservation = Reservation::find($repair->reservation_id);
-                    $reservation->status = $status_select;
-                    $reservation->status_completed = 1; //เสร็จสมบูรณ์
-                    $reservation->save();
-                } elseif ($status_select == "ส่งซัก") {
-                    //ตาราclean
-                    $repair->repair_status = "ซ่อมเสร็จแล้ว";
-                    $repair->save();
-                    //เพิ่มข้อมูลในตาราง clean
-                    $create_clean = new Clean();
-                    $create_clean->clean_status = 'รอดำเนินการ';
-                    $create_clean->reservation_id =  $repair->reservation_id;
-                    $create_clean->save();
+                // ตารางstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->repair_id = $repair->id;
+                $create_status->status = 'กำลังซ่อม';
+                $create_status->save();
+                // ตารางreservation
+                $reservation = Reservation::find($repair->reservation_id);
+                $reservation->status = "กำลังซ่อม";
+                $reservation->save();
+            }
+        }
+        return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
+    }
+    public function repairupdatestatustoclean(Request $request)
+    {
+        $item_check = $request->input('item_check_');
+        foreach ($item_check as $index => $repair_id) {
+            // ตารางrepair
+            $repair = Repair::find($repair_id);
+            $repair->repair_status = "ซ่อมเสร็จแล้ว";
+            $repair->save();
+            // ตารางstatus
+            $create_status = new Orderdetailstatus();
+            $create_status->repair_id = $repair->id;
+            $create_status->status = "ซ่อมเสร็จแล้ว";
+            $create_status->save();
+            // ตารางreservation
+            $reservation = Reservation::find($repair->reservation_id);
+            $reservation->status = "รอดำเนินการส่งซัก";
+            $reservation->save();
+            // ตารางclean
+            $create_clean = new Clean();
+            $create_clean->clean_status = "รอดำเนินการ";
+            $create_clean->reservation_id = $repair->reservation_id;
+            $create_clean->save();
+        }
+        return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
+    }
+    public function repairupdatestatustocleanorready(Request $request)
+    {
+        $item_check = $request->input('item_check_');
+        $status_next = $request->input('status_next');
+        // พร้อมให้เช่าต่อ
+        if ($status_next == 1) {
+            foreach ($item_check as $index => $repair_id) {
+                // ตารางrepair
+                $repair = Repair::find($repair_id);
+                $repair->repair_status = "ซ่อมเสร็จแล้ว";
+                $repair->save();
+                // ตารางstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->repair_id = $repair->id;
+                $create_status->status = "ซ่อมเสร็จแล้ว";
+                $create_status->save();
+                // ตารางreservation
+                $reservation = Reservation::find($repair->reservation_id);
+                $reservation->status = "ซ่อมเสร็จแล้ว";
+                $reservation->status_completed = 1;
+                $reservation->save();
+                // เพิ่มจำนวนครั้งในการแก้ไข  ทั้งชุด / เสื้อ /ผ้าถุง      
+                if ($reservation->shirtitems_id != null) {
+                    $shirt = Shirtitem::find($reservation->shirtitems_id);
+                    $shirt->repair_count = $shirt->repair_count + 1;
+                    $shirt->save();
+                } elseif ($reservation->skirtitems_id != null) {
+                    $skirt = Skirtitem::find($reservation->skirtitems_id);
+                    $skirt->repair_count = $skirt->repair_count + 1;
+                    $skirt->save();
+                } else {
+                    $dress = Dress::find($reservation->dress_id);
+                    if ($dress->separable == 1) {
+                        $dress->repair_count = $dress->repair_count + 1;
+                        $dress->save();
+                    } elseif ($dress->separable == 2) {
+                        // ซ่อมทั้งชุด
+                        if ($repair->repair_type == 10) {
+                            // อัปเดตตาราง dress
+                            $dress->repair_count = $dress->repair_count + 1;
+                            $dress->save();
+                            // อัปเดตตารางshirt
+                            $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
+                            $shirt = Shirtitem::find($shirt_id);
+                            $shirt->repair_count = $shirt->repair_count + 1;
+                            $shirt->save();
+                            // อัปเดตตาราง skirt 
+                            $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
+                            $skirt = Skirtitem::find($skirt_id);
+                            $skirt->repair_count = $skirt->repair_count + 1;
+                            $skirt->save();
+                        }
+                        // ซ่อมแค่เสื้อ
+                        elseif ($repair->repair_type == 20) {
+                            // อัปเดตตารางshirt
+                            $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
+                            $shirt = Shirtitem::find($shirt_id);
+                            $shirt->repair_count = $shirt->repair_count + 1;
+                            $shirt->save();
+                        }
+                        // ซ่อมแค่ผ้าถุง
+                        elseif ($repair->repair_type == 30) {
+                            // อัปเดตตาราง skirt 
+                            $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
+                            $skirt = Skirtitem::find($skirt_id);
+                            $skirt->repair_count = $skirt->repair_count + 1;
+                            $skirt->save();
+                        }
+                    }
                 }
+            }
+        }
+        // ส่งไปซักอีกครั้ง
+        elseif ($status_next == 2) {
+            foreach ($item_check as $index => $repair_id) {
+                // ตารางrepair
+                $repair = Repair::find($repair_id);
+                $repair->repair_status = "ซ่อมเสร็จแล้ว";
+                $repair->save();
+                // ตารางstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->repair_id = $repair->id;
+                $create_status->status = "ซ่อมเสร็จแล้ว";
+                $create_status->save();
+                // ตารางreservation
+                $reservation = Reservation::find($repair->reservation_id);
+                $reservation->status = 'รอดำเนินการส่งซัก';
+                $reservation->save();
+                // ตารางclean
+                $create_clean = new Clean();
+                $create_clean->reservation_id = $repair->reservation_id;
+                $create_clean->clean_status = "รอดำเนินการ";
+                $create_clean->save();
+                // ตารางstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->clean_id = $create_clean->id;
+                $create_status->status = "รอดำเนินการ";
+                $create_status->save();
             }
         }
         return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
@@ -250,20 +364,31 @@ class EmployeeController extends Controller
     public function clean()
     {
         $clean = Clean::all();
+        $clean_pending = Clean::where('clean_status', "รอดำเนินการ")->get();
         $cleans = Clean::all();
+        $clean_doing_wash = Clean::where('clean_status', 'กำลังส่งซัก')->get();
         $countwait = Clean::where('clean_status', 'รอดำเนินการ')->count();
         $countdoing = Clean::where('clean_status', 'กำลังส่งซัก')->count();
         $countsuccess = Clean::where('clean_status', 'ซักเสร็จแล้ว')->count();
-        return view('employee.clean', compact('clean', 'countwait', 'countdoing', 'countsuccess', 'cleans'));
+        return view('employee.clean', compact('clean', 'countwait', 'countdoing', 'countsuccess', 'cleans', 'clean_pending', 'clean_doing_wash'));
     }
 
     public function repair()
     {
         $repair = Repair::all();
+        $repair_pending = Repair::where('repair_status', "รอดำเนินการ")->get();
+        $repairs_null = Repair::where('repair_status', "กำลังซ่อม")
+            ->where('clean_id', null)->get();
+
+        $repairs_not_null = Repair::where('repair_status', "กำลังซ่อม")
+            ->whereNotNull('clean_id')->get();
+
+
+
         $countwait = Repair::where('repair_status', 'รอดำเนินการ')->count();
         $countdoing = Repair::where('repair_status', 'กำลังซ่อม')->count();
         $countsuccess = Repair::where('repair_status', 'ซ่อมเสร็จแล้ว')->count();
-        return view('employee.repair', compact('repair', 'countwait', 'countdoing', 'countsuccess'));
+        return view('employee.repair', compact('repair', 'countwait', 'repairs_null','repairs_not_null' ,  'countdoing', 'countsuccess', 'repair_pending'));
 
         return view('employee.repair');
     }

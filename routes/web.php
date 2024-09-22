@@ -120,6 +120,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/clean/update-statustwo', [EmployeeController::class, 'cleanupdatestatuspagetwo'])->name('employee.cleanupdatestatuspagetwo');
 
     Route::post('/employee/repair/update-status', [EmployeeController::class, 'repairupdatestatus'])->name('employee.repairupdatestatus');
+    Route::post('/employee/repair/update-statusrepairupdatestatustoclean', [EmployeeController::class, 'repairupdatestatustoclean'])->name('employee.repairupdatestatustoclean');
+    Route::post('/employee/repair/update-statusrepairupdatestatustocleanorready', [EmployeeController::class, 'repairupdatestatustocleanorready'])->name('employee.repairupdatestatustocleanorready');
+
     Route::post('/employee/clean/afterwashtorepair', [EmployeeController::class, 'afterwashtorepair'])->name('employee.afterwashtorepair');
 
 

@@ -80,21 +80,20 @@
                         <form action="{{ route('employee.cleanupdatestatus') }}" method="POST">
                             @csrf
                             <div class="table-responsive">
-                                <table class="table table-striped table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>เลือก</th>
-                                            <th>รายการซัก</th>
-                                            <th>สถานะ</th>
+                                @if ($clean_pending->count() > 0)
+                                    <table class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>เลือก</th>
+                                                <th>รายการซัก</th>
+                                                <th>สถานะ</th>
 
-                                            <th>คิวเช่าต่อไป </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($clean as $clean)
-                                            @if ($clean->clean_status != 'ซักเสร็จแล้ว' && $clean->clean_status != 'กำลังส่งซัก')
+                                                <th>คิวเช่าต่อไป </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($clean_pending as $clean)
                                                 <tr>
-
                                                     <td>
                                                         <input type="checkbox" name="select_item_[]"
                                                             value="{{ $clean->id }}" class="select-item-class"
@@ -104,19 +103,20 @@
                                                     <script>
                                                         function updatecheck() {
                                                             var alldata = document.getElementsByClassName('select-item-class');
-                                                            var check_status = null;
+                                                            var check_status = true;
                                                             var list_clean_id = [];
-                                                            var buttonupdate = document.getElementById('buttonupdate');
+                                                            var button_page_one = document.getElementById('button_page_one');
                                                             for (var i = 0; i < alldata.length; i++) {
                                                                 if (alldata[i].checked) {
                                                                     check_status = alldata[i].getAttribute('data-status');
                                                                     list_clean_id.push(alldata[i].value);
+                                                                    check_status = false ; 
                                                                 }
                                                             }
-                                                            if (check_status == null) {
-                                                                buttonupdate.disabled = true;
+                                                            if (check_status) {
+                                                                button_page_one.disabled = true;
                                                             } else {
-                                                                buttonupdate.disabled = false;
+                                                                button_page_one.disabled = false;
                                                             }
                                                         }
                                                     </script>
@@ -219,13 +219,16 @@
                                                         @endif
                                                     </td>
                                                 </tr>
-                                            @endif
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                    <button class="btn btn-danger" type="button" data-toggle="modal"
+                                        data-target="#showmodalwait" id="button_page_one" disabled>อัพเดตสถานะ</button>
+                                @else
+                                    <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
+                                @endif
                             </div>
-                            <button class="btn btn-danger" type="button" data-toggle="modal"
-                                data-target="#showmodalwait">อัพเดตสถานะ</button>
+
                             <div class="row mt-3">
                                 <div class="modal fade" id="showmodalwait" role="dialog" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -262,20 +265,21 @@
                     <div class="card-body">
 
                         <div class="table-responsive">
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>เลือก</th>
-                                        <th>รายการซัก</th>
-                                        <th>สถานะ</th>
+                            @if ($clean_doing_wash->count() > 0)
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>เลือก</th>
+                                            <th>รายการซัก</th>
+                                            <th>สถานะ</th>
 
-                                        <th>คิวเช่าต่อไป </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($cleans as $clean)
-                                        @if ($clean->clean_status != 'ซักเสร็จแล้ว' && $clean->clean_status != 'รอดำเนินการ')
+                                            <th>คิวเช่าต่อไป </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($clean_doing_wash as $clean)
                                             <tr>
+
                                                 <td>
                                                     <input type="checkbox" name="select_item_[]"
                                                         value="{{ $clean->id }}" class="select-item-class"
@@ -288,12 +292,20 @@
                                                         var alldata = document.getElementsByClassName('select-item-class');
                                                         var check_status = null;
                                                         var list_clean_id = [];
-                                                        var buttonupdate = document.getElementById('buttonupdate');
+                                                        var button_page_two = document.getElementById('button_page_two');
+                                                        var checkdisableddata = true ; 
                                                         for (var i = 0; i < alldata.length; i++) {
                                                             if (alldata[i].checked) {
                                                                 check_status = alldata[i].getAttribute('data-status');
                                                                 list_clean_id.push(alldata[i].value);
+                                                                checkdisableddata = false ; 
                                                             }
+                                                        }
+                                                        if(checkdisableddata){
+                                                            button_page_two.disabled = true ; 
+                                                        }
+                                                        else{
+                                                            button_page_two.disabled = false ; 
                                                         }
 
                                                         for (var i = 0; i < alldata.length; i++) {
@@ -311,7 +323,7 @@
                                                         var showmeaasage_doing_wash = document.getElementById('showmeaasage_doing_wash');
                                                         if (check_status == "กำลังส่งซัก") {
                                                             showmeaasage_doing_wash.innerHTML =
-                                                            'ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังส่งซัก" เป็นเสร็จแล้ว(พร้อมให้เช่าต่อ)' + 
+                                                                'ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังส่งซัก" เป็นเสร็จแล้ว(พร้อมให้เช่าต่อ)' +
                                                                 '<input type="hidden" name="ID_for_clean" value="' + list_clean_id + '">';
                                                         }
                                                     }
@@ -414,20 +426,20 @@
                                                         </span>
                                                     @endif
                                                 </td>
-                                                <td>{{ $clean->reservation_id }}</td>
+                                                
                                                 <td>
                                                     <button class="btn btn-danger" type="button" data-toggle="modal"
                                                         data-target="#need_to_repair{{ $clean->id }}">ต้องซ่อม</button>
                                                 </td>
 
                                                 @php
-                                                    $reservation = App\Models\Reservation::find($clean->reservation_id) ; 
-                                                    $dress_id = $reservation->dress_id ; 
-                                                    $shirt_id = $reservation->shirtitems_id ; 
-                                                    $skirt_id = $reservation->skirtitems_id ;
+                                                    $reservation = App\Models\Reservation::find($clean->reservation_id);
+                                                    $dress_id = $reservation->dress_id;
+                                                    $shirt_id = $reservation->shirtitems_id;
+                                                    $skirt_id = $reservation->skirtitems_id;
                                                 @endphp
 
-                                
+
                                                 <div class="modal fade" id="need_to_repair{{ $clean->id }}"
                                                     role="dialog" aria-hidden="true">
                                                     <div class="modal-dialog modal-lg" role="document">
@@ -442,11 +454,18 @@
                                                                     {{ $clean->id }}
                                                                     รายละเอียดของการซ่อม
                                                                     <select name="typerepair">
-                                                                        <option value="10" id="type_total_dress{{$clean->id}}">ทั้งชุด</option>
-                                                                        <option value="20" id="type_shirt{{$clean->id}}">เสื้อ</option>
-                                                                        <option value="30" id="type_skirt{{$clean->id}}">ผ้าถุง</option>
+                                                                        <option value="10"
+                                                                            id="type_total_dress{{ $clean->id }}">
+                                                                            ทั้งชุด</option>
+                                                                        <option value="20"
+                                                                            id="type_shirt{{ $clean->id }}">เสื้อ
+                                                                        </option>
+                                                                        <option value="30"
+                                                                            id="type_skirt{{ $clean->id }}">ผ้าถุง
+                                                                        </option>
                                                                     </select>
-                                                                    <input type="hidden" name="clean_id" value="{{ $clean->id }}">
+                                                                    <input type="hidden" name="clean_id"
+                                                                        value="{{ $clean->id }}">
                                                                     <textarea name="repair_detail" cols="60" rows="4" class="form-control"
                                                                         placeholder="กรุณากรอกรายละเอียดของการซ่อมที่ต้องการ..."></textarea>
                                                                 </div>
@@ -462,59 +481,42 @@
                                                 </div>
 
                                                 <script>
-                                                    var type_total_dress = document.getElementById('type_total_dress{{$clean->id}}') ; 
-                                                    var type_shirt = document.getElementById('type_shirt{{$clean->id}}') ; 
-                                                    var type_skirt = document.getElementById('type_skirt{{$clean->id}}') ; 
-                                                    var dress_id = '{{$dress_id}}' ; 
-                                                    var shirt_id = '{{$shirt_id}}' ; 
-                                                    var skirt_id = '{{$skirt_id}}' ; 
-                                                    if(shirt_id){
-                                                        type_total_dress.style.display = 'none' ; 
-                                                        type_skirt.style.display = 'none' ; 
-                                                        type_shirt.selected = true ; 
+                                                    var type_total_dress = document.getElementById('type_total_dress{{ $clean->id }}');
+                                                    var type_shirt = document.getElementById('type_shirt{{ $clean->id }}');
+                                                    var type_skirt = document.getElementById('type_skirt{{ $clean->id }}');
+                                                    var dress_id = '{{ $dress_id }}';
+                                                    var shirt_id = '{{ $shirt_id }}';
+                                                    var skirt_id = '{{ $skirt_id }}';
+                                                    if (shirt_id) {
+                                                        type_total_dress.style.display = 'none';
+                                                        type_skirt.style.display = 'none';
+                                                        type_shirt.selected = true;
+                                                    } else if (skirt_id) {
+                                                        type_total_dress.style.display = 'none';
+                                                        type_shirt.style.display = 'none';
+                                                        type_skirt.selected = true;
+                                                    } else {
+                                                        type_total_dress.style.display = 'block';
+                                                        type_shirt.style.disabled = 'block';
+                                                        type_skirt.style.disabled = 'block';
+                                                        type_total_dress.selected = true;
                                                     }
-                                                    else if(skirt_id){
-                                                        type_total_dress.style.display = 'none' ; 
-                                                        type_shirt.style.display = 'none' ; 
-                                                        type_skirt.selected = true ; 
-                                                    }
-                                                    else{
-                                                        type_total_dress.style.display = 'block' ; 
-                                                        type_shirt.style.disabled = 'block' ; 
-                                                        type_skirt.style.disabled = 'block' ; 
-                                                        type_total_dress.selected = true ; 
-                                                    }
-                                                    
-
-
-
                                                 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                             </tr>
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-danger" type="button" data-toggle="modal"
+                            data-target="#showmodalwash" id="button_page_two" disabled>อัพเดตสถานะ</button>
+                            @else
+                                <p style="text-align: center ;">ไม่มีรายการแสดงผล</p>
+                            @endif
                         </div>
 
 
 
 
-                        <button class="btn btn-danger" type="button" data-toggle="modal"
-                            data-target="#showmodalwash">อัพเดตสถานะ</button>
+                        
                         <div class="row mt-3">
                             <div class="modal fade" id="showmodalwash" role="dialog" aria-hidden="true">
                                 <div class="modal-dialog modal-lg" role="document">
@@ -525,7 +527,8 @@
                                                 <p>หัว</p>
                                             </div>
                                             <div class="modal-body" id="showmeaasage_doing_wash">
-                                                ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังส่งซัก" เป็น' ซักเสร็จแล้ว (พร้อมให้เช่าต่อ)
+                                                ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังส่งซัก" เป็น' ซักเสร็จแล้ว
+                                                (พร้อมให้เช่าต่อ)
                                                 <br><br>
                                             </div>
                                             <div class="modal-footer">
@@ -537,7 +540,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                    </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

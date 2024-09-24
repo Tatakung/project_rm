@@ -17,6 +17,7 @@ use App\Models\Dressmeasurement;
 use App\Models\Typedress;
 use App\Models\Jewelry;
 use App\Models\Dressmeaadjustment;
+use App\Models\Dressmea;
 
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
@@ -1039,6 +1040,7 @@ class ManageorderController extends Controller
     public function savemanageitemcutdress(Request $request, $id)
     {
 
+       
         DB::beginTransaction();
         try {
 
@@ -1091,10 +1093,9 @@ class ManageorderController extends Controller
                 $update_name_mea = $request->input('update_mea_name_');
                 $update_number_mea = $request->input('update_mea_number_');
                 foreach ($id_for_mea as $index => $id_for_mea_table) {
-                    $update_data = Measurementorderdetail::find($id_for_mea_table);
-                    $update_data->measurement_name = $update_name_mea[$index];
-                    $update_data->measurement_number_old = $update_number_mea[$index];
-                    $update_data->measurement_number = $update_number_mea[$index];
+                    $update_data = Dressmeaadjustment::find($id_for_mea_table);
+                    $update_data->name = $update_name_mea[$index];
+                    $update_data->new_size = $update_number_mea[$index];
                     $update_data->save();
                 }
             }
@@ -1107,12 +1108,10 @@ class ManageorderController extends Controller
                 $add_mea_name = $request->input('add_mea_name_'); //ตัวหมุน
                 $add_mea_number = $request->input('add_mea_number_');
                 foreach ($add_mea_name as $index => $add) {
-                    $add_measurement = new Measurementorderdetail();
+                    $add_measurement = new Dressmeaadjustment();
                     $add_measurement->order_detail_id = $id;
-                    $add_measurement->measurement_name = $add;
-                    $add_measurement->measurement_number_old = $add_mea_number[$index];
-                    $add_measurement->measurement_number = $add_mea_number[$index];
-                    $add_measurement->measurement_unit = "นิ้ว";
+                    $add_measurement->name = $add;
+                    $add_measurement->new_size = $add_mea_number[$index];
                     $add_measurement->save();
                 }
             }
@@ -1136,6 +1135,15 @@ class ManageorderController extends Controller
         foreach($dress_mea_adjust as $index => $mea_adjust_id){
             $update_mea_adjust = Dressmeaadjustment::find($mea_adjust_id) ; 
             $update_mea_adjust->new_size = $dress_mea_adjust_number[$index] ; 
+            $update_mea_adjust->status = 'รอ' ; 
+
+            $mea_current = Dressmea::where('id',$update_mea_adjust->dressmea_id)->value('current_mea') ; 
+            if($update_mea_adjust->new_size !=  $mea_current){
+                $update_mea_adjust->status = "แก้ไข"; 
+            }
+            else{
+                $update_mea_adjust->status = "ไม่มีการแก้ไข"; 
+            }
             $update_mea_adjust->save() ; 
         }
         
@@ -1143,6 +1151,10 @@ class ManageorderController extends Controller
         $orderdetail->save();
         return redirect()->back()->with('success', "บันทึกข้อมูล");
     }
+
+
+
+
 
     //บันทึกของเช่าเครื่องประดับsavemanageitemrentjewelry
     public function savemanageitemrentjewelry(Request $request, $id)

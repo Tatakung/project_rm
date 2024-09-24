@@ -184,11 +184,11 @@
                         <p><strong>ราคาประกันค่าเสียหาย:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท
                         </p>
                         <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
-                        <p>
+                        {{-- <p>
                             <strong>สถานะชุด:</strong>
                             <span style="color: green;">ยังปล่อยให้เช่า</span>
 
-                        </p>
+                        </p> --}}
 
 
                         <p>
@@ -298,8 +298,11 @@
                             <strong>ขนาดของชุด</strong> (ปรับแก้ ขยาย/ลด ไม่เกิน 4 นิ้ว):
 
 
-                            <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea">
+                            {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea">
                                 <i class="bi bi-plus-square text-dark"></i>
+                            </button> --}}
+                            <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#history_adjust">
+                                <i class="bi bi-journal-text text-dark">ประวัติการปรับแก้</i>
                             </button>
                             @php
                                 $list_check_mea = [];
@@ -433,73 +436,74 @@
                 </div>
                 <div class="modal-body">
                     <div class="container">
-                        @if($history_reservation->count() > 0 )
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                            <thead>
-                                <tr style="background-color: #f2f2f2;">
-                                    <th>ลำดับ</th>
-                                    <th>ชื่อลูกค้า</th>
-                                    <th>วันที่รับ</th>
-                                    <th>วันที่คืน</th>
-                                    <th>วันที่คืนจริง</th>
-                                    <th>สถานะการคืน</th>
-                                    <th>ค่าปรับ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($history_reservation as $index => $history)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>
-                                            @php
-                                                $customer_id = App\Models\Order::where('id', $history->order_id)->value(
-                                                    'customer_id',
-                                                );
-                                                $customer = App\Models\Customer::find($customer_id);
-                                            @endphp
-                                            คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
-                                        </td>
-                                        <td>
-                                            {{ \Carbon\Carbon::parse($history->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                            {{ \Carbon\Carbon::parse($history->pickup_date)->year + 543 }}
-                                        </td>
-                                        {{-- คอลัมน?์ วันัดคืน --}}
-                                        <td>
-                                            {{ \Carbon\Carbon::parse($history->return_date)->locale('th')->isoFormat('D MMMM') }}
-                                            {{ \Carbon\Carbon::parse($history->return_date)->year + 543 }}
-                                        </td>
-                                        {{-- คอลัมน์วันนัดคืนจริง --}}
-                                        <td>
-                                            {{ \Carbon\Carbon::parse($history->real_return_date)->locale('th')->isoFormat('D MMM') }}
-                                            {{ \Carbon\Carbon::parse($history->real_return_date)->year + 543 }}
-                                        </td>
-                                        <td>
-                                            @php
-                                                $return = \Carbon\Carbon::parse($history->return_date);
-                                                $returnreal = \Carbon\Carbon::parse($history->real_return_date);
-                                                $text = null;
-                                                if ($returnreal->gt($return)) {
-                                                    $text = 'คืนล่าช้า';
-                                                } elseif ($returnreal->eq($return)) {
-                                                    $text = 'คืนตรงเวลา';
-                                                } else {
-                                                    $text = 'คืนก่อนกำหนด';
-                                                }
-                                            @endphp
-                                        {{$text}}
-                                        </td>
-                                        <td>
-                                            @if ($history->total_damage_insurance == 0)
-                                                -
-                                            @else
-                                                {{ $history->total_damage_insurance }}
-                                            @endif
-                                        </td>
-                                        
+                        @if ($history_reservation->count() > 0)
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                <thead>
+                                    <tr style="background-color: #f2f2f2;">
+                                        <th>ลำดับ</th>
+                                        <th>ชื่อลูกค้า</th>
+                                        <th>วันที่รับ</th>
+                                        <th>วันที่คืน</th>
+                                        <th>วันที่คืนจริง</th>
+                                        <th>สถานะการคืน</th>
+                                        <th>ค่าปรับ</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($history_reservation as $index => $history)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>
+                                                @php
+                                                    $customer_id = App\Models\Order::where(
+                                                        'id',
+                                                        $history->order_id,
+                                                    )->value('customer_id');
+                                                    $customer = App\Models\Customer::find($customer_id);
+                                                @endphp
+                                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($history->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($history->pickup_date)->year + 543 }}
+                                            </td>
+                                            {{-- คอลัมน?์ วันัดคืน --}}
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($history->return_date)->locale('th')->isoFormat('D MMMM') }}
+                                                {{ \Carbon\Carbon::parse($history->return_date)->year + 543 }}
+                                            </td>
+                                            {{-- คอลัมน์วันนัดคืนจริง --}}
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($history->real_return_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($history->real_return_date)->year + 543 }}
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $return = \Carbon\Carbon::parse($history->return_date);
+                                                    $returnreal = \Carbon\Carbon::parse($history->real_return_date);
+                                                    $text = null;
+                                                    if ($returnreal->gt($return)) {
+                                                        $text = 'คืนล่าช้า';
+                                                    } elseif ($returnreal->eq($return)) {
+                                                        $text = 'คืนตรงเวลา';
+                                                    } else {
+                                                        $text = 'คืนก่อนกำหนด';
+                                                    }
+                                                @endphp
+                                                {{ $text }}
+                                            </td>
+                                            <td>
+                                                @if ($history->total_damage_insurance == 0)
+                                                    -
+                                                @else
+                                                    {{ $history->total_damage_insurance }}
+                                                @endif
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         @endif
                     </div>
 
@@ -549,6 +553,83 @@
             </div>
         </div>
     </div>
+
+
+
+
+
+
+
+
+    {{-- ประวัติการปรับแก้ --}}
+    <div class="modal fade" id="history_adjust" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">ประวัติการปรับแก้ชุด</div>
+                <form action="{{ route('admin.addimage', ['id' => $datadress->id]) }}" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        @php
+                        $list_one = [];
+                        $list_two = [] ;
+                        $meadress = App\Models\Dressmea::where('dress_id', $datadress->id)->get();
+                        foreach ($meadress as $item) {
+                            $list_one[] = $item->id;
+                        }
+                        $dress_adjust = App\Models\Dressmeaadjustment::whereIn('dressmea_id',$list_one)
+                                                ->where('status','แก้ไข')
+                                                ->get() ; 
+                        
+                        foreach ($dress_adjust as $item) {
+                            $list_two[] = $item->id ; 
+                        }
+                        $show_his = App\Models\Dressmeaadjustment::whereIn('id',$list_two)->get() ; 
+                    @endphp
+                        @if($show_his->count() > 0 )
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="border: 1px solid #ddd; padding: 8px;">ส่วนที่ปรับ</th>
+                                <th style="border: 1px solid #ddd; padding: 8px;">ขนาดเดิม</th>
+                                <th style="border: 1px solid #ddd; padding: 8px;">ขนาดที่ปรับ</th>
+                            </tr>
+                            
+                            @foreach ($show_his as $item) 
+                            <tr>
+                                @php
+                                        $dress_mea = App\Models\Dressmea::find($item->dressmea_id) ; 
+                                    @endphp
+                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                    {{$dress_mea->mea_dress_name}}
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">{{$dress_mea->initial_mea}}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">{{$item->new_size}}</td>
+                            </tr>
+                            @endforeach
+                        </table>
+                        @else
+                        <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้</p>
+                        @endif
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     <!-- modalเพิ่มข้อมูลการวัด -->

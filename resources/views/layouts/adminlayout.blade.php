@@ -250,12 +250,18 @@
                     <span class="bi bi-arrow-return-left"></span>
                     <span class="ml-2">จัดการชุดที่คืนแล้ว</span>
                 </a> --}}
-                <a href=""
+                <a href="{{route('employee.cutdressadjust')}}"
                 class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                  <span class="bi bi-scissors"></span>
                  <span class="ml-2">จัดการคิวงานตัดชุด
                      <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
-                         1
+                         @php
+                             $cutdresss = App\Models\Orderdetail::where('type_order',1)
+                                ->whereNotIn('status_detail',['ส่งมอบชุดแล้ว','ตัดชุดเสร็จสิ้น'])
+                                ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+                                ->get() ; 
+                         @endphp
+                         {{$cutdresss->count()}}
                      </span>
                  </span>
              </a>
@@ -278,7 +284,27 @@
             </a>
 
 
-            <a href="{{ route('employee.clean') }}"
+            
+
+
+            <a href="{{route('employee.listdressreturn')}}"
+            class="list-group-item  list-group-item-action border-0 align-items-center"
+            id="d1">
+             <!-- Replace 'bi-box-arrow-up' with your desired Bootstrap icon -->
+             <span class="bi bi-box-arrow-up"></span>
+             <span class="ml-2">รายการชุดที่รอส่งคืน
+                 <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                     @php
+                         $listdressreturns = App\Models\Reservation::where('status_completed',0)
+                            ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
+                            ->where('status','กำลังเช่า')
+                            ->get() ; 
+                     @endphp
+                     {{$listdressreturns->count()}}
+                 </span>
+             </span>
+         </a>
+         <a href="{{ route('employee.clean') }}"
                 class="list-group-item @if (Route::currentRouteName() == 'employee.clean') active @endif list-group-item-action border-0 align-items-center"
                 id="d1">
                 <span class="bi bi-water"></span>

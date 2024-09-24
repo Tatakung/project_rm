@@ -68,6 +68,46 @@ class EmployeeController extends Controller
     }
 
 
+    public function listdressreturn()
+    {
+        $listdressreturns = Reservation::where('status_completed', 0)
+            ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
+            ->where('status', 'กำลังเช่า')
+            ->get();
+        return view('employee.listdressreturn', compact('listdressreturns'));
+    }
+
+
+
+
+
+
+
+
+    public function cutdressadjust()
+    {
+        $cutdresss_page_one = Orderdetail::where('type_order', 1)
+            ->where('status_detail', 'รอดำเนินการตัด')
+            ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+            ->get();
+        $cutdresss_page_two = Orderdetail::where('type_order', 1)
+            ->where('status_detail', 'เริ่มดำเนินการตัด')
+            ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+            ->get();
+        $cutdresss_page_three = Orderdetail::where('type_order', 1)
+            ->where('status_detail', 'ตัดชุดเสร็จสิ้น')
+            ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+            ->get();
+
+        $cutdresss_page_four = Orderdetail::where('type_order', 1)
+            ->where('status_detail', 'แก้ไขชุด')
+            ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+            ->get();
+
+        return view('employee.cutdressadjust', compact('cutdresss_page_one', 'cutdresss_page_two', 'cutdresss_page_three', 'cutdresss_page_four'));
+    }
+
+
 
 
     public function calendar()
@@ -77,11 +117,50 @@ class EmployeeController extends Controller
     }
 
 
+    public function buttoncleanrowpageone($id)
+    {
+        $clean = clean::find($id);
+        //ตารางclean
+        $clean->clean_status = "กำลังส่งซัก";
+        $clean->save();
+        //ตารางstatus
+        $create_status = new Orderdetailstatus();
+        $create_status->status = "กำลังส่งซัก";
+        $create_status->clean_id = $clean->id;
+        $create_status->save();
+        $reservation = Reservation::find($clean->reservation_id);
+        $reservation->status = "กำลังส่งซัก";
+        $reservation->save();
+        return redirect()->back()->with('success', "อัพเดตสำเร็จ");
+    }
+    public function buttoncleanrowpagetwo($id)
+    {
+        $clean = Clean::find($id);
+        //ตาราclean
+        $clean->clean_status = "ซักเสร็จแล้ว";
+        $clean->save();
+        //ตารางstatus
+        $create_status = new Orderdetailstatus();
+        $create_status->status = "ซักเสร็จแล้ว";
+        $create_status->clean_id = $clean->id;
+        $create_status->save();
+        //ตารางreservation 
+        $reservation = Reservation::find($clean->reservation_id);
+        $reservation->status = "ซักเสร็จแล้ว";
+        $reservation->status_completed = 1; //เสร็จสมบูรณ์
+        $reservation->save();
+        return redirect()->back()->with('success', "อัพเดตสำเร็จ");
+    }
+
+
 
     public function cleanupdatestatus(Request $request)
     {
+
+
         $next_status = $request->input('next_status'); //ซักเสร็จแล้ว  /  ส่งซ่อม 
-        $separate_clean_id = $request->input('select_item_');
+        // $separate_clean_id = $request->input('select_item_');
+        $separate_clean_id = explode(',', $request->input('select_item'));
         foreach ($separate_clean_id as $index => $clean_id) {
             $clean = Clean::find($clean_id);
             if ($clean->clean_status == "รอดำเนินการ") {
@@ -196,7 +275,25 @@ class EmployeeController extends Controller
     }
 
 
-
+    public function buttonrepairrowpageone($id)
+    {
+        $repair = Repair::find($id);
+        if ($repair->repair_status == "รอดำเนินการ") {
+            //ตารางrepair
+            $repair->repair_status = "กำลังซ่อม";
+            $repair->save();
+            // ตารางstatus
+            $create_status = new Orderdetailstatus();
+            $create_status->repair_id = $repair->id;
+            $create_status->status = 'กำลังซ่อม';
+            $create_status->save();
+            // ตารางreservation
+            $reservation = Reservation::find($repair->reservation_id);
+            $reservation->status = "กำลังซ่อม";
+            $reservation->save();
+        }
+        return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
+    }
 
 
 
@@ -205,7 +302,11 @@ class EmployeeController extends Controller
 
     public function repairupdatestatus(Request $request)
     {
-        $item_check = $request->input('item_check_');
+
+        $item = $request->input('item_check');
+        $item_check = explode(',', $item);
+        // dd($item_check) ; 
+        // $item_check = $request->input('item_check_');
         foreach ($item_check as $index => $repair_id) {
             $repair = Repair::find($repair_id);
             if ($repair->repair_status == "รอดำเนินการ") {
@@ -388,7 +489,7 @@ class EmployeeController extends Controller
         $countwait = Repair::where('repair_status', 'รอดำเนินการ')->count();
         $countdoing = Repair::where('repair_status', 'กำลังซ่อม')->count();
         $countsuccess = Repair::where('repair_status', 'ซ่อมเสร็จแล้ว')->count();
-        return view('employee.repair', compact('repair', 'countwait', 'repairs_null','repairs_not_null' ,  'countdoing', 'countsuccess', 'repair_pending'));
+        return view('employee.repair', compact('repair', 'countwait', 'repairs_null', 'repairs_not_null',  'countdoing', 'countsuccess', 'repair_pending'));
 
         return view('employee.repair');
     }
@@ -422,8 +523,6 @@ class EmployeeController extends Controller
     //เพิ่มการตัดชุดลงในตะกร้า บันทึก
     public function savecutdress(Request $request)
     {
-
-
         DB::beginTransaction();
         try {
 
@@ -501,18 +600,16 @@ class EmployeeController extends Controller
             $orderdetail->save();
 
 
-            // บันทึกข้อมูลในตาราง Measurementorderdetail
+            // บันทึกข้อมูลในตาราง Dressmeaadjustment
             if ($request->input('add_mea_name_')) {
                 $mea_name = $request->input('add_mea_name_');
                 $mea_number = $request->input('add_mea_number_');
                 if ($mea_name) {
                     foreach ($mea_name as $index => $mea) {
-                        $data = new Measurementorderdetail();
+                        $data = new Dressmeaadjustment();
                         $data->order_detail_id = $orderdetail->id;
-                        $data->measurement_name = $mea;
-                        $data->measurement_number_old = $mea_number[$index];
-                        $data->measurement_number = $mea_number[$index];
-                        $data->measurement_unit = 'นิ้ว';
+                        $data->name = $mea;
+                        $data->new_size = $mea_number[$index];
                         $data->save();
                     }
                 }
@@ -791,7 +888,8 @@ class EmployeeController extends Controller
         $orderdetail = Orderdetail::find($id);
         $measurementorderdetail  = Measurementorderdetail::where('order_detail_id', $id)->get();
         $fitting = Fitting::where('order_detail_id', $id)->get();
-        return view('employeecutdress.manageitemcutdress', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fitting'));
+        $measurementadjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
+        return view('employeecutdress.manageitemcutdress', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fitting', 'measurementadjusts'));
     }
 
     //เช่าชุด
@@ -837,8 +935,7 @@ class EmployeeController extends Controller
     //ลบdeletemeasurementitem ใน item
     public function deletemeasurementitem($id)
     {
-        // dd($id) ; 
-        $delete_measuremen = Measurementorderdetail::find($id);
+        $delete_measuremen = Dressmeaadjustment::find($id);
         $delete_measuremen->delete();
         return redirect()->back();
     }
@@ -901,10 +998,10 @@ class EmployeeController extends Controller
                 //ตารางorderdetailstatus 
                 $create_status = new Orderdetailstatus();
                 $create_status->order_detail_id = $orderdetail->id;
-                $create_status->status = 'เริ่มดำเนินการตัด';
+                $create_status->status = 'รอดำเนินการตัด';
                 $create_status->save();
                 //ตารางorderdetail
-                $orderdetail->status_detail = "เริ่มดำเนินการตัด";
+                $orderdetail->status_detail = "รอดำเนินการตัด";
                 $orderdetail->status_payment = $payment_status;
                 $orderdetail->save();
 

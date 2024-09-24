@@ -6,15 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Dressmeaadjustment extends Model
+class Dressmeasurementcutedit extends Model
 {
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
-        'dressmea_id',
-        'order_detail_id',
-        'new_size',
-        'status',
-        'name' , 
+        'adjustment_id',
+        'order_detail_id' , 
+        'old_size' , 
+        'edit_new_size',
+        'adjustment_number',
+        'status' , 
     ];
 }

@@ -77,7 +77,7 @@
     </style>
 
     <ol class="breadcrumb" style="background: white ; ">
-    
+
         <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}"
                 style="color: black ; ">รายการออเดอร์ทั้งหมด</a></li>
         <li class="breadcrumb-item"><a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}"
@@ -93,10 +93,11 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-5">
-                    
+
 
                         <div class="info-box">
                             <h5>ข้อมูลการตัดชุด</h5>
+                            <p><strong>วันที่นัดส่งมอบชุด:</strong> {{ $orderdetail->pickup_date }}</p>
                             <p><strong>ราคาตัด:</strong> {{ number_format($orderdetail->price, 2) }} บาท</p>
                             <p><strong>ราคามัดจำตัด:</strong> {{ number_format($orderdetail->deposit, 2) }} บาท</p>
                             <p><strong>จำนวน:</strong> {{ $orderdetail->amount }} ชุด</p>
@@ -131,6 +132,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <h5 style="margin-top: 10px;">สถานะออเดอร์</h5>
+                            </div>
+                            <div class="col-md-6 text-right"
+                                @if ($orderdetail->status_detail != 'รอดำเนินการตัด') style="display: none;" @endif>
+                                <button class="btn" style="background: #A7567F; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus">อัพเดตสถานะ</button>
                             </div>
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'เริ่มดำเนินการตัด') style="display: none;" @endif>
@@ -171,10 +177,12 @@
                                         <div class="modal-body">
                                             @if ($orderdetail->status_detail == 'เริ่มดำเนินการตัด')
                                                 <p>ต้องการอัพเดตสถานะจาก "เริ่มดำเนินการตัด" เป็น "ตัดชุดเสร็จสิ้น" ?</p>
+                                            @elseif($orderdetail->status_detail == 'รอดำเนินการตัด')
+                                                <p>ต้องการอัพเดตสถานะจาก "รอดำเนินการตัด" เป็น "เริ่มดำเนินการตัด" ?</p>
                                             @elseif($orderdetail->status_detail == 'แก้ไขชุด')
                                                 <p>ต้องการอัพเดตสถานะจาก "แก้ไขชุด" เป็น "แก้ไขชุดเสร็จสิ้น" ?</p>
                                             @elseif($orderdetail->status_detail == 'แก้ไขชุดเสร็จสิ้น')
-                                                <p>ต้องการอัพเดตสถานะจาก "แก้ไขชุดเสร็จสิ้น" เป็น "รับชุดแล้ว" ?</p>
+                                                <p>ต้องการอัพเดตสถานะจาก "แก้ไขชุดเสร็จสิ้น" เป็น "ส่งมอบชุดแล้ว" ?</p>
                                             @endif
                                         </div>
                                         <div class="modal-footer">
@@ -198,8 +206,7 @@
                                     <div class="modal-content">
                                         <div class="modal-header" style="background-color: #A7567F; color: #ffffff;">
                                             <h5 class="modal-title" style="font-weight: bold;">อัพเดตสถานะ</h5>
-                                            <button type="button" class="close" data-dismiss="modal"
-                                                aria-label="Close">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
@@ -224,22 +231,22 @@
                                                 style="max-height: 300px; overflow-y: auto; overflow-x: hidden; display: none;">
                                                 <div class="row">
                                                     <div class="col-md-5">
-                                                        <p>วันที่นัดรับชุด</p>
-                                                        <input type="date" name="" class="form-control"
+                                                        <p>วันที่นัดรับชุด (หลังปรับแก้)</p>
+                                                        <input type="date" name="pickup_date_new" class="form-control"
                                                             value="{{ $orderdetail->pickup_date }}">
                                                     </div>
                                                 </div>
-                                                @foreach ($mea_orderdetailforedit as $item)
+                                                @foreach ($dress_adjusts as $item)
                                                     <div class="form-group row align-items-center mb-2">
                                                         <div class="col-4">
                                                             <span
-                                                                style="font-size: 0.875rem;">{{ $item->measurement_name }}</span>
+                                                                style="font-size: 0.875rem;">{{ $item->name }}</span>
                                                         </div>
                                                         <div class="col-4">
                                                             <input type="hidden" name="id_for_edit_mea_cut_[]"
                                                                 value="{{ $item->id }}">
                                                             <input type="number" class="form-control"
-                                                                value="{{ $item->measurement_number }}"
+                                                                value="{{ $item->new_size }}"
                                                                 name="edit_mea_cut_[]" step="0.01">
                                                         </div>
                                                         <div class="col-3">
@@ -301,18 +308,29 @@
                                     @endif
 
                                     <div class="status-text">
+                                        
+                                        @if($orderdetailstatus->status == "ตัดชุดเสร็จสิ้น")
+                                        <h6 class="mb-0">{{ $orderdetailstatus->status }} (รอส่งมอบ)</h6>
+                                        @elseif($orderdetailstatus->status == "แก้ไขชุดเสร็จสิ้น")
+                                        <h6 class="mb-0">{{ $orderdetailstatus->status }} (รอส่งมอบ)</h6>
+                                        @else
                                         <h6 class="mb-0">{{ $orderdetailstatus->status }}</h6>
+                                        @endif
 
                                         <small class="text-muted">
                                             {{ \Carbon\Carbon::parse($orderdetailstatus->created_at)->addHours(7)->format('d/m/Y H:i') }}
                                         </small><br>
                                         @if ($orderdetailstatus->status == 'แก้ไขชุด')
-                                            @foreach ($mea_orderdetail as $item)
-                                                @if ($item->status_measurement == 'รอการแก้ไข')
+                                            @foreach ($dress_edit_cut as $item)
+                                                @if ($item->status == 'รอการแก้ไข')
                                                     <p style="color: red; font-size: 15px; margin: 2px;">
-                                                        ปรับแก้{{ $item->measurement_name }}
-                                                        {{ $item->measurement_number_old }} ->
-                                                        {{ $item->measurement_number }} นิ้ว</p>
+                                                        ปรับแก้
+                                                        @php
+                                                            $adj_name = App\Models\Dressmeaadjustment::where('id',$item->adjustment_id)->value('name') ; 
+                                                        @endphp
+                                                        {{$adj_name}}
+                                                        {{ $item->old_size }} ->
+                                                        {{ $item->edit_new_size }} นิ้ว</p>
                                                 @endif
                                             @endforeach
                                         @endif
@@ -334,12 +352,12 @@
                         </div>
 
                         <table class="table table-bordered">
-                            @foreach ($mea_orderdetail as $index => $mea_orderdetail)
+                            @foreach ($dress_adjusts as $index => $dress_adjust)
                                 @if ($index % 2 == 0)
                                     <tr>
                                 @endif
-                                <th>{{ $mea_orderdetail->measurement_name }}</th>
-                                <td>{{ $mea_orderdetail->measurement_number }} นิ้ว</td>
+                                <th>{{ $dress_adjust->name }}</th>
+                                <td>{{ $dress_adjust->new_size }} นิ้ว</td>
 
                                 @if ($index % 2 == 1)
                                     </tr>

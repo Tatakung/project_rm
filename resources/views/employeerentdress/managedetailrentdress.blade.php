@@ -109,18 +109,15 @@
                             <img src="{{ asset('storage/' . $dressimage->dress_image) }}" alt="" width="120px;"
                                 height="auto">
                             <hr>
-                            <div class="current-status">
+                            {{-- <div class="current-status">
                                 <h2>สถานะปัจจุบันของชุด</h2>
                                 <p class="status">{{ $status_if_dress->status }}</p>
 
 
-                                {{-- <p>ทั้งชุด{{$orderdetail->dress_id}}</p>
-                                    <p>เสื้อ{{$orderdetail->shirtitems_id}}</p>
-                                    <p>ผ้าภุง{{$orderdetail->skirtitems_id}}</p> --}}
-
+                            
 
                                 <p>อัพเดตล่าสุด: 18/09/2024 15:30</p>
-                            </div>
+                            </div> --}}
                             <hr>
 
                             <h5 class="mt-4">ข้อมูลการเช่า</h5>
@@ -464,7 +461,14 @@
                                             $dress_mea_adjust->dressmea_id,
                                         )->first();
                                     @endphp
-                                    <th>{{ $dress_mea->mea_dress_name }}</th>
+                                    <th>{{ $dress_mea->mea_dress_name }}
+                                        <span style="font-size: 12px; color: rgb(140, 35, 35) ; ">
+                                            @php
+                                                $mea_local = App\models\Dressmea::find($dress_mea_adjust->dressmea_id) ; 
+                                            @endphp
+                                            (ปรับได้ {{$mea_local->initial_mea - 4 }} - {{$mea_local->initial_mea + 4 }})
+                                        </span>
+                                    </th>
                                     <td>{{ $dress_mea_adjust->new_size }}</td>
 
                                     @if ($dress_mea->current_mea != $dress_mea_adjust->new_size)

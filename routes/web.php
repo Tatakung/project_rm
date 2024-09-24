@@ -111,6 +111,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/selectdate', [EmployeeController::class, 'selectdate'])->name('employee.selectdate');
     Route::get('/employee/clean', [EmployeeController::class, 'clean'])->name('employee.clean');
     Route::get('/employee/dressadjust', [EmployeeController::class, 'dressadjust'])->name('employee.dressadjust');
+    Route::get('/employee/cutdressadjust', [EmployeeController::class, 'cutdressadjust'])->name('employee.cutdressadjust');
+    Route::get('/employee/listdressreturn', [EmployeeController::class, 'listdressreturn'])->name('employee.listdressreturn');
 
     Route::get('/employee/repair', [EmployeeController::class, 'repair'])->name('employee.repair');
     Route::get('/employee/calendar', [EmployeeController::class, 'calendar'])->name('employee.calendar');
@@ -118,6 +120,13 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::post('/employee/clean/update-status', [EmployeeController::class, 'cleanupdatestatus'])->name('employee.cleanupdatestatus');
     Route::post('/employee/clean/update-statustwo', [EmployeeController::class, 'cleanupdatestatuspagetwo'])->name('employee.cleanupdatestatuspagetwo');
+
+
+    Route::post('/employee/clean/buttoncleanrowpageone/{id}', [EmployeeController::class, 'buttoncleanrowpageone'])->name('employee.buttoncleanrowpageone');
+    Route::post('/employee/clean/buttoncleanrowpagetwo/{id}', [EmployeeController::class, 'buttoncleanrowpagetwo'])->name('employee.buttoncleanrowpagetwo');
+
+    Route::post('/employee/clean/buttonrepairrowpageone/{id}', [EmployeeController::class, 'buttonrepairrowpageone'])->name('employee.buttonrepairrowpageone');
+
 
     Route::post('/employee/repair/update-status', [EmployeeController::class, 'repairupdatestatus'])->name('employee.repairupdatestatus');
     Route::post('/employee/repair/update-statusrepairupdatestatustoclean', [EmployeeController::class, 'repairupdatestatustoclean'])->name('employee.repairupdatestatustoclean');
@@ -137,8 +146,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/cart/deletelist/{id}', [EmployeeController::class, 'deletelist'])->name('employee.deletelist'); //ลบรายการในตะกร้า
     Route::get('/employee/card/manageitem/{id}', [EmployeeController::class, 'manageitem'])->name('employee.manageitem'); //จัดการตาม item แยกตาม type_order
     // Route::post('/employee/manageitem/deletemeaitem/{id}', [EmployeeController::class, 'deletemeaitem'])->name('employee.deletemeaitem'); //ลบdeletemeasurement ใน item
-    Route::post('/employee/manageitem/deletemeasurementitem/{id}', [EmployeeController::class, 'deletemeasurementitem'])->name('employee.deletemeasurementitem'); //ลบdeletemeasurement ใน item
-    Route::post('/employee/manageitem/deletefittingitem/{id}', [EmployeeController::class, 'deletefittingitem'])->name('employee.deletefittingitem'); //ลบdeletefittng ใน item
+    Route::get('/employee/manageitem/deletemeasurementitem/{id}', [EmployeeController::class, 'deletemeasurementitem'])->name('employee.deletemeasurementitem'); //ลบdeletemeasurement ใน item
+    Route::get('/employee/manageitem/deletefittingitem/{id}', [EmployeeController::class, 'deletefittingitem'])->name('employee.deletefittingitem'); //ลบdeletefittng ใน item
 
     // Route::post('/employee/manageitem/savemanageitem/{id}', [ManageorderController::class, 'savemanageitem'])->name('employee.savemanageitem'); //บันทึกจัดการตาม item
 

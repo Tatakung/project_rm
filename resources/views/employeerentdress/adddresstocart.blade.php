@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col-md-3">
                     <label class="form-label">เลือกประเภทชุด</label>
-                    <select name="dress_type" id="dress_type" class="form-select" required>
+                    <select name="dress_type" id="dress_type" class="form-control" required>
                         <option value="" disabled selected>เลือกประเภทชุด</option>
                         @foreach ($typedress as $item)
                             <option value="{{ $item->type_dress_name }}" @if ($dress_type == $item->type_dress_name) selected @endif>
@@ -17,7 +17,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" id="character">ลักษณะชุด</label>
-                    <select class="form-select" name="character" id="character">
+                    <select name="character" id="character" class="form-control">
                         <option value="">เลือกลักษณะชุด</option>
                         <option value="10" @if ($textcharacter == 'ทั้งชุด') selected @endif>ทั้งชุด</option>
                         <option value="20" @if ($textcharacter == 'เสื้อ') selected @endif>เสื้อ</option>
@@ -26,14 +26,16 @@
                 </div>
 
                 <div class="col-md-3">
-                    <input type="text" id="datepicker" placeholder="เลือกช่วงวัน"
-                        value="{{ $text_startDate }} ถึง {{ $text_endDate }}">
+                    <label class="form-label" id="">เลือกวันที่นัดรับชุด-วันที่คืนคืนชุด</label>
+                    <input class="form-control" type="text" id="datepicker" placeholder="เลือกช่วงวัน"
+                        value="{{ $text_startDate }}  {{ $text_endDate }}">
                     <input type="hidden" id="startDate" name="startDate">
                     <input type="hidden" id="endDate" name="endDate">
                     <input type="hidden" id="totalDay" name="totalDay">
-                    <p id="showday" style="font-size: 20px;"> {{ $text_totalDay }} วัน</p>
+                    <p id="showday" style="font-size: 20px;"> {{ $text_totalDay }} </p>
                 </div>
                 <div class="col-md-3">
+                    <br>
                     <button type="submit" class="btn btn-success">ค้นหา</button>
                 </div>
             </div>
@@ -49,7 +51,7 @@
                                 @php
                                     $image = App\Models\Dressimage::where('dress_id', $dress->id)->value('dress_image');
                                 @endphp
-                                <p style="color: rgb(241, 5, 147)">dress_id ที่ : {{ $dress->id }} </p>
+                                {{-- <p style="color: rgb(241, 5, 147)">dress_id ที่ : {{ $dress->id }} </p> --}}
                                 <p>หมายเลขชุด : {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
                                 <img src="{{ asset('storage/' . $image) }}" alt=""
                                     style="max-height: 300px; object-fit: contain; margin-top: 10px;">

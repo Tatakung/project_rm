@@ -30,7 +30,7 @@
                         <th>วันที่ทำรายการ</th>
                         <th>ชื่อ-สกุลลูกค้า</th>
                         {{-- <th>สถานะ</th> --}}
-                        {{-- <th>ยอดรวม</th> --}}
+                        <th>ยอดรวม</th>
                         <th>รายการ</th>
                         <th>รายละเอียด</th>
                     </tr>
@@ -47,7 +47,7 @@
                             {{ \Carbon\Carbon::parse($order->created_at)->year + 543 }}
                         </td>
                         <td>คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</td>
-                        {{-- <td>{{ number_format($order->total_price, 2) }} บาท</td> --}}
+                        <td>{{ number_format($order->total_price, 2) }} บาท</td>
                         <td>{{ $order->total_quantity }} รายการ</td>
                         <td>
                             <a href="{{ route('employee.ordertotaldetail', ['id' => $order->id]) }}" class="btn btn-info btn-sm">

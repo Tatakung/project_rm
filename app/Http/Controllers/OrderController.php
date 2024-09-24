@@ -20,6 +20,7 @@ use App\Models\Paymentstatus;
 use App\Models\User;
 use App\Models\Repair;
 use App\Models\Dressmeasurementnow;
+use App\Models\Dressmeasurementcutedit;
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
 use App\Models\Clean;
@@ -191,7 +192,9 @@ class OrderController extends Controller
         $valuestatus = Orderdetailstatus::where('order_detail_id', $id)
             ->latest('created_at')
             ->value('status');
-        return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit'));
+        $dress_edit_cut = Dressmeasurementcutedit::where('order_detail_id',$id)->get() ; 
+        $dress_adjusts = Dressmeaadjustment::where('order_detail_id',$id)->get() ; 
+        return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit','dress_adjusts','dress_edit_cut'));
     }
 
 
@@ -415,6 +418,7 @@ class OrderController extends Controller
             $orderdetail->status_detail = "คืนชุดแล้ว";
             $orderdetail->total_damage_insurance = $request->input('total_damage_insurance'); //ปรับจริง
             $orderdetail->cause_for_insurance = $request->input('cause_for_insurance'); //เหตุผลในการปรับ ; 
+            $orderdetail->real_return_date = now() ; 
             $orderdetail->save();
 
             //ตารางorderdetailstatus
@@ -684,7 +688,18 @@ class OrderController extends Controller
     {
         $orderdetail = Orderdetail::find($id);
         $status = $orderdetail->status_detail;
-        if ($status == 'เริ่มดำเนินการตัด') {
+
+        if($status == "รอดำเนินการตัด"){
+            //ตารางorderdetail
+            $orderdetail->status_detail = "เริ่มดำเนินการตัด";
+            $orderdetail->save();
+            //ตารางorderdetailstatus
+            $create_status = new Orderdetailstatus();
+            $create_status->order_detail_id = $id;
+            $create_status->status = "เริ่มดำเนินการตัด";
+            $create_status->save();
+        }
+        elseif ($status == 'เริ่มดำเนินการตัด') {
             //ตารางorderdetail
             $orderdetail->status_detail = "ตัดชุดเสร็จสิ้น";
             $orderdetail->save();
@@ -696,14 +711,14 @@ class OrderController extends Controller
         } elseif ($status == 'ตัดชุดเสร็จสิ้น') {
             if ($request->input('dressStatus') == "yes") {
                 //ตารางorderdetail
-                $orderdetail->status_detail = "รับชุดแล้ว";
+                $orderdetail->status_detail = "ส่งมอบชุดแล้ว";
                 $orderdetail->real_pickup_date = now();
                 $orderdetail->save();
                 //ตารางorderdetailstatus
                 $order_detail_id_for_new = $id;
                 $create_status = new Orderdetailstatus();
                 $create_status->order_detail_id = $order_detail_id_for_new;
-                $create_status->status = "รับชุดแล้ว";
+                $create_status->status = "ส่งมอบชุดแล้ว";
                 $create_status->save();
                 if ($orderdetail->status_payment == 1) {
                     //ตารางpaymentstatus
@@ -723,9 +738,10 @@ class OrderController extends Controller
                     $create_price->financial_expenses = 0;
                     $create_price->save();
                 }
-            } elseif ($request->input('dressStatus') == "no") {
+            } elseif ($request->input('dressStatus') == "no") {           
                 //ตารางorderdetail
                 $orderdetail->status_detail = "แก้ไขชุด";
+                $orderdetail->pickup_date = $request->input('pickup_date_new') ; 
                 $orderdetail->status_fix_measurement = 'รอการแก้ไข';
                 $orderdetail->save();
                 //ตารางorderdetailstatus
@@ -735,18 +751,30 @@ class OrderController extends Controller
                 $create_status->status = "แก้ไขชุด";
                 $create_status->save();
 
+                // ตารางdate
+                $create_date = new Date() ; 
+                $create_date->order_detail_id = $order_detail_id_for_new ; 
+                $create_date->pickup_date = $request->input('pickup_date_new') ; 
+                $create_date->save() ; 
+
+
                 //ตารางmea_orderdetail
                 $id_for_edit_mea_cut = $request->input('id_for_edit_mea_cut_');
                 $edit_mea_cut = $request->input('edit_mea_cut_');
+
+                $max_count = Dressmeasurementcutedit::where('order_detail_id',$id)->max('adjustment_number') ; 
+
                 foreach ($id_for_edit_mea_cut as $index => $id) {
-                    $update = Measurementorderdetail::find($id);
-                    if ($update->measurement_number_old != $edit_mea_cut[$index]) {
-                        $update->measurement_number = $edit_mea_cut[$index];
-                        $update->status_measurement = 'รอการแก้ไข';
-                        $update->save();
-                    } else {
-                        $update->measurement_number = $edit_mea_cut[$index];
-                        $update->save();
+                    $update = Dressmeaadjustment::find($id);
+                    if ($update->new_size != $edit_mea_cut[$index]) {
+                        $create_mea_cut_edit = new Dressmeasurementcutedit() ; 
+                        $create_mea_cut_edit->adjustment_id = $update->id ; 
+                        $create_mea_cut_edit->order_detail_id = $update->order_detail_id ;
+                        $create_mea_cut_edit->old_size = $update->new_size ; 
+                        $create_mea_cut_edit->edit_new_size = $edit_mea_cut[$index];
+                        $create_mea_cut_edit->adjustment_number = $max_count + 1   ; 
+                        $create_mea_cut_edit->status = 'รอการแก้ไข' ; 
+                        $create_mea_cut_edit->save() ; 
                     }
                 }
             }
@@ -762,14 +790,14 @@ class OrderController extends Controller
             $create_status->save();
         } elseif ($status == 'แก้ไขชุดเสร็จสิ้น') {
             //ตารางorderdetail
-            $orderdetail->status_detail = "รับชุดแล้ว";
+            $orderdetail->status_detail = "ส่งมอบชุดแล้ว";
             $orderdetail->real_pickup_date = now();
             $orderdetail->save();
             //ตารางorderdetailstatus
             $order_detail_id_for_new = $id;
             $create_status = new Orderdetailstatus();
             $create_status->order_detail_id = $order_detail_id_for_new;
-            $create_status->status = "รับชุดแล้ว";
+            $create_status->status = "ส่งมอบชุดแล้ว";
             $create_status->save();
             if ($orderdetail->status_payment == 1) {
                 //ตารางpaymentstatus
@@ -1213,7 +1241,6 @@ class OrderController extends Controller
 
         // $dress_mea = Dressmea::where('dress_id', $dress_id)->get();
 
-
         if ($textcharacter === "ทั้งชุด") {
             $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
             $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
@@ -1262,6 +1289,7 @@ class OrderController extends Controller
                 $create_order_detail->deposit = $data_dress->dress_deposit;
                 $create_order_detail->damage_insurance = $data_dress->damage_insurance;
                 $create_order_detail->save();
+
 
                 $dress_mea = Dressmea::where('dress_id', $dress_id)->get();
                 foreach ($dress_mea as $data) {

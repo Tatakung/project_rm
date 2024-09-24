@@ -13,6 +13,7 @@
                 มีความสำคัญสูงสุดและต้องจัดเตรียมก่อน</strong></p>
     </div>
 
+    @if($reservations->count() > 0 )
     <table class="table shadow-sm" style="width: 100%; background-color: #ffffff; border-collapse: collapse;">
         <thead>
             <tr style="background-color: #f2f2f2;">
@@ -20,7 +21,7 @@
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชุด</th>
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชื่อลูกค้า</th>
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">วันที่นัดรับ</th>
-                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ตำแหน่งชุด</th>
+                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">สถานะชุด</th>
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ดูรายละเอียด</th>
             </tr>
         </thead>
@@ -43,6 +44,11 @@
                         if ($dressmea != $dressmeaadjust->new_size) {
                             $validate = true;
                         }
+                    }
+                    if ($validate) {
+                        $edit_message_mea = 'รอการปรับแก้ขนาด';
+                    } else {
+                        $edit_message_mea = 'ไม่ต้องปรับแก้ขนาด';
                     }
 
                     $dress = App\Models\Dress::where('id', $reservation->dress_id)->first();
@@ -94,6 +100,7 @@
                                         break;
                                     }
                                 }
+
                             @endphp
                         @endif
 
@@ -118,7 +125,7 @@
                         </span>
                         <span class="d-block mt-2" style="font-size: 14px;">
                             @if ($validate)
-                                <span style="color: #CC2828;">- ต้องปรับแก้ขนาด</span>
+                                <span style="color: #CC2828;">- รอการปรับแก้ขนาด</span>
                             @else
                                 <span style="color: #28a745;">- ไม่ต้องปรับแก้ขนาด</span>
                             @endif
@@ -139,19 +146,99 @@
                             var start_date = new Date("{{ $reservation->start_date }}");
                             var day = start_date - now;
                             var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
-                            document.getElementById('showday{{ $reservation->id }}').innerHTML = "เหลืออีก " + totalday + ' วัน !';
+                            document.getElementById('showday{{ $reservation->id }}').innerHTML = "เหลืออีก " + totalday + ' วัน ';
                         </script>
                     </td>
                     <td style="width: 200px;">
 
                         @if ($reservation->shirtitems_id)
+                            {{-- หาสถานะปัจจุบันของเสื้อ --}}
                             @php
-                                $check_status_dress_now = null;
+                                $list_for_status = [];
+                                $check_status_shirt_now_for_shirt_id = App\Models\Reservation::where(
+                                    'status_completed',
+                                    0,
+                                )
+                                    ->where('shirtitems_id', $reservation->shirtitems_id)
+                                    ->get();
+                                foreach ($check_status_shirt_now_for_shirt_id as $item) {
+                                    $list_for_status[] = $item->id;
+                                }
+                                $check_status_shirt_now_for_dress_id = App\Models\Reservation::where(
+                                    'status_completed',
+                                    0,
+                                )
+                                    ->where('dress_id', $reservation->dress_id)
+                                    ->whereNull('shirtitems_id')
+                                    ->whereNull('skirtitems_id')
+                                    ->get();
+                                foreach ($check_status_shirt_now_for_dress_id as $value) {
+                                    $list_for_status[] = $value->id;
+                                }
+
+                                $check_status_total = App\Models\Reservation::orderByRaw(
+                                    " STR_TO_DATE(start_date,'%Y-%m-%d') asc",
+                                )
+                                    ->whereIn('id', $list_for_status)
+                                    ->first();
                             @endphp
+
+                            @if ($number == 1)
+                                @if ($check_status_total->status == 'กำลังเช่า')
+                                    กำลังถูกเช่าโดยลูกค้าท่านก่อน(คืน{{ \Carbon\Carbon::parse($check_status_total->start_date)->locale('th')->isoFormat('D MMM') }})
+                                @elseif($check_status_total->status == 'ถูกจอง')
+                                    อยู่ในร้าน
+                                @else
+                                    {{ $check_status_total->status }}
+                                @endif
+                            @else
+                                รอคิว
+                            @endif
                         @elseif($reservation->skirtitems_id)
+                            {{-- หาสถานะปัจจุบันของผ้าถุง --}}
                             @php
-                                $check_status_dress_now = null;
+                                $list_for_status = [];
+                                $check_status_skirt_now_for_skirt_id = App\Models\Reservation::where(
+                                    'status_completed',
+                                    0,
+                                )
+                                    ->where('skirtitems_id', $reservation->skirtitems_id)
+                                    ->get();
+                                foreach ($check_status_skirt_now_for_skirt_id as $item) {
+                                    $list_for_status[] = $item->id;
+                                }
+                                $check_status_skirt_now_for_dress_id = App\Models\Reservation::where(
+                                    'status_completed',
+                                    0,
+                                )
+                                    ->where('dress_id', $reservation->dress_id)
+                                    ->whereNull('shirtitems_id')
+                                    ->whereNull('skirtitems_id')
+                                    ->get();
+                                foreach ($check_status_skirt_now_for_dress_id as $value) {
+                                    $list_for_status[] = $value->id;
+                                }
+
+                                $check_status_total = App\Models\Reservation::orderByRaw(
+                                    " STR_TO_DATE(start_date,'%Y-%m-%d') asc",
+                                )
+                                    ->whereIn('id', $list_for_status)
+                                    ->first();
                             @endphp
+
+                            @if ($number == 1)
+                                @if ($check_status_total->status == 'กำลังเช่า')
+                                    กำลังถูกเช่าโดยลูกค้าท่านก่อน(คืน{{ \Carbon\Carbon::parse($check_status_total->start_date)->locale('th')->isoFormat('D MMM') }})
+                                @elseif($check_status_total->status == 'ถูกจอง')
+                                    อยู่ในร้าน
+                                @else
+                                    {{ $check_status_total->status }}
+                                @endif
+                            @else
+                                รอคิว
+                            @endif
+
+
                         @else
                             @if ($number == 1)
                                 @php
@@ -171,7 +258,7 @@
                                     {{ $check_status_dress_now->status }}
                                 @endif
                             @else
-                            รอคิว
+                                รอคิว
                             @endif
                         @endif
 
@@ -189,4 +276,7 @@
             @endforeach
         </tbody>
     </table>
+    @else
+    <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
+    @endif
 @endsection

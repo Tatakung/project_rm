@@ -149,20 +149,20 @@
                 <div class="col-md-6">
                     <div id="aria_show_mea" style="margin-left: 80px;">
                         {{-- พื้นที่แสดงผล --}}
-                        @foreach ($measurementorderdetail as $measurementorderdetail)
+                        @foreach ($measurementadjusts as $measurementorderdetail)
                             <div class="row">
                                 <div class="col-md-4" style="text-align: center;">
                                     <input type="hidden" name="mea_id_[]" value="{{ $measurementorderdetail->id }}">
                                     <input type="text" name="update_mea_name_[]" class="form-control"
                                         style="font-size: 15px; margin-top: 8px; width: 90%; height: 70%;"
-                                        value="{{ $measurementorderdetail->measurement_name }}" placeholder="ชื่อการวัด">
+                                        value="{{ $measurementorderdetail->name }}" placeholder="ชื่อการวัด">
                                 </div>
                                 <div class="col-md-4" style="display: flex; align-items: center;">
                                     <input type="hidden" value="{{ $measurementorderdetail->id }}"
                                         name="mea_order_detail_id_[]">
                                     <input type="number" name="update_mea_number_[]" class="form-control"
                                         style="width: 90%; height: 70%; font-size: 15px; margin-right: 10px;"
-                                        value="{{ $measurementorderdetail->measurement_number }}" step="0.01"
+                                        value="{{ $measurementorderdetail->new_size }}" step="0.01"
                                         min="0" max="100" placeholder="ค่าวัด">
                                     <span style="font-size: 15px; margin-left: 20px;">นิ้ว</span>
                                 </div>
@@ -171,7 +171,7 @@
                                         style="width: 25px; height: 25px; border-radius: 50%; padding: 0; margin-top: 10px; background-color: #A7567F;">
                                         <i class="bi bi-x" style="font-size: 16px; margin: 0; color: white;"></i>
                                     </button> --}}
-                                    <form
+                                    {{-- <form
                                         action="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}"
                                         method="POST">
                                         @csrf
@@ -181,7 +181,14 @@
                                             type="submit">
                                             <i class="bi bi-x" style="font-size: 16px; margin: 0; color: white;"></i>
                                         </button>
-                                    </form>
+                                    </form> --}}
+
+                                    <a href="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}">
+                                        <button class="btn d-flex justify-content-center align-items-center"
+                                            style="width: 25px; height: 25px; border-radius: 50%; padding: 0; margin-top: 10px; background-color: #A7567F;">
+                                            <i class="bi bi-x" style="font-size: 16px; margin: 0; color: white;"></i>
+                                        </button>
+                                    </a>
 
 
 

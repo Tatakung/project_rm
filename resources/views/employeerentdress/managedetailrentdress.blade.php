@@ -462,17 +462,17 @@
                                         )->first();
                                     @endphp
                                     <th>{{ $dress_mea->mea_dress_name }}
-                                        <span style="font-size: 12px; color: rgb(140, 35, 35) ; ">
+                                        <span style="font-size: 30px; color: rgb(140, 35, 35) ; ">
                                             @php
                                                 $mea_local = App\models\Dressmea::find($dress_mea_adjust->dressmea_id) ; 
                                             @endphp
-                                            (ปรับได้ {{$mea_local->initial_mea - 4 }} - {{$mea_local->initial_mea + 4 }})
+                                            (ปรับได้ {{$mea_local->initial_mea - 4 }} - {{$mea_local->initial_mea + 4 }} นิ้ว)
                                         </span>
                                     </th>
                                     <td>{{ $dress_mea_adjust->new_size }}</td>
 
                                     @if ($dress_mea->current_mea != $dress_mea_adjust->new_size)
-                                        <td style="color: #eb3131 ; font-size: 14px;">
+                                        <td style="color: #eb3131 ; font-size: 26px;">
                                             ปรับแก้:จาก{{ $dress_mea->current_mea }}<i
                                                 class="bi bi-arrow-right"></i>{{ $dress_mea_adjust->new_size }}นิ้ว
                                             {{-- <span
@@ -611,14 +611,19 @@
                     </div>
                     <div class="modal-body">
                         <h5>คุณได้แก้ไขขนาดชุดให้ลูกค้าเรียบร้อยแล้วใช่หรือไม่?</h5>
-                        <table class="table table-bordered">
+                        
+                            <input type="hidden" name="dress_id" value="{{$orderdetail->dress_id}}">
+                            <input type="hidden" name="shirtitems_id" value="{{$orderdetail->shirtitems_id }}">
+                            <input type="hidden" name="skirtitems_id" value="{{$orderdetail->skirtitems_id }}">
+                            <input type="hidden" name="order_detail_id" value="{{$orderdetail->id}}">
                             @foreach ($dress_mea_adjust_modal as $index => $dress_mea_adjust_modal)
+                            <input type="hidden" name="dress_adjustment_[]" value="{{$dress_mea_adjust_modal->id}}">
                                 <input type="hidden" name="dressmea_id_[]"
                                     value="{{ $dress_mea_adjust_modal->dressmea_id }}">
                                 <input type="hidden" name="new_size_[]"
                                     value="{{ $dress_mea_adjust_modal->new_size }}">
                             @endforeach
-                        </table>
+                        
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn" data-dismiss="modal"

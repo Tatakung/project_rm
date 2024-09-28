@@ -2,7 +2,7 @@
 
 @section('content')
     <h1 class="text-center my-4" style="color: #3d3d3d; font-family: 'Prompt', sans-serif; font-weight: 600;">
-        "คิวการจัดเตรียมชุดสำหรับลูกค้า"
+        "คิวรอลูกค้าส่งคืนชุด"
     </h1>
 
     <div class="alert alert-info" role="alert" style="font-family: 'Prompt', sans-serif;">

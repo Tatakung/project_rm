@@ -18,6 +18,7 @@ class Skirtitem extends Model
         'skirtitem_rental',
         'skirt_damage_insurance',
         'repair_count' , 
+        'skirt_adjustment'
     ];
 
     // skirtitem เป็น M - 1 ของ dress

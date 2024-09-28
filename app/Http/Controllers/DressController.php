@@ -291,11 +291,11 @@ class DressController extends Controller
             ->where('count', $maxcount)->get();
         $measument_no_separate_now_modal = Dressmeasurementnow::where('dress_id', $id)
             ->where('count', $maxcount)->get();
-           
+
         $reservations = Reservation::where('dress_id', $id)
             ->where('status_completed', 0)
             ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
-            ->whereIn('status',['ถูกจอง',"กำลังเช่า"])
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
             ->get();
 
 
@@ -304,24 +304,22 @@ class DressController extends Controller
             ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
             ->first();
 
-        // $reservation_history = Reservation::where('status_completed', 0)
-        //     ->where('dress_id', $id)
-        //     ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
-        //     // ->whereIn('status',['ถูกจอง','กำลังเช่า'])
-        //     ->get();
-        
-
-        $history_reservation = Orderdetail::where('dress_id',$id)
-                ->where('status_detail','คืนชุดแล้ว')
-                ->get() ; 
-        
+        $history_reservation = Orderdetail::where('dress_id', $id)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
 
 
+        $date_reservations = Reservation::where('dress_id', $id)
+            ->where('dress_id',$id)
+            ->where('status_completed', 0)
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
 
 
         $mea_dress = Dressmea::where('dress_id', $id)->get();
-        return view('admin.dressdetail', compact('datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now','history_reservation'));
+        return view('admin.dressdetail', compact('date_reservations','datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now', 'history_reservation'));
     }
+
     // แยกได้
     private function dressdetailyes($id)
     {
@@ -431,7 +429,7 @@ class DressController extends Controller
 
 
 
-        return view('admin.dressdetailyes', compact('text_check_status_shirt','text_check_status_skirt' ,  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress'));
+        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress'));
     }
 
 
@@ -841,4 +839,32 @@ class DressController extends Controller
     {
         return Dress::all();
     }
+    public function dresslist(){
+        $typedresss = Typedress::with('dresses')->get() ; 
+        return view('admin.dresslist',compact('typedresss')) ; 
+    }
+
+    public function separatedresslist($id) {
+        $dress = Dress::find($id) ;
+        if($dress->separable == 1 ){
+            return $this->dresslistno($id)  ;
+        }
+        elseif($dress->separable == 2 ){
+            return $this->dresslistyes($id) ; 
+        }
+    }
+
+    private function dresslistno($id){
+     
+        $history = Dressmea::where('dress_id',$id)->get() ; 
+        $dress_id = $id ; 
+        return view('admin.historydressadjustmentno',compact('history','dress_id')) ; 
+    }
+    
+    private function dresslistyes(){
+        dd('แยกได้ครับ') ; 
+    }
+ 
+
+    
 }

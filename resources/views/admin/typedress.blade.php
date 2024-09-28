@@ -24,9 +24,11 @@
             margin-left: auto;
             margin-right: auto;
             margin: auto;
+            font-size: 34px; /*น้าแอ๊ด*/
         }
         body {
             font-family: "Prompt", sans-serif;
+            font-size: 34px; /*น้าแอ๊ด*/
         }
     </style>
 </head>
@@ -48,24 +50,23 @@
                 <div class="card card-custom mt-5 col-3">
                     <a href="{{ route('admin.dressdetail', ['id' => $item->id , 'separable' => $item->separable]) }}">
                         <div class="card-body">
-                            
+                            <h4>{{$typedress->type_dress_name}} {{$item->dress_code_new}}{{$item->dress_code}} </h4>
                             <div class="card-body">
                                     @if ($item->dressimages->isNotEmpty())
                                     <img src="{{ asset('storage/' . $item->dressimages->first()->dress_image) }}"
                                         alt=""  class="card-img mb-3">
                                 @endif
                                 
-                                <h6 @if($item->dress_status == "พร้อมให้เช่า") style="color: green" 
+                                {{-- <h6 @if($item->dress_status == "พร้อมให้เช่า") style="color: green ; font-size: 34px; /*น้าแอ๊ด*/" 
                                     @else
                                     style="color: red" 
-                                    @endif
-                                >{{$item->dress_status}}</h6>
+                                    @endif>{{$item->dress_status}}</h6> --}}
                                 @if($item->separable == 1)
-                                <h6 style="color: black;"> ทั้งชุด</h6>
+                                <h6 style="color: black; font-size: 34px; /*น้าแอ๊ด*/"> ทั้งชุด</h6>
                                 @elseif($item->separable == 2)
-                                <h6 style="color: black;"> ชุดแยก: เสื้อและกระโปรง</h6>
+                                <h6 style="color: black; font-size: 34px; /*น้าแอ๊ด*/"> ชุดแยก: เสื้อและกระโปรง</h6>
                                 @endif
-                                <h6 style="color: black;">ราคาเช่า: {{ number_format($item->dress_price, 2) }} บาท</h6>
+                                <h6 style="color: black; font-size: 34px; /*น้าแอ๊ด*/">ราคาเช่า: {{ number_format($item->dress_price, 2) }} บาท</h6>
                             </div>
                         </div>
                 </div>

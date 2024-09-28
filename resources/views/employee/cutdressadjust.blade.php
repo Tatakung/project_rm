@@ -16,16 +16,16 @@
     <div class="container">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a href="#pagea" class="nav-link active" data-toggle="tab">รอดำเนินการตัด ({{$cutdresss_page_one->count()}})</a>
+                <a href="#pagea" class="nav-link active" data-toggle="tab">รอดำเนินการตัด (มี {{$cutdresss_page_one->count()}} รายการ)</a>
             </li>
             <li class="nav-item">
-                <a href="#pageb" class="nav-link" data-toggle="tab">เริ่มดำเนินการตัด ({{$cutdresss_page_two->count()}})</a>
+                <a href="#pageb" class="nav-link" data-toggle="tab">เริ่มดำเนินการตัด (มี {{$cutdresss_page_two->count()}} รายการ)</a>
             </li>
             <li class="nav-item">
-                <a href="#pagec" class="nav-link" data-toggle="tab">แก้ไขชุด ({{$cutdresss_page_four->count()}})</a>
+                <a href="#pagec" class="nav-link" data-toggle="tab">แก้ไขชุด (มี {{$cutdresss_page_four->count()}} รายการ)</a>
             </li>
             <li class="nav-item">
-                <a href="#paged" class="nav-link" data-toggle="tab">ตัดเสร็จแล้ว(รอส่งมอบ) ({{$cutdresss_page_three->count()}})</a>
+                <a href="#paged" class="nav-link" data-toggle="tab">ตัดเสร็จแล้วมีรอส่งมอบ (มี {{$cutdresss_page_three->count()}} รายการ)</a>
             </li>
         </ul>
 

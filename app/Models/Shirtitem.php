@@ -18,6 +18,7 @@ class Shirtitem extends Model
         'shirtitem_rental',
         'shirt_damage_insurance',
         'repair_count' , 
+        'shirt_adjustment' , 
     ];
 
     // shirtitem เป็น M - 1 ของ dress

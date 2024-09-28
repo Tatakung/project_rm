@@ -162,7 +162,7 @@
 
 
                                         <div class="mb-3">
-                                            <label for="pickup_date" class="form-label">วันที่นัดรับ</label>
+                                            <label for="pickup_date" class="form-label">วันที่นัดส่งมอบชุด(วันนัดรับชุด)</label>
                                             <input type="date" class="form-control" id="pickup_date"
                                                 name="pickup_date" min="{{ $today }}" required>
                                         </div>

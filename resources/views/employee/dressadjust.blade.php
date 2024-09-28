@@ -17,7 +17,7 @@
     <table class="table shadow-sm" style="width: 100%; background-color: #ffffff; border-collapse: collapse;">
         <thead>
             <tr style="background-color: #f2f2f2;">
-                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ลำดับคิว</th>
+                {{-- <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ลำดับคิว</th> --}}
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชุด</th>
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชื่อลูกค้า</th>
                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">วันที่นัดรับ</th>
@@ -56,7 +56,7 @@
                 @endphp
 
                 <tr style="border-bottom: 1px solid #e6e6e6;">
-                    <td>
+                    
                         @if ($reservation->shirtitems_id)
                             @php
                                 $find = App\Models\Reservation::where('status_completed', 0)
@@ -104,13 +104,13 @@
                             @endphp
                         @endif
 
-                        @if ($number == 1)
+                        {{-- @if ($number == 1)
                             คิวที่ {{ $number }} <span style="color: red; margin-left: 5px;">&#9733;</span>
                         @else
                             คิวที่ {{ $number }}
-                        @endif
+                        @endif --}}
 
-                    </td>
+                 
 
                     <td style="padding: 16px;">
                         เช่า {{ $type_dress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
@@ -125,9 +125,9 @@
                         </span>
                         <span class="d-block mt-2" style="font-size: 14px;">
                             @if ($validate)
-                                <span style="color: #CC2828;">- รอการปรับแก้ขนาด</span>
+                                <span style="color: #CC2828; font-size: 30px;">- รอการปรับแก้ขนาด</span>
                             @else
-                                <span style="color: #28a745;">- ไม่ต้องปรับแก้ขนาด</span>
+                                <span style="color: #28a745; font-size: 30px;">- ไม่ต้องปรับแก้ขนาด</span>
                             @endif
                         </span>
                     </td>

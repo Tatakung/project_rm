@@ -192,9 +192,9 @@ class OrderController extends Controller
         $valuestatus = Orderdetailstatus::where('order_detail_id', $id)
             ->latest('created_at')
             ->value('status');
-        $dress_edit_cut = Dressmeasurementcutedit::where('order_detail_id',$id)->get() ; 
-        $dress_adjusts = Dressmeaadjustment::where('order_detail_id',$id)->get() ; 
-        return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit','dress_adjusts','dress_edit_cut'));
+        $dress_edit_cut = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
+        $dress_adjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
+        return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut'));
     }
 
 
@@ -393,8 +393,7 @@ class OrderController extends Controller
                 $create_price->financial_expenses = 0;
                 $create_price->save();
             }
-        }
-        elseif ($status == "กำลังเช่า") {
+        } elseif ($status == "กำลังเช่า") {
             //ตารางfinancial
             if ($request->input('total_damage_insurance') > 0) {
                 $create_total_damage_insurance = new Financial();
@@ -418,7 +417,7 @@ class OrderController extends Controller
             $orderdetail->status_detail = "คืนชุดแล้ว";
             $orderdetail->total_damage_insurance = $request->input('total_damage_insurance'); //ปรับจริง
             $orderdetail->cause_for_insurance = $request->input('cause_for_insurance'); //เหตุผลในการปรับ ; 
-            $orderdetail->real_return_date = now() ; 
+            $orderdetail->real_return_date = now();
             $orderdetail->save();
 
             //ตารางorderdetailstatus
@@ -450,7 +449,7 @@ class OrderController extends Controller
                     $update_dress = Dress::find($dress->id);
                     $update_dress->dress_rental = $update_dress->dress_rental + 1; //จำนวนครั้งที่ถูกเช่า
                     $update_dress->save();
-    
+
                     $shirt_id = Shirtitem::where('dress_id', $update_dress->id)->value('id');
                     $skirt_id = Skirtitem::where('dress_id', $update_dress->id)->value('id');
                     // +1เสื้อ
@@ -486,7 +485,7 @@ class OrderController extends Controller
                 $create_repair->reservation_id = $orderdetail->reservation_id;
                 $create_repair->repair_description = $request->input('repair_details');
                 $create_repair->repair_status = 'รอดำเนินการ';
-                $create_repair->repair_type = $request->input('repair_type') ; //10ทั้งชุด 20เสื้อ 30ผ้าถุง
+                $create_repair->repair_type = $request->input('repair_type'); //10ทั้งชุด 20เสื้อ 30ผ้าถุง
                 $create_repair->save();
                 //ตารางstatus
                 $create_status = new Orderdetailstatus();
@@ -689,7 +688,7 @@ class OrderController extends Controller
         $orderdetail = Orderdetail::find($id);
         $status = $orderdetail->status_detail;
 
-        if($status == "รอดำเนินการตัด"){
+        if ($status == "รอดำเนินการตัด") {
             //ตารางorderdetail
             $orderdetail->status_detail = "เริ่มดำเนินการตัด";
             $orderdetail->save();
@@ -698,8 +697,7 @@ class OrderController extends Controller
             $create_status->order_detail_id = $id;
             $create_status->status = "เริ่มดำเนินการตัด";
             $create_status->save();
-        }
-        elseif ($status == 'เริ่มดำเนินการตัด') {
+        } elseif ($status == 'เริ่มดำเนินการตัด') {
             //ตารางorderdetail
             $orderdetail->status_detail = "ตัดชุดเสร็จสิ้น";
             $orderdetail->save();
@@ -738,10 +736,10 @@ class OrderController extends Controller
                     $create_price->financial_expenses = 0;
                     $create_price->save();
                 }
-            } elseif ($request->input('dressStatus') == "no") {           
+            } elseif ($request->input('dressStatus') == "no") {
                 //ตารางorderdetail
                 $orderdetail->status_detail = "แก้ไขชุด";
-                $orderdetail->pickup_date = $request->input('pickup_date_new') ; 
+                $orderdetail->pickup_date = $request->input('pickup_date_new');
                 $orderdetail->status_fix_measurement = 'รอการแก้ไข';
                 $orderdetail->save();
                 //ตารางorderdetailstatus
@@ -752,29 +750,29 @@ class OrderController extends Controller
                 $create_status->save();
 
                 // ตารางdate
-                $create_date = new Date() ; 
-                $create_date->order_detail_id = $order_detail_id_for_new ; 
-                $create_date->pickup_date = $request->input('pickup_date_new') ; 
-                $create_date->save() ; 
+                $create_date = new Date();
+                $create_date->order_detail_id = $order_detail_id_for_new;
+                $create_date->pickup_date = $request->input('pickup_date_new');
+                $create_date->save();
 
 
                 //ตารางmea_orderdetail
                 $id_for_edit_mea_cut = $request->input('id_for_edit_mea_cut_');
                 $edit_mea_cut = $request->input('edit_mea_cut_');
 
-                $max_count = Dressmeasurementcutedit::where('order_detail_id',$id)->max('adjustment_number') ; 
+                $max_count = Dressmeasurementcutedit::where('order_detail_id', $id)->max('adjustment_number');
 
                 foreach ($id_for_edit_mea_cut as $index => $id) {
                     $update = Dressmeaadjustment::find($id);
                     if ($update->new_size != $edit_mea_cut[$index]) {
-                        $create_mea_cut_edit = new Dressmeasurementcutedit() ; 
-                        $create_mea_cut_edit->adjustment_id = $update->id ; 
-                        $create_mea_cut_edit->order_detail_id = $update->order_detail_id ;
-                        $create_mea_cut_edit->old_size = $update->new_size ; 
+                        $create_mea_cut_edit = new Dressmeasurementcutedit();
+                        $create_mea_cut_edit->adjustment_id = $update->id;
+                        $create_mea_cut_edit->order_detail_id = $update->order_detail_id;
+                        $create_mea_cut_edit->old_size = $update->new_size;
                         $create_mea_cut_edit->edit_new_size = $edit_mea_cut[$index];
-                        $create_mea_cut_edit->adjustment_number = $max_count + 1   ; 
-                        $create_mea_cut_edit->status = 'รอการแก้ไข' ; 
-                        $create_mea_cut_edit->save() ; 
+                        $create_mea_cut_edit->adjustment_number = $max_count + 1;
+                        $create_mea_cut_edit->status = 'รอการแก้ไข';
+                        $create_mea_cut_edit->save();
                     }
                 }
             }
@@ -845,15 +843,164 @@ class OrderController extends Controller
 
     public function actionupdatestatusadjustdress(Request $request, $id)
     {
-        $dressmea_id = $request->input('dressmea_id_');
-        $new_size = $request->input('new_size_');
+
+        $dress_id = $request->input('dress_id');
+        $shirtitems_id = $request->input('shirtitems_id');
+        $skirtitems_id = $request->input('skirtitems_id');
+        $dress = Dress::find($dress_id);
+        $shirt = Shirtitem::find($shirtitems_id);
+        $skirt = Skirtitem::find($skirtitems_id);
+        $order_detail_id = $request->input('order_detail_id');
+
+
+        if ($shirtitems_id) {
+            $count_adjust_shirt = Shirtitem::where('id', $shirtitems_id)->max('shirt_adjustment');
+            $count_adjust_shirt = $count_adjust_shirt + 1;
+            $dressmea_id = $request->input('dressmea_id_');
+            $new_size = $request->input('new_size_');
+            $dress_adjustment = $request->input('dress_adjustment_');
+            foreach ($dressmea_id as $index => $dress_mea_id) {
+                $dress_mea = Dressmea::find($dress_mea_id);
+                if ($dress_mea->current_mea != $new_size[$index]) {
+                    // สร้างตารางประวัติการแก้ dressmeasurementcutedits
+                    $create_cut_edit = new Dressmeasurementcutedit();
+                    $create_cut_edit->adjustment_id = $dress_adjustment[$index];
+                    $create_cut_edit->order_detail_id = $order_detail_id;
+                    $create_cut_edit->name = $dress_mea->mea_dress_name;
+                    $create_cut_edit->dress_id = $dress_mea->dress_id;
+                    $create_cut_edit->shirtitems_id = $dress_mea->shirtitems_id;
+                    $create_cut_edit->skirtitems_id = $dress_mea->skirtitems_id;
+                    $create_cut_edit->old_size = $dress_mea->current_mea;
+                    $create_cut_edit->edit_new_size = $new_size[$index];
+                    $create_cut_edit->adjustment_number = $count_adjust_shirt;
+                    $create_cut_edit->save();
+                }
+            }
+            // อย่าลืมอัพเดตค่าจำนวนครั้งที่ชุดนี้ถุกแก้ ตาราง shirt 
+            $update_shirt_adjust_count = Shirtitem::find($shirtitems_id);
+            $update_shirt_adjust_count->shirt_adjustment = $count_adjust_shirt;
+            $update_shirt_adjust_count->save();
+        } elseif ($skirtitems_id) {
+
+            $count_adjust_skirt = Skirtitem::where('id', $skirtitems_id)->max('skirt_adjustment');
+            $count_adjust_skirt = $count_adjust_skirt + 1;
+            $dressmea_id = $request->input('dressmea_id_');
+            $new_size = $request->input('new_size_');
+            $dress_adjustment = $request->input('dress_adjustment_');
+            foreach ($dressmea_id as $index => $dress_mea_id) {
+                $dress_mea = Dressmea::find($dress_mea_id);
+                if ($dress_mea->current_mea != $new_size[$index]) {
+                    // สร้างตารางประวัติการแก้ dressmeasurementcutedits
+                    $create_cut_edit = new Dressmeasurementcutedit();
+                    $create_cut_edit->adjustment_id = $dress_adjustment[$index];
+                    $create_cut_edit->order_detail_id = $order_detail_id;
+                    $create_cut_edit->name = $dress_mea->mea_dress_name;
+                    $create_cut_edit->dress_id = $dress_mea->dress_id;
+                    $create_cut_edit->shirtitems_id = $dress_mea->shirtitems_id;
+                    $create_cut_edit->skirtitems_id = $dress_mea->skirtitems_id;
+                    $create_cut_edit->old_size = $dress_mea->current_mea;
+                    $create_cut_edit->edit_new_size = $new_size[$index];
+                    $create_cut_edit->adjustment_number = $count_adjust_skirt;
+                    $create_cut_edit->save();
+                }
+            }
+            // อย่าลืมอัพเดตค่าจำนวนครั้งที่ชุดนี้ถุกแก้ ตาราง skirt 
+            $update_skirt_adjust_count = Skirtitem::find($skirtitems_id);
+            $update_skirt_adjust_count->skirt_adjustment = $count_adjust_skirt;
+            $update_skirt_adjust_count->save();
+        } else {
+            if ($dress->separable == 1) {
+                $max = Dress::where('id', $dress->id)->max('dress_adjustment');
+                $count_dress_adjustment = $max + 1;
+
+                $dressmea_id = $request->input('dressmea_id_');
+                $new_size = $request->input('new_size_');
+                $dress_adjustment = $request->input('dress_adjustment_');
+                foreach ($dressmea_id as $index => $dress_mea_id) {
+                    $dress_mea = Dressmea::find($dress_mea_id);
+                    if ($dress_mea->current_mea != $new_size[$index]) {
+                        // สร้างตารางประวัติการแก้ dressmeasurementcutedits
+                        $create_cut_edit = new Dressmeasurementcutedit();
+                        $create_cut_edit->adjustment_id = $dress_adjustment[$index];
+                        $create_cut_edit->order_detail_id = $order_detail_id;
+                        $create_cut_edit->name = $dress_mea->mea_dress_name;
+                        $create_cut_edit->dress_id = $dress_mea->dress_id;
+                        $create_cut_edit->shirtitems_id = $dress_mea->shirtitems_id;
+                        $create_cut_edit->skirtitems_id = $dress_mea->skirtitems_id;
+                        $create_cut_edit->old_size = $dress_mea->current_mea;
+                        $create_cut_edit->edit_new_size = $new_size[$index];
+                        $create_cut_edit->adjustment_number = $count_dress_adjustment;
+                        $create_cut_edit->save();
+                    }
+                }
+                // อย่าลืมอัพเดตค่าจำนวนครั้งที่ชุดนี้ถุกแก้ ตาราง dress
+                $dress->dress_adjustment = $count_dress_adjustment;
+                $dress->save();
+            } elseif ($dress->separable == 2) {
+                // เช่าทั้งชุด แต่มันแยกได้
+                $dressmea_id = $request->input('dressmea_id_');
+                $new_size = $request->input('new_size_');
+                $dress_adjustment = $request->input('dress_adjustment_');
+                foreach ($dressmea_id as $index => $dress_mea_id) {
+                    $dress_mea = Dressmea::find($dress_mea_id);
+                    if ($dress_mea->current_mea != $new_size[$index]) {
+                        $check_shirt = $dress_mea->shirtitems_id;
+                        $check_skirt = $dress_mea->skirtitems_id;
+                        if ($check_shirt != null) {
+                            $max = Shirtitem::where('id', $check_shirt)->max('shirt_adjustment');
+                            $max = $max + 1;
+                            $max_for_shirt = $max;
+                            // อย่าลืมอัพเดตค่าจำนวนครั้งที่ชุดนี้ถุกแก้ ตาราง shirt และ ตาราง skirt 
+                            $update_shirt_id = Shirtitem::where('dress_id', $dress_id)->value('id');
+                            $update_shirt = Shirtitem::find($update_shirt_id);
+                            $update_shirt->shirt_adjustment = $max_for_shirt;
+                            $update_shirt->save();
+                        } elseif ($check_skirt != null) {
+                            $max = Skirtitem::where('id', $check_skirt)->max('skirt_adjustment');
+                            $max =  $max + 1;
+                            $max_for_skirt = $max;
+                            // อย่าลืมอัพเดตค่าจำนวนครั้งที่ชุดนี้ถุกแก้ ตาราง shirt และ ตาราง skirt 
+                            $update_skirt_id = Skirtitem::where('dress_id', $dress_id)->value('id');
+                            $update_skirt = Skirtitem::find($update_skirt_id);
+                            $update_skirt->skirt_adjustment = $max_for_skirt;
+                            $update_skirt->save();
+                        }
+                        // สร้างตารางประวัติการแก้ dressmeasurementcutedits
+                        $create_cut_edit = new Dressmeasurementcutedit();
+                        $create_cut_edit->adjustment_id = $dress_adjustment[$index];
+                        $create_cut_edit->order_detail_id = $order_detail_id;
+                        $create_cut_edit->name = $dress_mea->mea_dress_name;
+                        $create_cut_edit->dress_id = $dress_mea->dress_id;
+                        $create_cut_edit->shirtitems_id = $dress_mea->shirtitems_id;
+                        $create_cut_edit->skirtitems_id = $dress_mea->skirtitems_id;
+                        $create_cut_edit->old_size = $dress_mea->current_mea;
+                        $create_cut_edit->edit_new_size = $new_size[$index];
+                        $create_cut_edit->adjustment_number = $max;
+                        $create_cut_edit->save();
+                    }
+                }
+            }
+        }
+
+        //สุดท้ายแล้ว ต้องอัพเดตค่าในตาราง dressmea ให้เป็นปัจจุับน
         foreach ($dressmea_id as $index => $dress_mea_id) {
             $update_mea = Dressmea::find($dress_mea_id);
             $update_mea->current_mea = $new_size[$index];
             $update_mea->save();
         }
+
+
+
+
+
+
+
+
         return redirect()->back()->with('อัพเดตสถานะของแก้ไขการวัดสำเร็จ');
     }
+
+
+
 
     public function adddresstocart()
     {

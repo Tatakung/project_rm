@@ -119,13 +119,15 @@
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="separable" id="separate_rent_no" value="1" required>
                         <label class="form-check-label" for="separate_rent_no">
-                            ไม่สามารถเช่าแยกได้(เช่าเป็นชุด)
+                            {{-- ไม่สามารถเช่าแยกได้(เช่าเป็นชุด) --}}
+                            ไม่อนุญาติให้ลูกค้าเช่าแยก (ลูกค้าต้องเช่าเป็นชุด)
                         </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="separable" id="separate_rent_yes" value="2" required>
                         <label class="form-check-label" for="separate_rent_yes">
-                            สามารถเช่าแยกได้(เสื้อ+กระโปรง/กางเกง)
+                            {{-- สามารถเช่าแยกได้(เสื้อ+กระโปรง/กางเกง) --}}
+                            อนุญาติให้ลูกค้าเช่าแยกได้ (เสื้อ / ผ้าถุง)
                         </label>
                     </div>
 
@@ -265,7 +267,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[4]"
-                                    id="no_shirt_measurement_dress_name4" value="ไหล่กว้าง" required readonly>
+                                    id="no_shirt_measurement_dress_name4" value="ความกว้างของไหล่" required readonly>
                             </div>
                             <div class="col-md-4">
                                 <input type="number"
@@ -279,7 +281,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[5]"
-                                    id="no_shirt_measurement_dress_name5" value="เสื้อยาว" required readonly>
+                                    id="no_shirt_measurement_dress_name5" value="ความยาวชุด" required readonly>
                             </div>
                             <div class="col-md-4">
                                 <input type="number"
@@ -293,7 +295,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[6]"
-                                    id="no_shirt_measurement_dress_name6" value="แขนยาว" required readonly>
+                                    id="no_shirt_measurement_dress_name6" value="ความยาวแขน" required readonly>
                             </div>
                             <div class="col-md-4">
                                 <input type="number"
@@ -385,7 +387,7 @@
 
             {{-- กล่องกรณีที่ชุดสามารถเช่าแยกได้ --}}
             <div id="Big_show_aria_yes_separated" style="display: none;">
-                <h3 style="text-align: center ; ">กรณีที่ชุดสามารถเช่าแยกได้(เสื้อ + กระโปรง/กางเกง)</h3>
+                <h3 style="text-align: center ; ">กรณีที่ชุดสามารถเช่าแยกได้(เสื้อ + ผ้าถุง)</h3>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="shadow p-4 mb-5 bg-white rounded">
@@ -549,18 +551,18 @@
                     <div class="col-md-6">
                         <div class="shadow p-4 mb-5 bg-white rounded">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0">ข้อมูลกระโปรง</h4>
+                                <h4 class="mb-0">ข้อมูลผ้าถุง</h4>
                                 <button type="button" class="btn btn-success" id="button_add_mea_skirt">+
                                     เพิ่มการวัดกระโปรง</button>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <label for="skirt_price">ราคากระโปรง</label>
+                                    <label for="skirt_price">ราคาผ้าถุง</label>
                                     <input type="number" name="skirt_price" id="skirt_price" class="form-control"
                                         placeholder="ราคา" min="1">
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="skirt_deposit">มัดจำราคากระโปรง</label>
+                                    <label for="skirt_deposit">มัดจำราคาผ้าถุง</label>
                                     <input type="number" name="skirt_deposit" id="skirt_deposit" class="form-control"
                                         placeholder="ราคา" min="1">
                                 </div>

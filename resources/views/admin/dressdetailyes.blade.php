@@ -56,7 +56,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="pants-tab" data-toggle="tab" href="#pants" role="tab" aria-controls="pants"
-                        aria-selected="false">ข้อมูลกระโปรง</a>
+                        aria-selected="false">ข้อมูลผ้าถุง</a>
                 </li>
             </ul>
 
@@ -85,9 +85,9 @@
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
                                                                         </p> -->
-                                <p><strong>สถานะชุด:</strong> <span
+                                {{-- <p><strong>สถานะชุด:</strong> <span
                                         @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
-                                        {{ $datadress->dress_status }}</span></p>
+                                        {{ $datadress->dress_status }}</span></p> --}}
 
 
                                 <p><strong>สถานะปัจจุบันของชุด</strong></p>
@@ -117,8 +117,8 @@
                                         @foreach ($dress_mea_totaldress as $dress_mea_totaldress)
                                             <tr>
                                                 <td>{{ $dress_mea_totaldress->mea_dress_name }}<span
-                                                        style="font-size: 12px; color: rgb(197, 21, 21)">(ปรับได้
-                                                        {{ $dress_mea_totaldress->initial_mea - 4 }}-{{ $dress_mea_totaldress->initial_mea + 4 }})</span>
+                                                        style="font-size: 30px; color: rgb(197, 21, 21)">(ปรับได้
+                                                        {{ $dress_mea_totaldress->initial_mea - 4 }}-{{ $dress_mea_totaldress->initial_mea + 4 }} นิ้ว)</span>
                                                 </td>
                                                 <td col-1>{{ $dress_mea_totaldress->current_mea }} </td>
                                                 <td col-1>นิ้ว</td>
@@ -349,8 +349,8 @@
                                         @foreach ($dress_mea_shirt as $dress_mea_shirt)
                                             <tr>
                                                 <td>{{ $dress_mea_shirt->mea_dress_name }}<span
-                                                        style="font-size: 12px; color: rgb(197, 21, 21)">(ปรับได้
-                                                        {{ $dress_mea_shirt->initial_mea - 4 }}-{{ $dress_mea_shirt->initial_mea + 4 }})</span>
+                                                        style="font-size: 30px; color: rgb(197, 21, 21)">(ปรับได้
+                                                        {{ $dress_mea_shirt->initial_mea - 4 }}-{{ $dress_mea_shirt->initial_mea + 4 }} นิ้ว)</span>
                                                 </td>
                                                 <td col-1>{{ $dress_mea_shirt->current_mea }} </td>
                                                 <td col-1>นิ้ว</td>
@@ -451,7 +451,7 @@
                             <div class="col-md-4">
                                 <p><strong>สถานะผ้าถุงตอนนี้:</strong> <span>{{ $text_check_status_skirt }}</span>
                                 </p>
-                                <p><strong>จำนวนกระโปรง/กางเกง:</strong> 1 ตัว</p>
+                                <p><strong>จำนวนผ้าถุง:</strong> 1 ตัว</p>
                                 <p><strong>ราคา:</strong> {{ number_format($skirtitem->skirtitem_price, 2) }} บาท</p>
                                 <p><strong>ราคามัดจำ:</strong> {{ number_format($skirtitem->skirtitem_deposit, 2) }} บาท
                                 </p>
@@ -571,8 +571,8 @@
                                         @foreach ($dress_mea_skirt as $dress_mea_skirt)
                                             <tr>
                                                 <td>{{ $dress_mea_skirt->mea_dress_name }}<span
-                                                        style="font-size: 12px; color: rgb(197, 21, 21)">(ปรับได้
-                                                        {{ $dress_mea_skirt->initial_mea - 4 }}-{{ $dress_mea_skirt->initial_mea + 4 }})</span>
+                                                        style="font-size: 30px; color: rgb(197, 21, 21)">(ปรับได้
+                                                        {{ $dress_mea_skirt->initial_mea - 4 }}-{{ $dress_mea_skirt->initial_mea + 4 }} นิ้ว)</span>
                                                 </td>
 
                                                 </td>
@@ -876,7 +876,7 @@
                         <div class="modal-body">
                             <div class="container-fluid">
                                 <!-- ข้อมูลชุด -->
-                                <h5 class="mb-4">ข้อมูลกระโปรง/กางเกง</h5>
+                                <h5 class="mb-4">ข้อมูลผ้าถุง</h5>
 
                                 <form action="{{ route('admin.updatedressyesskirt', ['id' => $skirtitem->id]) }}"
                                     method="POST">

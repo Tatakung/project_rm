@@ -232,63 +232,8 @@
                         @endphp
                         <p><strong>จำนวนครั้งที่ซ่อม</strong>
                             {{ $historyrepair->count() }} ครั้ง
-                            <span><button class="btn btn-secondary" type="button" data-toggle="modal"
-                                    data-target="#showhistory_repair">ประวัติการซ่อม</button></span>
+                            <span></span>
                         </p>
-                        {{-- modalประวัติการซ่อมชุด --}}
-                        <div class="modal fade" id="showhistory_repair" tabindex="-1" role="dialog"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">ประวัติการซ่อม</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-
-                                        @if ($historyrepair->count() > 0)
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>วันที่</th>
-                                                        <th>รายการ</th>
-                                                        <th>สถานะ</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($historyrepair as $repair)
-                                                        <tr>
-                                                            <td>{{ $repair->created_at }}</td>
-                                                            <td>{{ $repair->repair_description }}</td>
-                                                            <td>{{ $repair->repair_status }}</td>
-                                                        </tr>
-                                                    @endforeach
-
-
-                                                </tbody>
-                                            </table>
-                                        @else
-                                            <p style="text-align: center ; ">ไม่มีรายการประวัติการซ่อม</p>
-                                        @endif
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">ปิด</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-
-
-
-
-
-
 
 
 
@@ -298,12 +243,10 @@
                             <strong>ขนาดของชุด</strong> (ปรับแก้ ขยาย/ลด ไม่เกิน 4 นิ้ว):
 
 
-                            {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea">
+                            <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea">
                                 <i class="bi bi-plus-square text-dark"></i>
-                            </button> --}}
-                            <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#history_adjust">
-                                <i class="bi bi-journal-text text-dark">ประวัติการปรับแก้</i>
                             </button>
+
                             @php
                                 $list_check_mea = [];
                             @endphp
@@ -316,7 +259,7 @@
                                 @foreach ($mea_dress as $index => $mea_dress)
                                     <tr>
                                         <td>{{ $mea_dress->mea_dress_name }}<span
-                                                style="font-size: 12px; color: rgb(197, 21, 21)">(ปรับได้
+                                                style="font-size: 30px; color: rgb(197, 21, 21)">(ปรับได้
                                                 {{ $mea_dress->initial_mea - 4 }}-{{ $mea_dress->initial_mea + 4 }})</span>
                                         </td>
 
@@ -344,10 +287,7 @@
             </div>
         </div>
     </div>
-
-
-
-    <div class="container">
+    {{-- <div class="container">
         <div class="row">
             <div class="col-md-3">
                 <h3>คิวการเช่าชุด</h3>
@@ -357,8 +297,6 @@
                     data-target="#reservation_history">ประวัติเช่าชุดนี้</button>
             </div>
         </div>
-
-
         @if ($reservations->count() > 0)
             <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                 <thead>
@@ -415,10 +353,68 @@
         @else
             <h6 style="text-align: center ; ">ไม่มีคิวการเช่าชุดนี้ !</h6>
         @endif
+    </div> --}}
+
+    <br>
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+    <style>
+        #calendar {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+    </style>
+
+    <div id='calendar'></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: [
+                    // ข้อมูลการจองจะถูกเพิ่มที่นี่
+                    @foreach ($date_reservations as $reservation)
+                        {
+                            @php
+                                $order_id = App\Models\Orderdetail::where('reservation_id', $reservation->id)->value('order_id');
+                                $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
+                                $customer = App\Models\Customer::find($customer_id);
+                            @endphp
+
+                            title:
+                                'คุณ {{ $customer->customer_fname }} {{ $customer->customer_lname }} - {{ $reservation->status }}',
+                                start: '{{ $reservation->start_date }}',
+                                end:
+                                '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
+                                color: '{{ $reservation->status == 'ถูกจอง' ? '#3788d8' : '#257e4a' }}'
+                        },
+                    @endforeach
+                ],
+                locale: 'th'
+            });
+            calendar.render();
+        });
+    </script>
 
 
 
-    </div>
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -571,44 +567,45 @@
                     @csrf
                     <div class="modal-body">
                         @php
-                        $list_one = [];
-                        $list_two = [] ;
-                        $meadress = App\Models\Dressmea::where('dress_id', $datadress->id)->get();
-                        foreach ($meadress as $item) {
-                            $list_one[] = $item->id;
-                        }
-                        $dress_adjust = App\Models\Dressmeaadjustment::whereIn('dressmea_id',$list_one)
-                                                ->where('status','แก้ไข')
-                                                ->get() ; 
-                        
-                        foreach ($dress_adjust as $item) {
-                            $list_two[] = $item->id ; 
-                        }
-                        $show_his = App\Models\Dressmeaadjustment::whereIn('id',$list_two)->get() ; 
-                    @endphp
-                        @if($show_his->count() > 0 )
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr style="background-color: #f2f2f2;">
-                                <th style="border: 1px solid #ddd; padding: 8px;">ส่วนที่ปรับ</th>
-                                <th style="border: 1px solid #ddd; padding: 8px;">ขนาดเดิม</th>
-                                <th style="border: 1px solid #ddd; padding: 8px;">ขนาดที่ปรับ</th>
-                            </tr>
-                            
-                            @foreach ($show_his as $item) 
-                            <tr>
-                                @php
-                                        $dress_mea = App\Models\Dressmea::find($item->dressmea_id) ; 
-                                    @endphp
-                                <td style="border: 1px solid #ddd; padding: 8px;">
-                                    {{$dress_mea->mea_dress_name}}
-                                </td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">{{$dress_mea->initial_mea}}</td>
-                                <td style="border: 1px solid #ddd; padding: 8px;">{{$item->new_size}}</td>
-                            </tr>
-                            @endforeach
-                        </table>
+                            $list_one = [];
+                            $list_two = [];
+                            $meadress = App\Models\Dressmea::where('dress_id', $datadress->id)->get();
+                            foreach ($meadress as $item) {
+                                $list_one[] = $item->id;
+                            }
+                            $dress_adjust = App\Models\Dressmeaadjustment::whereIn('dressmea_id', $list_one)
+                                ->where('status', 'แก้ไข')
+                                ->get();
+
+                            foreach ($dress_adjust as $item) {
+                                $list_two[] = $item->id;
+                            }
+                            $show_his = App\Models\Dressmeaadjustment::whereIn('id', $list_two)->get();
+                        @endphp
+                        @if ($show_his->count() > 0)
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="border: 1px solid #ddd; padding: 8px;">ส่วนที่ปรับ</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">ขนาดเดิม</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">ขนาดที่ปรับ</th>
+                                </tr>
+
+                                @foreach ($show_his as $item)
+                                    <tr>
+                                        @php
+                                            $dress_mea = App\Models\Dressmea::find($item->dressmea_id);
+                                        @endphp
+                                        <td style="border: 1px solid #ddd; padding: 8px;">
+                                            {{ $dress_mea->mea_dress_name }}
+                                        </td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">{{ $dress_mea->initial_mea }}
+                                        </td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">{{ $item->new_size }}</td>
+                                    </tr>
+                                @endforeach
+                            </table>
                         @else
-                        <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้</p>
+                            <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้</p>
                         @endif
                     </div>
                     <div class="modal-footer">

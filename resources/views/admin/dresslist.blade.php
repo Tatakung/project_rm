@@ -1,0 +1,37 @@
+@extends('layouts.adminlayout')
+@section('content')
+    <div class="container mt-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>รูป</th>
+                    <th>ปรเภทชุด</th>
+                    <th>หมายเลขชุด</th>
+                    <th>action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($typedresss as $type)
+                    @foreach ($type->dresses as $dress)
+                        <tr>
+                            <td>
+                                @php
+                                    $images = App\Models\Dressimage::where('dress_id',$dress->id)->value('dress_image') ; 
+                                @endphp
+                                <img src="{{ asset('storage/'  .$images)   }}" alt="" width="60px;">
+                            </td>
+                            <td>{{$type->type_dress_name}}</td>
+                            <td>{{$dress->dress_code_new}}{{$dress->dress_code}}</td>
+                            <td>
+                                    <a href="" class="btn btn-danger" >รายละเอียด</a>
+                                    <a href="{{route('admin.separatedresslist',['id' => $dress->id])}}" class="btn btn-danger">ประวัติการปรับแก้ชุด</a>
+                                    <a href="" class="btn btn-danger">ประวัติการซ่อมชุด</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endforeach
+
+            </tbody>
+        </table>
+    </div>
+@endsection

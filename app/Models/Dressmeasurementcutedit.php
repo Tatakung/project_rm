@@ -17,5 +17,10 @@ class Dressmeasurementcutedit extends Model
         'edit_new_size',
         'adjustment_number',
         'status' , 
+        'name',
+        'dress_id',
+        'shirtitems_id',
+        'skirtitems_id' , 
+        
     ];
 }

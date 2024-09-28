@@ -27,15 +27,12 @@
         body {
             /* font-family: 'Barlow', sans-serif; */
             font-family: "Prompt", sans-serif;
+
         }
 
         a:hover {
             text-decoration: none;
         }
-
-
-
-
 
 
         .overlay {
@@ -202,6 +199,13 @@
                     id="d1">
                     <i class="bi bi-cash-coin"></i>
                     <span class="ml-2">ค่าใช้จ่าย</span>
+                </a>
+
+                <a href="{{ route('admin.dresslist') }}"
+                    class="list-group-item list-group-item-action border-0 align-items-center"
+                    id="d1">
+                    <i class="bi bi-shirt"></i>
+                    <span class="ml-2">รายการชุด</span>
                 </a>
 
 

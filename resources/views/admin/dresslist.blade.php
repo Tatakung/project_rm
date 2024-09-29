@@ -23,9 +23,9 @@
                             <td>{{$type->type_dress_name}}</td>
                             <td>{{$dress->dress_code_new}}{{$dress->dress_code}}</td>
                             <td>
-                                    <a href="" class="btn btn-danger" >รายละเอียด</a>
-                                    <a href="{{route('admin.separatedresslist',['id' => $dress->id])}}" class="btn btn-danger">ประวัติการปรับแก้ชุด</a>
-                                    <a href="" class="btn btn-danger">ประวัติการซ่อมชุด</a>
+                                    <a href="{{ route('admin.dressdetail', ['id' => $dress->id , 'separable' => $dress->separable]) }}" class="btn btn-danger">รายละเอียด</a>
+                                    <a href="{{route('admin.historydressadjust',['id' => $dress->id])}}" class="btn btn-danger">ประวัติการปรับแก้ชุด</a>
+                                    <a href="{{route('admin.historydressrepair', ['id' => $dress->id])}}" class="btn btn-danger">ประวัติการซ่อมชุด</a>
                             </td>
                         </tr>
                     @endforeach

@@ -42,8 +42,11 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     //กลุ่มชุด
     Route::get('/admin/adddress-form', [DressController::class, 'formadddress'])->name('admin.formadddress'); //แบบฟอร์มเพิ่มชุด
     Route::get('/admin/dresslist', [DressController::class, 'dresslist'])->name('admin.dresslist');
-    Route::get('/admin/separatedresslist/{id}', [DressController::class, 'separatedresslist'])->name('admin.separatedresslist');
+    Route::get('/admin/historydressadjust/{id}', [DressController::class, 'historydressadjust'])->name('admin.historydressadjust');
+    Route::get('/admin/historydressrepair/{id}', [DressController::class, 'historydressrepair'])->name('admin.historydressrepair');
 
+
+    
     Route::post('/admin/adddress-form/save', [DressController::class, 'savedress'])->name('admin.savedress'); //บันทึกข้อมูล 
     Route::get('/gettypename/{typename}', [DressController::class, 'autodresscode']);
     Route::get('/admin/dresstotal', [DressController::class, 'dresstotal'])->name('admin.dresstotal'); //ชุดทั้งหมด

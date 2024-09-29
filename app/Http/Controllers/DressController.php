@@ -14,6 +14,8 @@ use App\Models\Typedress;
 use App\Models\Orderdetail;
 use App\Models\User;
 use App\Models\Reservation;
+use App\Models\Dressmeasurementcutedit;
+use App\Models\Repair;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -310,14 +312,14 @@ class DressController extends Controller
 
 
         $date_reservations = Reservation::where('dress_id', $id)
-            ->where('dress_id',$id)
+            ->where('dress_id', $id)
             ->where('status_completed', 0)
             ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
             ->get();
 
 
         $mea_dress = Dressmea::where('dress_id', $id)->get();
-        return view('admin.dressdetail', compact('date_reservations','datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now', 'history_reservation'));
+        return view('admin.dressdetail', compact('date_reservations', 'datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now', 'history_reservation'));
     }
 
     // แยกได้
@@ -839,32 +841,85 @@ class DressController extends Controller
     {
         return Dress::all();
     }
-    public function dresslist(){
-        $typedresss = Typedress::with('dresses')->get() ; 
-        return view('admin.dresslist',compact('typedresss')) ; 
+    public function dresslist()
+    {
+        $typedresss = Typedress::with('dresses')->get();
+        return view('admin.dresslist', compact('typedresss'));
     }
 
-    public function separatedresslist($id) {
-        $dress = Dress::find($id) ;
-        if($dress->separable == 1 ){
-            return $this->dresslistno($id)  ;
+    public function historydressadjust($id)
+    {
+        $dress = Dress::find($id);
+        if ($dress->separable == 1) {
+            return $this->dresslistno($id);
+        } elseif ($dress->separable == 2) {
+            return $this->dresslistyes($id);
         }
-        elseif($dress->separable == 2 ){
-            return $this->dresslistyes($id) ; 
+    }
+
+    private function dresslistno($id)
+    {
+        $dress = Dress::find($id);
+        $typedress = Typedress::where('id', $dress->type_dress_id)->first();
+        $history = Dressmeasurementcutedit::where('dress_id', $id)->get();
+        return view('admin.his-dress-adjust-no', compact('dress', 'typedress', 'history'));
+    }
+
+    private function dresslistyes($id)
+    {
+        $dress = Dress::find($id);
+        $typedress = Typedress::where('id', $dress->type_dress_id)->first();
+
+        $shirt_id = Shirtitem::where('dress_id', $id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $id)->value('id');
+        $history_shirt = Dressmeasurementcutedit::where('shirtitems_id', $shirt_id)->get();
+        $history_skirt = Dressmeasurementcutedit::where('skirtitems_id', $skirt_id)->get();
+        return view('admin.his-dress-adjust-yes', compact('dress', 'typedress', 'history_shirt', 'history_skirt'));
+    }
+
+    // ตัวแยกประวัติการซ่อม
+    public function historydressrepair($id)
+    {
+        $dress = Dress::find($id);
+        if ($dress->separable == 1) {
+            return $this->hisrepairno($id);
+        } elseif ($dress->separable == 2) {
+            return $this->hisrepairyes($id);
         }
     }
 
-    private function dresslistno($id){
-     
-        $history = Dressmea::where('dress_id',$id)->get() ; 
-        $dress_id = $id ; 
-        return view('admin.historydressadjustmentno',compact('history','dress_id')) ; 
-    }
-    
-    private function dresslistyes(){
-        dd('แยกได้ครับ') ; 
-    }
- 
 
-    
+    private function hisrepairno($id)
+    {
+        $dress = Dress::find($id);
+        $typedressname = Typedress::find($dress->type_dress_id);
+
+
+        $reservation = Reservation::where('dress_id', $id)->get();
+        $list_one = [];
+        $list_two = [];
+        foreach ($reservation as $item) {
+            $list_one[] = $item->id;
+        }
+
+        foreach ($list_one as $item) 
+            {
+            $findreservation = Repair::where('reservation_id', $item)
+                ->whereIn('repair_status', ['ซ่อมเสร็จแล้ว', 'กำลังซ่อม'])->get();
+            if($findreservation->isNotEmpty()){
+                foreach($findreservation as $item){
+                    $list_two[] = $item->id ; 
+                }
+            }
+        }
+
+        $history = Repair::whereIn('id',$list_two)->get() ; 
+        return view('admin.hist-dress-repair-no', compact('dress', 'typedressname','history'));
+    }
+
+
+    private function hisrepairyes($id)
+    {
+        return view('admin.hist-dress-repair-yes');
+    }
 }

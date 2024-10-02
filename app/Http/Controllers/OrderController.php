@@ -117,6 +117,7 @@ class OrderController extends Controller
         $dress_mea_adjust_button = Dressmeaadjustment::where('order_detail_id', $id)->get();
 
         $dress_mea_adjust_modal = Dressmeaadjustment::where('order_detail_id', $id)->get();
+        $dress_mea_adjust_modal_show = Dressmeaadjustment::where('order_detail_id', $id)->get();
 
 
 
@@ -130,7 +131,7 @@ class OrderController extends Controller
             ->where('status_completed', 0)
             ->orderByRaw(" STR_TO_DATE(start_date, '%Y-%m-%d') asc")
             ->first();
-        return view('employeerentdress.managedetailrentdress', compact( 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button'));
+        return view('employeerentdress.managedetailrentdress', compact( 'dress_mea_adjust_modal_show','status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button'));
     }
 
     //จัดการเช่าเครื่องประดับ

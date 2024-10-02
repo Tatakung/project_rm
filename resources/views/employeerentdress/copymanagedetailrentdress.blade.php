@@ -427,8 +427,6 @@
 
 
 
-
-
                         <div class="status-timeline">
                             @foreach ($orderdetailstatus as $index => $orderdetailstatus)
                                 <div class="status-step">

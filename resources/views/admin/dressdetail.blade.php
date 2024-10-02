@@ -179,9 +179,9 @@
                     <div class="col-md-4">
                         <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                         <!-- <p><strong>รหัสชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</p> -->
-                        <p><strong>ราคา:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
-                        <p><strong>ราคามัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
-                        <p><strong>ราคาประกันค่าเสียหาย:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท
+                        <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
+                        <p><strong>เงินมัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
+                        <p><strong>ค่าประกันชุด:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท
                         </p>
                         <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
                         {{-- <p>
@@ -269,7 +269,7 @@
                                 @foreach ($mea_dress as $index => $mea_dress)
                                     <tr>
                                         <td>{{ $mea_dress->mea_dress_name }}<span
-                                                style="font-size: 30px; color: rgb(197, 21, 21)">(ปรับได้
+                                                style="font-size: 14px; color: rgb(197, 21, 21)">(ปรับได้
                                                 {{ $mea_dress->initial_mea - 4 }}-{{ $mea_dress->initial_mea + 4 }})</span>
                                         </td>
 

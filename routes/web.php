@@ -44,6 +44,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/dresslist', [DressController::class, 'dresslist'])->name('admin.dresslist');
     Route::get('/admin/historydressadjust/{id}', [DressController::class, 'historydressadjust'])->name('admin.historydressadjust');
     Route::get('/admin/historydressrepair/{id}', [DressController::class, 'historydressrepair'])->name('admin.historydressrepair');
+    Route::get('/admin/historydressrent/{id}', [DressController::class, 'historydressrent'])->name('admin.historydressrent');
 
 
     

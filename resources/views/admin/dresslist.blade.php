@@ -26,6 +26,7 @@
                                     <a href="{{ route('admin.dressdetail', ['id' => $dress->id , 'separable' => $dress->separable]) }}" class="btn btn-danger">รายละเอียด</a>
                                     <a href="{{route('admin.historydressadjust',['id' => $dress->id])}}" class="btn btn-danger">ประวัติการปรับแก้ชุด</a>
                                     <a href="{{route('admin.historydressrepair', ['id' => $dress->id])}}" class="btn btn-danger">ประวัติการซ่อมชุด</a>
+                                    <a href="{{route('admin.historydressrent', ['id' => $dress->id])}}" class="btn btn-danger">ประวัติการเช่า</a>
                             </td>
                         </tr>
                     @endforeach

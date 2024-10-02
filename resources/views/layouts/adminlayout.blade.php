@@ -142,11 +142,11 @@
                 <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
             </h1>
             <div class="list-group ">
-                <a href="" class="list-group-item list-group-item-action border-0 d-flex align-items-center"
+                {{-- <a href="" class="list-group-item list-group-item-action border-0 d-flex align-items-center"
                     id="d1">
                     <i class="bi bi-calendar-week"></i>
                     <span class="ml-2 ">ปฏิทินการทำงาน</span>
-                </a>
+                </a> --}}
 
                 <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
                     data-toggle="collapse" data-target="#sale-collapse" id="d1">
@@ -169,13 +169,31 @@
                     </div>
                 </div>
 
+                <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
+                    data-toggle="collapse" data-target="#salee-collapse" id="d1">
+                    <div>
+                        <span class="bi bi-cart-dash"></span>
+                        <span class="ml-2">การจัดการ</span>
+                    </div>
+                    <span class="bi bi-chevron-down small"></span>
+                </button>
+                <div class="collapse" id="salee-collapse" data-parent="#sidebar">
+                    <div class="list-group">
+                        <a href="{{ route('admin.formadddress') }}" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            เพิ่มชุดใหม่</a>
+                        <a href="{{route('admin.dresstotal')}}" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            รายการชุด</a>
+                        
+                    </div>
+                </div>
 
-                <a href="{{ route('admin.dresstotal') }}"
+
+                {{-- <a href="{{ route('admin.dresstotal') }}"
                     class="list-group-item @if (Route::currentRouteName() == 'admin.dresstotal') active @endif list-group-item-action border-0 align-items-center"
                     id="d1">
                     <i class="bi bi-kanban"></i>
                     <span class="ml-2 nav-pills">จัดการชุด</span>
-                </a>
+                </a> --}}
 
 
                 {{-- <a href="{{ route('admin.jewelrytotal') }}"
@@ -208,6 +226,13 @@
                     <span class="ml-2">รายการชุด</span>
                 </a>
 
+                <a href="{{ route('employee.addorder') }}"
+                    class="list-group-item list-group-item-action border-0 align-items-center"
+                    id="d1">
+                    <i class="bi bi-shirt"></i>
+                    <span class="ml-2">เพิ่มออเดอร์</span>
+                </a>
+
 
             </div>
         </div>
@@ -217,11 +242,11 @@
             <h1 class="logo-container">
                 <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
             </h1>
-            <a href="{{ route('employee.calendar') }}"
+            {{-- <a href="{{ route('employee.calendar') }}"
                 class="list-group-item list-group-item-action border-0 d-flex align-items-center" id="d1">
                 <i class="bi bi-calendar-week"></i>
                 <span class="ml-2 ">ปฏิทินการทำงาน</span>
-            </a>
+            </a> --}}
 
             <!-- <div class="list-group rounded-0">
             <a href="" class="list-group-item border-0 align-items-center" id="d1">

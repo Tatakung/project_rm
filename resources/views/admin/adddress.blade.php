@@ -89,7 +89,7 @@
                     });
                 </script>
                 <div class="col-md-3">
-                    <label for="dress_price">ราคาชุด/ครั้ง</label>
+                    <label for="dress_price">ราคาเช่าชุด/ครั้ง</label>
                     <input type="number" name="dress_price" id="dress_price" class="form-control" placeholder="จำนวนบาท" required min="1">
                 </div>
                 <div class="col-md-3">

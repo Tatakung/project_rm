@@ -17,7 +17,6 @@
             text-align: center;
             color: black;
             margin-bottom: 15px;
-            font-size: 34px ; /* น้าแอ๊ด */
         }
         .card-img {
             max-height: 350px;
@@ -26,12 +25,10 @@
             margin-left: auto;
             margin-right: auto;
             margin: auto;
-            font-size: 34px ; /* น้าแอ๊ด */
         }
         body {
             /* font-family: 'Barlow', sans-serif; */
             font-family: "Prompt", sans-serif;
-             font-size: 34px ; /* น้าแอ๊ด */
         }
     </style>
 </head>
@@ -48,10 +45,7 @@
     </div>
 
     <div class="container ">
-        <div class="d-flex justify-content-end ">
-          <button class="btn btn-success ">
-            <a href="{{ route('admin.formadddress') }}" style="color: aliceblue ; font-size: 34px;">เพิ่มชุดใหม่เข้าไปในร้าน (สำหรับเช่า)</a>  
-        </div>
+      
 
         </button>
         <div class="container">

@@ -45,7 +45,7 @@
                                 var day = pickup_date - now ; 
                                 var totalday = Math.ceil(day / (1000 * 60 * 60 *24)) ; 
 
-                                document.getElementById('showday{{$orderdetail->id}}').innerHTML = 'เหลืออีก '  +totalday+ ' วัน !' ; 
+                                document.getElementById('showday{{$orderdetail->id}}').innerHTML = 'เหลืออีก '  +totalday+ ' วัน ' ; 
 
 
 

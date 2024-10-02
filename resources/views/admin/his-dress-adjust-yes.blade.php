@@ -43,8 +43,7 @@
                                                     );
                                                     $customer = App\Models\Customer::find($customer_id);
                                                 @endphp
-                                                <th colspan="3">ครั้งที่ {{ $item->adjustment_number }} ลูกค้า:
-                                                    คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</th>
+                                                <th colspan="3">ครั้งที่ {{ $item->adjustment_number }} </th>
                                             </tr>
                                             <tr style="background-color: #f2f2f2;">
                                                 <th style="border: 1px solid #ddd; padding: 8px;">ส่วนที่ปรับ</th>
@@ -110,8 +109,7 @@
                                                     );
                                                     $customer = App\Models\Customer::find($customer_id);
                                                 @endphp
-                                                <th colspan="3">ครั้งที่ {{ $item->adjustment_number }} ลูกค้า:
-                                                    คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</th>
+                                                <th colspan="3">ครั้งที่ {{ $item->adjustment_number }} </th>
                                             </tr>
                                             <tr style="background-color: #f2f2f2;">
                                                 <th style="border: 1px solid #ddd; padding: 8px;">ส่วนที่ปรับ</th>

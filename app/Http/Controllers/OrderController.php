@@ -97,6 +97,7 @@ class OrderController extends Controller
     private function managedetailrentdress($id)
     {
 
+
         $orderdetail = Orderdetail::find($id);
         $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
         $customer_id = Order::where('id', $orderdetail->order_id)->value('customer_id');
@@ -129,7 +130,7 @@ class OrderController extends Controller
             ->where('status_completed', 0)
             ->orderByRaw(" STR_TO_DATE(start_date, '%Y-%m-%d') asc")
             ->first();
-        return view('employeerentdress.managedetailrentdress', compact('status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button'));
+        return view('employeerentdress.managedetailrentdress', compact( 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button'));
     }
 
     //จัดการเช่าเครื่องประดับ

@@ -28,7 +28,6 @@
         }
         body {
             font-family: "Prompt", sans-serif;
-            font-size: 34px; /*น้าแอ๊ด*/
         }
     </style>
 </head>
@@ -62,11 +61,11 @@
                                     style="color: red" 
                                     @endif>{{$item->dress_status}}</h6> --}}
                                 @if($item->separable == 1)
-                                <h6 style="color: black; font-size: 34px; /*น้าแอ๊ด*/"> ทั้งชุด</h6>
+                                <h6 style="color: black;"> ทั้งชุด</h6>
                                 @elseif($item->separable == 2)
-                                <h6 style="color: black; font-size: 34px; /*น้าแอ๊ด*/"> ชุดแยก: เสื้อและกระโปรง</h6>
+                                <h6 style="color: black;"> ชุดแยก: เสื้อและกระโปรง</h6>
                                 @endif
-                                <h6 style="color: black; font-size: 34px; /*น้าแอ๊ด*/">ราคาเช่า: {{ number_format($item->dress_price, 2) }} บาท</h6>
+                                <h6 style="color: black;    ">ราคาเช่า: {{ number_format($item->dress_price, 2) }} บาท</h6>
                             </div>
                         </div>
                 </div>

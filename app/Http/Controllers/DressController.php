@@ -314,7 +314,7 @@ class DressController extends Controller
         $date_reservations = Reservation::where('dress_id', $id)
             ->where('dress_id', $id)
             ->where('status_completed', 0)
-            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            // ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
             ->get();
 
 
@@ -345,7 +345,6 @@ class DressController extends Controller
         $measument_yes_separate_now_shirt = Dressmeasurementnow::where('shirtitems_id', $shirtitem->id)
             ->where('count', $maxcountshirt)->get();
         $reservation_shirt = Reservation::where('shirtitems_id', $shirtitem->id)
-
             ->where('status_completed', 0)
             ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
             ->get();
@@ -427,11 +426,22 @@ class DressController extends Controller
         }
 
 
+        $date_reservations_dress = Reservation::where('dress_id', $id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->where('status_completed', 0)
+            ->get();
+
+        $date_reservations_shirt = Reservation::where('shirtitems_id',$shirtitem->id)
+            ->where('status_completed', 0)
+            ->get();
+
+            $date_reservations_skirt = Reservation::where('skirtitems_id',$skirtitem->id)
+            ->where('status_completed', 0)
+            ->get();
 
 
-
-
-        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress'));
+        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress', 'date_reservations_dress','date_reservations_shirt','date_reservations_skirt'));
     }
 
 
@@ -537,19 +547,6 @@ class DressController extends Controller
             $update_skirt->skirt_damage_insurance = $request->input('update_skirt_damage_insurance');
             $update_skirt->skirtitem_status = $request->input('update_skirt_status');
             $update_skirt->save();
-
-            if ($request->input('mea_now_id_') != null) {
-                $mea_now_id = $request->input('mea_now_id_');
-                $mea_now_name = $request->input('mea_now_name_');
-                $mea_now_number = $request->input('mea_now_number_');
-                // $mea_now_unit = $request->input('mea_now_unit_');
-                foreach ($mea_now_id as $index => $mea_now_id) {
-                    $update_mea_now = Dressmeasurementnow::find($mea_now_id);
-                    $update_mea_now->measurementnow_dress_number = $mea_now_number[$index];
-                    $update_mea_now->measurementnow_dress_unit = "นิ้ว";
-                    $update_mea_now->save();
-                }
-            }
 
             DB::commit();
             return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
@@ -902,24 +899,99 @@ class DressController extends Controller
             $list_one[] = $item->id;
         }
 
-        foreach ($list_one as $item) 
-            {
+        foreach ($list_one as $item) {
             $findreservation = Repair::where('reservation_id', $item)
                 ->whereIn('repair_status', ['ซ่อมเสร็จแล้ว', 'กำลังซ่อม'])->get();
-            if($findreservation->isNotEmpty()){
-                foreach($findreservation as $item){
-                    $list_two[] = $item->id ; 
+            if ($findreservation->isNotEmpty()) {
+                foreach ($findreservation as $item) {
+                    $list_two[] = $item->id;
                 }
             }
         }
-
-        $history = Repair::whereIn('id',$list_two)->get() ; 
-        return view('admin.hist-dress-repair-no', compact('dress', 'typedressname','history'));
+        $history = Repair::whereIn('id', $list_two)->get();
+        return view('admin.hist-dress-repair-no', compact('dress', 'typedressname', 'history'));
     }
-
-
     private function hisrepairyes($id)
     {
-        return view('admin.hist-dress-repair-yes');
+        $dress = Dress::find($id);
+        $typedressname = Typedress::find($dress->type_dress_id);
+
+        $shirt_id = Shirtitem::where('dress_id', $id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $id)->value('id');
+        $list_one_shirt = [];
+        $list_two_shirt = [];
+
+        // สาเหตุที่เราต้องเช็คทั้ง dress_idและshirt_id เพราะว่ามันจะมี 2 กรณีททีคือ กรณีที่เขาเช่าแคาเสื้อ มันก็จะมีแค่ shirt_idไง พอตอนซ่อม มันก็จะซ่อมแค่เสื้อ
+        // และกรณีที่สองคือ เช่าทั้งชุด dress_id  แล้วซ่อมทั้งชุดอะไรยังงี้ หรือซ่อมแค่เสื้ออะไรยังงี้อะ มันก็ต้องนับเสื้อด้วยถ้าซ่อมทั้งชุดอะ  
+        $shirt_id_in_re = reservation::where('shirtitems_id', $shirt_id)->get();
+        $dress_id_in_re = Reservation::where('dress_id', $id)->get();
+        foreach ($shirt_id_in_re as $item) {
+            $list_one_shirt[] = $item->id;
+        }
+        foreach ($dress_id_in_re as $item) {
+            $list_one_shirt[] = $item->id;
+        }
+        $list_one_shirt = array_unique($list_one_shirt);
+        foreach ($list_one_shirt as $reservation_id) {
+            $find_repair = Repair::where('reservation_id', $reservation_id)
+                ->whereIn('repair_type', ['10', '20'])
+                ->whereIn('repair_status', ['ซ่อมเสร็จแล้ว', 'กำลังซ่อม'])
+                ->get();
+
+            if ($find_repair->isNotEmpty()) {
+                foreach ($find_repair as $item) {
+                    $list_two_shirt[] = $item->id;
+                }
+            }
+        }
+        $history_shirt = Repair::whereIn('id', $list_two_shirt)->get();
+
+
+
+
+        $list_one_skirt = [];
+        $list_two_skirt = [];
+
+        // สาเหตุที่เราต้องเช็คทั้ง dress_idและshirt_id เพราะว่ามันจะมี 2 กรณีททีคือ กรณีที่เขาเช่าแคาเสื้อ มันก็จะมีแค่ shirt_idไง พอตอนซ่อม มันก็จะซ่อมแค่เสื้อ
+        // และกรณีที่สองคือ เช่าทั้งชุด dress_id  แล้วซ่อมทั้งชุดอะไรยังงี้ หรือซ่อมแค่เสื้ออะไรยังงี้อะ มันก็ต้องนับเสื้อด้วยถ้าซ่อมทั้งชุดอะ  
+        $skirt_id_in_re = reservation::where('skirtitems_id', $skirt_id)->get();
+        $dress_id_in_re = Reservation::where('dress_id', $id)->get();
+        foreach ($skirt_id_in_re as $item) {
+            $list_one_skirt[] = $item->id;
+        }
+        foreach ($dress_id_in_re as $item) {
+            $list_one_skirt[] = $item->id;
+        }
+        $list_one_skirt = array_unique($list_one_skirt);
+        foreach ($list_one_skirt as $reservation_id) {
+            $find_repair = Repair::where('reservation_id', $reservation_id)
+                ->whereIn('repair_type', ['10', '30'])
+                ->whereIn('repair_status', ['ซ่อมเสร็จแล้ว', 'กำลังซ่อม'])
+                ->get();
+
+            if ($find_repair->isNotEmpty()) {
+                foreach ($find_repair as $item) {
+                    $list_two_skirt[] = $item->id;
+                }
+            }
+        }
+        $history_skirt = Repair::whereIn('id', $list_two_skirt)->get();
+        return view('admin.hist-dress-repair-yes', compact('dress', 'typedressname', 'history_shirt', 'history_skirt'));
     }
+
+
+    public function historydressrent($id){
+        $dress = Dress::find($id) ; 
+        if($dress->separable == 1 ){
+            dd('ไม่ได้') ; 
+        }
+        elseif($dress->separable == 2 ){
+            dd('ได้') ; 
+        }
+    }
+
+
+
+
+
 }

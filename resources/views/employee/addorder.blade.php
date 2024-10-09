@@ -13,7 +13,7 @@
                     <div class="card-body text-center d-flex flex-column justify-content-between">
                         <div>
                             <i class="bi bi-scissors card-icon"></i>
-                            <h5 class="card-title mt-3">ตัดชุด</h5>
+                            <h5 class="card-title mt-3">ตัดเย็บชุด</h5>
                         </div>
                         <button class="btn custom-btn mt-3">
                             <a href="{{route('employee.addcutdress')}}" class="custom-link">เพิ่มออเดอร์</a>

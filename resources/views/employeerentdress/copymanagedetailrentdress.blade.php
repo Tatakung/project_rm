@@ -86,6 +86,7 @@
         }
     </style>
 
+
     {{-- ชุดแยกได้กับชุดอยกไม่ได้  --}}
     @php
         $dress_separable = App\Models\Dress::where('id', $orderdetail->dress_id)->value('separable');

@@ -32,20 +32,46 @@
                         </div>
                     @endif
                     <div class="media-left">
-                        {{-- <p style="font-size: 15px;">เลขorder_detail_id ที่:{{ $detail->id }}</p> --}}
-                        <p style="font-size: 15px;">{{ $detail->title_name }}</p>
-                        <p style="font-size: 15px;">ราคา: {{ number_format($detail->price, 2) }} บาท</p>
-                        <p style="font-size: 15px;">ราคามัดจำ: {{ number_format($detail->deposit, 2) }} บาท</p>
+                        @php
+                            if($detail->type_order == 2 ){
+                                $dress = App\Models\Dress::find($detail->dress_id) ; 
+                                $type_name = App\Models\Typedress::where('id',$dress->type_dress_id)->value('type_dress_name') ; 
+                            }      
+                        @endphp
+                        <p style="font-size: 15px;">
+
+                            @if($detail->type_order == 1 )
+                            รายการตัดชุด  
+                            @elseif($detail->type_order == 2 )
+                                @if($detail->shirtitems_id)
+                                เช่า{{$type_name}} {{$dress->dress_code_new}}{{$dress->dress_code}} (เสื้อ)
+                                @elseif($detail->skirtitems_id)
+                                เช่า{{$type_name}} {{$dress->dress_code_new}}{{$dress->dress_code}} (ผ้าถุง)
+                                @else
+                                เช่า{{$type_name}} {{$dress->dress_code_new}}{{$dress->dress_code}} (ทั้งชุด)
+                                @endif
+                            @endif
+
+                        </p>
+                        <p style="font-size: 15px;">ราคาเช่า: {{ number_format($detail->price, 2) }} บาท</p>
+                        <p style="font-size: 15px;">เงินมัดจำ: {{ number_format($detail->deposit, 2) }} บาท</p>
                     </div>
                     <div class="media-body text-center">
-                        <p style="font-size: 15px;">วันที่นัดรับ:
-                            {{ \Carbon\Carbon::parse($detail->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($detail->pickup_date)->year + 543 }}
+                        @php
+                            $Date = App\Models\Date::where('order_detail_id',$detail->id)
+                                    ->orderBy('created_at','desc')
+                                    ->first() ; 
+                        @endphp
+                        <p style="font-size: 15px;">วันนัดรับ:
+                            {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
                         </p>
                         <p style="font-size: 15px;">
-                            @if ($detail->return_date != null)
-                                วันที่นัดคืน:{{ \Carbon\Carbon::parse($detail->return_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($detail->return_date)->year + 543 }}
+
+                            @if($detail->type_order == 2)
+                            วันนัดคืน:{{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
+
                             @endif
                         </p>
 
@@ -86,14 +112,6 @@
 
 
 
-
-            {{-- <div class="media">
-            <div class="media-right">
-                <a href="{{ route('employee.confirmorder', ['id' => $order->id]) }}" class="btn btn-dark">
-                    ชำระเงิน
-                </a>
-            </div>
-        </div> --}}
 
             <div class="row">
                 <div class="col-md-12">

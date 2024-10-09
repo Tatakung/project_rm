@@ -2,7 +2,7 @@
 
 @section('content')
     <h1 class="text-center my-4" style="color: #3d3d3d; font-family: 'Prompt', sans-serif; font-weight: 600;">
-        "คิวรอลูกค้าส่งคืนชุด"
+        คิวรอลูกค้าส่งคืนชุด
     </h1>
 
     <div class="alert alert-info" role="alert" style="font-family: 'Prompt', sans-serif;">
@@ -12,6 +12,43 @@
         <p class="mb-0">กรุณาจัดเตรียมชุดตามลำดับคิว <strong>คิวที่ 1 <span style="color: red;">&#9733;</span>
                 มีความสำคัญสูงสุดและต้องจัดเตรียมก่อน</strong></p> --}}
     </div>
+
+
+    <div class="coontainer mr-4 mb-2">
+        <div class="row mt-5 ">
+            <div class="col-md-12" style="text-align: right ; ">
+                {{-- <button>
+                    เฉพาะวันนี้
+                </button>
+                <button>
+                    ทั้งหมด
+                </button> --}}
+
+
+
+               
+
+                <form action="{{route('employee.listdressreturnfilter')}}" method="GET">
+                    @csrf
+                    <div class="filter-buttons">
+                        <button class="btn" type="submit" name="filter_click" value="total"
+                            @if ($filer == 'total') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
+                        @else
+                        style="border: 1px solid #ccc;" @endif>ทั้งหมด</button>
+                        <button class="btn" type="submit" name="filter_click" value="today"
+                            @if ($filer == 'today') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
+                        @else
+                        style="border: 1px solid #ccc;" @endif>เฉพาะวันนี้</button>
+                    </div>
+                </form>
+
+    
+            </div>
+        </div>
+    </div>
+
+
+
     @if($listdressreturns->count() > 0 )
     <table class="table shadow-sm" style="width: 100%; background-color: #ffffff; border-collapse: collapse;">
         <thead>

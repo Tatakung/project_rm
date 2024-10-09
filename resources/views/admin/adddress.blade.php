@@ -1,6 +1,7 @@
 <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
     <div class="modal-dialog custom-modal-dialog" role="document">
-        <div class="modal-content custom-modal-content" style="max-width: 350px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
+        <div class="modal-content custom-modal-content"
+            style="max-width: 350px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
             <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
                 <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
             </div>
@@ -11,10 +12,10 @@
 
 
 <script>
-    @if(session('fail'))
-    setTimeout(function() {
-        $('#showfail').modal('show');
-    }, 500);
+    @if (session('fail'))
+        setTimeout(function() {
+            $('#showfail').modal('show');
+        }, 500);
     @endif
 </script>
 
@@ -29,9 +30,9 @@
                 <strong>กรุณานำรหัสชุดเหล่านี้ไปติดไว้ กำกับกับชุดที่ได้เพิ่ม:</strong>
                 <ul>
                     @if (session('dressCodes'))
-                    @foreach (session('dressCodes') as $code)
-                    <li>{{ $code }}</li>
-                    @endforeach
+                        @foreach (session('dressCodes') as $code)
+                            <li>{{ $code }}</li>
+                        @endforeach
                     @endif
                 </ul>
             </div>
@@ -43,705 +44,852 @@
     </div>
 </div>
 <script>
-    @if(session('dressCodes'))
-    setTimeout(function() {
-        $('#showsuccessss').modal('show');
-    }, 500);
+    @if (session('dressCodes'))
+        setTimeout(function() {
+            $('#showsuccessss').modal('show');
+        }, 500);
     @endif
 </script>
+
 @extends('layouts.adminlayout')
 @section('content')
-<div class="container mt-4">
     <form action="{{ route('admin.savedress') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <h3 class="mb-4" style="text-align: center ; ">แบบฟอร์มเพิ่มชุด</h3>
-        <div class="shadow p-4 mb-5 bg-white rounded">
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <label for="type_dress_id">ประเภทชุด</label>
-                    <select name="type_dress_id" id="type_dress_id" class="form-control" required>
-                        <option value="" disabled selected>ประเภทชุดที่ต้องการเพิ่ม</option>
-                        @foreach ($typeDresses as $typeDress)
-                        <option value="{{ $typeDress->id }}">{{ $typeDress->type_dress_name }}</option>
-                        @endforeach
-                        <option value="select_other">อื่นๆ</option>
-                    </select>
-                </div>
-                <div class="col-sm-3">
-                    <div style="display: none" id="showinputother">
-                        <label class="form-label" for="inputother">อื่นๆโปรดระบุ</label>
-                        <input class="form-control" type="text" name="inputother" id="inputother">
-                    </div>
-                </div>
-                <script>
-                    var selectdresstype = document.getElementById('type_dress_id');
-                    var showshowinputother = document.getElementById('showinputother');
-                    var present_inputother = document.getElementById('inputother');
-                    selectdresstype.addEventListener('change', function() {
-                        if (selectdresstype.value == "select_other") {
-                            showshowinputother.style.display = "block";
-                            present_inputother.setAttribute('required', 'required')
-                        } else {
-                            showshowinputother.style.display = "none";
-                            present_inputother.value = '';
-                            present_inputother.removeAttribute('required');
-                        }
-                    });
-                </script>
-                <div class="col-md-3">
-                    <label for="dress_price">ราคาเช่าชุด/ครั้ง</label>
-                    <input type="number" name="dress_price" id="dress_price" class="form-control" placeholder="จำนวนบาท" required min="1">
-                </div>
-                <div class="col-md-3">
-                    <label for="dress_deposit">ราคามัดจำ/ครั้ง</label>
-                    <input type="number" name="dress_deposit" id="dress_deposit" class="form-control" placeholder="จำนวนบาท" required min="1">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <label for="dress_count">ประกันค่าเสียหายชุด</label>
-                    <input type="number" name="damage_insurance" id="damage_insurance" class="form-control" placeholder="จำนวนบาท" required min="0">
-                </div>
-                <div class="col-md-3">
-                    <label for="dress_count">จำนวนชุด</label>
-                    <input type="number" name="dress_count" id="dress_count" class="form-control" required min="1" value="1">
-                </div>
-                <div class="col-md-6">
-                    <label for="note" class="form-label">รายละเอียดอื่นๆ</label>
-                    <textarea class="form-control" id="dress_description" name="dress_description" rows="3" placeholder="ใส่รายละเอียดเพิ่มเติมที่เกี่ยวข้อง"></textarea>
-                </div>
-            </div>
 
+        <div class="container mt-5">
+            <div class="card">
+                <div class="card-body">
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label">การเช่าชุด</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="separable" id="separate_rent_no" value="1" required>
-                        <label class="form-check-label" for="separate_rent_no">
-                            {{-- ไม่สามารถเช่าแยกได้(เช่าเป็นชุด) --}}
-                            ไม่อนุญาติให้ลูกค้าเช่าแยก (ลูกค้าต้องเช่าเป็นชุด)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="separable" id="separate_rent_yes" value="2" required>
-                        <label class="form-check-label" for="separate_rent_yes">
-                            {{-- สามารถเช่าแยกได้(เสื้อ+กระโปรง/กางเกง) --}}
-                            อนุญาติให้ลูกค้าเช่าแยกได้ (เสื้อ / ผ้าถุง)
-                        </label>
-                    </div>
-
-                </div>
-                <div class="col-md-6">
-                <div id="aria_input_show_image">                    
-                    
-                    <label for="imagerent">อัปโหลดรูปภาพ</label>    
-                    <input type="file" class="form-control" id="add_image" name="add_image" required>
-                    </div>
-                </div>
-            </div>
-                <script>
-                    var button_addimage = document.getElementById('addimage');
-                    var aria_input_show_image = document.getElementById('aria_input_show_image');
-                    var count_image = 1;
-                    button_addimage.addEventListener('click', function() {
-                        count_image++;
-                        var divrow = document.createElement('div');
-                        divrow.className = 'row mb-3';
-                        divrow.id = 'row_image' + count_image;
-
-                        var label = document.createElement('label');
-                        label.htmlFor = 'label';
-                        label.className = 'col-sm-2';
-                        label.innerHTML = 'อัปโหลดรูปภาพ';
-
-                        // divrow.appendChild(label) ; 
-
-                        var divone = document.createElement('div');
-                        divone.className = 'col-md-7';
-
-                        var input = document.createElement('input');
-                        input.type = 'file';
-                        input.className = 'form-control';
-                        input.id = 'imagerent' + count_image;
-                        input.name = 'imagerent_[' + count_image + ']';
-                        input.required = true;
-
-                        divone.appendChild(input);
-
-                        var divtwo = document.createElement('div');
-                        divtwo.className = 'col-md-2';
-
-                        var button = document.createElement('button');
-                        button.className = 'form-control btn btn-danger';
-                        button.type = 'button';
-                        button.innerHTML = 'ลบ';
-
-                        divtwo.appendChild(button);
-
-                        divrow.appendChild(label);
-                        divrow.appendChild(divone);
-                        divrow.appendChild(divtwo);
-                        aria_input_show_image.appendChild(divrow);
-
-                        button.addEventListener('click', function() {
-                            divrow.remove();
-                        });
-
-
-                    });
-                </script>
-
-        
-
-        </div>
-
-
-
-        {{-- กล่องกรณีที่เป็นชุด --}}
-            <div id="Big_show_aria_no_separated" style="display: none;">
-                <h3 style="text-align: center ; ">กรณีที่เป็นชุด</h3>
-                <div class="shadow p-4 mb-5 bg-white rounded">
-                <div class="row mb-2">
-                    <div class="col-md-2">
-                        {{-- <h4 class="mb-0">ข้อมูลเสื้อ</h4> --}}
-                        <button type="button" class="btn btn-success" id="button_add_mea_no_separated">+
-                            เพิ่มการวัด</button>
-                    </div>
-                    </div>
-                    <div id="show_aria_no_separated">
-                        <div class="row mb-2">
-                            <div class="col-md-4">
-                                <th>ชื่อการวัด</th>
-                            </div>
-                            <div class="col-md-4">
-                                <th>ขนาด</th>
-                            </div>
-                            <div class="col-md-4">
-                                <th>หน่วย</th>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[1]"
-                                    id="no_shirt_measurement_dress_name1" value="รอบอก" required readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="number"
-                                    name="no_shirt_measurement_dress_number_[1]"id="no_shirt_measurement_dress_number1"
-                                    class="form-control" max="100" min="0" step="0.01" placeholder="ขนาด">
-                            </div>
-                            <div class="col-md-4">
-                                <p class="form-control-static mt-2 ml-3 ">นิ้ว</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[2]"
-                                    id="no_shirt_measurement_dress_name2" value="รอบเอว" required readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="number"
-                                    name="no_shirt_measurement_dress_number_[2]"id="no_shirt_measurement_dress_number2"
-                                    class="form-control" max="100" min="0" step="0.01" placeholder="ขนาด">
-                            </div>
-                            <div class="col-md-4">
-                                <p class="form-control-static mt-2 ml-3 ">นิ้ว</p>
-                            </div>
-                        </div>
-                        <div class="row ">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[3]"
-                                    id="no_shirt_measurement_dress_name3" value="รอบสะโพก" required readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="number"
-                                    name="no_shirt_measurement_dress_number_[3]"id="no_shirt_measurement_dress_number3"
-                                    class="form-control" max="100" min="0" step="0.01" placeholder="ขนาด">
-                            </div>
-                            <div class="col-md-4">
-                                <p class="form-control-static mt-2 ml-3">นิ้ว</p>
-                            </div>
+                    <p style="text-align: center ;"><strong>เพิ่มชุด</strong></p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="type_dress" class="form-label">เลือกประเภทชุดที่ต้องการเพิ่ม</label>
+                            <select name="type_dress_id" id="type_dress_id" class="form-control" required>
+                                <option value="" disabled selected>ประเภทชุดที่ต้องการเพิ่ม</option>
+                                @foreach ($typeDresses as $typeDress)
+                                    <option value="{{ $typeDress->id }}">{{ $typeDress->type_dress_name }}</option>
+                                @endforeach
+                                <option value="select_other">อื่นๆ</option>
+                            </select>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[4]"
-                                    id="no_shirt_measurement_dress_name4" value="ความกว้างของไหล่" required readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="number"
-                                    name="no_shirt_measurement_dress_number_[4]"id="no_shirt_measurement_dress_number4"
-                                    class="form-control" max="100" min="0" step="0.01" placeholder="ขนาด">
-                            </div>
-                            <div class="col-md-4">
-                                <p class="form-control-static mt-2 ml-3">นิ้ว</p>
-                            </div>
+                        <div class="col-md-4" id="show_other_input" style="display: none;">
+                            <label for="" class="form-label">ระบุประเภทชุดที่ตัด</label>
+                            <input type="text" name="other_input" id="other_input" class="form-control">
                         </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[5]"
-                                    id="no_shirt_measurement_dress_name5" value="ความยาวชุด" required readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="number"
-                                    name="no_shirt_measurement_dress_number_[5]"id="no_shirt_measurement_dress_number5"
-                                    class="form-control" max="100" min="0" step="0.01" placeholder="ขนาด">
-                            </div>
-                            <div class="col-md-4">
-                                <p class="form-control-static mt-2 ml-3">นิ้ว</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[6]"
-                                    id="no_shirt_measurement_dress_name6" value="ความยาวแขน" required readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="number"
-                                    name="no_shirt_measurement_dress_number_[6]"id="no_shirt_measurement_dress_number6"
-                                    class="form-control" max="100" min="0" step="0.01" placeholder="ขนาด">
-                            </div>
-                            <div class="col-md-4">
-                                <p class="form-control-static mt-2 ml-3">นิ้ว</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="no_shirt_measurement_dress_name_[7]"
-                                    id="no_shirt_measurement_dress_name7" value="กระโปรงยาว" required readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="number"
-                                    name="no_shirt_measurement_dress_number_[7]"id="no_shirt_measurement_dress_number7"
-                                    class="form-control" max="100" min="0" step="0.01" placeholder="ขนาด">
-                            </div>
-                            <div class="col-md-4">
-                                <p class="form-control-static mt-2 ml-3">นิ้ว</p>
-                            </div>
-                        </div>
-
-
-
-
-
                         <script>
-                            var button_add_mea_no_separated = document.getElementById('button_add_mea_no_separated');
-                            var show_aria_no_separated = document.getElementById('show_aria_no_separated');
-                            var count_no_separated = 7;
-                            button_add_mea_no_separated.addEventListener('click', function() {
-                                count_no_separated++;
-                                var div_mea_no = document.createElement('div');
-                                div_mea_no.className = 'row';
-                                div_mea_no.id = 'row_mea_no_separated' + count_no_separated;
-
-                                input =
-
-                                    '<div class="col-md-4">' +
-                                    '<select name="" class="form-control" required name="no_shirt_measurement_dress_name_[' +
-                                    count_no_separated +
-                                    ']" >' +
-                                    '<option value="" disabled selected>เลือกรายการ</option>' +
-                                    '<option value="ยาวหน้า">ยาวหน้า</option>' +
-                                    '<option value="ยาวหลัง">ยาวหลัง</option>' +
-                                    '<option value="บ่าหน้า">บ่าหน้า</option>' +
-                                    '<option value="บ่าหลัง">บ่าหลัง</option>' +
-                                    '<option value="รอบคอ">รอบคอ</option>' +
-                                    '<option value="รักแท้">รักแท้</option>' +
-                                    '<option value="อกห่าง">อกห่าง</option>' +
-                                    '<option value="อกสูง">อกสูง</option>' +
-                                    '<option value="สะโพกเล็ก">สะโพกเล็ก</option>' +
-                                    '<option value="แขนกว้าง">แขนกว้าง</option>' +
-                                    '<option value="ต้นขา">ต้นขา</option>' +
-                                    '<option value="ปลายขา">ปลายขา</option>' +
-                                    '<option value="เป้า">เป้า</option>' +
-                                    '<option value="กางเกงยาว">กางเกงยาว</option>' +
-                                    '</select>' +
-                                    '</div>' +
-                                    '<div class="col-md-4">' +
-                                    '<input type="number" name="no_shirt_measurement_dress_number_[' + count_no_separated +
-                                    ']" id="no_shirt_measurement_dress_number ' + count_no_separated +
-                                    ' " class="form-control" placeholder="ขนาด" required max="100" min="0" step="0.01">' +
-                                    '</div>' +
-                                    '<div class="col-md-1">' +
-                                    '<p class="form-control-static mt-2 ml-3 ">นิ้ว</p>' +
-                                    '</div>' +
-                                    '<div class="col-md-3">' +
-                                    '<button class="btn btn-danger" onclick="deletenoseparated(' + count_no_separated +
-                                    ')">ลบ</button>' +
-                                    '</div>';
-
-                                div_mea_no.innerHTML = input;
-                                show_aria_no_separated.appendChild(div_mea_no);
+                            var type_dress = document.getElementById('type_dress_id');
+                            var show_other_input = document.getElementById('show_other_input');
+                            type_dress.addEventListener('change', function() {
+                                if (type_dress.value === 'select_other') {
+                                    show_other_input.style.display = 'block';
+                                    document.getElementById('other_input').setAttribute('required', 'required');
+                                } else {
+                                    show_other_input.style.display = 'none';
+                                    document.getElementById('other_input').value = '';
+                                    document.getElementById('other_input').removeAttribute('required');;
+                                }
                             });
-
-                            function deletenoseparated(count_no_separated) {
-                                var Deletenoseparated = document.getElementById('row_mea_no_separated' + count_no_separated);
-                                Deletenoseparated.remove();
-                            }
                         </script>
                     </div>
-                </div>
 
-            </div>
 
-            {{-- กล่องกรณีที่ชุดสามารถเช่าแยกได้ --}}
-            <div id="Big_show_aria_yes_separated" style="display: none;">
-                <h3 style="text-align: center ; ">กรณีที่ชุดสามารถเช่าแยกได้(เสื้อ + ผ้าถุง)</h3>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="shadow p-4 mb-5 bg-white rounded">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0">ข้อมูลเสื้อ</h4>
-                                <button type="button" class="btn btn-success" id="button_add_mea_shirt">+
-                                    เพิ่มการวัดเสื้อ</button>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <label for="" class="form-label">ราคาเช่า (บาท)</label>
+                            <input type="number" class="form-control" name="dress_price" id="dress_price" min="0"
+                                step="0.01" required placeholder="กรอกกจำนวนเงิน">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="" class="form-label">ราคามัดจำ (บาท) 20% ของราคาเช่า</label>
+                            <input type="number" class="form-control" name="dress_deposit" id="dress_deposit"
+                                min="0" step="0.01" required readonly>
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <label for="" class="form-label">ประกันค่าเสียหายชุด (บาท) 50% ของราคาเช่า</label>
+                            <input type="number" class="form-control" min="0" step="0.01" required
+                                name="damage_insurance" id="damage_insurance" readonly>
+                        </div>
+
+                        <div class="col-md-6" id="coun">
+                            <label for="" class="form-label">จำนวนชุด</label>
+                            <input type="number" class="form-control" min="1" required placeholder="กรอกจำนวนชุด"
+                                name="dress_count" id="dress_count" value="1">
+                        </div>
+                    </div>
+                    <script>
+                        var dress_price = document.getElementById('dress_price');
+                        var dress_deposit = document.getElementById('dress_deposit');
+                        var damage_insurance = document.getElementById('damage_insurance');
+                        dress_price.addEventListener('input', function() {
+                            var value_input_price = dress_price.value;
+                            var convert_price = parseFloat(value_input_price);
+                            if (convert_price) {
+                                dress_deposit.value = convert_price * 0.2;
+                                damage_insurance.value = convert_price * 0.5;
+                            }
+                            else{
+                                dress_deposit.value = '' ; 
+                                damage_insurance.value = '' ; 
+                            }
+                            
+                        });
+                    </script>
+
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <label for="">รายละเอียดเพิ่มเติม</label>
+                            <textarea class="form-control" rows="3" placeholder="ใส่รายละเอียด(หากมี)" name="dress_description"
+                                id="dress_description"></textarea>
+
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <label for="imageUpload" class="form-label">อัปโหลดรูปภาพชุด</label>
+                            <input type="file" class="form-control" accept="image/*" name="add_image" id="add_image"
+                                required>
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rental_option" id="rental_option1"
+                                    value="1" required>
+                                <label class="form-check-label" for="rental_option1">
+                                    ไม่อนุญาติให้ลูกค้าเช่าแยก (ลูกค้าต้องเช่าเป็นชุด)
+                                </label>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="">ราคาเสื้อ</label>
-                                    <input type="number" name="shirt_price" id="shirt_price" class="form-control"
-                                        placeholder="ราคา" min="1">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="">มัดจำราคาเสื้อ</label>
-                                    <input type="number" name="shirt_deposit" id="shirt_deposit" class="form-control"
-                                        placeholder="ราคา" min="1">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="">ประกันค่าเสียหาย</label>
-                                    <input type="number" name="shirt_damage_insurance" id="shirt_damage_insurance"
-                                        class="form-control" placeholder="ราคา" min="1">
-                                </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rental_option" id="rental_option2"
+                                    value="2" required>
+                                <label class="form-check-label" for="rental_option2">
+                                    อนุญาติให้ลูกค้าเช่าแยกได้ (เสื้อ / ผ้าถุง)
+                                </label>
                             </div>
-                            <div id="aria_input_shirt">
-                                {{-- พื้นที่แสดงผล --}}
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <p>ชื่อการวัด</p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p>ขนาด</p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p>หน่วย</p>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-4">
 
-                                        <input type="text" class="form-control"
-                                            name="yes_shirt_measurement_dress_name_[1]"
-                                            id="yes_shirt_measurement_dress_name1" value="รอบอก" required readonly>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="number"
-                                            name="yes_shirt_measurement_dress_number_[1]"id="yes_shirt_measurement_dress_number1"
-                                            class="form-control" placeholder="ขนาด">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p class="form-control-static mt-2 ml-3">นิ้ว</p>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row mt-5" id="show_div_dress_total" style="display: none ; ">
+                        <div class="col-md-12">
+                            <div id="header_dress_total">
+                                <p><strong>ข้อมูลการวัดตัวของชุด (หน่วยเป็นนิ้ว)</strong>
+                                    <button type="button" id="button_add_mea_total">+ เพิ่มการวัดเพิ่มเติม</button>
+                                </p>
+                            </div>
+
+                            <div class="row mt-1" id="show_dress_total">
+
+
+                                <div class="col-md-12" id="aria_dress_total1">
+                                    <div class="row mb-3">
+                                        <div class="col-md-2">
+                                            <input type="text"  class="form-control" name="name_total_[1]"
+                                                placeholder="ชื่อการวัด" value="รอบอก">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_[1]"
+                                                placeholder="ขนาด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_min_[1]"
+                                                placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_max_[1]"
+                                                placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <button class="btn" onclick="delete_dress_total(1)"><i
+                                                    class="bi bi-x-circle"></i></button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control"
-                                            name="yes_shirt_measurement_dress_name_[2]"
-                                            id="yes_shirt_measurement_dress_name2" value="ไหล่กว้าง" required readonly>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="number"
-                                            name="yes_shirt_measurement_dress_number_[2]"id="yes_shirt_measurement_dress_number2"
-                                            class="form-control" placeholder="ขนาด">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p class="form-control-static mt-2 ml-3">นิ้ว</p>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control"
-                                            name="yes_shirt_measurement_dress_name_[3]"
-                                            id="yes_shirt_measurement_dress_name3" value="เสื้อยาว" required readonly>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="number"
-                                            name="yes_shirt_measurement_dress_number_[3]"id="yes_shirt_measurement_dress_number3"
-                                            class="form-control" placeholder="ขนาด">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p class="form-control-static mt-2 ml-3">นิ้ว</p>
+
+                                <div class="col-md-12" id="aria_dress_total2">
+                                    <div class="row mb-3">
+                                        <div class="col-md-2">
+                                            <input type="text"  class="form-control" name="name_total_[2]"
+                                                placeholder="ชื่อการวัด" value="รอบเอว">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_[2]"
+                                                placeholder="ขนาด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_min_[2]"
+                                                placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_max_[2]"
+                                                placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <button class="btn" onclick="delete_dress_total(2)"><i
+                                                    class="bi bi-x-circle"></i></button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control"
-                                            name="yes_shirt_measurement_dress_name_[4]"
-                                            id="yes_shirt_measurement_dress_name4" value="แขนยาว" required readonly>
+
+                                <div class="col-md-12" id="aria_dress_total3">
+                                    <div class="row mb-3">
+                                        <div class="col-md-2">
+                                            <input type="text"  class="form-control" name="name_total_[3]"
+                                                placeholder="ชื่อการวัด" value="รอบสะโพก">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_[3]"
+                                                placeholder="ขนาด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_min_[3]"
+                                                placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_max_[3]"
+                                                placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <button class="btn" onclick="delete_dress_total(3)"><i
+                                                    class="bi bi-x-circle"></i></button>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <input type="number"
-                                            name="yes_shirt_measurement_dress_number_[4]"id="yes_shirt_measurement_dress_number4"
-                                            class="form-control" placeholder="ขนาด">
+                                </div>
+
+                                <div class="col-md-12" id="aria_dress_total4">
+                                    <div class="row mb-3">
+                                        <div class="col-md-2">
+                                            <input type="text"  class="form-control" name="name_total_[4]"
+                                                placeholder="ชื่อการวัด" value="ความกว้างของไหล่">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_[4]"
+                                                placeholder="ขนาด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_min_[4]"
+                                                placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_max_[4]"
+                                                placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <button class="btn" onclick="delete_dress_total(4)"><i
+                                                    class="bi bi-x-circle"></i></button>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <p class="form-control-static mt-2 ml-3">นิ้ว</p>
+                                </div>
+
+                                <div class="col-md-12" id="aria_dress_total5">
+                                    <div class="row mb-3">
+                                        <div class="col-md-2">
+                                            <input type="text"  class="form-control" name="name_total_[5]"
+                                                placeholder="ชื่อการวัด" value="ความยาวชุด">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_[5]"
+                                                placeholder="ขนาด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_min_[5]"
+                                                placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_max_[5]"
+                                                placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <button class="btn" onclick="delete_dress_total(5)"><i
+                                                    class="bi bi-x-circle"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-12" id="aria_dress_total6">
+                                    <div class="row mb-3">
+                                        <div class="col-md-2">
+                                            <input type="text"  class="form-control" name="name_total_[6]"
+                                                placeholder="ชื่อการวัด" value="ความยาวแขน">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_[6]"
+                                                placeholder="ขนาด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_min_[6]"
+                                                placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_max_[6]"
+                                                placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <button class="btn" onclick="delete_dress_total(6)"><i
+                                                    class="bi bi-x-circle"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12" id="aria_dress_total7">
+                                    <div class="row mb-3">
+                                        <div class="col-md-2">
+                                            <input type="text"  class="form-control" name="name_total_[7]"
+                                                placeholder="ชื่อการวัด" value="กระโปรงยาว">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_[7]"
+                                                placeholder="ขนาด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_min_[7]"
+                                                placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control" name="number_total_max_[7]"
+                                                placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn" onclick="delete_dress_total(7)"><i
+                                                    class="bi bi-x-circle"></i></button>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <script>
-                                    var button_add_mea_shirt = document.getElementById('button_add_mea_shirt'); //ปุ่มเพิ่มการวัด
-                                    var aria_input_shirt = document.getElementById('aria_input_shirt'); // พื้นที่แสดงผล
-                                    var count_shirt = 4;
+                                    var button_add_mea_total = document.getElementById('button_add_mea_total');
+                                    var show_dress_total = document.getElementById('show_dress_total');
+                                    var count_dress_total = 7;
+                                    button_add_mea_total.addEventListener('click', function() {
+                                        count_dress_total++;
+                                        var div_dress_total = document.createElement('div');
+                                        div_dress_total.id = 'aria_dress_total' + count_dress_total;
+                                        div_dress_total.className = 'col-md-12';
 
-                                    button_add_mea_shirt.addEventListener('click', function() {
-                                        count_shirt++;
-                                        var div = document.createElement('div');
-                                        div.className = 'row mb-3';
-                                        div.id = 'row_shirt' + count_shirt;
+                                        input_dress_total =
 
-
-                                        input =
-
-                                            '<div class="col-md-4">' +
-                                            '<select class="form-control" required  name="yes_shirt_measurement_dress_name_[' + count_shirt +
-                                            ']">' +
-                                            '<option value="" disabled selected>เลือกรายการ</option>' +
-                                            '<option value="ยาวหน้า">ยาวหน้า</option>' +
-                                            '<option value="ยาวหลัง">ยาวหลัง</option> ' +
-                                            '<option value="บ่าหน้า">บ่าหน้า</option>' +
-                                            '<option value="บ่าหลัง">บ่าหลัง</option>' +
-                                            '<option value="รอบคอ">รอบคอ</option>' +
-                                            '<option value="รักแท้">รักแท้</option>' +
-                                            '<option value="อกห่าง">อกห่าง</option>' +
-                                            '<option value="อกสูง">อกสูง</option>' +
-                                            '<option value="แขนกว้าง">แขนกว้าง</option>' +
-                                            '</select>' +
-                                            '</div>' +
-                                            '<div class="col-md-4">' +
-                                            '<input type="number" name="yes_shirt_measurement_dress_number_[' + count_shirt +
-                                            ']"id="yes_shirt_measurement_dress_number ' + count_shirt +
-                                            '  " class="form-control" placeholder="ขนาด" required>' +
+                                            '<div class="row mb-3">' +
+                                            '<div class="col-md-2">' +
+                                            '<input type="text" required class="form-control" name="name_total_[' +
+                                            count_dress_total +
+                                            ']" placeholder="ชื่อการวัด">' +
                                             '</div>' +
                                             '<div class="col-md-2">' +
-                                            '<p class="form-control-static mt-2 ml-3">นิ้ว</p>' +
+                                            '<input type="number" class="form-control" name="number_total_[' +
+                                            count_dress_total +
+                                            ']" placeholder="ขนาด" required step="0.01" min="0">' +
                                             '</div>' +
-                                            '<div class="col-md-1">' +
-                                            '<button type="button" class="btn btn-danger" onclick="deleteshirt(' + count_shirt +
-                                            ')">ลบ</button>' +
+
+                                            '<div class="col-md-2">' +
+                                            '<input type="number" class="form-control" name="number_total_min_[' +
+                                            count_dress_total +
+                                            ']" placeholder="ขนาดต่ำสุด" required step="0.01" min="0">' +
+                                            '</div>' +
+
+                                            '<div class="col-md-2">' +
+                                            '<input type="number" class="form-control" name="number_total_max_[' +
+                                            count_dress_total +
+                                            ']" placeholder="ขนาดสูงสุด" required step="0.01" min="0">' +
+                                            '</div>' +
+
+                                            '<div class="col-md-2">' +
+                                            '<button class="btn" onclick="delete_dress_total(' + count_dress_total +
+                                            ')" ><i class="bi bi-x-circle"></i></button>' +
+                                            '</div>' +
                                             '</div>';
-                                        div.innerHTML = input;
-                                        aria_input_shirt.appendChild(div);
 
+                                        div_dress_total.innerHTML = input_dress_total;
+                                        show_dress_total.appendChild(div_dress_total);
                                     });
+                                </script>
 
-                                    function deleteshirt(count_shirt) {
-                                        var deletediv = document.getElementById('row_shirt' + count_shirt);
-                                        deletediv.remove();
+                                <script>
+                                    function delete_dress_total(count_dress_total) {
+                                        var delete_total_dress = document.getElementById('aria_dress_total' + count_dress_total)
+                                        delete_total_dress.remove();
                                     }
                                 </script>
-                            </div>
 
-                            <div>
                             </div>
                         </div>
                     </div>
 
 
-                    {{-- กล่องที่สาม --}}
-                    <div class="col-md-6">
-                        <div class="shadow p-4 mb-5 bg-white rounded">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0">ข้อมูลผ้าถุง</h4>
-                                <button type="button" class="btn btn-success" id="button_add_mea_skirt">+
-                                    เพิ่มการวัดกระโปรง</button>
+
+
+
+                    {{-- เสื้อ/ผ้าถุง --}}
+                    <div id="show_div_shirt_skirt" style="display: none ; ">
+
+
+                        <div class="row mt-5">
+                            <div class="col-md-12">
+                                <h4>ข้อมูลเสื้อ</h4>
+                                <div class="row mt-1">
+                                    <div class="col-md-4">
+                                        <label for="" class="form-label">ราคาเช่า (บาท)</label>
+                                        <input type="number" class="form-control" name="shirt_price" id="shirt_price" min="0" step="0.01"
+                                             placeholder="กรอกกจำนวนเงิน">
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="" class="form-label">ราคามัดจำ (บาท)</label>
+                                        <input type="number" class="form-control" name="shirt_deposit" id="shirt_deposit" min="0" step="0.01"
+                                             readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="" class="form-label">ประกันค่าเสียหาย (บาท)</label>
+                                        <input type="number" class="form-control" name="shirt_damage_insurance" id="shirt_damage_insurance" min="0" step="0.01"
+                                             readonly>
+                                    </div>
+                                </div>
+                                
+
+                                <script>
+                                    var shirt_price = document.getElementById('shirt_price') ; 
+                                    var shirt_deposit = document.getElementById('shirt_deposit') ; 
+                                    var shirt_damage_insurance = document.getElementById('shirt_damage_insurance') ; 
+                                    shirt_price.addEventListener('input',function(){
+                                        var convert_price_shirt = parseFloat(shirt_price.value) ; 
+                                        if(convert_price_shirt){
+                                            shirt_deposit.value = convert_price_shirt*0.20 ; 
+                                            shirt_damage_insurance.value = convert_price_shirt*0.5 ; 
+                                        }
+                                        else{
+                                            shirt_deposit.value = '' ; 
+                                            shirt_damage_insurance.value = '' ; 
+                                        }
+                                    }) ; 
+                                </script>
+
+                                <div class="row mt-1">
+                                    <div class="col-md-12 mt-3">
+                                        <p>ข้อมูลการวัดตัวของเสื้อ (หน่วยเป็นนิ้ว)
+                                            <button type="button" id="add_mea_shirt">+ เพิ่มการวัดเพิ่มเติม</button>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row" id="show_shirt_total">
+                                    {{-- พื้นที่แสดงผล --}}
+                                    <div class="col-md-12" id="aria_dress_shirt1">
+                                        <div class="row mb-3">
+                                            <div class="col-md-2">
+                                                <input type="text"  class="form-control" name="name_shirt_[1]"
+                                                    placeholder="ชื่อการวัด" value="รอบอก">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_[1]"
+                                                    placeholder="ขนาด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_min_[1]"
+                                                    placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_max_[1]"
+                                                    placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <button class="btn" onclick="delete_dress_shirt(1)"><i
+                                                        class="bi bi-x-circle"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" id="aria_dress_shirt2">
+                                        <div class="row mb-3">
+                                            <div class="col-md-2">
+                                                <input type="text"  class="form-control" name="name_shirt_[2]"
+                                                    placeholder="ชื่อการวัด" value="ความกว้างของไหล่">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_[2]"
+                                                    placeholder="ขนาด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_min_[2]"
+                                                    placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_max_[2]"
+                                                    placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <button class="btn" onclick="delete_dress_shirt(2)"><i
+                                                        class="bi bi-x-circle"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" id="aria_dress_shirt3">
+                                        <div class="row mb-3">
+                                            <div class="col-md-2">
+                                                <input type="text"  class="form-control" name="name_shirt_[3]"
+                                                    placeholder="ชื่อการวัด" value="ความยาวเสื้อ">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_[3]"
+                                                    placeholder="ขนาด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_min_[3]"
+                                                    placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_max_[3]"
+                                                    placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <button class="btn" onclick="delete_dress_shirt(3)"><i
+                                                        class="bi bi-x-circle"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" id="aria_dress_shirt4">
+                                        <div class="row mb-3">
+                                            <div class="col-md-2">
+                                                <input type="text"  class="form-control" name="name_shirt_[4]"
+                                                    placeholder="ชื่อการวัด" value="ความยาวแขน">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_[4]"
+                                                    placeholder="ขนาด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_min_[4]"
+                                                    placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_shirt_max_[4]"
+                                                    placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <button class="btn" onclick="delete_dress_shirt(4)"><i
+                                                        class="bi bi-x-circle"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        var show_shirt_total = document.getElementById('show_shirt_total');
+                                        var add_mea_shirt = document.getElementById('add_mea_shirt');
+                                        var count_add_shirt = 4;
+                                        add_mea_shirt.addEventListener('click', function() {
+                                            count_add_shirt++;
+
+                                            var div = document.createElement('div');
+                                            div.className = 'col-md-12';
+                                            div.id = 'aria_dress_shirt' + count_add_shirt;
+
+                                            input =
+                                                '<div class="row mb-3">' +
+                                                '<div class="col-md-2">' +
+                                                '<input type="text" required class="form-control" name="name_shirt_[' + count_add_shirt +
+                                                ']" placeholder="ชื่อการวัด">' +
+                                                '</div>' +
+                                                '<div class="col-md-2">' +
+                                                '<input type="number" class="form-control" name="number_shirt_[' + count_add_shirt +
+                                                ']" placeholder="ขนาด" required step="0.01" min="0">' +
+                                                '</div>' +
+
+                                                '<div class="col-md-2">' +
+                                                '<input type="number" class="form-control" name="number_shirt_min_[' + count_add_shirt +
+                                                ']" placeholder="ขนาดต่ำสุด" required step="0.01" min="0">' +
+                                                '</div>' +
+
+                                                '<div class="col-md-2">' +
+                                                '<input type="number" class="form-control" name="number_shirt_max_[' + count_add_shirt +
+                                                ']" placeholder="ขนาดสูงสุด" required step="0.01" min="0">' +
+                                                '</div>' +
+
+                                                '<div class="col-md-2">' +
+                                                '<button class="btn" onclick="delete_dress_shirt(' + count_add_shirt +
+                                                ')"><i class="bi bi-x-circle"></i></button>' +
+                                                '</div>' +
+                                                '</div>';
+                                            div.innerHTML = input;
+                                            show_shirt_total.appendChild(div);
+
+                                        });
+
+                                        function delete_dress_shirt(count_add_shirt) {
+                                            var delete_count_add_shirt = document.getElementById('aria_dress_shirt' + count_add_shirt);
+                                            delete_count_add_shirt.remove();
+                                        }
+                                    </script>
+
+                                </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="skirt_price">ราคาผ้าถุง</label>
-                                    <input type="number" name="skirt_price" id="skirt_price" class="form-control"
-                                        placeholder="ราคา" min="1">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="skirt_deposit">มัดจำราคาผ้าถุง</label>
-                                    <input type="number" name="skirt_deposit" id="skirt_deposit" class="form-control"
-                                        placeholder="ราคา" min="1">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="">ประกันค่าเสียหาย&nbsp;</label>
-                                    <input type="number" name="skirt_damage_insurance" id="skirt_damage_insurance"
-                                        class="form-control" placeholder="ราคา" min="1">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <p>ชื่อการวัด</p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p>ขนาด</p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p>หน่วย</p>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-
-                                    <input type="text" class="form-control"
-                                        name="yes_skirt_measurement_dress_name_[1]" id="yes_skirt_measurement_dress_name1"
-                                        value="รอบเอว" required readonly>
-                                </div>
-                                <div class="col-md-4">
-
-                                    <input type="number"
-                                        name="yes_skirt_measurement_dress_number_[1]"id="yes_skirt_measurement_dress_number1"
-                                        class="form-control" min="1" max="100" step="0.01" placeholder="ขนาด">
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="form-control-static mt-2 ml-3">นิ้ว</p>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-
-                                    <input type="text" class="form-control"
-                                        name="yes_skirt_measurement_dress_name_[2]" id="yes_skirt_measurement_dress_name2"
-                                        value="รอบสะโพก" required readonly>
-                                </div>
-                                <div class="col-md-4">
-
-                                    <input type="number"
-                                        name="yes_skirt_measurement_dress_number_[2]"id="yes_skirt_measurement_dress_number2"
-                                        class="form-control" min="1" max="100" step="0.01" placeholder="ขนาด">
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="form-control-static mt-2 ml-3">นิ้ว</p>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-
-                                    <input type="text" class="form-control"
-                                        name="yes_skirt_measurement_dress_name_[3]" id="yes_skirt_measurement_dress_name3"
-                                        value="กระโปรงยาว" required readonly>
-                                </div>
-                                <div class="col-md-4">
-
-                                    <input type="number"
-                                        name="yes_skirt_measurement_dress_number_[3]"id="yes_skirt_measurement_dress_number3"
-                                        class="form-control" min="1" max="100" step="0.01" placeholder="ขนาด">
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="form-control-static mt-2 ml-3">นิ้ว</p>
-                                </div>
-                            </div>
-                            <div id="aria_input_skirt">
-                                {{-- พื้นที่แสดงผล --}}
-
-
-                            </div>
-
-                            <script>
-                                var button_add_mea_skirt = document.getElementById('button_add_mea_skirt'); //กดเพิ่ม
-                                var aria_input_skirt = document.getElementById('aria_input_skirt'); //แสดงผล
-                                var count_skirt = 3;
-                                button_add_mea_skirt.addEventListener('click', function() {
-                                    count_skirt++;
-
-                                    var div_skirt = document.createElement('div');
-                                    div_skirt.className = 'row mb-3';
-                                    div_skirt.id = 'row_skirt' + count_skirt;
-
-                                    input =
-
-                                        '<div class="col-md-4">' +
-                                        '<select class="form-control" required name="yes_skirt_measurement_dress_name_[' + count_skirt +
-                                        ']">' +
-                                        '<option value="" disabled selected>เลือกรายการ</option>' +
-                                        '<option value="ต้นขา">ต้นขา</option>' +
-                                        '<option value="ปลายขา">ปลายขา</option>' +
-                                        '<option value="เป้า">เป้า</option>' +
-                                        '<option value="กางเกงยาว">กางเกงยาว</option>' +
-                                        '</select>' +
-
-                                        '</div>' +
-                                        '<div class="col-md-4">' +
-                                        '<input type="number" name="yes_skirt_measurement_dress_number_[' + count_skirt +
-                                        ']"id="yes_skirt_measurement_dress_number ' + count_skirt +
-                                        ' " class="form-control" placeholder="ขนาด" min="1" max="100" step="0.01">' +
-                                        '</div>' +
-                                        '<div class="col-md-2">' +
-                                        '<p class="form-control-static mt-2 ml-3">นิ้ว</p>' +
-                                        '</div>' +
-                                        '<div class="col-md-1">' +
-                                        '<button type="button" class="btn btn-danger" onclick="deleteskirt(' + count_skirt +
-                                        ')">ลบ</button>' +
-                                        '</div>';
-                                    div_skirt.innerHTML = input;
-                                    aria_input_skirt.appendChild(div_skirt);
-                                });
-
-                                function deleteskirt(count_skirt) {
-                                    var deleteskirt = document.getElementById('row_skirt' + count_skirt);
-                                    deleteskirt.remove();
-                                }
-                            </script>
                         </div>
+
+
+
+
+                        <div class="row mt-5">
+                            <div class="col-md-12">
+                                <h4>ข้อมูลผ้าถุง</h4>
+                                <div class="row mt-1">
+                                    <div class="col-md-4">
+                                        <label for="" class="form-label">ราคาเช่า (บาท)</label>
+                                        <input type="number" class="form-control" name="skirt_price" id="skirt_price" min="0" step="0.01"
+                                             placeholder="กรอกกจำนวนเงิน">
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="" class="form-label">ราคามัดจำ (บาท)</label>
+                                        <input type="number" class="form-control" name="skirt_deposit" id="skirt_deposit" min="0" step="0.01"
+                                             readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="" class="form-label">ประกันค่าเสียหาย (บาท)</label>
+                                        <input type="number" class="form-control" name="skirt_damage_insurance" id="skirt_damage_insurance" min="0" step="0.01"
+                                             readonly>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    var skirt_price = document.getElementById('skirt_price') ; 
+                                    var skirt_deposit = document.getElementById('skirt_deposit') ; 
+                                    var skirt_damage_insurance = document.getElementById('skirt_damage_insurance') ; 
+                                    skirt_price.addEventListener('input',function(){
+                                        var convert_skirt_price = parseFloat(skirt_price.value) ; 
+                                        if(convert_skirt_price){
+                                            skirt_deposit.value = convert_skirt_price*0.2 ; 
+                                            skirt_damage_insurance.value = convert_skirt_price*0.5 ; 
+                                        }
+                                        else{
+                                            skirt_deposit.value = '' ;
+                                            skirt_damage_insurance.value = '' ; 
+                                        }
+                                    }) ; 
+                                </script>
+
+
+
+
+                                <div class="row mt-1">
+                                    <div class="col-md-12 mt-3">
+                                        <p>ข้อมูลการวัดตัวของผ้าถุง (หน่วยเป็นนิ้ว)
+                                            <button type="button" id="add_mea_skirt">+ เพิ่มการวัดเพิ่มเติม</button>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row" id="show_skirt_total">
+                                    {{-- พื้นที่แสดงผล --}}
+                                    <div class="col-md-12" id="aria_dress_skirt1">
+                                        <div class="row mb-3">
+                                            <div class="col-md-2">
+                                                <input type="text"  class="form-control" name="name_skirt_[1]"
+                                                    placeholder="ชื่อการวัด" value="รอบอก">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_skirt_[1]"
+                                                    placeholder="ขนาด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_skirt_min_[1]"
+                                                    placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_skirt_max_[1]"
+                                                    placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <button class="btn" onclick="delete_dress_skirt(1)"><i
+                                                        class="bi bi-x-circle"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" id="aria_dress_skirt2">
+                                        <div class="row mb-3">
+                                            <div class="col-md-2">
+                                                <input type="text"  class="form-control" name="name_skirt_[2]"
+                                                    placeholder="ชื่อการวัด" value="รอบสะโพก">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_skirt_[2]"
+                                                    placeholder="ขนาด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_skirt_min_[2]"
+                                                    placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_skirt_max_[2]"
+                                                    placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <button class="btn" onclick="delete_dress_skirt(2)"><i
+                                                        class="bi bi-x-circle"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" id="aria_dress_skirt3">
+                                        <div class="row mb-3">
+                                            <div class="col-md-2">
+                                                <input type="text"  class="form-control" name="name_skirt_[3]"
+                                                    placeholder="ชื่อการวัด" value="กระโปรงยาว">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_skirt_[3]"
+                                                    placeholder="ขนาด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_skirt_min_[3]"
+                                                    placeholder="ขนาดต่ำสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control" name="number_skirt_max_[3]"
+                                                    placeholder="ขนาดสูงสุด"  step="0.01" min="0">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <button class="btn" onclick="delete_dress_skirt(3)"><i
+                                                        class="bi bi-x-circle"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+                                    <script>
+                                        var show_skirt_total = document.getElementById('show_skirt_total');
+                                        var add_mea_shirt = document.getElementById('add_mea_skirt');
+                                        var count_add_skirt = 3;
+                                        add_mea_skirt.addEventListener('click', function() {
+                                            count_add_skirt++;
+
+                                            var div = document.createElement('div');
+                                            div.className = 'col-md-12';
+                                            div.id = 'aria_dress_skirt' + count_add_skirt;
+
+                                            input =
+                                                '<div class="row mb-3">' +
+                                                '<div class="col-md-2">' +
+                                                '<input type="text" required class="form-control" name="name_skirt_[' + count_add_skirt +
+                                                ']" placeholder="ชื่อการวัด">' +
+                                                '</div>' +
+                                                '<div class="col-md-2">' +
+                                                '<input type="number" class="form-control" name="number_skirt_[' + count_add_skirt +
+                                                ']" placeholder="ขนาด" required step="0.01" min="0">' +
+                                                '</div>' +
+
+                                                '<div class="col-md-2">' +
+                                                '<input type="number" class="form-control" name="number_skirt_min_[' + count_add_skirt +
+                                                ']" placeholder="ขนาดต่ำสุด" required step="0.01" min="0">' +
+                                                '</div>' +
+
+                                                '<div class="col-md-2">' +
+                                                '<input type="number" class="form-control" name="number_skirt_max_[' + count_add_skirt +
+                                                ']" placeholder="ขนาดสูงสุด" required step="0.01" min="0">' +
+                                                '</div>' +
+
+                                                '<div class="col-md-2">' +
+                                                '<button class="btn" onclick="delete_dress_skirt(' + count_add_skirt +
+                                                ')"><i class="bi bi-x-circle"></i></button>' +
+                                                '</div>' +
+                                                '</div>';
+                                            div.innerHTML = input;
+                                            show_skirt_total.appendChild(div);
+
+                                        });
+
+                                        function delete_dress_skirt(count_add_skirt) {
+                                            var delete_count_add_skirt = document.getElementById('aria_dress_skirt' + count_add_skirt);
+                                            delete_count_add_skirt.remove();
+                                        }
+                                    </script>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
                     </div>
+                    <script>
+                        var show_div_dress_total = document.getElementById('show_div_dress_total');
+                        var show_div_shirt_skirt = document.getElementById('show_div_shirt_skirt');
+                        var rental_option1 = document.getElementById('rental_option1');
+                        var rental_option2 = document.getElementById('rental_option2');
+                        rental_option1.addEventListener('change', function() {
+                            if (this.checked) {
+                                console.log('1');
+                                show_div_dress_total.style.display = 'block';
+                                show_div_shirt_skirt.style.display = 'none';
+                            }
+                        });
+
+
+                        rental_option2.addEventListener('change', function() {
+                            if (this.checked) {
+                                console.log('2');
+                                show_div_shirt_skirt.style.display = 'block';
+                                show_div_dress_total.style.display = 'none';
+                            }
+                        });
+                    </script>
                 </div>
             </div>
-            <div style="display: flex; justify-content: center;">
-                <button class="btn btn-success" type="submit">ยืนยันการเพิ่มชุด</button>
+            <div class="row mt-4">
+                <div class="col-md-12" style="text-align: center ; ">
+                    <button type="submit" class="btn btn-success">ยืนยันการเพิ่มชุด</button>
+                </div>
             </div>
-        </form>
-    </div>
-
-
-    <script>
-        var Big_show_aria_no_separated = document.getElementById('Big_show_aria_no_separated');
-        var Big_show_aria_yes_separated = document.getElementById('Big_show_aria_yes_separated');
-        var separate_rent_yes = document.getElementById('separate_rent_yes');
-        var separate_rent_no = document.getElementById('separate_rent_no');
-
-
-        separate_rent_yes.addEventListener('change', function() {
-            if (this.checked) {
-                Big_show_aria_yes_separated.style.display = 'block';
-                Big_show_aria_no_separated.style.display = 'none';
-                document.getElementById('no_shirt_measurement_dress_number1').removeAttribute('required');
-                document.getElementById('no_shirt_measurement_dress_number2').removeAttribute('required');
-                document.getElementById('no_shirt_measurement_dress_number3').removeAttribute('required');
-
-                document.getElementById('shirt_price').setAttribute('required', 'required');
-                document.getElementById('shirt_deposit').setAttribute('required', 'required');
-                document.getElementById('shirt_damage_insurance').setAttribute('required', 'required');
-
-
-                document.getElementById('skirt_price').setAttribute('required', 'required');
-                document.getElementById('skirt_deposit').setAttribute('required', 'required');
-                document.getElementById('skirt_damage_insurance').setAttribute('required', 'required');
-
-            }
-        });
-
-        separate_rent_no.addEventListener('change', function() {
-            if (this.checked) {
-                Big_show_aria_no_separated.style.display = 'block';
-                Big_show_aria_yes_separated.style.display = 'none';
-                document.getElementById('no_shirt_measurement_dress_number1').setAttribute('required', 'required');
-                document.getElementById('no_shirt_measurement_dress_number2').setAttribute('required', 'required');
-                document.getElementById('no_shirt_measurement_dress_number3').setAttribute('required', 'required');
-
-                document.getElementById('shirt_price').removeAttribute('required');
-                document.getElementById('shirt_deposit').removeAttribute('required');
-                document.getElementById('shirt_damage_insurance').removeAttribute('required');
-
-
-                document.getElementById('skirt_price').removeAttribute('required');
-                document.getElementById('skirt_deposit').removeAttribute('required');
-                document.getElementById('skirt_damage_insurance').removeAttribute('required');
-
-
-            }
-        });
-    </script>
+        </div>
+    </form>
 @endsection

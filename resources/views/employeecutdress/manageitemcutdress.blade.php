@@ -90,7 +90,7 @@
                 <div class="col-md-4">
                     <!-- ประเภทชุด -->
                     <div class="mb-3">
-                        <p style="font-size: 17px;">รายการ : {{ $orderdetail->title_name }}</p>
+                        <p style="font-size: 17px;">รายการ : ตัด{{ $orderdetail->type_dress }}</p>
                     </div>
 
 
@@ -98,48 +98,51 @@
 
 
                     <div class="mb-3">
-                        <label for="" class="form-label"><span>ราคาต่อชุด</span></label>
+                        <label for="" class="form-label"><span>ราคาตัดชุด (บาท)</span></label>
                         <input type="number" style="font-size: 15px;  width: 70%; height: 70%;" class="form-control"
-                            name="update_price" value="{{ $orderdetail->price }}">
+                            name="update_price" value="{{ $orderdetail->price }}" min="1" required>
                     </div>
 
 
 
                     <div class="mb-3">
-                        <label for="" class="form-label"><span>ราคามัดจำ</span></label>
+                        <label for="" class="form-label"><span>เงินมัดจำ (บาท)</span></label>
                         <input type="number" style="font-size: 15px;  width: 70%; height: 70%;" class="form-control"
-                            name="update_deposit" value="{{ $orderdetail->deposit }}">
+                            name="update_deposit" value="{{ $orderdetail->deposit }}" min="1" required>
                     </div>
                     <div class="mb-3">
                         <div class="flex-fill pe-2">
                             <label for="" class="form-label"><span>จำนวนชุด</span></label>
                             <input type="number" style="font-size: 15px;  width: 70%; height: 70%;" class="form-control"
-                                name="update_amount" value="{{ $orderdetail->amount }}" min="1">
+                                name="update_amount" value="{{ $orderdetail->amount }}" min="1" required max="100">
                         </div>
                     </div>
+                    
+
+
                     <div class="mb-3">
-                        <label for="update_cloth" class="form-label"><span>ผ้า</span></label>
-                        <div class="d-flex flex-column">
-                            <div class="form-check">
-                                <input type="radio" id="cloth_customer" name="update_cloth" value="1"
-                                    class="form-check-input" {{ $orderdetail->cloth == 1 ? 'checked' : '' }}>
-                                <label for="cloth_customer" class="form-check-label">ลูกค้านำผ้ามาเอง</label>
-                            </div>
-                            <div class="form-check mt-2">
-                                <input type="radio" id="cloth_store" name="update_cloth" value="2"
-                                    class="form-check-input" {{ $orderdetail->cloth == 2 ? 'checked' : '' }}>
-                                <label for="cloth_store" class="form-check-label">ทางร้านหาผ้าให้</label>
-                            </div>
-                        </div>
+                        <label for="update_cloth" class="form-label"><span>ที่มาของผ้า</span></label>
+                        <select name="update_cloth" id="update_cloth" class="form-control">
+                            <option value="1" {{ $orderdetail->cloth == 1 ? 'selected' : ''  }} >ลูกค้านำผ้ามาเอง</option>
+                            <option value="2" {{ $orderdetail->cloth == 2 ? 'selected' : ''}} >ทางร้านหาผ้าให้</option>
+                        </select>
                     </div>
+
+
+
+
+
 
                     @php
                         $today = \Carbon\Carbon::today()->toDateString();
+                        $date_order_detail = App\Models\Date::where('order_detail_id',$orderdetail->id)
+                                            ->orderBy('created_at','desc')
+                                            ->first() ; 
                     @endphp
                     <div class="mb-3">
-                        <label for="" class="form-label"><span>วันที่นัดรับ</span></label>
+                        <label for="" class="form-label"><span>วันที่นัดส่งมอบชุด</span></label>
                         <input type="date" style="font-size: 15px;  width: 70%; height: 70%;" class="form-control"
-                            name="update_pickup_date" value="{{ $orderdetail->pickup_date }}" min="{{ $today }}">
+                            name="update_pickup_date" value="{{ $date_order_detail->pickup_date }}" min="{{ $today }}">
                     </div>
                     <div class="mb-3">
                         <label for="" class="form-label"><span>รายละเอียดอื่นๆ(หากมี)</span></label>
@@ -167,21 +170,7 @@
                                     <span style="font-size: 15px; margin-left: 20px;">นิ้ว</span>
                                 </div>
                                 <div class="col-md-4">
-                                    {{-- <button class="btn d-flex justify-content-center align-items-center"
-                                        style="width: 25px; height: 25px; border-radius: 50%; padding: 0; margin-top: 10px; background-color: #A7567F;">
-                                        <i class="bi bi-x" style="font-size: 16px; margin: 0; color: white;"></i>
-                                    </button> --}}
-                                    {{-- <form
-                                        action="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}"
-                                        method="POST">
-                                        @csrf
-                                        
-                                        <button class="btn d-flex justify-content-center align-items-center"
-                                            style="width: 25px; height: 25px; border-radius: 50%; padding: 0; margin-top: 10px; background-color: #A7567F;"
-                                            type="submit">
-                                            <i class="bi bi-x" style="font-size: 16px; margin: 0; color: white;"></i>
-                                        </button>
-                                    </form> --}}
+                                   
 
                                     <a href="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}">
                                         <button class="btn d-flex justify-content-center align-items-center"

@@ -89,7 +89,7 @@
                                                 placeholder="กรุณากรอกราคาประกันค่าเสียหาย" min="0" required>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
+                                    {{-- <div class="row mb-3">
                                         <div class="col-12">
                                             <label for="dress_status">สถานะชุด</label>
                                             <select name="update_dress_status" id="update_dress_status"
@@ -118,7 +118,7 @@
                                                 </option>
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="row mb-4">
                                         <div class="col-12">
                                             <label for="dress_description">คำอธิบายชุด</label>
@@ -183,32 +183,15 @@
                         <p><strong>เงินมัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
                         <p><strong>ค่าประกันชุด:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท
                         </p>
-                        <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
-                        {{-- <p>
-                            <strong>สถานะชุด:</strong>
-                            <span style="color: green;">ยังปล่อยให้เช่า</span>
+                    
 
-                        </p> --}}
-
-
-                        <p>
-                            <strong>สถานะชุดปัจจุบัน:</strong>
-                            <span style="color: rgb(163, 99, 3);">
-                                @if ($dress_status_now != null)
-                                    {{ $dress_status_now->status }}
-                                @else
-                                    ชุดอยู่ในร้าน ไม่มีคิวจอง
-                                @endif
+                        <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง
+                            <span>
+                                <a href="{{route('admin.historydressrent',['id'=>$datadress->id])}}">ดูประวัติ</a>
                             </span>
-
                         </p>
 
-
-
-
-                        <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง</p>
-
-                        <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p>
+                        
                         {{-- สำหรับแสดงประวัติการซ่อม --}}
                         @php
                             $reservation = App\Models\Reservation::where('dress_id', $datadress->id)->get();
@@ -232,9 +215,11 @@
                         @endphp
                         <p><strong>จำนวนครั้งที่ซ่อม</strong>
                             {{ $historyrepair->count() }} ครั้ง
-                            <span></span>
+                            <span>
+                                <a href="">ดูประวัติ</a>
+                            </span>
                         </p>
-
+                        <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p>
                     </div>
 
                     
@@ -250,12 +235,12 @@
 
                     <div class="col-md-5">
                         <p>
-                            <strong>ขนาดของชุด</strong> (ปรับแก้ ขยาย/ลด ไม่เกิน 4 นิ้ว):
+                            <strong>ขนาดของชุด</strong> (ปรับแก้ ขยาย/ลด ได้):
 
 
-                            <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea">
+                            {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea">
                                 <i class="bi bi-plus-square text-dark"></i>
-                            </button>
+                            </button> --}}
 
                             @php
                                 $list_check_mea = [];
@@ -269,11 +254,9 @@
                                 @foreach ($mea_dress as $index => $mea_dress)
                                     <tr>
                                         <td>{{ $mea_dress->mea_dress_name }}<span
-                                                style="font-size: 14px; color: rgb(197, 21, 21)">(ปรับได้
-                                                {{ $mea_dress->initial_mea - 4 }}-{{ $mea_dress->initial_mea + 4 }})</span>
+                                                style="font-size: 14px; color: rgb(197, 21, 21)"> (ปรับได้
+                                                {{ $mea_dress->initial_min }}-{{ $mea_dress->initial_max}})</span>
                                         </td>
-
-
                                         <td>{{ $mea_dress->current_mea }}</td>
                                         <td>นิ้ว</td>
                                     </tr>
@@ -428,6 +411,7 @@
 
 
 
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#reservation_history">กดดูประวัติการเช่า</button>
 
 
 

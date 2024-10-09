@@ -14,6 +14,8 @@ class Date extends Model
         'order_detail_id',
         'pickup_date',
         'return_date',
+        'actua_pickup_date',
+        'actua_return_date' , 
     ];
 
     //ตารางdate เป็น M - 1 ของตาราง orderdetail

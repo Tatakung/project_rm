@@ -50,7 +50,7 @@
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-body text-center">
-                                        <p>ลูกค้าชำระเงินเต็มจำนวน(มัดจำ+ราคาชุด+ประกันค่าเสียหาย)</p>
+                                        <p>ลูกค้าชำระเงินเต็มจำนวน(มัดจำ+ราคาเช่า+ประกันค่าเสียหาย)</p>
                                         <input type="radio" name="payment_status" value="2">
                                     </div>
                                 </div>
@@ -82,33 +82,64 @@
 
 
                             <div class="media-left">
-                                <strong>{{ $detail->title_name }}<span>&nbsp(&nbsp;{{ $detail->amount }}&nbsp;ชุด)</span></strong>
+                                @php
+                                    if ($detail->type_order == 2) {
+                                        $dress = App\Models\Dress::find($detail->dress_id);
+                                        $type_name = App\Models\Typedress::where('id', $dress->type_dress_id)->value(
+                                            'type_dress_name',
+                                        );
+                                    }
+                                @endphp
+                                <strong>
+                                    @if ($detail->type_order == 1)
+                                        รายการตัดชุด
+                                    @elseif($detail->type_order == 2)
+                                        @if ($detail->shirtitems_id)
+                                            เช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                            (เสื้อ)
+                                        @elseif($detail->skirtitems_id)
+                                            เช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                            (ผ้าถุง)
+                                        @else
+                                            เช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                            (ทั้งชุด)
+                                        @endif
+                                    @endif
+
+                                </strong>
                                 <p style="font-size: 15px;  margin-bottom: 5px; ">จำนวน&nbsp;{{ $detail->amount }}&nbsp;ชุด
                                 </p>
                                 <p style="font-size: 15px;  margin-bottom: 5px;">
-                                    ราคา:&nbsp;{{ $detail->price }}&nbsp;บาท
+                                    @if ($detail->type_order == 1)
+                                        ราคาตัด:&nbsp;{{ $detail->price }}&nbsp;บาท
+                                    @elseif($detail->type_order == 2)
+                                        ราคาเช่า:&nbsp;{{ $detail->price }}&nbsp;บาท
+                                    @endif
                                 </p>
                                 <p style="font-size: 15px;  margin-bottom: 5px;">
-                                    ราคามัดจำ:&nbsp;{{ $detail->deposit }}&nbsp;บาท
+                                    เงินมัดจำ:&nbsp;{{ $detail->deposit }}&nbsp;บาท
                                 </p>
                                 @if ($detail->type_order == 2)
                                     <p style="font-size: 15px;  margin-bottom: 5px;">
                                         ประกันค่าเสียหาย:&nbsp;{{ $detail->damage_insurance }}&nbsp;บาท</p>
                                 @endif
+
+                                @php
+                                    $Date = App\Models\Date::where('order_detail_id', $detail->id)
+                                        ->orderBy('created_at', 'desc')
+                                        ->first();
+                                @endphp
                                 <p style="font-size: 15px;  margin-bottom: 5px;">วันที่นัดรับ:
-                                    {{ \Carbon\Carbon::parse($detail->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($detail->pickup_date)->year + 543 }}
+                                    {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
                                 </p>
                                 @if ($detail->type_order == 2)
                                     <p style="font-size: 15px;  margin-bottom: 5px;">วันที่นัดคืน:
-                                        {{ \Carbon\Carbon::parse($detail->return_date)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($detail->return_date)->year + 543 }}
+                                        {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
                                     </p>
                                 @endif
-                                @if ($detail->type_order == 2)
-                                    <p style="font-size: 15px;  margin-bottom: 5px; ">
-                                        ค่าบริการขยายเวลาเช่าชุด&nbsp;{{ $detail->late_charge }}&nbsp;บาท</p>
-                                @endif
+
 
                             </div>
                             <div class="media-body">
@@ -138,7 +169,7 @@
                             <p style="font-size: 15px;  margin-bottom: 5px; ">ราคาค่าเช่า</p>
                             <p style="font-size: 15px;  margin-bottom: 5px;">ค่ามัดจำ</p>
                             <p style="font-size: 15px;  margin-bottom: 5px;">ประกันค่าเสียหาย</p>
-                            <p style="font-size: 15px;  margin-bottom: 5px;">ค่าบริการขยายเวลาเช่าชุด</p>
+                            {{-- <p style="font-size: 15px;  margin-bottom: 5px;">ค่าบริการขยายเวลาเช่าชุด</p> --}}
                             {{-- <p style="font-size: 15px;  margin-bottom: 5px; color: crimson">จำนวนเงินที่ต้องชำระทั้งหมด</p> --}}
                         </div>
                         <div class="media-body">
@@ -153,8 +184,8 @@
                             </p>
                             <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
                                 {{ number_format(array_sum($list_damage_insurance), 2) }}</p>
-                            <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
-                                {{ number_format(array_sum($late_charge_late_charge), 2) }}</p>
+                            {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
+                                {{ number_format(array_sum($late_charge_late_charge), 2) }}</p> --}}
                         </div>
                     </div>
                     <hr>

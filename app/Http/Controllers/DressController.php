@@ -15,6 +15,8 @@ use App\Models\Orderdetail;
 use App\Models\User;
 use App\Models\Reservation;
 use App\Models\Dressmeasurementcutedit;
+use App\Models\Date;
+
 use App\Models\Repair;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -104,7 +106,7 @@ class DressController extends Controller
             $dress->dress_status = "พร้อมให้เช่า";
             $dress->dress_description = $request->input('dress_description');
             $dress->dress_rental = 0;
-            $dress->separable = $request->input('separable'); //1แยกไม่ได้ 2 แยกได้
+            $dress->separable = $request->input('rental_option'); //1แยกไม่ได้ 2 แยกได้
             $dress->save();
 
             // เก็บ dress_code ที่ถูกสร้างไว้ใน list
@@ -115,28 +117,7 @@ class DressController extends Controller
             $mea_dress_number = $request->input('measurement_dress_number_');
             $mea_dress_unit = $request->input('measurement_dress_unit_');
 
-            // foreach ($mea_dress_name as $index => $mea) {
-            //     $addmea = new Dressmeasurement;
-            //     $addmea->dress_id  = $dress->id;
-            //     $addmea->measurement_dress_name = $mea;
-            //     $addmea->measurement_dress_number = $mea_dress_number[$index];
-            //     $addmea->measurement_dress_unit = $mea_dress_unit[$index];
-            //     $addmea->save();
-            // }
-
-
-            //รูปภาพ
-            // if ($request->hasFile('imagerent_')) {
-            //     $images = $request->file('imagerent_');
-            //     // $images->image = $request->file('imagerent_')->store('dress_image','public') ; 
-            //     foreach ($images as $index => $image) {
-            //         $additionalImage = new Dressimage;
-            //         $additionalImage->dress_id  = $dress->id;
-            //         $additionalImage->dress_image = $image->store('dress_images', 'public');
-            //         $additionalImage->save();
-            //     }
-            // }
-
+         
             // ปรับเป็น 2 รูป
             if ($request->hasFile('add_image')) {
                 $add_image = new Dressimage();
@@ -148,27 +129,28 @@ class DressController extends Controller
 
 
 
-
-
             //ส่วนการแยกได้กับแยกไม่ได้
-            if ($request->input('separable') == 1) {
+            if ($request->input('rental_option') == 1) {
                 //แยกไม่ได้
 
                 //ตารางเริ่มต้นdressmeasurement
-                if ($request->input('no_shirt_measurement_dress_name_') != null) {
-                    $no_shirt_measurement_dress_name = $request->input('no_shirt_measurement_dress_name_');
-                    $no_shirt_measurement_dress_number = $request->input('no_shirt_measurement_dress_number_');
-                    // $no_shirt_measurement_dress_unit = $request->input('no_shirt_measurement_dress_unit_');
-                    foreach ($no_shirt_measurement_dress_name as $index => $no_shirt_meas_dress_name) {
+                if ($request->input('name_total_') != null) {
+                    $name_total = $request->input('name_total_');
+                    $number_total = $request->input('number_total_');
+                    $number_total_min = $request->input('number_total_min_') ; 
+                    $number_total_max = $request->input('number_total_max_') ; 
+                    foreach ($name_total as $index => $name) {
                         $addmea = new Dressmea();
                         $addmea->dress_id  = $dress->id;
-                        $addmea->mea_dress_name = $no_shirt_meas_dress_name;
-                        $addmea->initial_mea = $no_shirt_measurement_dress_number[$index];
-                        $addmea->current_mea = $no_shirt_measurement_dress_number[$index];
+                        $addmea->mea_dress_name = $name;
+                        $addmea->initial_mea = $number_total[$index];
+                        $addmea->initial_min = $number_total_min[$index] ; 
+                        $addmea->initial_max = $number_total_max[$index] ; 
+                        $addmea->current_mea = $number_total[$index];
                         $addmea->save();
                     }
                 }
-            } elseif ($request->input('separable') == 2) {
+            } elseif ($request->input('rental_option') == 2) {
                 //แยกได้
 
                 //ตารางshirtitem
@@ -193,30 +175,36 @@ class DressController extends Controller
 
 
                 //เสื้อตารางdressmeasurement
-                $yes_shirt_measurement_dress_name = $request->input('yes_shirt_measurement_dress_name_');
-                $yes_shirt_measurement_dress_number = $request->input('yes_shirt_measurement_dress_number_');
-                // $yes_shirt_measurement_dress_unit = $request->input('yes_shirt_measurement_dress_unit_');
-                foreach ($yes_shirt_measurement_dress_name as $index => $yes_shirt_mea_dress_name) {
+                $name_shirt = $request->input('name_shirt_');
+                $number_shirt = $request->input('number_shirt_');
+                $number_shirt_min = $request->input('number_shirt_min_') ; 
+                $number_shirt_max = $request->input('number_shirt_max_') ; 
+                foreach ($name_shirt as $index => $name_sh) {
                     $add_item_shiry = new Dressmea();
                     $add_item_shiry->dress_id = $dress->id;
                     $add_item_shiry->shirtitems_id  = $add_shirtitem->id;
-                    $add_item_shiry->mea_dress_name = $yes_shirt_mea_dress_name;
-                    $add_item_shiry->initial_mea = $yes_shirt_measurement_dress_number[$index];
-                    $add_item_shiry->current_mea = $yes_shirt_measurement_dress_number[$index];
+                    $add_item_shiry->mea_dress_name = $name_sh;
+                    $add_item_shiry->initial_mea = $number_shirt[$index];
+                    $add_item_shiry->initial_min = $number_shirt_min[$index] ; 
+                    $add_item_shiry->initial_max = $number_shirt_max[$index] ; 
+                    $add_item_shiry->current_mea = $number_shirt[$index];
                     $add_item_shiry->save();
                 }
 
                 //กระโปรงตารางdressmeasurement
-                $yes_skirt_measurement_dress_name = $request->input('yes_skirt_measurement_dress_name_');
-                $yes_skirt_measurement_dress_number = $request->input('yes_skirt_measurement_dress_number_');
-                // $yes_skirt_measurement_dress_unit = $request->input('yes_skirt_measurement_dress_unit_');
-                foreach ($yes_skirt_measurement_dress_name as $index => $yes_skirt_mea_dress_name) {
+                $name_skirt = $request->input('name_skirt_');
+                $number_skirt = $request->input('number_skirt_');
+                $number_skirt_min = $request->input('number_skirt_min_') ; 
+                $number_skirt_max = $request->input('number_skirt_max_') ; 
+                foreach ($name_skirt as $index => $name_sk) {
                     $add_item_skiry = new Dressmea();
                     $add_item_skiry->dress_id = $dress->id;
                     $add_item_skiry->skirtitems_id  = $add_skirtitem->id;
-                    $add_item_skiry->mea_dress_name = $yes_skirt_mea_dress_name;
-                    $add_item_skiry->initial_mea = $yes_skirt_measurement_dress_number[$index];
-                    $add_item_skiry->current_mea = $yes_skirt_measurement_dress_number[$index];
+                    $add_item_skiry->mea_dress_name = $name_sk;
+                    $add_item_skiry->initial_mea = $number_skirt[$index];
+                    $add_item_skiry->initial_min = $number_skirt_min[$index] ; 
+                    $add_item_skiry->initial_max = $number_skirt_max[$index] ; 
+                    $add_item_skiry->current_mea = $number_skirt[$index];
                     $add_item_skiry->save();
                 }
             }
@@ -426,22 +414,26 @@ class DressController extends Controller
         }
 
 
+
+        //คิวเช่าเฉพาะทั้งชุด
         $date_reservations_dress = Reservation::where('dress_id', $id)
             ->whereNull('shirtitems_id')
             ->whereNull('skirtitems_id')
             ->where('status_completed', 0)
             ->get();
 
-        $date_reservations_shirt = Reservation::where('shirtitems_id',$shirtitem->id)
+        // คิวเช่าเฉพาะเสื้อ
+        $date_reservations_shirt = Reservation::where('shirtitems_id', $shirtitem->id)
             ->where('status_completed', 0)
             ->get();
 
-            $date_reservations_skirt = Reservation::where('skirtitems_id',$skirtitem->id)
+        //คิวเช่าเฉพาะผ้าถุง
+        $date_reservations_skirt = Reservation::where('skirtitems_id', $skirtitem->id)
             ->where('status_completed', 0)
             ->get();
 
 
-        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress', 'date_reservations_dress','date_reservations_shirt','date_reservations_skirt'));
+        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress', 'date_reservations_dress', 'date_reservations_shirt', 'date_reservations_skirt'));
     }
 
 
@@ -980,16 +972,29 @@ class DressController extends Controller
     }
 
 
-    public function historydressrent($id){
-        $dress = Dress::find($id) ; 
-        if($dress->separable == 1 ){
-            dd('ไม่ได้') ; 
-        }
-        elseif($dress->separable == 2 ){
-            dd('ได้') ; 
+    public function historydressrent($id)
+    {
+        $dress = Dress::find($id);
+        if ($dress->separable == 1) {
+            return $this->historydressrentNo($id) ; 
+        } elseif ($dress->separable == 2) {
+            return $this->historydressrentYes($id) ; 
         }
     }
 
+
+    private function historydressrentNo($id){
+
+        $dress = Dress::find($id) ; 
+        $typedress = Typedress::find($dress->type_dress_id) ; 
+        $history_renrdress = Orderdetail::where('dress_id', $id)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+
+      
+
+        return view('admin.his-dress-rent-history-no',compact('history_renrdress','dress','typedress')) ;  
+    }
 
 
 

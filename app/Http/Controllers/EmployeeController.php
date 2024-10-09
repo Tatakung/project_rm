@@ -64,9 +64,29 @@ class EmployeeController extends Controller
             ->where('status', 'ถูกจอง')
             ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
             ->get();
-        return view('employee.dressadjust', compact('reservations'));
+
+        $filer = 'total';
+        return view('employee.dressadjust', compact('reservations', 'filer'));
     }
 
+    public function dressadjustfilter(Request $request){
+        $filter_click = $request->input('filter_click') ; 
+        
+        if($filter_click == "today"){
+            $reservations = Reservation::where('status_completed', 0)
+            ->where('status', 'ถูกจอง')
+            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+            ->whereDate('start_date',now())
+            ->get();
+        $filer = 'today' ; 
+        }
+        elseif($filter_click == "total"){
+            return $this->dressadjust() ; 
+        }
+        return view('employee.dressadjust', compact('reservations', 'filer'));
+    }
+
+   
 
     public function listdressreturn()
     {
@@ -74,7 +94,24 @@ class EmployeeController extends Controller
             ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
             ->where('status', 'กำลังเช่า')
             ->get();
-        return view('employee.listdressreturn', compact('listdressreturns'));
+        $filer = 'total' ;
+        return view('employee.listdressreturn', compact('listdressreturns','filer'));
+    }
+
+    public function listdressreturnfilter(Request $request){
+        $filter_click = $request->input('filter_click') ; 
+        if($filter_click == 'today'){
+            $listdressreturns = Reservation::where('status_completed', 0)
+            ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
+            ->where('status', 'กำลังเช่า')
+            ->whereDate('end_date',now())
+            ->get();
+        $filer = 'today' ;
+        }
+        elseif($filter_click == 'total'){
+            return $this->listdressreturn() ; 
+        }
+        return view('employee.listdressreturn', compact('listdressreturns','filer'));
     }
 
 
@@ -90,6 +127,8 @@ class EmployeeController extends Controller
             ->where('status_detail', 'รอดำเนินการตัด')
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
             ->get();
+
+
         $cutdresss_page_two = Orderdetail::where('type_order', 1)
             ->where('status_detail', 'เริ่มดำเนินการตัด')
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
@@ -103,6 +142,7 @@ class EmployeeController extends Controller
             ->where('status_detail', 'แก้ไขชุด')
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
             ->get();
+
 
         return view('employee.cutdressadjust', compact('cutdresss_page_one', 'cutdresss_page_two', 'cutdresss_page_three', 'cutdresss_page_four'));
     }
@@ -523,6 +563,7 @@ class EmployeeController extends Controller
     //เพิ่มการตัดชุดลงในตะกร้า บันทึก
     public function savecutdress(Request $request)
     {
+
         DB::beginTransaction();
         try {
 
@@ -583,8 +624,6 @@ class EmployeeController extends Controller
             $orderdetail->employee_id = $id_employee;
             $orderdetail->type_dress = $TYPE_DRESS;
             $orderdetail->type_order = 1; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4เช่าตัด
-            $orderdetail->title_name = "ตัด" . $TYPE_DRESS;
-            $orderdetail->pickup_date = $request->input('pickup_date');
             $orderdetail->amount = $request->input('amount');
 
             if ($request->input('deposit') > $request->input('price')) {
@@ -599,11 +638,15 @@ class EmployeeController extends Controller
             $orderdetail->note = $request->input('note');
             $orderdetail->save();
 
+            $date = new Date();
+            $date->order_detail_id = $orderdetail->id;
+            $date->pickup_date = $request->input('pickup_date');
+            $date->save();
 
             // บันทึกข้อมูลในตาราง Dressmeaadjustment
-            if ($request->input('add_mea_name_')) {
-                $mea_name = $request->input('add_mea_name_');
-                $mea_number = $request->input('add_mea_number_');
+            if ($request->input('name_')) {
+                $mea_name = $request->input('name_');
+                $mea_number = $request->input('number_');
                 if ($mea_name) {
                     foreach ($mea_name as $index => $mea) {
                         $data = new Dressmeaadjustment();
@@ -615,19 +658,18 @@ class EmployeeController extends Controller
                 }
             }
 
-
-            // //ตาราง fitting 
-            // $fit_date = $request->input('fitting_date_');
-            // $fit_note = $request->input('fitting_note_');
-            // if ($fit_date && $fit_note) {
-            //     foreach ($fit_date as $index => $fiting) {
-            //         $data = new Fitting();
-            //         $data->order_detail_id = $orderdetail->id;
-            //         $data->fitting_date = $fiting;
-            //         $data->fitting_note = $fit_note[$index];
-            //         $data->save();
-            //     }
-            // }
+            // บันทึกช้อม๔ุลงในตาราง rentimage
+            if ($request->hasFile('file_image_')) {
+                $imf_loop = $request->file('file_image_');
+                $note_image = $request->input('note_image_');
+                foreach ($imf_loop as $index => $img) {
+                    $image_save = new Imagerent();
+                    $image_save->order_detail_id = $orderdetail->id;
+                    $image_save->image = $img->store('rent_images', 'public');
+                    $image_save->description = $note_image[$index] ?? null;
+                    $image_save->save();
+                }
+            }
 
 
             DB::commit();
@@ -810,43 +852,70 @@ class EmployeeController extends Controller
     //ลบรายการต่างๆ
     public function deletelist($id)
     {
+
+
+
+
+
         $delete_orderdetail = Orderdetail::find($id);
 
-        //ลบตาราง reservation
-        $delete_reservation = Reservation::find($delete_orderdetail->reservation_id);
-        $delete_reservation->delete();
+        //ตัดชุด
+        if ($delete_orderdetail->type_order == 1) {
+            //ลบตารางdress_mea_adjust
+            Dressmeaadjustment::where('order_detail_id', $id)->delete();
+            //ลบลูกๆมันด้วย
+            Imagerent::where('order_detail_id', $id)->delete();
+            Paymentstatus::where('order_detail_id', $id)->delete();
+            Date::where('order_detail_id', $id)->delete();
+            Measurementorderdetail::where('order_detail_id', $id)->delete();
+            Orderdetailstatus::where('order_detail_id', $id)->delete();
 
-        //ลบตารางdress_mea_adjust
-        Dressmeaadjustment::where('order_detail_id', $id)->delete();
+            //อัปเดตตาราง order ด้วย เพราะorderdetail มันลบไปแล้วไง
+            $ORDER_ID = $delete_orderdetail->order_id;
+            $update_order = Order::find($ORDER_ID);
+
+            $update_order->total_quantity = $update_order->total_quantity - 1; //รายการทั้งหมดจะลดลงทีละ1 
+
+            $update_order->total_price = $update_order->total_price - ($delete_orderdetail->price * $delete_orderdetail->amount);
+            $update_order->total_deposit = $update_order->total_deposit - ($delete_orderdetail->deposit * $delete_orderdetail->amount);
+            $update_order->save();
+        }
+        // เช่าชุด
+        elseif ($delete_orderdetail->type_order == 2) {
+            //ลบตาราง reservation
+            $delete_reservation = Reservation::find($delete_orderdetail->reservation_id);
+            $delete_reservation->delete();
+
+            //ลบตารางdress_mea_adjust
+            Dressmeaadjustment::where('order_detail_id', $id)->delete();
+
+            //ลบลูกๆมันด้วย
+            Imagerent::where('order_detail_id', $id)->delete();
+            Paymentstatus::where('order_detail_id', $id)->delete();
+            Fitting::where('order_detail_id', $id)->delete();
+            Financial::where('order_detail_id', $id)->delete();
+            Date::where('order_detail_id', $id)->delete();
+            Measurementorderdetail::where('order_detail_id', $id)->delete();
+            Orderdetailstatus::where('order_detail_id', $id)->delete();
+
+            //อัปเดตตาราง order ด้วย เพราะorderdetail มันลบไปแล้วไง
+            $ORDER_ID = $delete_orderdetail->order_id;
+            $update_order = Order::find($ORDER_ID);
+
+            $update_order->total_quantity = $update_order->total_quantity - 1; //รายการทั้งหมดจะลดลงทีละ1 
+
+            $update_order->total_price = $update_order->total_price - ($delete_orderdetail->price * $delete_orderdetail->amount);
+            $update_order->total_deposit = $update_order->total_deposit - ($delete_orderdetail->deposit * $delete_orderdetail->amount);
+            $update_order->save();
+        } elseif ($delete_orderdetail->type_order == 3) {
+            dd('ยังไม่ทำ');
+        } elseif ($delete_orderdetail->type_order == 4) {
+            dd('ยังไม่ทำ');
+        }
 
 
-        //กรณีเช่าชุด
 
 
-
-
-        // กรณีเช่าเครื่องประดับ
-
-
-
-
-        //ลบลูกๆมันด้วย
-        Imagerent::where('order_detail_id', $id)->delete();
-        Paymentstatus::where('order_detail_id', $id)->delete();
-        Fitting::where('order_detail_id', $id)->delete();
-        Financial::where('order_detail_id', $id)->delete();
-        Date::where('order_detail_id', $id)->delete();
-        Measurementorderdetail::where('order_detail_id', $id)->delete();
-        Orderdetailstatus::where('order_detail_id', $id)->delete();
-
-        //อัปเดตตาราง order ด้วย เพราะorderdetail มันลบไปแล้วไง
-        $ORDER_ID = $delete_orderdetail->order_id;
-        $update_order = Order::find($ORDER_ID);
-
-        $update_order->total_quantity = $update_order->total_quantity - 1; //รายการทั้งหมดจะลดลงทีละ1 
-        $update_order->total_price = $update_order->total_price - ($delete_orderdetail->price * $delete_orderdetail->amount);
-        $update_order->total_deposit = $update_order->total_deposit - ($delete_orderdetail->deposit * $delete_orderdetail->amount);
-        $update_order->save();
 
         if ($update_order->total_quantity == 0) {
             $update_order->delete();
@@ -1005,31 +1074,11 @@ class EmployeeController extends Controller
                 $orderdetail->status_payment = $payment_status;
                 $orderdetail->save();
 
-                //ตารางdate
-                $create_date = new Date();
-                $create_date->order_detail_id = $orderdetail->id;
-                $create_date->pickup_date = $orderdetail->pickup_date;
-                $create_date->save();
                 //ตารางpayment_status
                 $create_payment = new Paymentstatus();
                 $create_payment->order_detail_id = $orderdetail->id;
                 $create_payment->payment_status = $payment_status;
                 $create_payment->save();
-                // ตารางfinancial
-                $create_financial = new Financial();
-                $create_financial->order_detail_id = $orderdetail->id;
-                if ($payment_status == 1) {
-                    $text = "ชำระมัดจำ";
-                    $money = $orderdetail->deposit *  $orderdetail->amount;
-                } elseif ($payment_status == 2) {
-                    $text = "ชำระเต็มจำนวน";
-                    $money = $orderdetail->price *  $orderdetail->amount;
-                }
-                $create_financial->item_name = $text;
-                $create_financial->type_order = 1;
-                $create_financial->financial_income = $money;
-                $create_financial->financial_expenses = 0;
-                $create_financial->save();
             } elseif ($orderdetail->type_order == 2) {
                 //ตารางorderdetailstatus 
                 $create_status = new Orderdetailstatus();
@@ -1040,33 +1089,11 @@ class EmployeeController extends Controller
                 $orderdetail->status_detail = "ถูกจอง";
                 $orderdetail->status_payment = $payment_status;
                 $orderdetail->save();
-                //ตารางdate
-                $create_date = new Date();
-                $create_date->order_detail_id = $orderdetail->id;
-                $create_date->pickup_date = $orderdetail->pickup_date;
-                $create_date->return_date = $orderdetail->return_date;
-                $create_date->save();
                 //ตารางpayment_status
                 $create_payment = new Paymentstatus();
                 $create_payment->order_detail_id = $orderdetail->id;
                 $create_payment->payment_status = $payment_status;
                 $create_payment->save();
-                // ตารางfinancial
-                $create_financial = new Financial();
-                $create_financial->order_detail_id = $orderdetail->id;
-                if ($payment_status == 1) {
-                    $text = "ชำระมัดจำ";
-                    $money = $orderdetail->deposit *  $orderdetail->amount;
-                } elseif ($payment_status == 2) {
-                    $text = "ชำระเต็มจำนวน";
-                    $money = $orderdetail->price *  $orderdetail->amount;
-                }
-                $create_financial->item_name = $text;
-                $create_financial->type_order = 2;
-                $create_financial->financial_income = $money;
-                $create_financial->financial_expenses = 0;
-                $create_financial->save();
-
 
                 //ตารางreservation 
                 $update_reservation = Reservation::find($orderdetail->reservation_id);

@@ -1072,7 +1072,6 @@ class ManageorderController extends Controller
 
             //ตาราง orderdetail
             $update_order_detail = Orderdetail::find($id);
-            $update_order_detail->pickup_date = $request->input('update_pickup_date');
             $update_order_detail->amount = $request->input('update_amount');
 
             if ($request->input('update_deposit') > $request->input('update_price')) {
@@ -1085,6 +1084,18 @@ class ManageorderController extends Controller
             $update_order_detail->note = $request->input('update_note');
             $update_order_detail->cloth = $request->input('update_cloth');
             $update_order_detail->save();
+
+            // ตารางdate
+            $update_date_id = Date::where('order_detail_id',$id)
+                            ->orderBy('created_at','desc')
+                            ->value('id') ; 
+            $update_date = Date::find($update_date_id) ; 
+            $update_date->pickup_date = $request->input('update_pickup_date');
+            $update_date->save() ; 
+
+
+
+
 
             //อัปเดตข้อมูลการวัดmeasurement
 

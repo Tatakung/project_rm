@@ -44,15 +44,15 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/dresslist', [DressController::class, 'dresslist'])->name('admin.dresslist');
     Route::get('/admin/historydressadjust/{id}', [DressController::class, 'historydressadjust'])->name('admin.historydressadjust');
     Route::get('/admin/historydressrepair/{id}', [DressController::class, 'historydressrepair'])->name('admin.historydressrepair');
-    Route::get('/admin/historydressrent/{id}', [DressController::class, 'historydressrent'])->name('admin.historydressrent');
+    Route::get('/admin/admin/typedress/dressdetail/historydressrent/{id}', [DressController::class, 'historydressrent'])->name('admin.historydressrent');
 
 
     
     Route::post('/admin/adddress-form/save', [DressController::class, 'savedress'])->name('admin.savedress'); //บันทึกข้อมูล 
     Route::get('/gettypename/{typename}', [DressController::class, 'autodresscode']);
-    Route::get('/admin/dresstotal', [DressController::class, 'dresstotal'])->name('admin.dresstotal'); //ชุดทั้งหมด
-    Route::get('/admin/typedress/{id}', [DressController::class, 'typedress'])->name('admin.typedress'); //หลังจากแยกประเภทชุด
-    Route::get('/admin/typedress/dressdetail/{id}', [DressController::class, 'dressdetail'])->name('admin.dressdetail'); //รายะลเอียดย่อย
+    // Route::get('/admin/dresstotal', [DressController::class, 'dresstotal'])->name('admin.dresstotal'); //ชุดทั้งหมด
+    // Route::get('/admin/typedress/{id}', [DressController::class, 'typedress'])->name('admin.typedress'); //หลังจากแยกประเภทชุด
+    // Route::get('/admin/typedress/dressdetail/{id}', [DressController::class, 'dressdetail'])->name('admin.dressdetail'); //รายะลเอียดย่อย
     Route::post('/admin/typedress/dressdetail/updatedressnoyes/{id}', [DressController::class, 'updatedressnoyes'])->name('admin.updatedressnoyes'); //อัปเดตชุดnoyes
     Route::post('/admin/typedress/dressdetail/updatedressyesshirt/{id}', [DressController::class, 'updatedressyesshirt'])->name('admin.updatedressyesshirt'); //อัปเดตชุดyesshirt
     Route::post('/admin/typedress/dressdetail/updatedressyesskirt/{id}', [DressController::class, 'updatedressyesskirt'])->name('admin.updatedressyesskirt'); //อัปเดตชุดyesskirt
@@ -112,14 +112,29 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 //สำหรับพนักงานและแอดมิน
 Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/admin/dresstotal', [DressController::class, 'dresstotal'])->name('admin.dresstotal'); //ชุดทั้งหมด
+    Route::get('/admin/typedress/{id}', [DressController::class, 'typedress'])->name('admin.typedress'); //หลังจากแยกประเภทชุด
+    Route::get('/admin/typedress/dressdetail/{id}', [DressController::class, 'dressdetail'])->name('admin.dressdetail'); //รายะลเอียดย่อย
+
     // Route::get('/homepage', [HomeController::class, 'homepage'])->name('homepage'); // หน้าแรก
     Route::get('/employee/homepage', [EmployeeController::class, 'homepage'])->name('employee.homepage'); // หน้าแรก
     Route::get('/employee/addorder', [EmployeeController::class, 'addorder'])->name('employee.addorder');
     Route::get('/employee/selectdate', [EmployeeController::class, 'selectdate'])->name('employee.selectdate');
     Route::get('/employee/clean', [EmployeeController::class, 'clean'])->name('employee.clean');
     Route::get('/employee/dressadjust', [EmployeeController::class, 'dressadjust'])->name('employee.dressadjust');
+
+    
+    Route::get('/employee/dressadjust/filter', [EmployeeController::class, 'dressadjustfilter'])->name('employee.dressadjustfilter');
+
+
     Route::get('/employee/cutdressadjust', [EmployeeController::class, 'cutdressadjust'])->name('employee.cutdressadjust');
     Route::get('/employee/listdressreturn', [EmployeeController::class, 'listdressreturn'])->name('employee.listdressreturn');
+    Route::get('/employee/listdressreturn/filter', [EmployeeController::class, 'listdressreturnfilter'])->name('employee.listdressreturnfilter');
+
+
+
+
+
 
     Route::get('/employee/repair', [EmployeeController::class, 'repair'])->name('employee.repair');
     Route::get('/employee/calendar', [EmployeeController::class, 'calendar'])->name('employee.calendar');
@@ -198,6 +213,15 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/ordertotal/detail/{id}', [OrderController::class, 'ordertotaldetail'])->name('employee.ordertotaldetail'); //ออเดอร์detail แยก
 
     Route::get('/employee/ordertotal/detail/show/{id}', [OrderController::class, 'ordertotaldetailshow'])->name('employee.ordertotaldetailshow'); //ออเดอร์orderdetail_id เลย
+
+
+    Route::get('/employee/ordertotal/detail/show/postpone/{id}', [OrderController::class, 'ordertotaldetailpostpone'])->name('employee.ordertotaldetailpostpone'); //เลื่อนวันนัดรับ-คืน
+    Route::get('/employee/ordertotal/detail/show/postpone/checked/{id}', [OrderController::class, 'ordertotaldetailpostponechecked'])->name('employee.ordertotaldetailpostponechecked'); //เช็คเลื่อนวันนัดรับ-คืน
+
+
+
+
+    Route::get('/employee/ordertotal/detail/show/cutadjust/{id}', [OrderController::class, 'cutadjust'])->name('employee.cutadjust');
 
 
     //action ต่างๆภายใน detail

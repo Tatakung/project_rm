@@ -20,14 +20,18 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+        rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
 
         body {
             /* font-family: 'Barlow', sans-serif; */
-            font-family: "Prompt", sans-serif;
-
+            /* font-family: "Prompt", sans-serif; */
+            font-family: "Bai Jamjuree", sans-serif;
         }
 
         a:hover {
@@ -179,11 +183,13 @@
                 </button>
                 <div class="collapse" id="salee-collapse" data-parent="#sidebar">
                     <div class="list-group">
-                        <a href="{{ route('admin.formadddress') }}" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        <a href="{{ route('admin.formadddress') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             เพิ่มชุดใหม่</a>
-                        <a href="{{route('admin.dresstotal')}}" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        <a href="{{ route('admin.dresstotal') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             รายการชุด</a>
-                        
+
                     </div>
                 </div>
 
@@ -220,15 +226,13 @@
                 </a>
 
                 <a href="{{ route('admin.dresslist') }}"
-                    class="list-group-item list-group-item-action border-0 align-items-center"
-                    id="d1">
+                    class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                     <i class="bi bi-shirt"></i>
                     <span class="ml-2">รายการชุด</span>
                 </a>
 
                 <a href="{{ route('employee.addorder') }}"
-                    class="list-group-item list-group-item-action border-0 align-items-center"
-                    id="d1">
+                    class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                     <i class="bi bi-shirt"></i>
                     <span class="ml-2">เพิ่มออเดอร์</span>
                 </a>
@@ -261,6 +265,17 @@
                 <span class="ml-2">รายการออเดอร์ทั้งหมด</span>
             </a>
 
+
+            <a href="{{ route('admin.dresstotal') }}"
+                class="list-group-item list-group-item-action border-0 align-items-center"
+                id="d1">
+                <span class="bi bi-list-ul"></span>
+                <span class="ml-2">รายการชุด</span>
+            </a>
+
+
+
+
             <a href="{{ route('employee.addorder') }}"
                 class="list-group-item @if (Route::currentRouteName() == 'employee.addorder') active @endif list-group-item-action border-0 align-items-center"
                 id="d1">
@@ -279,22 +294,22 @@
                     <span class="bi bi-arrow-return-left"></span>
                     <span class="ml-2">จัดการชุดที่คืนแล้ว</span>
                 </a> --}}
-                <a href="{{route('employee.cutdressadjust')}}"
+            <a href="{{ route('employee.cutdressadjust') }}"
                 class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
-                 <span class="bi bi-scissors"></span>
-                 <span class="ml-2">จัดการคิวงานตัดชุด
-                     <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
-                         @php
-                             $cutdresss = App\Models\Orderdetail::where('type_order',1)
-                                ->whereNotIn('status_detail',['ส่งมอบชุดแล้ว','ตัดชุดเสร็จสิ้น'])
+                <span class="bi bi-scissors"></span>
+                <span class="ml-2">จัดการคิวงานตัดชุด
+                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                        @php
+                            $cutdresss = App\Models\Orderdetail::where('type_order', 1)
+                                ->whereNotIn('status_detail', ['ส่งมอบชุดแล้ว', 'ตัดชุดเสร็จสิ้น'])
                                 ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
-                                ->get() ; 
-                         @endphp
-                         {{$cutdresss->count()}}
-                     </span>
-                 </span>
-             </a>
-             
+                                ->get();
+                        @endphp
+                        {{ $cutdresss->count() }}
+                    </span>
+                </span>
+            </a>
+
 
             <a href="{{ route('employee.dressadjust') }}"
                 class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
@@ -313,27 +328,26 @@
             </a>
 
 
-            
 
 
-            <a href="{{route('employee.listdressreturn')}}"
-            class="list-group-item  list-group-item-action border-0 align-items-center"
-            id="d1">
-             <!-- Replace 'bi-box-arrow-up' with your desired Bootstrap icon -->
-             <span class="bi bi-box-arrow-up"></span>
-             <span class="ml-2">รายการชุดที่รอส่งคืน
-                 <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
-                     @php
-                         $listdressreturns = App\Models\Reservation::where('status_completed',0)
-                            ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
-                            ->where('status','กำลังเช่า')
-                            ->get() ; 
-                     @endphp
-                     {{$listdressreturns->count()}}
-                 </span>
-             </span>
-         </a>
-         <a href="{{ route('employee.clean') }}"
+
+            <a href="{{ route('employee.listdressreturn') }}"
+                class="list-group-item  list-group-item-action border-0 align-items-center" id="d1">
+                <!-- Replace 'bi-box-arrow-up' with your desired Bootstrap icon -->
+                <span class="bi bi-box-arrow-up"></span>
+                <span class="ml-2">รายการชุดที่รอส่งคืน
+                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                        @php
+                            $listdressreturns = App\Models\Reservation::where('status_completed', 0)
+                                ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
+                                ->where('status', 'กำลังเช่า')
+                                ->get();
+                        @endphp
+                        {{ $listdressreturns->count() }}
+                    </span>
+                </span>
+            </a>
+            <a href="{{ route('employee.clean') }}"
                 class="list-group-item @if (Route::currentRouteName() == 'employee.clean') active @endif list-group-item-action border-0 align-items-center"
                 id="d1">
                 <span class="bi bi-water"></span>
@@ -355,7 +369,7 @@
                 class="list-group-item @if (Route::currentRouteName() == 'employee.repair') active @endif list-group-item-action border-0 align-items-center"
                 id="d1">
                 <span class="bi bi-tools"></span>
-                <span class="ml-2">รายการซ่่อมชุด
+                <span class="ml-2">รายการซ่อมชุด
                     <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
                         @php
                             $repaircount = App\Models\Repair::whereIn('repair_status', [

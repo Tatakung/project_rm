@@ -6,18 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Dressmea extends Model
+class AdditionalChange extends Model
 {
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
-        'dress_id',
-        'shirtitems_id',
-        'skirtitems_id',
-        'mea_dress_name',
-        'initial_mea',
-        'initial_min',
-        'initial_max',
-        'current_mea'
+        'order_detail_id',
+        'charge_type',
+        'amount',
     ];
+
 }

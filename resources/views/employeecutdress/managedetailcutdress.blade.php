@@ -1,477 +1,582 @@
 @extends('layouts.adminlayout')
-
 @section('content')
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            max-width: 90%;
-            margin-top: 30px;
-        }
-
-        .card {
-            border: none;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            background-color: #EAD8C0;
-            color: dark;
-        }
-
         .status-timeline {
-            position: relative;
             padding: 20px 0;
         }
 
-        .status-timeline::before {
-            content: '';
-            position: absolute;
-            height: 100%;
-            width: 2px;
-            background-color: #dee2e6;
-            left: 15px;
-            top: 0;
-        }
-
         .status-step {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
+            z-index: 1;
+            position: relative;
         }
 
         .status-icon {
-            width: 32px;
-            height: 32px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background-color: #fff;
-            border: 2px solid #dee2e6;
+            background-color: #e9ecef;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1;
-            margin-right: 15px;
+            margin: 0 auto 10px;
+            color: #6c757d;
         }
 
+        .status-icon.active {
+            background-color: #e2361b;
+            color: #000;
+            /* เปลี่ยนสีตัวอักษรเป็นสีดำเพื่อให้เห็นชัดบนพื้นสีเหลือง */
+        }
 
-        .status-text {
+        .status-line {
             flex-grow: 1;
+            height: 3px;
+            background-color: #e9ecef;
+            position: relative;
+            top: 25px;
+            z-index: 0;
         }
 
-        .table {
+        .status-line.active {
+            background-color: #f9e746;
+        }
+
+        .status-step p {
             margin-bottom: 0;
         }
 
-        .table th {
-            background-color: #f8f9fa;
-        }
-
-        .info-box {
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
+        .status-step small {
+            color: #6c757d;
         }
     </style>
-
-    <ol class="breadcrumb" style="background: white ; ">
-
-        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}"
-                style="color: black ; ">รายการออเดอร์ทั้งหมด</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}"
-                style="color: black ; ">รายละเอียดออเดอร์ที่ {{ $orderdetail->order_id }}</a></li>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
+        <li class="breadcrumb-item"><a
+                href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">รายละเอียดออเดอร์ที่
+                {{ $orderdetail->order_id }}</a></li>
         <li class="breadcrumb-item active">{{ $orderdetail->title_name }}</li>
     </ol>
 
-    <div class="container">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="mb-0">รายการตัดชุด : {{ $orderdetail->title_name }}</h3>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-5">
+    <div class="container mt-4">
+
+        @php
+            $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)
+                ->orderBy('created_at', 'asc')
+                ->first();
+        @endphp
 
 
-                        <div class="info-box">
-                            <h5>ข้อมูลการตัดชุด</h5>
-                            <p><strong>วันที่นัดส่งมอบชุด:</strong> {{ $orderdetail->pickup_date }}</p>
-                            <p><strong>ราคาตัด:</strong> {{ number_format($orderdetail->price, 2) }} บาท</p>
-                            <p><strong>ราคามัดจำตัด:</strong> {{ number_format($orderdetail->deposit, 2) }} บาท</p>
-                            <p><strong>จำนวน:</strong> {{ $orderdetail->amount }} ชุด</p>
-                            <p><strong>ผ้า:</strong>
-                                @if ($orderdetail->cloth == 1)
-                                    ลูกค้านำผ้ามาเอง
-                                @elseif($orderdetail->cloth == 2)
-                                    ทางร้านหาผ้าให้
-                                @endif
-                            </p>
+        <h4 class="mt-2"><strong>รายการ : ตัด{{ $orderdetail->type_dress }}</strong>
+        </h4>
 
-                            <p><strong>สถานะจ่ายเงิน:</strong> <span class="badge bg-warning">
-                                    @if ($orderdetail->status_payment == 1)
-                                        ชำระเงินมัดจำแล้ว
-                                    @elseif($orderdetail->status_payment == 2)
-                                        ชำระเงินเต็มจำนวนแล้ว
-                                    @endif
-                                </span></p>
-                            <p><strong>โน๊ต:</strong>{{ $orderdetail->note }}
-                                <button type="button" class="btn" data-toggle="modal" data-target="#editnote"
-                                    @if ($orderdetail->status_detail == 'รับชุดแล้ว') style="display: none;" @endif>
-                                    <img src="{{ asset('images/edit.png') }}" alt="" width="22px;" height="auto">
-                                </button>
-                            </p>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
 
-                        </div>
-                        {{-- <button class="btn btn-warning w-100 mb-3" data-bs-toggle="modal" data-bs-target="#editModal">
-                            <i class="fas fa-edit"></i> แก้ไขชุด
-                        </button> --}}
-                    </div>
-                    <div class="col-md-7">
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 style="margin-top: 10px;">สถานะออเดอร์</h5>
+                                <h5 class="card-title">สถานะการตัดเย็บชุด</h5>
                             </div>
+
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'รอดำเนินการตัด') style="display: none;" @endif>
-                                <button class="btn" style="background: #A7567F; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัพเดตสถานะ</button>
+                                <button class="btn" style="background: #3406dc; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus">อัพเดตสถานะตัดเย็บ</button>
                             </div>
+
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'เริ่มดำเนินการตัด') style="display: none;" @endif>
-                                <button class="btn" style="background: #A7567F; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัพเดตสถานะ</button>
+                                <button class="btn" style="background: #3406dc; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus">อัพเดตสถานะตัดเย็บ</button>
                             </div>
+
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'ตัดชุดเสร็จสิ้น') style="display: none;" @endif>
-                                <button class="btn" style="background: #A7567F; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatusone">อัพเดตสถานะ</button>
+                                <button class="btn" style="background: #24a30e; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus_to_deliver">ชุดเรียบร้อย</button>
+                                <a href="{{ route('employee.cutadjust', ['id' => $orderdetail->id]) }}"class="btn"
+                                    style="background: #a01919; color: #ffffff;">ชุดต้องมีการปรับแก้ไข</a>
                             </div>
-                            <div class="col-md-6 text-right"
-                                @if ($orderdetail->status_detail != 'แก้ไขชุด') style="display: none;" @endif>
-                                <button class="btn" style="background: #A7567F; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัพเดตสถานะ</button>
-                            </div>
-                            <div class="col-md-6 text-right"
-                                @if ($orderdetail->status_detail != 'แก้ไขชุดเสร็จสิ้น') style="display: none;" @endif>
-                                <button class="btn" style="background: #A7567F; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัพเดตสถานะ</button>
-                            </div>
-                        </div>
 
-                        <!-- Modal อัพเดตสถานะ -->
-                        <div class="modal fade" id="updatestatus" tabindex="-1" role="dialog" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <form
-                                    action="{{ route('employee.actionupdatestatuscutdress', ['id' => $orderdetail->id]) }}"
-                                    method="POST">
-                                    @csrf
+
+
+
+
+
+
+
+
+                            <div id="updatestatus" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static"
+                                data-keyboard="false">>
+                                <div class="modal-dialog" role="document">
                                     <div class="modal-content">
-                                        <div class="modal-header" style="background-color: #A7567F; color: #ffffff;">
-                                            <h5 class="modal-title" style="font-weight: bold;">อัพเดตสถานะ</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            @if ($orderdetail->status_detail == 'เริ่มดำเนินการตัด')
-                                                <p>ต้องการอัพเดตสถานะจาก "เริ่มดำเนินการตัด" เป็น "ตัดชุดเสร็จสิ้น" ?</p>
-                                            @elseif($orderdetail->status_detail == 'รอดำเนินการตัด')
-                                                <p>ต้องการอัพเดตสถานะจาก "รอดำเนินการตัด" เป็น "เริ่มดำเนินการตัด" ?</p>
-                                            @elseif($orderdetail->status_detail == 'แก้ไขชุด')
-                                                <p>ต้องการอัพเดตสถานะจาก "แก้ไขชุด" เป็น "แก้ไขชุดเสร็จสิ้น" ?</p>
-                                            @elseif($orderdetail->status_detail == 'แก้ไขชุดเสร็จสิ้น')
-                                                <p>ต้องการอัพเดตสถานะจาก "แก้ไขชุดเสร็จสิ้น" เป็น "ส่งมอบชุดแล้ว" ?</p>
-                                            @endif
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn" data-dismiss="modal"
-                                                style="background-color: #f8f9fa; color: #000;">ยกเลิก</button>
-                                            <button type="submit" class="btn"
-                                                style="background-color: #A7567F; color: #ffffff;">ยืนยัน</button>
-                                        </div>
+                                        <form
+                                            action="{{ route('employee.actionupdatestatuscutdress', ['id' => $orderdetail->id]) }}"
+                                            method="POST">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">ยืนยันการอัพเดตสถานะ</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                @if ($orderdetail->status_detail == 'รอดำเนินการตัด')
+                                                    <p>คุณกำลังจะเปลี่ยนสถานะจาก "รอดำเนินการตัด" เป็น "เริ่มดำเนินการตัด"
+                                                    </p>
+                                                    <p>คุณแน่ใจหรือไม่ที่จะดำเนินการต่อ?</p>
+                                                @elseif($orderdetail->status_detail == 'เริ่มดำเนินการตัด')
+                                                    <p>คุณกำลังจะเปลี่ยนสถานะจาก "เริ่มดำเนินการตัด" เป็น "ตัดชุดเสร็จสิ้น"
+                                                    </p>
+                                                    <p>คุณแน่ใจหรือไม่ที่จะดำเนินการต่อ?</p>
+                                                @endif
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">ยกเลิก</button>
+                                                <button type="submit" class="btn btn-primary"
+                                                    id="confirmUpdateStatus">ยืนยัน</button>
+                                            </div>
+                                        </form>
                                     </div>
-                                </form>
+                                </div>
                             </div>
-                        </div>
-                        <!-- Modal อัพเดตสถานะ -->
-                        <div class="modal fade" id="updatestatusone" tabindex="-1" role="dialog" aria-hidden="true"
-                            data-backdrop="static">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <form
-                                    action="{{ route('employee.actionupdatestatuscutdress', ['id' => $orderdetail->id]) }}"
-                                    method="POST">
-                                    @csrf
-                                    <div class="modal-content">
-                                        <div class="modal-header" style="background-color: #A7567F; color: #ffffff;">
-                                            <h5 class="modal-title" style="font-weight: bold;">อัพเดตสถานะ</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>กรุณาเลือกสถานะของชุด:</p>
-                                            <div class="form-check mb-3">
-                                                <input class="form-check-input" type="radio" name="dressStatus"
-                                                    id="statusOK" value="yes" required>
-                                                <label class="form-check-label" for="statusOK">
-                                                    ชุดเรียบร้อย พร้อมให้ลูกค้านำกลับบ้าน
-                                                </label>
-                                            </div>
-                                            <div class="form-check mb-3">
-                                                <input class="form-check-input" type="radio" name="dressStatus"
-                                                    id="statusAdjust" value="no" required>
-                                                <label class="form-check-label" for="statusAdjust">
-                                                    ชุดต้องมีการปรับแก้ไข
-                                                </label>
-                                            </div>
 
-                                            <div id="showmeaforedit"
-                                                style="max-height: 300px; overflow-y: auto; overflow-x: hidden; display: none;">
-                                                <div class="row">
-                                                    <div class="col-md-5">
-                                                        <p>วันที่นัดรับชุด (หลังปรับแก้)</p>
-                                                        <input type="date" name="pickup_date_new" class="form-control"
-                                                            value="{{ $orderdetail->pickup_date }}">
+
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="updatestatus_to_deliver" tabindex="-1"
+                                aria-labelledby="updatestatus_to_deliverLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <form
+                                            action="{{ route('employee.actionupdatestatuscutdress', ['id' => $orderdetail->id]) }}"
+                                            method="POST">
+                                            @csrf
+                                            <div class="modal-header bg-success text-white">
+                                                <h5 class="modal-title" id="readyToDeliverModalLabel">ยืนยันการส่งมอบชุด
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h6 class="mb-3">รายละเอียดการสั่งตัด</h6>
+                                                <div class="row mb-2">
+                                                    <div class="col-md-6">
+                                                        <p><strong>ชื่อลูกค้า:</strong>
+                                                            <span>คุณ{{ $customer->customer_fname }}
+                                                                {{ $customer->customer_lname }}</span>
+                                                        </p>
+                                                        <p><strong>วันที่สั่งตัดชุด:</strong>
+                                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+
+                                                            </span></p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <p><strong>กำหนดส่งมอบชุด:</strong> <span>
+                                                                {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                                                {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
+                                                            </span></p>
+                                                        <p><strong>ระยะเวลาในการตัด:</strong>-<span></span></p>
                                                     </div>
                                                 </div>
-                                                @foreach ($dress_adjusts as $item)
-                                                    <div class="form-group row align-items-center mb-2">
-                                                        <div class="col-4">
-                                                            <span
-                                                                style="font-size: 0.875rem;">{{ $item->name }}</span>
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <input type="hidden" name="id_for_edit_mea_cut_[]"
-                                                                value="{{ $item->id }}">
-                                                            <input type="number" class="form-control"
-                                                                value="{{ $item->new_size }}"
-                                                                name="edit_mea_cut_[]" step="0.01">
-                                                        </div>
-                                                        <div class="col-3">
-                                                            <span style="font-size: 0.875rem;">นิ้ว</span>
-                                                        </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <p><strong>ราคาตัดชุด:</strong>
+                                                            <span>{{ $orderdetail->price }}</span> บาท
+                                                        </p>
+                                                        <p><strong>จ่ายแล้ว:</strong>
+                                                            <span>{{ $orderdetail->deposit }}</span> บาท
+                                                        </p>
                                                     </div>
-                                                @endforeach
+                                                    <div class="col-md-6">
+                                                        <p><strong>คงเหลือ:</strong>
+                                                            <span></span>{{ number_format($orderdetail->price - $orderdetail->deposit) }}
+                                                            บาท
+                                                        </p>
+                                                    </div>
+                                                </div>
+
                                             </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn" data-dismiss="modal"
-                                                style="background-color: #f8f9fa; color: #000;">ยกเลิก</button>
-                                            <button type="submit" class="btn"
-                                                style="background-color: #A7567F; color: #ffffff;">ยืนยัน</button>
-                                        </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">ยกเลิก</button>
+                                                <button type="submit" class="btn btn-success"
+                                                    id="confirmDelivery">ยืนยันการส่งมอบ</button>
+                                            </div>
+                                        </form>
                                     </div>
-                                </form>
+                                </div>
                             </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                         </div>
+                        <div class="status-timeline d-flex justify-content-between position-relative">
 
 
 
+                            @php
+                                $list_status = [];
+                                foreach ($orderdetailstatus as $index => $status) {
+                                    $list_status[] = $status->status;
+                                }
+                            @endphp
+                            {{-- 
+                                @foreach ($orderdetailstatus as $item)
+                                    {{$item->status}}
+                                @endforeach --}}
+
+
+
+
+
+                            <div class="status-step text-center">
+                                <div class="status-icon @if (in_array('รอดำเนินการตัด', $list_status)) active @endif">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <p>รอดำเนินการตัด</p>
+                                <small>
+                                    <p>
+                                        @php
+                                            $created_at = App\Models\Orderdetailstatus::where(
+                                                'order_detail_id',
+                                                $orderdetail->id,
+                                            )
+                                                ->where('status', 'รอดำเนินการตัด')
+                                                ->first();
+                                            if ($created_at) {
+                                                $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                    ->addHours(7)
+                                                    ->format('d/m/Y H:i');
+                                            } else {
+                                                $text_date = 'รอดำเนินการ';
+                                            }
+                                        @endphp
+                                        {{ $text_date }}
+                                    </p>
+                                </small>
+                            </div>
+
+
+                            <div class="status-line "></div>
+
+
+
+                            <div class="status-step text-center">
+                                <div class="status-icon @if (in_array('เริ่มดำเนินการตัด', $list_status)) active @endif">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <p>เริ่มดำเนินการตัด</p>
+                                <small>
+                                    <p>
+                                        @php
+                                            $created_at = App\Models\Orderdetailstatus::where(
+                                                'order_detail_id',
+                                                $orderdetail->id,
+                                            )
+                                                ->where('status', 'เริ่มดำเนินการตัด')
+                                                ->first();
+                                            if ($created_at) {
+                                                $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                    ->addHours(7)
+                                                    ->format('d/m/Y H:i');
+                                            } else {
+                                                $text_date = 'รอดำเนินการ';
+                                            }
+                                        @endphp
+                                        {{ $text_date }}
+                                    </p>
+                                </small>
+                            </div>
+
+                            <div class="status-line "></div>
+
+
+
+
+
+
+
+
+
+
+                            <div class="status-step text-center">
+                                <div class="status-icon @if (in_array('ตัดชุดเสร็จสิ้น', $list_status)) active @endif">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <p>ตัดชุดเสร็จสิ้น (รอส่งมอบ)</p>
+                                <small>
+                                    <p>
+                                        @php
+                                            $created_at = App\Models\Orderdetailstatus::where(
+                                                'order_detail_id',
+                                                $orderdetail->id,
+                                            )
+                                                ->where('status', 'ตัดชุดเสร็จสิ้น')
+                                                ->first();
+                                            if ($created_at) {
+                                                $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                    ->addHours(7)
+                                                    ->format('d/m/Y H:i');
+                                            } else {
+                                                $text_date = 'รอดำเนินการ';
+                                            }
+                                        @endphp
+                                        {{ $text_date }}
+                                    </p>
+                                </small>
+                            </div>
+                            <div class="status-line "></div>
+
+                            {{-- <div class="status-step text-center">
+                                <div class="status-icon @if (in_array('ตัดชุดเสร็จสิ้น', $list_status)) active @endif">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <p>แก้ไขชุด</p>
+                                <small>
+                                    <p>
+                                        @php
+                                            $created_at = App\Models\Orderdetailstatus::where(
+                                                'order_detail_id',
+                                                $orderdetail->id,
+                                            )
+                                                ->where('status', 'แก้ไขชุด')
+                                                ->first();
+                                            if ($created_at) {
+                                                $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                    ->addHours(7)
+                                                    ->format('d/m/Y H:i');
+                                            } else {
+                                                $text_date = 'รอดำเนินการ';
+                                            }
+                                        @endphp
+                                        {{ $text_date }}
+                                    </p>
+                                </small>
+                            </div>
+
+                            <div class="status-line "></div> --}}
+                            <div class="status-step text-center">
+                                <div class="status-icon @if (in_array('ส่งมอบชุดแล้ว', $list_status)) active @endif">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <p>ส่งมอบชุดแล้ว</p>
+                                <small>
+                                    <p>
+                                        @php
+                                            $created_at = App\Models\Orderdetailstatus::where(
+                                                'order_detail_id',
+                                                $orderdetail->id,
+                                            )
+                                                ->where('status', 'ส่งมอบชุดแล้ว')
+                                                ->first();
+                                            if ($created_at) {
+                                                $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                    ->addHours(7)
+                                                    ->format('d/m/Y H:i');
+                                            } else {
+                                                $text_date = 'รอดำเนินการ';
+                                            }
+                                        @endphp
+                                        {{ $text_date }}
+                                    </p>
+                                </small>
+                            </div>
+
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3 d-flex align-items-stretch">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">ข้อมูลการตัดเย็บชุด</h5>
+                        @php
+                            $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
+                            $customer = App\Models\Customer::find($customer_id);
+                        @endphp
+                        <p><span class="bi bi-person"></span> ชื่อลูกค้า : คุณ{{ $customer->customer_fname }}
+                            {{ $customer->customer_lname }}</p>
+
+
+                        @php
+                            $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)
+                                ->orderBy('created_at', 'asc')
+                                ->first();
+                        @endphp
+
+                        <p><i class="bi bi-calendar"></i> วันที่นัดส่งมอบชุด :
+                            {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }} <span id="span_still_one"></span>
+                        </p>
                         <script>
-                            var statusOK = document.getElementById('statusOK');
-                            var statusAdjust = document.getElementById('statusAdjust');
-                            var showmeaforedit = document.getElementById('showmeaforedit');
-
-                            document.addEventListener('DOMContentLoaded', function() {
-
-                                statusAdjust.addEventListener('change', function() {
-                                    if (statusAdjust.checked) {
-                                        showmeaforedit.style.display = 'block';
-                                    }
-                                });
-                                statusOK.addEventListener('change', function() {
-                                    if (statusOK.checked) {
-                                        showmeaforedit.style.display = 'none';
-                                    }
-                                });
-                            });
+                            var pickup_date = new Date('{{ $Date->pickup_date }}');
+                            var date_now = new Date();
+                            var still_one = Math.ceil((pickup_date - date_now) / (1000 * 60 * 60 * 24));
+                            document.getElementById('span_still_one').innerHTML = ' (เหลือเวลาอีก ' + still_one + ' วัน)';
                         </script>
 
+                        <p><i class="bi bi-currency-dollar"></i> ราคาตัดชุด (บาท) :
+                            {{ number_format($orderdetail->price, 2) }} บาท
+                        </p>
+
+                        <p><i class="bi bi-currency-dollar"></i> เงินมัดจำ (บาท) :
+                            {{ number_format($orderdetail->deposit, 2) }} บาท
+                        </p>
+
+                        <p><i class="bi bi-file-earmark-text"></i> จำนวนชุด : {{ $orderdetail->amount }}</p>
+                        <!-- ใช้ไอคอน file-earmark-text แทนจำนวนชุด -->
+
+                        <p><i class="bi bi-text-left"></i> ผ้า :
+                            @if ($orderdetail->cloth == 1)
+                                ลูกค้านำผ้ามาเอง
+                            @elseif($orderdetail->cloth == 2)
+                                ทางร้านหาผ้าให้
+                            @endif
+                        </p>
 
 
-                        <div class="status-timeline">
-                            @foreach ($orderdetailstatus as $index => $orderdetailstatus)
-                                <div class="status-step">
 
-                                    @if ($orderdetailstatus->status == 'รับชุดแล้ว')
-                                        <div class="status-icon active"
-                                            style="background-color: #f9e746;color: white;border-color: #f9e746;">
-                                            <i class="fas fa-tshirt"></i>
-                                        </div>
-                                    @else
-                                        <div class="status-icon active"
-                                            style="background-color: #A7567F;color: white;border-color: #A7567F;">
-                                            <i class="fas fa-tshirt"></i>
-                                        </div>
-                                    @endif
 
-                                    <div class="status-text">
-                                        
-                                        @if($orderdetailstatus->status == "ตัดชุดเสร็จสิ้น")
-                                        <h6 class="mb-0">{{ $orderdetailstatus->status }} (รอส่งมอบ)</h6>
-                                        @elseif($orderdetailstatus->status == "แก้ไขชุดเสร็จสิ้น")
-                                        <h6 class="mb-0">{{ $orderdetailstatus->status }} (รอส่งมอบ)</h6>
-                                        @else
-                                        <h6 class="mb-0">{{ $orderdetailstatus->status }}</h6>
-                                        @endif
+                        <p><i class="bi bi-check-circle"></i> สถานะ : @if ($orderdetail->status_payment == 1)
+                                ชำระเงินมัดจำแล้ว
+                            @elseif($orderdetail->status_payment == 2)
+                                ชำระเงินเต็มจำนวนแล้ว
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                                        <small class="text-muted">
-                                            {{ \Carbon\Carbon::parse($orderdetailstatus->created_at)->addHours(7)->format('d/m/Y H:i') }}
-                                        </small><br>
-                                        @if ($orderdetailstatus->status == 'แก้ไขชุด')
-                                            @foreach ($dress_edit_cut as $item)
-                                                @if ($item->status == 'รอการแก้ไข')
-                                                    <p style="color: red; font-size: 15px; margin: 2px;">
-                                                        ปรับแก้
-                                                        @php
-                                                            $adj_name = App\Models\Dressmeaadjustment::where('id',$item->adjustment_id)->value('name') ; 
-                                                        @endphp
-                                                        {{$adj_name}}
-                                                        {{ $item->old_size }} ->
-                                                        {{ $item->edit_new_size }} นิ้ว</p>
-                                                @endif
-                                            @endforeach
-                                        @endif
 
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="card-title">ข้อมูลการวัดตัวของลูกค้า (นิ้ว)</h5>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            @foreach ($dress_adjusts as $item)
+                                <div class="col-md-3 d-flex mt-3 ">
+                                    <div class="col-md-12"><strong>{{ $item->name }} {{ $item->new_size }} </strong>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
 
-
-                        <div class="row">
-                            <div class="col-6">
-                                <h5 class="mt-4" style="text-align: left;">ข้อมูลการวัดตัวของลูกค้า</h5>
+                        @if ($orderdetail->note != null)
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <h5 class="card-title">โน๊ต</h5>
+                                    -{{ $orderdetail->note }}
+                                </div>
                             </div>
-                            {{-- <div class="col-6 d-flex justify-content-end">
-                                <button class="btn" style="background: #A7567F; margin-top: 12px; color: #ffffff"
-                                    data-toggle='modal' data-target="#editmea">ปรับแก้การวัดของลูกค้า</button>
-                            </div> --}}
+                        @endif
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if($imagerent->count() > 0 )
+        <div class="row mt-3 mb-3">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="card-title">รูปภาพแสดงตัวแบบสำหรับตัดเย็บ</h5>
+                            </div>
                         </div>
 
-                        <table class="table table-bordered">
-                            @foreach ($dress_adjusts as $index => $dress_adjust)
-                                @if ($index % 2 == 0)
-                                    <tr>
-                                @endif
-                                <th>{{ $dress_adjust->name }}</th>
-                                <td>{{ $dress_adjust->new_size }} นิ้ว</td>
-
-                                @if ($index % 2 == 1)
-                                    </tr>
-                                @endif
+                        <div class="row mb-3">
+                            @foreach ($imagerent as $item)
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <img src="{{ asset('storage/' . $item->image) }}" alt="Image description"
+                                            style="width: 100%; height: 300px;">
+                                        <div class="card-body">
+                                            <p class="card-text">{{ $item->description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             @endforeach
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-    <div class="modal fade" id="editmea" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">แก้ไขชุด</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        @foreach ($mea_orderdetailforedit as $item)
-                            <div class="form-group row align-items-center">
-                                <div class="col-md-5">
-                                    <input class="form-control" type="text" value="{{ $item->measurement_name }}">
-                                </div>
-                                <div class="col-md-5">
-                                    <input type="number" class="form-control" value="{{ $item->measurement_number }}">
-                                </div>
-                                <div class="col-md-2">
-                                    <p>นิ้ว</p>
-                                </div>
-                            </div>
-                        @endforeach
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
-                    <button type="submit" class="btn btn-secondary">บันทึก</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="modal fade" id="editnote" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background: #A7567F ; color: #ffffff">
-                    <h5 class="modal-title" id="editModalLabel">แก้ไขโน๊ต</h5>
-                </div>
-
-
-                <form action="{{ route('employee.actionupdatenotecutdress', ['id' => $orderdetail->id]) }}"
-                    method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="note" class="form-label">โน๊ต:</label>
-                            <textarea class="form-control" id="note" name="note" rows="3">{{ $orderdetail->note }}</textarea>
                         </div>
+
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn" data-dismiss="modal"
-                            style="background-color: #f8f9fa; color: #000;">ยกเลิก</button>
-                        <button type="submit" class="btn"
-                            style="background-color: #A7567F; color: #ffffff;">บันทึกการแก้ไข</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
+        @endif
 
 
-    <div class="modal fade" id="editdate" tabindex="-1" aria-labelledby="editdate" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background: #A7567F ; color: #ffffff">
-                    <h5 class="modal-title" id="editModalLabel">แก้ไขโน๊ต</h5>
-                </div>
-
-                <form action="{{ route('employee.actionupdatedatecutdress', ['id' => $orderdetail->id]) }}"
-                    method="POST">
-                    @csrf
-                    <div class="modal-body">
+        <div class="row mt-3 mb-3">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
                         <div class="row">
-                            <div class="col-md-12 text-center">
-                                <p style="font-size: 20px;">แก้ไขวันที่นัดรับชุด</p>
-                            </div>
-                            @php
-                                $today = \Carbon\Carbon::today()->toDateString();
-                            @endphp
-                            <div class="col-md-12 d-flex justify-content-center align-items-center position-relative">
-                                <input style="background: #A7567F ; color: #ffffff " class="form-control" type="date"
-                                    id="datepicker" name="datepicker" min="{{ $today }}"
-                                    value="{{ $orderdetail->pickup_date }}">
+                            <div class="col-md-6">
+                                <h5 class="card-title">การแก้ไขและเพิ่มเติม (ร่างไว้คร่าวๆ)</h5>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn" data-dismiss="modal"
-                            style="background-color: #f8f9fa; color: #000;">ยกเลิก</button>
-                        <button type="submit" class="btn"
-                            style="background-color: #A7567F; color: #ffffff;">บันทึกการแก้ไข</button>
-                    </div>
-                </form>
 
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <p><strong>แก้ไขครั้งที่ 1 </strong></p>
+                                <p>ปรับความยาวกระโปรงจาก 24 -> 26.5 นิ้ว</p>
+                            </div>
+                        </div>
 
+                    </div>
+                </div>
             </div>
         </div>
+
+
+
+
+
+
+
+
+
     </div>
 @endsection

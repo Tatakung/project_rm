@@ -13,6 +13,8 @@ class Imagerent extends Model
     protected $fillable = [
         'order_detail_id',
         'image',
+        'description',
+        
     ];
 
     //ตารางorderdetailstatus เป็น M - 1 ของตาราง orderdetail

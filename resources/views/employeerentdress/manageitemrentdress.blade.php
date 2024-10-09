@@ -66,25 +66,48 @@
                         <img src="{{ asset('storage/' . $imagedress->first()->dress_image) }}" class="mr-5" alt="..."
                             style="width: 96px; height: 145px; border-radius: 2px;">
                         <div class="media-left">
-                            <p>รายการ : {{ $orderdetail->title_name }}</p>
+                            @php
+                                $dress_id = App\Models\Orderdetail::where('id',$orderdetail->id)->value('dress_id') ; 
+                                $dress = App\Models\Dress::find($dress_id) ; 
+                                $type_name = App\Models\Typedress::where('id',$dress->type_dress_id)->value('type_dress_name') ; 
+                            @endphp
+                            <p>รายการ : 
+                                @if($orderdetail->shirtitems_id)
+                                {{$type_name}} {{$dress->dress_code_new}}{{$dress->dress_code}} (เสื้อ)
+                                @elseif($orderdetail->skirtitems_id)
+                                {{$type_name}} {{$dress->dress_code_new}}{{$dress->dress_code}} (ผ้าถุง)
+                                @else
+                                {{$type_name}} {{$dress->dress_code_new}}{{$dress->dress_code}} (ทั้งชุด)
+
+                                @endif  
+                            </p>
+
                             <p>ประเภทชุด : {{ $orderdetail->type_dress }}</p>
                             <p>หมายเลขชุด : {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
                             <p>จำนวนชุด : {{ $orderdetail->amount }}&nbsp;ชุด</p>
-                            <p>ราคาชุด : {{ number_format($orderdetail->price) }} บาท</p>
+                            <p>ราคาเช่า : {{ number_format($orderdetail->price) }} บาท</p>
                         </div>
                         <div class="media-body text-center">
-                            <p>ราคามัดจำ : {{ number_format($orderdetail->deposit) }} บาท</p>
+                            <p>เงินมัดจำ : {{ number_format($orderdetail->deposit) }} บาท</p>
 
                             <p>ประกันค่าเสียหาย : {{ number_format($orderdetail->damage_insurance) }} บาท</p>
-                            <p>วันที่นัดรับ :
-                                {{ \Carbon\Carbon::parse($orderdetail->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($orderdetail->pickup_date)->year + 543 }}
+
+
+                            @php
+                                $Date_data = App\Models\Date::where('order_detail_id',$orderdetail->id)
+                                            ->orderBy('created_at','desc')
+                                            ->first() ; 
+                            @endphp
+
+
+                            <p>วันนัดรับ :
+                                {{ \Carbon\Carbon::parse($Date_data->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date_data->pickup_date)->year + 543 }}
                             </p>
-                            <p>วันที่นัดคืน :
-                                {{ \Carbon\Carbon::parse($orderdetail->return_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($orderdetail->return_date)->year + 543 }}
+                            <p>วันนัดคืน :
+                                {{ \Carbon\Carbon::parse($Date_data->return_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date_data->return_date)->year + 543 }}
                             </p>
-                            <p>ค่าบริการขยายเวลาเช่าชุด : {{ number_format($orderdetail->late_charge) }} บาท</p>
                         </div>
                         
                     </div>
@@ -114,8 +137,8 @@
                                         @endphp
                                         {{ $dress_mea->mea_dress_name  }}
                                         <span
-                                            style="color: #c40606 ; font-size: 13px;">(ปรับได้
-                                            {{ $dress_mea->initial_mea - 4  }}-{{ $dress_mea->initial_mea + 4 }} นิ้ว)</span>
+                                            style="color: #c40606 ; font-size: 13px;"> (ปรับได้
+                                            {{ $dress_mea->initial_min }}-{{ $dress_mea->initial_max }} นิ้ว)</span>
                                             
                                         </label>
                                 </div>
@@ -126,8 +149,8 @@
                                     <input type="number" name="dress_mea_adjust_number_[]" class="form-control"
                                         style="width: 50%; height: 60%; font-size: 15px; margin-right: 20px; margin-bottom: 1px;"
                                         value="{{ $dress_mea_adjust->new_size }}" step="0.01"
-                                        min="{{ $dress_mea->initial_mea - 4}}"
-                                        max="{{ $dress_mea->initial_mea + 4}}">
+                                        min="{{ $dress_mea->initial_min}}"
+                                        max="{{ $dress_mea->initial_max}}">
                                     <span style="margin-left: 5px; font-size: 15px;">นิ้ว</span>
                                 </div>
                                 <div class="col-md-4" style="padding-left: 1px; margin-top: 10px;">

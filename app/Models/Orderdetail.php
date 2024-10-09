@@ -64,6 +64,12 @@ class Orderdetail extends Model
         return $this->hasMany(Date::class, 'order_detail_id');
     }
 
+    // ความสัมพันธ์ที่จะดึง date ล่าสุด
+    public function latestDate()
+    {
+        return $this->hasOne(Date::class, 'order_detail_id')->latest('pickup_date');
+    }
+
     //ตาราง orderdetail เป็น 1 - M ของตาราง payment
     public function paymentstatuses()
     {

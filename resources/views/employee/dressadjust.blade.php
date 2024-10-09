@@ -1,8 +1,9 @@
 @extends('layouts.adminlayout')
 
 @section('content')
+
     <h1 class="text-center my-4" style="color: #3d3d3d; font-family: 'Prompt', sans-serif; font-weight: 600;">
-        "คิวการจัดเตรียมชุดสำหรับลูกค้า"
+        คิวการจัดเตรียมชุดสำหรับลูกค้า
     </h1>
 
     <div class="alert alert-info" role="alert" style="font-family: 'Prompt', sans-serif;">
@@ -12,6 +13,42 @@
         {{-- <p class="mb-0">กรุณาจัดเตรียมชุดตามลำดับคิว <strong>คิวที่ 1 <span style="color: red;">&#9733;</span>
                 มีความสำคัญสูงสุดและต้องจัดเตรียมก่อน</strong></p> --}}
     </div>
+
+
+
+    <div class="coontainer mr-4 mb-2">
+        <div class="row mt-5 ">
+            <div class="col-md-12" style="text-align: right ; ">
+                {{-- <button>
+                    เฉพาะวันนี้
+                </button>
+                <button>
+                    ทั้งหมด
+                </button> --}}
+
+
+
+               
+
+                <form action="{{route('employee.dressadjustfilter')}}" method="GET">
+                    @csrf
+                    <div class="filter-buttons">
+                        <button class="btn" type="submit" name="filter_click" value="total"
+                            @if ($filer == 'total') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
+                        @else
+                        style="border: 1px solid #ccc;" @endif>ทั้งหมด</button>
+                        <button class="btn" type="submit" name="filter_click" value="today"
+                            @if ($filer == 'today') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
+                        @else
+                        style="border: 1px solid #ccc;" @endif>เฉพาะวันนี้</button>
+                    </div>
+                </form>
+
+    
+            </div>
+        </div>
+    </div>
+
 
     @if ($reservations->count() > 0)
         <table class="table shadow-sm" style="width: 100%; background-color: #ffffff; border-collapse: collapse;">
@@ -65,47 +102,42 @@
                                 var start_date = new Date("{{ $reservation->start_date }}");
                                 var day = start_date - now;
                                 var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                
 
-                                if(totalday > 0){
+
+                                if (totalday > 0) {
                                     document.getElementById('showday{{ $reservation->id }}').innerHTML = "เหลืออีก " + totalday + ' วัน ';
-                                }
-                                else if(totalday == 0){
-                                    document.getElementById('showday{{ $reservation->id }}').innerHTML = "มารับชุดวันนี้ ";                   
-                                }
-                                else{
+                                } else if (totalday == 0) {
+                                    document.getElementById('showday{{ $reservation->id }}').innerHTML = "มารับชุดวันนี้ ";
+                                } else {
                                     document.getElementById('showday{{ $reservation->id }}').innerHTML = "เหลืออีก " + totalday + ' วัน ';
 
                                 }
-
-
-                            
                             </script>
                         </td>
 
 
-                            @php
-                                $list_one = [];
-                                $find_dress = App\Models\Reservation::where('status_completed', 0)
-                                    ->where('status', 'ถูกจอง')
-                                    ->where('dress_id', $reservation->dress_id)
-                                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
-                                    ->get();
+                        @php
+                            $list_one = [];
+                            $find_dress = App\Models\Reservation::where('status_completed', 0)
+                                ->where('status', 'ถูกจอง')
+                                ->where('dress_id', $reservation->dress_id)
+                                ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                ->get();
 
-                                foreach ($find_dress as $key => $value) {
-                                    $list_one[] = $value->id;
-                                }
-                                $total = App\Models\Reservation::whereIn('id', $list_one)
-                                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
-                                    ->get();
+                            foreach ($find_dress as $key => $value) {
+                                $list_one[] = $value->id;
+                            }
+                            $total = App\Models\Reservation::whereIn('id', $list_one)
+                                ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                ->get();
 
-                                foreach ($total as $index_dress => $item) {
-                                    if ($item->id == $reservation->id) {
-                                        $number = $index_dress + 1;
-                                        break;
-                                    }
+                            foreach ($total as $index_dress => $item) {
+                                if ($item->id == $reservation->id) {
+                                    $number = $index_dress + 1;
+                                    break;
                                 }
-                            @endphp
+                            }
+                        @endphp
 
                         <td style="padding: 16px;">
                             เช่า {{ $type_dress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
@@ -128,10 +160,10 @@
                         </td>
 
                         <td style="padding: 16px;">
-                            คุณ {{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                            คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
                         </td>
 
-                        
+
                         <td style="width: 200px;">
                             @php
                                 $status_now = App\Models\Reservation::where('status_completed', 0)
@@ -141,12 +173,13 @@
                             @endphp
 
                             @if ($number == 1)
-                                @if($status_now->status == 'ถูกจอง')
-                                   อยู่ในร้าน
+                                @if ($status_now->status == 'ถูกจอง')
+                                    อยู่ในร้าน
+                                @elseif($status_now->status == 'กำลังเช่า')
+                                    ถูกเช่าโดยลูกค้าท่านก่อนหน้า
                                 @else
-                                {{$status_now->status}}
+                                    {{ $status_now->status }}
                                 @endif
-                            
                             @else
                                 รอคิว
                             @endif

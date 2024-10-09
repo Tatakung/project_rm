@@ -49,6 +49,15 @@
             color: #6c757d;
         }
     </style>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
+        <li class="breadcrumb-item"><a
+                href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">รายละเอียดออเดอร์ที่
+                {{ $orderdetail->order_id }}</a></li>
+        <li class="breadcrumb-item active">{{ $orderdetail->title_name }}</li>
+    </ol>
+
     <div class="container mt-4">
         @php
             $dress = App\Models\Dress::find($orderdetail->dress_id);
@@ -65,23 +74,93 @@
                     $check_button_updatestatusadjust = true; //แปลว่าต้องแก้
                 }
             }
-
         @endphp
+
+
+        {{-- เช็คว่ามันอยู่คิวไหน --}}
         @php
             $reservation_now = App\Models\Reservation::where('status_completed', 0)
                 ->where('dress_id', $orderdetail->dress_id)
                 ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
                 ->first();
-            if ($reservation_now->id == $orderdetail->reservation_id) {
+
+            if ($reservation_now) {
+                if ($reservation_now->id == $orderdetail->reservation_id) {
+                    $check_open_button = true;
+                } elseif ($reservation_now->id != $orderdetail->reservation_id) {
+                    $check_open_button = false;
+                }
+            }
+            // เพื่อที่เข้ามาดูประวะัติการเช่าได้
+            else {
                 $check_open_button = true;
-            } elseif ($reservation_now->id != $orderdetail->reservation_id) {
-                $check_open_button = false;
             }
 
         @endphp
 
+        {{-- @php
+            $check_open_button = true ; 
+        @endphp --}}
 
-        <h4 class="mt-5"><strong>รายการ :
+        {{-- <p>คิวแรก : {{$reservation_now->id}}</p>
+        <p>reservation_id : {{$orderdetail->reservation_id}}</p> --}}
+
+
+
+        @if ($check_open_button == false)
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <div class="alert alert-danger" role="alert">
+                        @if ($reservation_now->status == 'ถูกจอง' || $reservation_now->status == 'กำลังเช่า')
+                            <strong>แจ้งเตือน:</strong> ชุดนี้<span> {{ $reservation_now->status }} </span>
+                            โดยลูกค้าท่านอื่น ไม่สามารถดำเนินการในรายการนี้ได้
+                        @else
+                            <strong>แจ้งเตือน:</strong> ชุดนี้<span> {{ $reservation_now->status }} </span>
+                            กรุณารอจนกว่าจะพร้อมใช้งาน
+                        @endif
+
+                        @if ($reservation_now->status == 'ถูกจอง' || $reservation_now->status == 'กำลังเช่า')
+                            <hr>
+                            <p class="mb-0">
+                                @php
+                                    $find_order_detail_now = App\Models\Orderdetail::where(
+                                        'reservation_id',
+                                        $reservation_now->id,
+                                    )->first();
+                                    $find_order_detail_id = App\Models\Orderdetail::find($find_order_detail_now->id);
+                                    $customer_id_re = App\Models\order::where(
+                                        'id',
+                                        $find_order_detail_id->order_id,
+                                    )->value('customer_id');
+                                    $customer_fname_re = App\Models\Customer::where('id', $customer_id_re)->value(
+                                        'customer_fname',
+                                    );
+                                    $customer_lname_re = App\Models\Customer::where('id', $customer_id_re)->value(
+                                        'customer_lname',
+                                    );
+
+                                @endphp
+                                <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
+                                    href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
+                                &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
+                                &bull; วันที่เช่า:
+                                {{ \Carbon\carbon::parse($reservation_now->start_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\carbon::parse($reservation_now->start_date)->year + 543 }}
+                                <br>
+                                &bull; กำหนดคืน:
+                                {{ \Carbon\carbon::parse($reservation_now->end_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\carbon::parse($reservation_now->end_date)->year + 543 }}
+                            </p>
+                        @endif
+
+                    </div>
+                </div>
+            </div>
+        @endif
+
+
+
+        <h4 class="mt-2"><strong>รายการ :
                 @if ($orderdetail->shirtitems_id)
                     เช่า{{ $typename }} {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
                 @elseif($orderdetail->skirtitems_id)
@@ -115,10 +194,11 @@
                             </div>
 
 
+
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail == 'กำลังเช่า') style="display: block ; "@else style="display: none ; " @endif>
                                 <button class="btn" style="background: #3406dc; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus_return">อัพเดตสถานะการเช่า</button>
+                                    data-target="#updatestatus_return">อัพเดตการรับชุดคืน</button>
                             </div>
 
 
@@ -239,8 +319,6 @@
             </div>
         </div>
 
-
-
         <div class="row mt-3 d-flex align-items-stretch">
             <div class="col-md-6">
                 <div class="card">
@@ -257,7 +335,7 @@
                                 <p><strong>ข้อมุลชุด</strong></p>
                                 <p>ประเภทชุด : {{ $typename }}</p>
                                 <p>หมายเลขชุด : {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
-                                <p>รายละเอียด : {{ $dress->dress_description }}</p>
+                                {{-- <p>รายละเอียด : {{ $dress->dress_description }}</p> --}}
                             </div>
                         </div>
                     </div>
@@ -288,6 +366,9 @@
                             -
                             {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
+
+                            <span><a
+                                    href="{{ route('employee.ordertotaldetailpostpone', ['id' => $orderdetail->id]) }}">เลื่อนวัน</a></span>
                         </p>
 
 
@@ -321,23 +402,11 @@
                             <div class="col-md-6">
                                 <h5 class="card-title">รายการปรับแก้ไขชุด</h5>
                             </div>
-
-                            <div class="col-md-6" style="text-align: right ; "
-                                @if ($check_button_updatestatusadjust == true && $check_open_button == true) style="display: block;" 
-                                @else
-                                    style="display: none ; " @endif>
-                                <button class="btn btn-success" data-toggle='modal' data-target="#updatestatusadjust"
-                                    type="button">ปรับแก้ไขนาดสำเร็จ</button>
-                            </div>
-
-
-
                         </div>
 
                         <table class="table mt-3">
                             <thead>
                                 <tr>
-
                                     <th scope="col">รายการ</th>
                                     <th scope="col">ขนาดเดิม</th>
                                     <th scope="col">ขนาดที่ปรับแก้</th>
@@ -350,27 +419,113 @@
                                             $dress_mea = App\Models\Dressmea::where('id', $item->dressmea_id)->first();
                                         @endphp
                                         <td>{{ $dress_mea->mea_dress_name }}</td>
-                                        <td>{{ $item->new_size }}</td>
-
-
+                                        <td>{{ $dress_mea->current_mea }}</td>
                                         @if ($dress_mea->current_mea != $item->new_size)
                                             <td style="color: #eb3131 ; ">
                                                 ปรับแก้:จาก{{ $dress_mea->current_mea }}<i
                                                     class="bi bi-arrow-right"></i>{{ $item->new_size }}นิ้ว
                                             </td>
+                                        @else
+                                            <td>ไม่ต้องปรับแก้</td>
                                         @endif
                                     </tr>
                                 @endforeach
-
                             </tbody>
                         </table>
+                        <div class="col-md-12"
+                            @if ($check_button_updatestatusadjust == true && $check_open_button == true) style="display: block; text-align: right ;" 
+                        @else
+                            style="display: none ; text-align: right ; " @endif>
 
+                            <button class="btn btn-success" data-toggle='modal' data-target="#updatestatusadjust"
+                                type="button">ปรับแก้ไขนาดสำเร็จ</button>
+                        </div>
+                        @if($his_dress_adjust->count() > 0 )
+                        <p><strong>ประวัติการปรับแก้</strong></p>
+                        @foreach ($his_dress_adjust as $item)
+                        <li>{{$item->name}} ปรับจาก {{$item->old_size}} เป็น {{$item->edit_new_size}}</li>         
+                        @endforeach
+                        @endif
+                    </div>
+                    
+                </div>
+                
+            </div>
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+        <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
+            <div class="col-md-6"
+                @if ($orderdetail->status_detail == 'คืนชุดแล้ว') style="display: block ; "
+            @else
+            style="display: none ; " @endif>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">สรุปการเช่า</h5>
+                        @php
+                            $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)
+                                ->orderBy('created_at', 'asc')
+                                ->first();
+                        @endphp
+
+                        <p><i class="bi bi-calendar"></i> วันที่รับชุดจริง :
+                            {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}
+                        </p>
+                        <p><i class="bi bi-calendar"></i> วันที่คืนชุดจริง :
+                            {{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}
+                        </p>
+
+
+                        <p><i class="bi bi-calendar"></i> จำนวนวันที่เช่าทั้งหมด : ยังไม่เชอร์ วัน </p>
+
+                        <p><i class="bi bi-"></i> รายได้ค่าเช่าชุด : {{ $orderdetail->price }} บาท</p>
+
+                        @if ($additional->count() > 0)
+                            @foreach ($additional as $item)
+                                <p><i class="bi bi-"></i>
+                                    @if ($item->charge_type == 1)
+                                        รายได้จากการหักเงินประกัน :
+                                    @elseif($item->charge_type == 2)
+                                        รายได้จากการคืนชุดล่าช้า :
+                                    @elseif($item->charge_type == 3)
+                                        รายได้จากค่าธรรมเนียมขยายระยะเวลาเช่า :
+                                    @endif
+                                    {{ $item->amount }} บาท
+                                </p>
+                            @endforeach
+                        @endif
 
 
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </div>
 
 
@@ -461,7 +616,7 @@
                             <tbody>
                                 <tr>
                                     <th style="width: 30%; text-align: left; padding: 10px;">ชื่อลูกค้า:</th>
-                                    <td style="padding: 10px;">คุณ {{ $customer->customer_fname }}
+                                    <td style="padding: 10px;">คุณ{{ $customer->customer_fname }}
                                         {{ $customer->customer_lname }}</td>
                                 </tr>
                                 <tr>
@@ -504,93 +659,235 @@
     </div>
 
 
-<!-- ปุ่มสำหรับเปิด Modal คืนชุด -->
-<button class="btn btn-success" id="returnButton" data-toggle="modal" data-target="#returnModal">คืนชุด</button>
+    <div class="modal fade" id="updatestatus_return" tabindex="-1" role="dialog"
+        aria-labelledby="updatestatus_returnLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <form action="{{ route('employee.actionupdatestatusrentdress', ['id' => $orderdetail->id]) }}"
+                method="POST">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #28a745; color: white;">
+                        <h5 class="modal-title" id="returnModalLabel" style="font-weight: bold; font-size: 1.5rem;">
+                            ยืนยันการคืนชุด</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            style="color: white;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- แสดงรายละเอียดการเช่าและการคืน -->
+                        <h6 class="mb-3">รายละเอียดการเช่าและการคืน:</h6>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 50%; text-align: left; padding: 10px;">ชื่อลูกค้า:</th>
+                                    <td style="padding: 10px;">คุณ{{ $customer->customer_fname }}
+                                        {{ $customer->customer_lname }}</td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%; text-align: left; padding: 10px;">วันที่รับชุด:</th>
+                                    <td style="padding: 10px;">
+                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}</td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%; text-align: left; padding: 10px;">วันที่มารับชุดจริง:</th>
+                                    <td style="padding: 10px;">
+                                        {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}</td>
+                                </tr>
 
-<!-- Modal สำหรับยืนยันการคืนชุดพร้อมรายละเอียดเพิ่มเติม -->
-<div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #28a745; color: white;">
-                <h5 class="modal-title" id="returnModalLabel" style="font-weight: bold; font-size: 1.5rem;">ยืนยันการคืนชุด</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- แสดงรายละเอียดการเช่าและการคืน -->
-                <h6 class="mb-3">รายละเอียดการเช่าและการคืน:</h6>
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <th style="width: 30%; text-align: left; padding: 10px;">ชื่อลูกค้า:</th>
-                            <td style="padding: 10px;">คุณ {{ $customer->customer_fname }} {{ $customer->customer_lname }}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 30%; text-align: left; padding: 10px;">วันที่มารับชุดจริง:</th>
-                            <td style="padding: 10px;">{{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }} {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}</td>
-                        </tr>
-                        
-                        <tr>
-                            <th style="width: 30%; text-align: left; padding: 10px;">วันที่นัดคืน:</th>
-                            <td style="padding: 10px;">{{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }} {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 30%; text-align: left; padding: 10px;">วันที่มาคืนจริง:</th>
-                            <td style="padding: 10px;">{{ \Carbon\Carbon::now()->locale('th')->isoFormat('D MMM') }} {{ \Carbon\Carbon::now()->year + 543 }}</td>
-                        </tr>
-                       
-                        <tr>
-                            <th style="width: 30%; text-align: left; padding: 10px;">จำนวนวันที่เช่าจริง:</th>
-                            <td style="padding: 10px;">2 วัน</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 30%; text-align: left; padding: 10px;">ค่าธรรมเนียมการขยายระยะเวลา:</th>
-                            <td style="padding: 10px;">0 บาท</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 30%; text-align: left; padding: 10px;">ค่าปรับส่งคืนชุดล่าช้า:</th>
-                            <td style="padding: 10px;">0 บาท</td>
-                        </tr>
-                    </tbody>
-                </table>
+                                <tr>
+                                    <th style="width: 50%; text-align: left; padding: 10px;">วันที่นัดคืน:</th>
+                                    <td style="padding: 10px;">
+                                        {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}</td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%; text-align: left; padding: 10px;">วันที่มาคืนจริง:</th>
+                                    <td style="padding: 10px;">
+                                        {{ \Carbon\Carbon::now()->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::now()->year + 543 }}</td>
+                                </tr>
 
-                <!-- ฟิลด์สำหรับพนักงานกรอกค่าธรรมเนียมการเสียหาย -->
-                <h6 class="mb-3">กรอกข้อมูลค่าธรรมเนียม:</h6>
-                <div class="form-group">
-                    <label for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</label>
-                    <input type="number" class="form-control" id="damageFee" placeholder="กรอกจำนวนเงิน" min="0" step="0.01">
+                                <tr>
+                                    <th style="width: 50%; text-align: left; padding: 10px;">ค่าปรับส่งคืนชุดล่าช้า:</th>
+                                    <td style="padding: 10px;"><span id="mulct"></span>
+                                    </td>
+                                </tr>
+                                <input type="hidden" name="late_return_fee" id="late_return_fee">
+                                <input type="hidden" name="late_chart" id="late_chart">
+                                <script>
+                                    var now_day = new Date();
+                                    var return_date = new Date('{{ $Date->return_date }}');
+                                    now_day.setHours(0, 0, 0, 0);
+                                    return_date.setHours(0, 0, 0, 0);
+                                    // console.log(return_date) ; 
+                                    var t = now_day - return_date;
+                                    var s = Math.ceil(t / (1000 * 60 * 60 * 24));
+                                    var p = s * 200; //ถ้าคืนช้า คิดวันละ 200 บาท  
+                                    document.getElementById('late_return_fee').value = p;
+                                    if (s == 0) {
+                                        document.getElementById('mulct').innerHTML = '0 บาท';
+                                    } else if (s > 0) {
+                                        document.getElementById('mulct').innerHTML = p + ' บาท ' + 'เนื่องจากคืนล่าช้า ' + s + ' วัน';
+                                    } else {
+                                        document.getElementById('mulct').innerHTML = '0 บาท'
+                                    }
+                                </script>
+                                <tr>
+                                    <th style="width: 50%; text-align: left; padding: 10px;">ค่าธรรมเนียมขยายระยะเวลาเช่า:
+                                    </th>
+                                    <td style="padding: 10px;"><span id="rental_exte"></span></td>
+                                </tr>
+
+                                <script>
+                                    var rr = new Date('{{ $Date->return_date }}');
+                                    var pp = new Date('{{ $Date->pickup_date }}');
+                                    rr.setHours(0, 0, 0, 0);
+                                    pp.setHours(0, 0, 0, 0);
+                                    var rr_pp = rr - pp;
+                                    var late_chart_day = Math.ceil(rr_pp / (1000 * 60 * 60 * 24) + 1);
+                                    var over_day = (late_chart_day - 3) * 100;
+                                    document.getElementById('late_chart').value = over_day;
+
+                                    //อิงจากวันที่นัดและคืนจริง
+                                    var r_pickup = new Date('{{ $Date->actua_pickup_date }}');
+                                    var r_return = new Date();
+                                    r_pickup.setHours(0, 0, 0, 0);
+                                    r_return.setHours(0, 0, 0, 0);
+                                    var r_return_r_pickup = r_return - r_pickup;
+                                    var total_r_return_r_pickup = Math.ceil(r_return_r_pickup / (1000 * 60 * 60 * 24) + 1);
+
+                                    console.log("ดูตรงนี้" + total_r_return_r_pickup);
+
+
+                                    if (total_r_return_r_pickup > 3) {
+                                        if (late_chart_day - 3 == 0) {
+                                            document.getElementById('rental_exte').innerHTML = '0 บาท';
+                                        } else {
+                                            document.getElementById('rental_exte').innerHTML = over_day + ' บาท' + '   (ขยายเวลาเช่า ' + (
+                                                late_chart_day -
+                                                3) + ' วัน)';
+
+                                        }
+
+
+
+                                    } else {
+                                        document.getElementById('rental_exte').innerHTML = '0 บาท';
+                                    }
+                                </script>
+
+
+                            </tbody>
+                        </table>
+
+                        <!-- ฟิลด์สำหรับพนักงานกรอกค่าธรรมเนียมการเสียหาย -->
+                        <h6 class="mb-3">กรอกข้อมูลค่าธรรมเนียม:</h6>
+                        <div class="form-group">
+                            <p>เก็บประกันจากลูกค้า : <span>{{ $orderdetail->damage_insurance }} บาท</span></p>
+                            <label for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</label>
+                            <input type="number" class="form-control" name="total_damage_insurance"
+                                id="total_damage_insurance" placeholder="กรอกจำนวนเงิน" min="0" step="0.01"
+                                required>
+                        </div>
+
+                        <!-- สรุปการชำระเงิน -->
+                        <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
+                        {{-- <div class="alert alert-warning" style="font-size: 1.2rem; padding: 10px;">
+                        <p>ยอดประกันชุดต้องคืนให้กับลูกค้า: <strong id="total_return_to_customer"></strong></p>
+                        <p>ยอดเงินที่ลูกค้าต้องจ่ายเพิ่มเติม: <strong id="total_customer_to_pay_shop"></strong></p>
+                    </div> --}}
+
+
+                        <hr>
+                        <!-- ฟิลด์สำหรับเลือกสถานะการดำเนินการหลังคืนชุด -->
+                        <h6 class="mb-3">การดำเนินการหลังจากคืนชุด:</h6>
+                        <div class="form-group">
+                            <label for="return_status">เลือกการดำเนินการ:</label>
+                            <select class="form-control" id="return_status" name="return_status" required>
+                                <option value="" selected disabled>เลือกรายการ</option>
+                                <option value="ส่งซัก">ส่งซัก</option>
+                                <option value="ต้องซ่อมแซม">ส่งซ่อม</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="repair_details_group" style="display: none;">
+                            <label for="repair_details">รายละเอียดการซ่อม:
+                            </label>
+                            <select id="repair_type" name="repair_type">
+                                <option value="10" id="type_total_dress">ทั้งชุด</option>
+                                <option value="20" id="type_shirt">เฉพาะเสื้อ</option>
+                                <option value="30" id="type_skirt">เฉพาะผ้าถุง</option>
+                            </select>
+                            <textarea class="form-control" id="repair_details" name="repair_details" rows="3"
+                                placeholder="รายละเอียดการซ่อม"></textarea>
+                        </div>
+
+                        @php
+                            $dress_separable = App\Models\Dress::where('id', $orderdetail->dress_id)->value(
+                                'separable',
+                            ); //เช็คว่าชุดแยกได้ไหม
+                        @endphp
+
+                        <script>
+                            var dress_separable = '{{ $dress_separable }}';
+                            var return_status = document.getElementById('return_status');
+                            var type_total_dress = document.getElementById('type_total_dress');
+                            var type_shirt = document.getElementById('type_shirt');
+                            var type_skirt = document.getElementById('type_skirt');
+                            var repair_details_group = document.getElementById('repair_details_group');
+                            var have_shirt = '{{ $orderdetail->shirtitems_id }}';
+                            var have_skirt = '{{ $orderdetail->skirtitems_id }}';
+
+                            return_status.addEventListener('change', function() {
+
+                                if (return_status.value === "ต้องซ่อมแซม") {
+                                    repair_details_group.style.display = 'block';
+                                    document.getElementById('repair_details').setAttribute('required', 'required');
+
+                                    if (dress_separable == '1') {
+                                        type_shirt.style.display = 'none';
+                                        type_skirt.style.display = 'none';
+                                        type_total_dress.style.display = 'block';
+                                        type_total_dress.selected = true;
+                                    } else if (dress_separable == '2') {
+                                        if (have_shirt) {
+                                            type_shirt.style.display = 'block';
+                                            type_skirt.style.display = 'none';
+                                            type_total_dress.style.display = 'none';
+                                            type_shirt.selected = true;
+                                        } else if (have_skirt) {
+                                            type_shirt.style.display = 'none';
+                                            type_skirt.style.display = 'block';
+                                            type_total_dress.style.display = 'none';
+                                            type_skirt.selected = true;
+                                        } else {
+                                            type_shirt.style.display = 'block';
+                                            type_skirt.style.display = 'block';
+                                            type_total_dress.style.display = 'block';
+                                            type_total_dress.selected = true;
+                                        }
+                                    }
+
+                                } else {
+                                    repair_details_group.style.display = 'none';
+                                    document.getElementById('repair_details').value = '';
+                                    document.getElementById('repair_details').removeAttribute('required');
+                                }
+                            });
+                        </script>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            style="background-color: #6c757d; border-color: #6c757d;">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary" id="confirmReturnButton"
+                            style="background-color: #007bff; border-color: #007bff;">ยืนยันการคืนชุด</button>
+                    </div>
                 </div>
-
-                <!-- ฟิลด์สำหรับเลือกสถานะการดำเนินการหลังคืนชุด -->
-                <h6 class="mb-3">การดำเนินการหลังจากคืนชุด:</h6>
-                <div class="form-group">
-                    <label for="operationAfterReturn">เลือกการดำเนินการ:</label>
-                    <select class="form-control" id="operationAfterReturn">
-                        <option value="clean">ส่งซัก</option>
-                        <option value="repair">ส่งซ่อม</option>
-                    </select>
-                </div>
-
-                <!-- สรุปการชำระเงิน -->
-                <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
-                <div class="alert alert-warning" style="font-size: 1.2rem; padding: 10px;">
-                    <p>ยอดคงเหลือที่ต้องชำระ: <strong id="totalDue">0 บาท</strong></p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #6c757d; border-color: #6c757d;">ยกเลิก</button>
-                <button type="button" class="btn btn-primary" id="confirmReturnButton" style="background-color: #007bff; border-color: #007bff;">ยืนยันการคืนชุด</button>
-            </div>
+            </form>
         </div>
     </div>
-</div>
-
-
-
-
-
-
-
-   
 @endsection

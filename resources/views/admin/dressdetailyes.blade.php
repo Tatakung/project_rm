@@ -84,31 +84,34 @@
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
-                                                                                            </p> -->
+                                                                                                            </p> -->
                                 {{-- <p><strong>สถานะชุด:</strong> <span
                                         @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
                                         {{ $datadress->dress_status }}</span></p> --}}
 
 
-                                <p><strong>สถานะปัจจุบันของชุด</strong></p>
+                                {{-- <p><strong>สถานะปัจจุบันของชุด</strong></p>
                                 <ul>
                                     <li>เสื้อ : {{ $text_check_status_shirt }}</li>
                                     <li>ผ้าถุง : {{ $text_check_status_skirt }}</li>
-                                </ul>
+                                </ul> --}}
 
-                                <p><strong>จำนวนชุด:</strong> {{ $datadress->dress_count }} ชุด</p>
                                 <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
                                 <p><strong>เงินมัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
                                 <p><strong>ค่าประกันชุด:</strong>
                                     {{ number_format($datadress->damage_insurance, 2) }} บาท</p>
 
 
-                                <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง</p>
+                                <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง
+                                    <span>
+                                        <a href="">ดูประวัติ</a>
+                                    </span>
+                                </p>
                                 <p><strong>คำอธิบายชุด:</strong> {{ $datadress->dress_description }}</p>
                             </div>
                             <div class="col-md-5">
                                 <p>
-                                    <strong>ขนาดของชุด</strong> (ปรับแก้ ขยาย/ลด ไม่เกิน 4 นิ้ว):
+                                    <strong>ขนาดของชุด</strong> (ปรับแก้ ขยาย/ลด ได้):
                                 <div class=" ">
                                     @php
                                         $list_check_name_shirt = [];
@@ -117,8 +120,8 @@
                                         @foreach ($dress_mea_totaldress as $dress_mea_totaldress)
                                             <tr>
                                                 <td>{{ $dress_mea_totaldress->mea_dress_name }}<span
-                                                        style="font-size: 14px; color: rgb(197, 21, 21)">(ปรับได้
-                                                        {{ $dress_mea_totaldress->initial_mea - 4 }}-{{ $dress_mea_totaldress->initial_mea + 4 }}
+                                                        style="font-size: 14px; color: rgb(197, 21, 21)"> (ปรับได้
+                                                        {{ $dress_mea_totaldress->initial_min  }}-{{ $dress_mea_totaldress->initial_max }}
                                                         นิ้ว)</span>
                                                 </td>
                                                 <td col-1>{{ $dress_mea_totaldress->current_mea }} </td>
@@ -139,8 +142,22 @@
 
                     <div class="container">
                         <h3>คิวการเช่าทั้งชุด</h3>
+                        <div id="calendar_dress">
 
-                        <div id="calendar_dress"></div>
+                        </div>
+                        <p>
+                            <span style="display: inline-block; width: 12px; height: 12px; background-color: #ff0000; border-radius: 50%; margin-right: 5px;"></span>
+                             เช่าทั้งชุด
+                        </p>
+                        <p>
+                            <span style="display: inline-block; width: 12px; height: 12px; background-color: #3788d8; border-radius: 50%; margin-right: 5px;"></span>
+                             เช่าเฉพาะเสื้อ
+                        </p>
+                        <p>
+                            <span style="display: inline-block; width: 12px; height: 12px; background-color: #257e4a; border-radius: 50%; margin-right: 5px;"></span>
+                             เช่าเฉพาะผ้าถุง
+                        </p>
+                        
 
                     </div>
 
@@ -167,25 +184,31 @@
                             </div>
                             <div class="col-md-4">
                                 <p>
-                                    <strong>สถานะเสื้อปัจุบัน:</strong>
+                                    {{-- <strong>สถานะเสื้อปัจุบัน:</strong>
                                     <span>
                                         {{ $text_check_status_shirt }}
-                                    </span>
+                                    </span> --}}
                                 </p>
-                                <p><strong>จำนวนเสื้อ:</strong> 1 ตัว</p>
                                 <p><strong>ราคาเช่า:</strong> {{ number_format($shirtitem->shirtitem_price, 2) }} บาท</p>
                                 <p><strong>เงินมัดจำ:</strong> {{ number_format($shirtitem->shirtitem_deposit, 2) }} บาท
                                 </p>
                                 <p><strong>ค่าประกัน:</strong> {{ number_format($shirtitem->shirt_damage_insurance, 2) }}
                                     บาท</p>
-                                <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $shirtitem->shirtitem_rental }} ครั้ง</p>
+                                <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $shirtitem->shirtitem_rental }} ครั้ง
+                                    <a href="">
+                                        ดูประวัติ
+                                    </a>
+                                </p>
+                                <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ
+                                    <a href="">ดูประวัติ</a>
+                                </p>
                             </div>
                             <div class="col-md-5">
                                 <p>
-                                    <strong>ขนาดของเสื้อ</strong> (ปรับแก้ ขยาย/ลด ไม่เกิน 4 นิ้ว):
-                                    <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea_shirt">
+                                    <strong>ขนาดของเสื้อ</strong> (ปรับแก้ ขยาย/ลด ได้):
+                                    {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea_shirt">
                                         <i class="bi bi-plus-square text-dark"></i>
-                                    </button>
+                                    </button> --}}
                                 <div class=" ">
                                     @php
                                         $list_check_name_shirt = [];
@@ -194,8 +217,8 @@
                                         @foreach ($dress_mea_shirt as $dress_mea_shirt)
                                             <tr>
                                                 <td>{{ $dress_mea_shirt->mea_dress_name }}<span
-                                                        style="font-size: 14px; color: rgb(197, 21, 21)">(ปรับได้
-                                                        {{ $dress_mea_shirt->initial_mea - 4 }}-{{ $dress_mea_shirt->initial_mea + 4 }}
+                                                        style="font-size: 14px; color: rgb(197, 21, 21)"> (ปรับได้
+                                                        {{ $dress_mea_shirt->initial_min  }}-{{ $dress_mea_shirt->initial_max }}
                                                         นิ้ว)</span>
                                                 </td>
                                                 <td col-1>{{ $dress_mea_shirt->current_mea }} </td>
@@ -250,23 +273,31 @@
                                 @endforeach
                             </div>
                             <div class="col-md-4">
-                                <p><strong>สถานะผ้าถุงตอนนี้:</strong> <span>{{ $text_check_status_skirt }}</span>
+                                {{-- <p><strong>สถานะผ้าถุงตอนนี้:</strong> <span>{{ $text_check_status_skirt }}</span> --}}
                                 </p>
-                                <p><strong>จำนวนผ้าถุง:</strong> 1 ตัว</p>
                                 <p><strong>ราคาเช่า:</strong> {{ number_format($skirtitem->skirtitem_price, 2) }} บาท</p>
                                 <p><strong>เงินมัดจำ:</strong> {{ number_format($skirtitem->skirtitem_deposit, 2) }} บาท
                                 </p>
                                 <p><strong>ค่าประกัน:</strong>
                                     {{ number_format($skirtitem->skirt_damage_insurance, 2) }} บาท</p>
-                                <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $skirtitem->skirtitem_rental }} ครั้ง</p>
+                                <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $skirtitem->skirtitem_rental }} ครั้ง
+                                    <span>
+                                        <a href="">ดูประวัติ</a>
+                                    </span>
+                                </p>
+                                <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ
+                                    <span>
+                                        <a href="">ดูประวัติ</a>
+                                    </span>
+                                </p>
                             </div>
                             <div class="col-md-5">
                                 <p>
-                                    <strong>ขนาดของผ้าถุง:</strong>
-                                    <button class="btn btn-link p-0 ml-2" data-toggle="modal"
+                                    <strong>ขนาดของผ้าถุง</strong> (ปรับแก้ ขยาย/ลด ได้):
+                                    {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal"
                                         data-target="#add_mea_skirt">
                                         <i class="bi bi-plus-square text-dark"></i>
-                                    </button>
+                                    </button> --}}
                                 <div class=" ">
                                     @php
                                         $list_check_name_skirt = [];
@@ -275,8 +306,8 @@
                                         @foreach ($dress_mea_skirt as $dress_mea_skirt)
                                             <tr>
                                                 <td>{{ $dress_mea_skirt->mea_dress_name }}<span
-                                                        style="font-size: 14px; color: rgb(197, 21, 21)">(ปรับได้
-                                                        {{ $dress_mea_skirt->initial_mea - 4 }}-{{ $dress_mea_skirt->initial_mea + 4 }}
+                                                        style="font-size: 14px; color: rgb(197, 21, 21)"> (ปรับได้
+                                                        {{ $dress_mea_skirt->initial_min }}-{{ $dress_mea_skirt->initial_max }}
                                                         นิ้ว)</span>
                                                 </td>
 
@@ -931,26 +962,72 @@
                 var calendarDress = new FullCalendar.Calendar(calendarElDress, {
                     initialView: 'dayGridMonth',
                     events: [
+                        // ทั้งชุด
                         @foreach ($date_reservations_dress as $reservation)
                             {
-
                                 @php
-
                                     $order_id = App\Models\Orderdetail::where('reservation_id', $reservation->id)->value('order_id');
                                     $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
                                     $customer = App\Models\Customer::find($customer_id);
-
                                 @endphp
 
-
                                 title:
-                                    'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} --- สถานะ:{{ $reservation->status }}',
+                                    'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} --- สถานะ: {{ $reservation->status }}',
                                     start: '{{ $reservation->start_date }}',
                                     end:
                                     '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
-                                    color: '{{ $reservation->status == 'ถูกจอง' ? '#3788d8' : '#257e4a' }}'
+                                    color:
+                                    '{{ $reservation->status == 'ถูกจอง' ? '#ff0000' : '#257e4a' }}' // สีแดงสำหรับเช่าทั้งชุด
                             },
                         @endforeach
+
+                        // คิวสำหรับเช่าเฉพาะเสื้อ
+                        @foreach ($date_reservations_shirt as $reservation)
+                            {
+                                @php
+                                    $order_id = App\Models\Orderdetail::where('reservation_id', $reservation->id)->value('order_id');
+                                    $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
+                                    $customer = App\Models\Customer::find($customer_id);
+                                @endphp
+
+                                title:
+                                    'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} --- สถานะ: {{ $reservation->status }}',
+                                    start: '{{ $reservation->start_date }}',
+                                    end:
+                                    '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
+                                    color: '#3788d8' // สีน้ำเงินสำหรับเช่าเฉพาะเสื้อ
+                            },
+                        @endforeach
+
+
+
+                        // คิวสำหรับเช่าเฉพาะผ้าถุง
+                        @foreach ($date_reservations_skirt as $reservation)
+                            {
+                                @php
+                                    $order_id = App\Models\Orderdetail::where('reservation_id', $reservation->id)->value('order_id');
+                                    $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
+                                    $customer = App\Models\Customer::find($customer_id);
+                                @endphp
+
+                                title:
+                                    'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} --- สถานะ: {{ $reservation->status }}',
+                                    start: '{{ $reservation->start_date }}',
+                                    end:
+                                    '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
+                                    color: '#257e4a' // สีเขียวสำหรับเช่าเฉพาะผ้าถุง
+                            },
+                        @endforeach
+
+
+
+
+
+
+
+
+
+
                     ],
                     locale: 'th'
                 });
@@ -970,15 +1047,18 @@
                                     {
                                         @php
 
-            $order_id = App\Models\Orderdetail::where('reservation_id', $reservation->id)->value('order_id');
-            $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
-            $customer = App\Models\Customer::find($customer_id);
+                                            $order_id = App\Models\Orderdetail::where('reservation_id', $reservation->id)->value('order_id');
+                                            $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
+                                            $customer = App\Models\Customer::find($customer_id);
 
-        @endphp
-                                        title: 'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} --- สถานะ:{{ $reservation->status }}',
-                                        start: '{{ $reservation->start_date }}',
-                                        end: '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
-                                        color: '{{ $reservation->status == 'ถูกจอง' ? '#3788d8' : '#257e4a' }}'
+                                        @endphp
+                                        title:
+                                            'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} --- สถานะ:{{ $reservation->status }}',
+                                            start: '{{ $reservation->start_date }}',
+                                            end:
+                                            '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
+                                            color:
+                                            '{{ $reservation->status == 'ถูกจอง' ? '#3788d8' : '#257e4a' }}'
                                     },
                                 @endforeach
                             ],
@@ -997,15 +1077,18 @@
                                     {
                                         @php
 
-            $order_id = App\Models\Orderdetail::where('reservation_id', $reservation->id)->value('order_id');
-            $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
-            $customer = App\Models\Customer::find($customer_id);
+                                            $order_id = App\Models\Orderdetail::where('reservation_id', $reservation->id)->value('order_id');
+                                            $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
+                                            $customer = App\Models\Customer::find($customer_id);
 
-        @endphp
-                                        title: 'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} --- สถานะ:{{ $reservation->status }}',
-                                        start: '{{ $reservation->start_date }}',
-                                        end: '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
-                                        color: '{{ $reservation->status == 'ถูกจอง' ? '#3788d8' : '#257e4a' }}'
+                                        @endphp
+                                        title:
+                                            'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} --- สถานะ:{{ $reservation->status }}',
+                                            start: '{{ $reservation->start_date }}',
+                                            end:
+                                            '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
+                                            color:
+                                            '{{ $reservation->status == 'ถูกจอง' ? '#3788d8' : '#257e4a' }}'
                                     },
                                 @endforeach
                             ],

@@ -23,7 +23,7 @@
         }
 
         .status-icon.active {
-            background-color: #e2361b;
+            background-color: #0c7ab6;
             color: #000;
             /* เปลี่ยนสีตัวอักษรเป็นสีดำเพื่อให้เห็นชัดบนพื้นสีเหลือง */
         }
@@ -106,56 +106,66 @@
         <p>reservation_id : {{$orderdetail->reservation_id}}</p> --}}
 
 
+        {{-- เอาไว้เช็คว่่าถ้า reservation_id เป็น 1 อะ ไอ้พวกแจ้งเตือนต่างๆไม่ต้องให้มันแสดงผลขึ้นมา เพราะมันเป็นประวัติไปแล้ว ไม่จำเป็นต้องแจ้งเตือน --}}
+        @php
+            $check_reser_status_for_his = App\Models\Reservation::where('id', $orderdetail->reservation_id)->value(
+                'status_completed',
+            );
+        @endphp
 
-        @if ($check_open_button == false)
-            <div class="row mt-2">
-                <div class="col-md-12">
-                    <div class="alert alert-danger" role="alert">
-                        @if ($reservation_now->status == 'ถูกจอง' || $reservation_now->status == 'กำลังเช่า')
-                            <strong>แจ้งเตือน:</strong> ชุดนี้<span> {{ $reservation_now->status }} </span>
-                            โดยลูกค้าท่านอื่น ไม่สามารถดำเนินการในรายการนี้ได้
-                        @else
-                            <strong>แจ้งเตือน:</strong> ชุดนี้<span> {{ $reservation_now->status }} </span>
-                            กรุณารอจนกว่าจะพร้อมใช้งาน
-                        @endif
+        @if ($check_reser_status_for_his != 1)
+            @if ($check_open_button == false)
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <div class="alert alert-danger" role="alert">
+                            @if ($reservation_now->status == 'ถูกจอง' || $reservation_now->status == 'กำลังเช่า')
+                                <strong>แจ้งเตือน:</strong> ชุดนี้<span> {{ $reservation_now->status }} </span>
+                                โดยลูกค้าท่านอื่น ไม่สามารถดำเนินการในรายการนี้ได้
+                            @else
+                                <strong>แจ้งเตือน:</strong> ชุดนี้<span> {{ $reservation_now->status }} </span>
+                                กรุณารอจนกว่าจะพร้อมใช้งาน
+                            @endif
 
-                        @if ($reservation_now->status == 'ถูกจอง' || $reservation_now->status == 'กำลังเช่า')
-                            <hr>
-                            <p class="mb-0">
-                                @php
-                                    $find_order_detail_now = App\Models\Orderdetail::where(
-                                        'reservation_id',
-                                        $reservation_now->id,
-                                    )->first();
-                                    $find_order_detail_id = App\Models\Orderdetail::find($find_order_detail_now->id);
-                                    $customer_id_re = App\Models\order::where(
-                                        'id',
-                                        $find_order_detail_id->order_id,
-                                    )->value('customer_id');
-                                    $customer_fname_re = App\Models\Customer::where('id', $customer_id_re)->value(
-                                        'customer_fname',
-                                    );
-                                    $customer_lname_re = App\Models\Customer::where('id', $customer_id_re)->value(
-                                        'customer_lname',
-                                    );
+                            @if ($reservation_now->status == 'ถูกจอง' || $reservation_now->status == 'กำลังเช่า')
+                                <hr>
+                                <p class="mb-0">
+                                    @php
+                                        $find_order_detail_now = App\Models\Orderdetail::where(
+                                            'reservation_id',
+                                            $reservation_now->id,
+                                        )->first();
+                                        $find_order_detail_id = App\Models\Orderdetail::find(
+                                            $find_order_detail_now->id,
+                                        );
+                                        $customer_id_re = App\Models\order::where(
+                                            'id',
+                                            $find_order_detail_id->order_id,
+                                        )->value('customer_id');
+                                        $customer_fname_re = App\Models\Customer::where('id', $customer_id_re)->value(
+                                            'customer_fname',
+                                        );
+                                        $customer_lname_re = App\Models\Customer::where('id', $customer_id_re)->value(
+                                            'customer_lname',
+                                        );
 
-                                @endphp
-                                <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
-                                    href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
-                                &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
-                                &bull; วันที่เช่า:
-                                {{ \Carbon\carbon::parse($reservation_now->start_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\carbon::parse($reservation_now->start_date)->year + 543 }}
-                                <br>
-                                &bull; กำหนดคืน:
-                                {{ \Carbon\carbon::parse($reservation_now->end_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\carbon::parse($reservation_now->end_date)->year + 543 }}
-                            </p>
-                        @endif
+                                    @endphp
+                                    <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
+                                        href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
+                                    &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
+                                    &bull; วันที่เช่า:
+                                    {{ \Carbon\carbon::parse($reservation_now->start_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\carbon::parse($reservation_now->start_date)->year + 543 }}
+                                    <br>
+                                    &bull; กำหนดคืน:
+                                    {{ \Carbon\carbon::parse($reservation_now->end_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\carbon::parse($reservation_now->end_date)->year + 543 }}
+                                </p>
+                            @endif
 
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         @endif
 
 
@@ -387,6 +397,12 @@
                                 ชำระเงินเต็มจำนวนแล้ว
                             @endif
                         </p>
+                        @php
+                            $user_id = App\Models\Order::where('id', $orderdetail->order_id)->value('user_id');
+                            $user = App\Models\User::find($user_id);
+                        @endphp
+                        <p><span class="bi bi-person"></span> พนักงานผู้รับออเดอร์ : คุณ{{ $user->name }}
+                            {{ $user->lname }}</p>
                     </div>
                 </div>
             </div>
@@ -400,7 +416,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 class="card-title">รายการปรับแก้ไขชุด</h5>
+                                <h5 class="card-title">รายการปรับแก้ไขชุด (หน่วยเป็นนิ้ว)</h5>
                             </div>
                         </div>
 
@@ -408,8 +424,18 @@
                             <thead>
                                 <tr>
                                     <th scope="col">รายการ</th>
-                                    <th scope="col">ขนาดเดิม</th>
-                                    <th scope="col">ขนาดที่ปรับแก้</th>
+                                    <th scope="col">
+                                        @if ($check_button_updatestatusadjust == true)
+                                            ขนาดเดิม
+                                        @elseif($check_button_updatestatusadjust == false)
+                                            ขนาด
+                                        @endif
+                                    </th>
+                                    <th scope="col">
+                                        @if ($check_button_updatestatusadjust == true)
+                                            ขนาดที่ปรับแก้
+                                        @endif
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -420,36 +446,44 @@
                                         @endphp
                                         <td>{{ $dress_mea->mea_dress_name }}</td>
                                         <td>{{ $dress_mea->current_mea }}</td>
-                                        @if ($dress_mea->current_mea != $item->new_size)
-                                            <td style="color: #eb3131 ; ">
-                                                ปรับแก้:จาก{{ $dress_mea->current_mea }}<i
-                                                    class="bi bi-arrow-right"></i>{{ $item->new_size }}นิ้ว
+
+                                        @if ($check_button_updatestatusadjust == true)
+                                            <td>
+                                                @if ($dress_mea->current_mea != $item->new_size)
+                                                    <span style="color: red;">ปรับแก้:จาก{{ $dress_mea->current_mea }}<i
+                                                            class="bi bi-arrow-right"></i>{{ $item->new_size }}นิ้ว</span>
+                                                @else
+                                                    ไม่ต้องปรับแก้ขนาด
+                                                @endif
                                             </td>
-                                        @else
-                                            <td>ไม่ต้องปรับแก้</td>
                                         @endif
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                         <div class="col-md-12"
-                            @if ($check_button_updatestatusadjust == true && $check_open_button == true) style="display: block; text-align: right ;" 
-                        @else
-                            style="display: none ; text-align: right ; " @endif>
-
+                            @if ($check_reser_status_for_his != 1) @if ($check_button_updatestatusadjust == true && $check_open_button == true) 
+                                style="display: block; text-align: right ;" 
+                            @else
+                                style="display: none ; text-align: right ; " @endif
+                        @else style="display: none ; text-align: right ; " @endif
+                            >
                             <button class="btn btn-success" data-toggle='modal' data-target="#updatestatusadjust"
                                 type="button">ปรับแก้ไขนาดสำเร็จ</button>
                         </div>
-                        @if($his_dress_adjust->count() > 0 )
-                        <p><strong>ประวัติการปรับแก้</strong></p>
-                        @foreach ($his_dress_adjust as $item)
-                        <li>{{$item->name}} ปรับจาก {{$item->old_size}} เป็น {{$item->edit_new_size}}</li>         
-                        @endforeach
+
+                        @if ($his_dress_adjust->count() > 0)
+                            <p><strong>ประวัติการปรับแก้ขนาด</strong></p>
+                            <p style="margin-left: 10px; font-size: 14px;">พนักงานที่ทำการปรับแก้ : คุณผกาสินี ชัยเลิศ</p>
+                            @foreach ($his_dress_adjust as $item)
+                                <li>{{ $item->name }} ปรับจาก {{ $item->old_size }} เป็น {{ $item->edit_new_size }}
+                                </li>
+                            @endforeach
                         @endif
                     </div>
-                    
+
                 </div>
-                
+
             </div>
 
 
@@ -464,53 +498,65 @@
 
 
         <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
-            <div class="col-md-6"
+            <div class="col-md-12"
                 @if ($orderdetail->status_detail == 'คืนชุดแล้ว') style="display: block ; "
-            @else
-            style="display: none ; " @endif>
+             @else
+              style="display: none ; " @endif>
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">สรุปการเช่า</h5>
-                        @php
-                            $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)
-                                ->orderBy('created_at', 'asc')
-                                ->first();
-                        @endphp
+                        <h5 class="card-title">
+                            <i class="bi bi-file-earmark-text"></i> สรุปข้อมูลการเช่าชุด
+                        </h5>
 
-                        <p><i class="bi bi-calendar"></i> วันที่รับชุดจริง :
-                            {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}
-                        </p>
-                        <p><i class="bi bi-calendar"></i> วันที่คืนชุดจริง :
-                            {{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}
-                        </p>
-
-
-                        <p><i class="bi bi-calendar"></i> จำนวนวันที่เช่าทั้งหมด : ยังไม่เชอร์ วัน </p>
-
-                        <p><i class="bi bi-"></i> รายได้ค่าเช่าชุด : {{ $orderdetail->price }} บาท</p>
-
-                        @if ($additional->count() > 0)
-                            @foreach ($additional as $item)
-                                <p><i class="bi bi-"></i>
-                                    @if ($item->charge_type == 1)
-                                        รายได้จากการหักเงินประกัน :
-                                    @elseif($item->charge_type == 2)
-                                        รายได้จากการคืนชุดล่าช้า :
-                                    @elseif($item->charge_type == 3)
-                                        รายได้จากค่าธรรมเนียมขยายระยะเวลาเช่า :
-                                    @endif
-                                    {{ $item->amount }} บาท
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>วันที่รับชุดจริง:</strong>
+                                    {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}
                                 </p>
-                            @endforeach
-                        @endif
+                                <p><strong>วันที่คืนชุดจริง:</strong>
+                                    {{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}
+                                </p>
+                                <p><strong>จำนวนวันที่เช่าทั้งหมด:</strong> ยังไม่เชอร์ วัน</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>รายได้ค่าเช่าชุด:</strong> {{ number_format($orderdetail->price, 2) }} บาท</p>
+                                <p><strong>เงินประกัน:</strong> {{ number_format($orderdetail->deposit, 2) }} บาท</p>
 
+                                @if ($additional->count() > 0)
+                                    @foreach ($additional as $item)
+                                        @if ($item->charge_type == 1)
+                                            <p><strong>รายได้จากการหักเงินประกัน:</strong>
+                                                {{ number_format($item->amount, 2) }} บาท</p>
+                                        @elseif($item->charge_type == 2)
+                                            <p><strong>รายได้จากการคืนชุดล่าช้า:</strong>
+                                                {{ number_format($item->amount, 2) }}
+                                                บาท</p>
+                                        @elseif($item->charge_type == 3)
+                                            <p><strong>รายได้จากค่าธรรมเนียมขยายระยะเวลาเช่า:</strong>
+                                                {{ number_format($item->amount, 2) }} บาท</p>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <p><strong>รายได้จากการหักเงินประกัน:</strong> 0.00 บาท</p>
+                                @endif
+                            </div>
+                        </div>
 
+                        <p><strong>หมายเหตุ:</strong> ไม่มีความเสียหายหรือการปรับแต่งเพิ่มเติม เงินประกันคืนเต็มจำนวน</p>
                     </div>
                 </div>
             </div>
+
+
+
+
+
+
+
         </div>
+    </div>
 
 
 
@@ -530,8 +576,8 @@
 
 
     {{-- modalปรับแก้ไขชุดสำเร็จ   --}}
-    <div class="modal fade" id="updatestatusadjust" tabindex="-1" role="dialog" aria-labelledby="updatestatusadjustLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="updatestatusadjust" tabindex="-1" role="dialog"
+        aria-labelledby="updatestatusadjustLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form action="{{ route('employee.actionupdatestatusadjustdress', ['id' => $orderdetail->id]) }}"

@@ -30,6 +30,7 @@ use App\Models\Dressimage;
 use App\Models\Dressmeaadjustment;
 use App\Models\Dressmea;
 use App\Models\AdditionalChange;
+use App\Models\AdjustmentRound;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -81,8 +82,88 @@ class OrderController extends Controller
     {
         $orderdetail = Orderdetail::find($id);
         $dress_adjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
-        return view('employeecutdress.manageadjust', compact('orderdetail', 'dress_adjusts'));
+        $date = Date::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        return view('employeecutdress.manageadjust', compact('orderdetail', 'dress_adjusts', 'date'));
     }
+
+    // บันทึกการปรับแก้ชุดกรณีตัดชุด\
+    public function savecutadjust(Request $request, $id)
+    {
+        $orderdetail = Orderdetail::find($id);
+        //ตารางorderdetail
+        $orderdetail->status_detail = "แก้ไขชุด";
+        $orderdetail->save();
+
+        //ตารางorderdetailstatus
+        $create_status = new Orderdetailstatus();
+        $create_status->order_detail_id = $id;
+        $create_status->status = "แก้ไขชุด";
+        $create_status->save();
+
+        // ตารางdate
+        $create_date = new Date() ; 
+        $create_date->order_detail_id = $id;
+        $create_date->pickup_date = $request->input('new_date') ; 
+        $create_date->save();
+
+        $round = AdjustmentRound::where('order_detail_id', $id)->max('round_number');
+        $round = $round + 1; //แก้ไขครั้งที่
+
+        // สร้างการแก้ไขครั้งที่
+        $create_round = new AdjustmentRound();
+        $create_round->order_detail_id = $id;
+        $create_round->round_number = $round;
+        $create_round->save();
+
+        if ($request->input('adjust_name_')) {
+            $adjust_name = $request->input('adjust_name_');
+            $old = $request->input('old_');
+            $new = $request->input('new_');
+            foreach ($adjust_name as $index => $name) {
+                if ($old[$index] != $new[$index]) {
+                    $create_adjust = new Dressmeasurementcutedit();
+                    $create_adjust->adjustment_id = $request->input('adjust_id') ; 
+                    $create_adjust->adjustment_round_id = $create_round->id;
+                    $create_adjust->order_detail_id = $id;
+                    $create_adjust->name = $name;
+                    $create_adjust->old_size = $old[$index];
+                    $create_adjust->edit_new_size = $new[$index];
+                    $create_adjust->save();
+                }
+            }
+        }
+        if ($request->input('dec_des_')) {
+            $dec_des = $request->input('dec_des_');
+            $dec_price = $request->input('dec_price_');
+            foreach ($dec_des as $index => $des) {
+                $create_dec = new Decoration();
+                $create_dec->order_detail_id = $id;
+                $create_dec->adjustment_round_id = $create_round->id;
+                $create_dec->decoration_description = $des;
+                $create_dec->decoration_price = $dec_price[$index];
+                $create_dec->save();
+            }
+        }
+    return redirect()->route('employee.ordertotaldetailshow',['id' => $id]) ; 
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     //ฟังชั่นแยกหน้า orderdetail
@@ -142,8 +223,8 @@ class OrderController extends Controller
             ->first();
 
 
-        $his_dress_adjust = Dressmeasurementcutedit::where('order_detail_id',$id)->get() ;     
-        return view('employeerentdress.managedetailrentdress', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button','his_dress_adjust'));
+        $his_dress_adjust = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
+        return view('employeerentdress.managedetailrentdress', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust'));
     }
 
 
@@ -209,7 +290,8 @@ class OrderController extends Controller
             ->value('status');
         $dress_edit_cut = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
         $dress_adjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
-        return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut'));
+        $round = AdjustmentRound::where('order_detail_id',$id)->get() ;
+        return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut','round'));
     }
 
 
@@ -292,7 +374,7 @@ class OrderController extends Controller
         //เช็ควันที่
         $value_start_date = $request->input('new_pickup_date');
         $value_end_date = $request->input('new_return_date');
-      
+
 
 
         $pickup = Carbon::parse($request->input('new_pickup_date'));
@@ -308,7 +390,7 @@ class OrderController extends Controller
 
         $check_reservation = Reservation::where('status_completed', 0)
             ->where('dress_id', $dress->id)
-            ->whereNot('id',$reser->id)
+            ->whereNot('id', $reser->id)
             ->get();
 
         $condition = true;

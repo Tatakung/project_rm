@@ -62,7 +62,7 @@
 
         @php
             $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)
-                ->orderBy('created_at', 'asc')
+                ->orderBy('created_at', 'desc')
                 ->first();
         @endphp
 
@@ -315,12 +315,6 @@
 
 
 
-
-
-
-
-
-
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('ตัดชุดเสร็จสิ้น', $list_status)) active @endif">
                                     <i class="fas fa-check"></i>
@@ -349,34 +343,60 @@
                             </div>
                             <div class="status-line "></div>
 
-                            {{-- <div class="status-step text-center">
-                                <div class="status-icon @if (in_array('ตัดชุดเสร็จสิ้น', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <p>แก้ไขชุด</p>
-                                <small>
-                                    <p>
-                                        @php
-                                            $created_at = App\Models\Orderdetailstatus::where(
-                                                'order_detail_id',
-                                                $orderdetail->id,
-                                            )
-                                                ->where('status', 'แก้ไขชุด')
-                                                ->first();
-                                            if ($created_at) {
-                                                $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    ->addHours(7)
-                                                    ->format('d/m/Y H:i');
-                                            } else {
-                                                $text_date = 'รอดำเนินการ';
-                                            }
-                                        @endphp
-                                        {{ $text_date }}
-                                    </p>
-                                </small>
-                            </div>
 
-                            <div class="status-line "></div> --}}
+
+
+
+
+
+                            @if (in_array('แก้ไขชุด', $list_status))
+                                <div class="status-step text-center">
+                                    <div class="status-icon @if (in_array('แก้ไขชุด', $list_status)) active @endif">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <p>แก้ไขชุด</p>
+                                    <small>
+                                        <p>
+                                            @php
+                                                $created_at = App\Models\Orderdetailstatus::where(
+                                                    'order_detail_id',
+                                                    $orderdetail->id,
+                                                )
+                                                    ->where('status', 'แก้ไขชุด')
+                                                    ->orderBy('created_at', 'desc')
+                                                    ->first();
+                                                if ($created_at) {
+                                                    $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                        ->addHours(7)
+                                                        ->format('d/m/Y H:i');
+                                                } else {
+                                                    $text_date = 'รอดำเนินการ';
+                                                }
+                                            @endphp
+                                            {{ $text_date }}
+                                        </p>
+                                    </small>
+                                </div>
+                                <div class="status-line "></div>
+                            @endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('ส่งมอบชุดแล้ว', $list_status)) active @endif">
                                     <i class="fas fa-check"></i>
@@ -432,7 +452,7 @@
 
                         @php
                             $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)
-                                ->orderBy('created_at', 'asc')
+                                ->orderBy('created_at', 'desc')
                                 ->first();
                         @endphp
 
@@ -467,14 +487,23 @@
                         </p>
 
 
-
-
                         <p><i class="bi bi-check-circle"></i> สถานะ : @if ($orderdetail->status_payment == 1)
                                 ชำระเงินมัดจำแล้ว
                             @elseif($orderdetail->status_payment == 2)
                                 ชำระเงินเต็มจำนวนแล้ว
                             @endif
                         </p>
+
+                        @php
+                            $user_id = App\Models\Order::where('id', $orderdetail->order_id)->value('user_id');
+                            $user = App\Models\User::find($user_id);
+                        @endphp
+                        <p><span class="bi bi-person"></span> พนักงานผู้รับออเดอร์ : คุณ{{ $user->name }}
+                            {{ $user->lname }}</p>
+
+
+
+
                     </div>
                 </div>
             </div>
@@ -516,59 +545,114 @@
             </div>
         </div>
 
-        @if($imagerent->count() > 0 )
+        @if ($imagerent->count() > 0)
+            <div class="row mt-3 mb-3">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5 class="card-title">รูปภาพแสดงตัวแบบสำหรับตัดเย็บ</h5>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                @foreach ($imagerent as $item)
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                                        <div class="card h-100 shadow-sm">
+                                            <img src="{{ asset('storage/' . $item->image) }}" alt="Image description"
+                                                style="width: 100%; height: 300px;">
+                                            <div class="card-body">
+                                                <p class="card-text">{{ $item->description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if($round->count() > 0 )
         <div class="row mt-3 mb-3">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 class="card-title">รูปภาพแสดงตัวแบบสำหรับตัดเย็บ</h5>
+                                <h5 class="card-title">การแก้ไขและเพิ่มเติม (หากมีการแก้ไข)</h5>
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            @foreach ($imagerent as $item)
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card h-100 shadow-sm">
-                                        <img src="{{ asset('storage/' . $item->image) }}" alt="Image description"
-                                            style="width: 100%; height: 300px;">
-                                        <div class="card-body">
-                                            <p class="card-text">{{ $item->description }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                        @foreach ($round as $item)
+                            <p><strong>แก้ไขชุดครั้งที่ {{ $item->round_number }}</strong></p>
+                            @php
+                                $mea_adjust = App\Models\Dressmeasurementcutedit::where(
+                                    'adjustment_round_id',
+                                    $item->id,
+                                )->get();
+                            @endphp
+                            
+                            
+                            @if($mea_adjust->count() > 0 )
+                            <div class="col-md-12">
+                                @foreach ($mea_adjust as $ad)
+                                    <li>ปรับ {{ $ad->name }} จาก {{ $ad->old_size }} เป็น {{ $ad->edit_new_size }} นิ้ว
+                                    </li>
+                                @endforeach
+                            </div>
+                            @endif
+
+                            @php
+                                $decoration = App\Models\Decoration::where('adjustment_round_id', $item->id)->get();
+
+                            @endphp
+
+                            @if($decoration->count() > 0 )
+                            <div class="col-md-12 mt-4">
+                                <p>รายการเพิ่มเติม</p>
+                                @foreach ($decoration as $dec)
+                                <li>{{$dec->decoration_description}} {{$dec->decoration_price}}บาท</li>
+                                @endforeach
+                            </div>
+                            @endif
+
+
+
+                        @endforeach
+                        {{-- <div class="row mb-3">
+                            <div class="col-md-12">
+                                <p><strong>แก้ไขและปรับขนาดชุดครั้งที่ 1 </strong></p>
+                                <li>ปรับความยาวกระโปรงจาก 24 -> 26.5 นิ้ว</li>
+                                <li>ปรับไหล่กว้างจาก 26.00 -> 25.45 นิ้ว</li>
+                                <li>รอบคอ 12.00 -> 13.50 นิ้ว</li>
+                            </div>
+                            <div class="col-md-12">
+                                <p>รายละเอียดที่ต้องแก้ไข</p>
+                                <span>จะต้องมีการขยับส่วนของส่วนหัวไหล่เข้ามาอีกสัก 5 เซน เพื่อให้มันประชิดกับรอบหอ</span>
+                            </div>
+                            <div class="col-md-12">
+                                <p>รายการเพิ่มเติม(ถ้ามี)</p>
+                                <li>เพิ่มลูกไม้ตรงบริเวณหัวไหล่ 50 บาท</li>
+                                <li>เพิ่ม</li>
+                            </div>
+                        </div> --}}
+
+
+
+
+
+
+
 
                     </div>
                 </div>
             </div>
         </div>
         @endif
-
-
-        <div class="row mt-3 mb-3">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5 class="card-title">การแก้ไขและเพิ่มเติม (ร่างไว้คร่าวๆ)</h5>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <p><strong>แก้ไขครั้งที่ 1 </strong></p>
-                                <p>ปรับความยาวกระโปรงจาก 24 -> 26.5 นิ้ว</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
 
 
 

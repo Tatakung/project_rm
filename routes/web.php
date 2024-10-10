@@ -222,6 +222,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::get('/employee/ordertotal/detail/show/cutadjust/{id}', [OrderController::class, 'cutadjust'])->name('employee.cutadjust');
+    Route::post('/employee/ordertotal/detail/show/cutadjust/save/{id}', [OrderController::class, 'savecutadjust'])->name('employee.savecutadjust');
 
 
     //action ต่างๆภายใน detail

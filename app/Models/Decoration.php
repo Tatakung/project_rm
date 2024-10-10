@@ -14,6 +14,7 @@ class Decoration extends Model
         'order_detail_id',
         'decoration_description',
         'decoration_price',
+        'adjustment_round_id',
     ];
 
      //ตารางdecoraction เป็น M - 1 ของตาราง orderdetail

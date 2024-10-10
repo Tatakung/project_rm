@@ -11,19 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dressmeasurementcutedits', function (Blueprint $table) {
+        Schema::create('adjustment_rounds', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('adjustment_id')->nullable();
-
             $table->unsignedBigInteger('order_detail_id')->nullable();
-            
-            $table->decimal('old_size', 9, 2)->nullable();
-            $table->decimal('edit_new_size', 9, 2)->nullable();
-            $table->integer('adjustment_number')->nullable();
-            $table->string('status')->nullable();
+            $table->integer('round_number')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('adjustment_id')->references('id')->on('dressmeaadjustments')->onDelete('cascade');
             $table->foreign('order_detail_id')->references('id')->on('orderdetails')->onDelete('cascade');
         });
     }
@@ -33,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dressmeasurementcutedits');
+        Schema::dropIfExists('adjustment_rounds');
     }
 };

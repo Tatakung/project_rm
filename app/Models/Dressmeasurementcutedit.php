@@ -21,6 +21,6 @@ class Dressmeasurementcutedit extends Model
         'dress_id',
         'shirtitems_id',
         'skirtitems_id' , 
-        
+        'adjustment_round_id',
     ];
 }

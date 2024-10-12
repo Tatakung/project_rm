@@ -86,13 +86,14 @@
 
                         <div class="col-md-4">
                             <label for="amount" class="form-label">จำนวนชุดที่ตัด</label>
-                            <input class="form-control" type="number" value="1" min="1" max="100" name="amount" id="amount" required>
+                            <input class="form-control" type="number" value="1" min="1" max="100"
+                                name="amount" id="amount" required>
                         </div>
 
                     </div>
 
 
-                    
+
 
                     <div class="row mt-4">
                         <div class="col-md-6">
@@ -117,16 +118,47 @@
                     <div class="row mt-4">
                         <div class="col-md-6">
                             <label for="" class="form-label">ราคาตัดชุด (บาท)</label>
-                            <input type="number" name="price" class="form-control" min="0" step="0.01" required
-                                placeholder="กรอกกจำนวนเงิน">
+                            <input type="number" name="price" id="price" class="form-control" min="0"
+                                step="0.01" required placeholder="กรอกกจำนวนเงิน">
                         </div>
 
                         <div class="col-md-6">
                             <label for="" class="form-label">เงินมัดจำ (บาท)</label>
-                            <input type="number" class="form-control" name="deposit" min="0" step="0.01" required
-                                placeholder="กรอกจำนวนเงิน">
+                            <input type="number" class="form-control" name="deposit" id="deposit" min="0"
+                                step="0.01" required placeholder="กรอกจำนวนเงิน">
                         </div>
                     </div>
+                    <script>
+                        var price = document.getElementById('price');
+                        var deposit = document.getElementById('deposit');
+
+                        deposit.addEventListener('input', function() {
+                            var convert_deposit = parseFloat(deposit.value);
+                            var convert_price = parseFloat(price.value);
+                            if (convert_deposit > convert_price) {
+                                deposit.value = convert_price;
+                            }
+                        });
+                        price.addEventListener('input',function(){
+                            deposit.value = '' ;
+
+                        }) ; 
+
+
+                    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                     <div class="row mt-4">
                         <div class="col-md-12">

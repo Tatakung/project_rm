@@ -128,31 +128,6 @@
                                     </div>
 
 
-                                    <!-- ข้อมูลการวัด -->
-                                    <h5 class="mb-4">ขนาดของชุดล่าสุด</h5>
-
-                                    @foreach ($measument_no_separate_now_modal as $measument_no_separate_now_modal)
-                                        <div class="row mb-3">
-                                            <div class="col-md-4">
-                                                <input type="hidden" name="mea_now_id_[]"
-                                                    value="{{ $measument_no_separate_now_modal->id }}">
-                                                <input type="text" class="form-control" name="mea_now_name_[]"
-                                                    value="{{ $measument_no_separate_now_modal->measurementnow_dress_name }}"
-                                                    placeholder="ชื่อการวัด" readonly>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="number" class="form-control" name="mea_now_number_[]"
-                                                    value="{{ $measument_no_separate_now_modal->measurementnow_dress_number }}"
-                                                    placeholder="หมายเลขการวัด"
-                                                    min="{{ $measument_no_separate_now_modal->measurementnow_dress_number_start - 4 }}"
-                                                    max="{{ $measument_no_separate_now_modal->measurementnow_dress_number_start + 4 }}"
-                                                    step="0.01" required>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <p>นิ้ว</p>
-                                            </div>
-                                        </div>
-                                    @endforeach
 
                             </div>
                         </div>
@@ -183,15 +158,17 @@
                         <p><strong>เงินมัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
                         <p><strong>ค่าประกันชุด:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท
                         </p>
-                    
+
 
                         <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง
-                            <span>
-                                <a href="{{route('admin.historydressrent',['id'=>$datadress->id])}}">ดูประวัติ</a>
-                            </span>
+                            {{-- <span
+                                @if ($check_admin == 1) style="display: block ; "
+                            @elseif($check_admin == 2)
+                            style="display: none ; " @endif><a
+                                    href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}">ดูประวัติ</a></span> --}}
                         </p>
 
-                        
+
                         {{-- สำหรับแสดงประวัติการซ่อม --}}
                         @php
                             $reservation = App\Models\Reservation::where('dress_id', $datadress->id)->get();
@@ -215,22 +192,15 @@
                         @endphp
                         <p><strong>จำนวนครั้งที่ซ่อม</strong>
                             {{ $historyrepair->count() }} ครั้ง
-                            <span>
-                                <a href="">ดูประวัติ</a>
-                            </span>
+                            {{-- <span
+                                @if ($check_admin == 1) style="display: block ; "
+                            @elseif($check_admin == 2)
+                            style="display: none ; " @endif><a
+                                    href="">ดูประวัติ</a></span> --}}
                         </p>
                         <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p>
+
                     </div>
-
-                    
-
-
-
-
-
-
-
-
 
 
                     <div class="col-md-5">
@@ -255,21 +225,39 @@
                                     <tr>
                                         <td>{{ $mea_dress->mea_dress_name }}<span
                                                 style="font-size: 14px; color: rgb(197, 21, 21)"> (ปรับได้
-                                                {{ $mea_dress->initial_min }}-{{ $mea_dress->initial_max}})</span>
+                                                {{ $mea_dress->initial_min }}-{{ $mea_dress->initial_max }})</span>
                                         </td>
                                         <td>{{ $mea_dress->current_mea }}</td>
                                         <td>นิ้ว</td>
                                     </tr>
-                                    {{-- @php
-                                        $list_check_mea[] = $measument_no_separate_now->measurementnow_dress_name;
-                                    @endphp --}}
                                 @endforeach
                             </tbody>
                         </table>
-
-
-
                     </div>
+
+
+
+
+
+
+
+                    <div class="mt-3"
+                        @if ($check_admin == 1) style="display: block ; "
+                    @elseif($check_admin == 2)
+                    style="display: none ; " @endif>
+                        <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}"
+                            class="btn btn-outline-primary mr-2">
+                            <i class="bi bi-clock-history"></i> ประวัติการเช่า
+                        </a>
+                        <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}"
+                            class="btn btn-outline-secondary">
+                            <i class="bi bi-tools"></i> ประวัติการซ่อม
+                        </a>
+                    </div>
+
+
+
+
                 </div>
 
 
@@ -277,7 +265,18 @@
 
 
 
+
+
+
             </div>
+
+
+
+
+
+
+
+
         </div>
     </div>
     {{-- <div class="container">
@@ -395,117 +394,6 @@
             calendar.render();
         });
     </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#reservation_history">กดดูประวัติการเช่า</button>
-
-
-
-
-
-    <div class="modal fade" id="reservation_history" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>ประวัติการเช่า{{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
-                    </h3>
-                </div>
-                <div class="modal-body">
-                    <div class="container">
-                        @if ($history_reservation->count() > 0)
-                            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                                <thead>
-                                    <tr style="background-color: #f2f2f2;">
-                                        <th>ลำดับ</th>
-                                        <th>ชื่อลูกค้า</th>
-                                        <th>วันที่รับ</th>
-                                        <th>วันที่คืน</th>
-                                        <th>วันที่คืนจริง</th>
-                                        <th>สถานะการคืน</th>
-                                        <th>ค่าปรับ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($history_reservation as $index => $history)
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>
-                                                @php
-                                                    $customer_id = App\Models\Order::where(
-                                                        'id',
-                                                        $history->order_id,
-                                                    )->value('customer_id');
-                                                    $customer = App\Models\Customer::find($customer_id);
-                                                @endphp
-                                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
-                                            </td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($history->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                                {{ \Carbon\Carbon::parse($history->pickup_date)->year + 543 }}
-                                            </td>
-                                            {{-- คอลัมน?์ วันัดคืน --}}
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($history->return_date)->locale('th')->isoFormat('D MMMM') }}
-                                                {{ \Carbon\Carbon::parse($history->return_date)->year + 543 }}
-                                            </td>
-                                            {{-- คอลัมน์วันนัดคืนจริง --}}
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($history->real_return_date)->locale('th')->isoFormat('D MMM') }}
-                                                {{ \Carbon\Carbon::parse($history->real_return_date)->year + 543 }}
-                                            </td>
-                                            <td>
-                                                @php
-                                                    $return = \Carbon\Carbon::parse($history->return_date);
-                                                    $returnreal = \Carbon\Carbon::parse($history->real_return_date);
-                                                    $text = null;
-                                                    if ($returnreal->gt($return)) {
-                                                        $text = 'คืนล่าช้า';
-                                                    } elseif ($returnreal->eq($return)) {
-                                                        $text = 'คืนตรงเวลา';
-                                                    } else {
-                                                        $text = 'คืนก่อนกำหนด';
-                                                    }
-                                                @endphp
-                                                {{ $text }}
-                                            </td>
-                                            <td>
-                                                @if ($history->total_damage_insurance == 0)
-                                                    -
-                                                @else
-                                                    {{ $history->total_damage_insurance }}
-                                                @endif
-                                            </td>
-
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @endif
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
-                </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
 
 
 

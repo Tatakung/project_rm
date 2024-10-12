@@ -75,7 +75,7 @@
 
                         <div class="col-md-4" id="show_other_input" style="display: none;">
                             <label for="" class="form-label">ระบุประเภทชุดที่ตัด</label>
-                            <input type="text" name="other_input" id="other_input" class="form-control">
+                            <input type="text" name="inputother" id="other_input" class="form-control">
                         </div>
                         <script>
                             var type_dress = document.getElementById('type_dress_id');

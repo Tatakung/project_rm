@@ -69,24 +69,24 @@ class EmployeeController extends Controller
         return view('employee.dressadjust', compact('reservations', 'filer'));
     }
 
-    public function dressadjustfilter(Request $request){
-        $filter_click = $request->input('filter_click') ; 
-        
-        if($filter_click == "today"){
+    public function dressadjustfilter(Request $request)
+    {
+        $filter_click = $request->input('filter_click');
+
+        if ($filter_click == "today") {
             $reservations = Reservation::where('status_completed', 0)
-            ->where('status', 'ถูกจอง')
-            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
-            ->whereDate('start_date',now())
-            ->get();
-        $filer = 'today' ; 
-        }
-        elseif($filter_click == "total"){
-            return $this->dressadjust() ; 
+                ->where('status', 'ถูกจอง')
+                ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                ->whereDate('start_date', now())
+                ->get();
+            $filer = 'today';
+        } elseif ($filter_click == "total") {
+            return $this->dressadjust();
         }
         return view('employee.dressadjust', compact('reservations', 'filer'));
     }
 
-   
+
 
     public function listdressreturn()
     {
@@ -94,24 +94,24 @@ class EmployeeController extends Controller
             ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
             ->where('status', 'กำลังเช่า')
             ->get();
-        $filer = 'total' ;
-        return view('employee.listdressreturn', compact('listdressreturns','filer'));
+        $filer = 'total';
+        return view('employee.listdressreturn', compact('listdressreturns', 'filer'));
     }
 
-    public function listdressreturnfilter(Request $request){
-        $filter_click = $request->input('filter_click') ; 
-        if($filter_click == 'today'){
+    public function listdressreturnfilter(Request $request)
+    {
+        $filter_click = $request->input('filter_click');
+        if ($filter_click == 'today') {
             $listdressreturns = Reservation::where('status_completed', 0)
-            ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
-            ->where('status', 'กำลังเช่า')
-            ->whereDate('end_date',now())
-            ->get();
-        $filer = 'today' ;
+                ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
+                ->where('status', 'กำลังเช่า')
+                ->whereDate('end_date', now())
+                ->get();
+            $filer = 'today';
+        } elseif ($filter_click == 'total') {
+            return $this->listdressreturn();
         }
-        elseif($filter_click == 'total'){
-            return $this->listdressreturn() ; 
-        }
-        return view('employee.listdressreturn', compact('listdressreturns','filer'));
+        return view('employee.listdressreturn', compact('listdressreturns', 'filer'));
     }
 
 
@@ -143,8 +143,15 @@ class EmployeeController extends Controller
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
             ->get();
 
+        $cutdresss_page_five = Orderdetail::where('type_order', 1)
+            ->where('status_detail', 'แก้ไขชุดเสร็จสิ้น')
+            ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+            ->get();
 
-        return view('employee.cutdressadjust', compact('cutdresss_page_one', 'cutdresss_page_two', 'cutdresss_page_three', 'cutdresss_page_four'));
+
+
+
+        return view('employee.cutdressadjust', compact('cutdresss_page_one', 'cutdresss_page_two', 'cutdresss_page_three', 'cutdresss_page_four','cutdresss_page_five'));
     }
 
 

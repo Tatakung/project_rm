@@ -38,12 +38,7 @@
 
 
         <div class="card mb-4 shadow-sm bg-body rounded">
-            {{-- <div class="card-header">
-                <i class="bi bi-info-circle"></i> รายละเอียดชุด
-                <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal">
-                    <i class="bi bi-pencil-square text-dark"></i>
-                </button>
-            </div> --}}
+
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item">
@@ -84,7 +79,7 @@
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
-                                                                                                            </p> -->
+                                                                                                                            </p> -->
                                 {{-- <p><strong>สถานะชุด:</strong> <span
                                         @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
                                         {{ $datadress->dress_status }}</span></p> --}}
@@ -103,9 +98,7 @@
 
 
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง
-                                    <span>
-                                        <a href="">ดูประวัติ</a>
-                                    </span>
+                                    
                                 </p>
                                 <p><strong>คำอธิบายชุด:</strong> {{ $datadress->dress_description }}</p>
                             </div>
@@ -121,7 +114,7 @@
                                             <tr>
                                                 <td>{{ $dress_mea_totaldress->mea_dress_name }}<span
                                                         style="font-size: 14px; color: rgb(197, 21, 21)"> (ปรับได้
-                                                        {{ $dress_mea_totaldress->initial_min  }}-{{ $dress_mea_totaldress->initial_max }}
+                                                        {{ $dress_mea_totaldress->initial_min }}-{{ $dress_mea_totaldress->initial_max }}
                                                         นิ้ว)</span>
                                                 </td>
                                                 <td col-1>{{ $dress_mea_totaldress->current_mea }} </td>
@@ -136,6 +129,24 @@
                                 </div>
                                 </p>
                             </div>
+
+
+                            <div class="mt-3"
+                                @if ($check_admin == 1) style="display: block ; "
+                    @elseif($check_admin == 2)
+                    style="display: none ; " @endif>
+                                <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}"
+                                    class="btn btn-outline-primary mr-2">
+                                    <i class="bi bi-clock-history"></i> ประวัติการเช่า
+                                </a>
+                                <a href="{{route('admin.historydressrepair', ['id' => $datadress->id])}}"
+                                    class="btn btn-outline-secondary">
+                                    <i class="bi bi-tools"></i> ประวัติการซ่อม
+                                </a>
+                            </div>
+
+
+
                         </div>
                     </div>
 
@@ -146,18 +157,21 @@
 
                         </div>
                         <p>
-                            <span style="display: inline-block; width: 12px; height: 12px; background-color: #ff0000; border-radius: 50%; margin-right: 5px;"></span>
-                             เช่าทั้งชุด
+                            <span
+                                style="display: inline-block; width: 12px; height: 12px; background-color: #ff0000; border-radius: 50%; margin-right: 5px;"></span>
+                            เช่าทั้งชุด
                         </p>
                         <p>
-                            <span style="display: inline-block; width: 12px; height: 12px; background-color: #3788d8; border-radius: 50%; margin-right: 5px;"></span>
-                             เช่าเฉพาะเสื้อ
+                            <span
+                                style="display: inline-block; width: 12px; height: 12px; background-color: #3788d8; border-radius: 50%; margin-right: 5px;"></span>
+                            เช่าเฉพาะเสื้อ
                         </p>
                         <p>
-                            <span style="display: inline-block; width: 12px; height: 12px; background-color: #257e4a; border-radius: 50%; margin-right: 5px;"></span>
-                             เช่าเฉพาะผ้าถุง
+                            <span
+                                style="display: inline-block; width: 12px; height: 12px; background-color: #257e4a; border-radius: 50%; margin-right: 5px;"></span>
+                            เช่าเฉพาะผ้าถุง
                         </p>
-                        
+
 
                     </div>
 
@@ -195,12 +209,12 @@
                                 <p><strong>ค่าประกัน:</strong> {{ number_format($shirtitem->shirt_damage_insurance, 2) }}
                                     บาท</p>
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $shirtitem->shirtitem_rental }} ครั้ง
-                                    <a href="">
+                                    {{-- <a href="">
                                         ดูประวัติ
-                                    </a>
+                                    </a> --}}
                                 </p>
                                 <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ
-                                    <a href="">ดูประวัติ</a>
+                                    {{-- <a href="">ดูประวัติ</a> --}}
                                 </p>
                             </div>
                             <div class="col-md-5">
@@ -218,7 +232,7 @@
                                             <tr>
                                                 <td>{{ $dress_mea_shirt->mea_dress_name }}<span
                                                         style="font-size: 14px; color: rgb(197, 21, 21)"> (ปรับได้
-                                                        {{ $dress_mea_shirt->initial_min  }}-{{ $dress_mea_shirt->initial_max }}
+                                                        {{ $dress_mea_shirt->initial_min }}-{{ $dress_mea_shirt->initial_max }}
                                                         นิ้ว)</span>
                                                 </td>
                                                 <td col-1>{{ $dress_mea_shirt->current_mea }} </td>
@@ -281,14 +295,14 @@
                                 <p><strong>ค่าประกัน:</strong>
                                     {{ number_format($skirtitem->skirt_damage_insurance, 2) }} บาท</p>
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $skirtitem->skirtitem_rental }} ครั้ง
-                                    <span>
+                                    {{-- <span>
                                         <a href="">ดูประวัติ</a>
-                                    </span>
+                                    </span> --}}
                                 </p>
                                 <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ
-                                    <span>
+                                    {{-- <span>
                                         <a href="">ดูประวัติ</a>
-                                    </span>
+                                    </span> --}}
                                 </p>
                             </div>
                             <div class="col-md-5">

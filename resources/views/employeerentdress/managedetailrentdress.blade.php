@@ -37,9 +37,19 @@
             z-index: 0;
         }
 
-        .status-line.active {
-            background-color: #f9e746;
+        .status-line::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            /* Adjust this value to align the arrow */
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 10px solid #e9ecef;
+            /* Arrow color */
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
         }
+
 
         .status-step p {
             margin-bottom: 0;
@@ -548,14 +558,24 @@
                     </div>
                 </div>
             </div>
-
-
-
-
-
-
-
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     </div>
 
 

@@ -13,5 +13,6 @@ class AdjustmentRound extends Model
     protected $fillable = [
         'order_detail_id',
         'round_number',
+        'user_id'
     ];
 }

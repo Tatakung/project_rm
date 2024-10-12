@@ -117,7 +117,7 @@ class DressController extends Controller
             $mea_dress_number = $request->input('measurement_dress_number_');
             $mea_dress_unit = $request->input('measurement_dress_unit_');
 
-         
+
             // ปรับเป็น 2 รูป
             if ($request->hasFile('add_image')) {
                 $add_image = new Dressimage();
@@ -137,15 +137,15 @@ class DressController extends Controller
                 if ($request->input('name_total_') != null) {
                     $name_total = $request->input('name_total_');
                     $number_total = $request->input('number_total_');
-                    $number_total_min = $request->input('number_total_min_') ; 
-                    $number_total_max = $request->input('number_total_max_') ; 
+                    $number_total_min = $request->input('number_total_min_');
+                    $number_total_max = $request->input('number_total_max_');
                     foreach ($name_total as $index => $name) {
                         $addmea = new Dressmea();
                         $addmea->dress_id  = $dress->id;
                         $addmea->mea_dress_name = $name;
                         $addmea->initial_mea = $number_total[$index];
-                        $addmea->initial_min = $number_total_min[$index] ; 
-                        $addmea->initial_max = $number_total_max[$index] ; 
+                        $addmea->initial_min = $number_total_min[$index];
+                        $addmea->initial_max = $number_total_max[$index];
                         $addmea->current_mea = $number_total[$index];
                         $addmea->save();
                     }
@@ -177,16 +177,16 @@ class DressController extends Controller
                 //เสื้อตารางdressmeasurement
                 $name_shirt = $request->input('name_shirt_');
                 $number_shirt = $request->input('number_shirt_');
-                $number_shirt_min = $request->input('number_shirt_min_') ; 
-                $number_shirt_max = $request->input('number_shirt_max_') ; 
+                $number_shirt_min = $request->input('number_shirt_min_');
+                $number_shirt_max = $request->input('number_shirt_max_');
                 foreach ($name_shirt as $index => $name_sh) {
                     $add_item_shiry = new Dressmea();
                     $add_item_shiry->dress_id = $dress->id;
                     $add_item_shiry->shirtitems_id  = $add_shirtitem->id;
                     $add_item_shiry->mea_dress_name = $name_sh;
                     $add_item_shiry->initial_mea = $number_shirt[$index];
-                    $add_item_shiry->initial_min = $number_shirt_min[$index] ; 
-                    $add_item_shiry->initial_max = $number_shirt_max[$index] ; 
+                    $add_item_shiry->initial_min = $number_shirt_min[$index];
+                    $add_item_shiry->initial_max = $number_shirt_max[$index];
                     $add_item_shiry->current_mea = $number_shirt[$index];
                     $add_item_shiry->save();
                 }
@@ -194,16 +194,16 @@ class DressController extends Controller
                 //กระโปรงตารางdressmeasurement
                 $name_skirt = $request->input('name_skirt_');
                 $number_skirt = $request->input('number_skirt_');
-                $number_skirt_min = $request->input('number_skirt_min_') ; 
-                $number_skirt_max = $request->input('number_skirt_max_') ; 
+                $number_skirt_min = $request->input('number_skirt_min_');
+                $number_skirt_max = $request->input('number_skirt_max_');
                 foreach ($name_skirt as $index => $name_sk) {
                     $add_item_skiry = new Dressmea();
                     $add_item_skiry->dress_id = $dress->id;
                     $add_item_skiry->skirtitems_id  = $add_skirtitem->id;
                     $add_item_skiry->mea_dress_name = $name_sk;
                     $add_item_skiry->initial_mea = $number_skirt[$index];
-                    $add_item_skiry->initial_min = $number_skirt_min[$index] ; 
-                    $add_item_skiry->initial_max = $number_skirt_max[$index] ; 
+                    $add_item_skiry->initial_min = $number_skirt_min[$index];
+                    $add_item_skiry->initial_max = $number_skirt_max[$index];
                     $add_item_skiry->current_mea = $number_skirt[$index];
                     $add_item_skiry->save();
                 }
@@ -305,9 +305,11 @@ class DressController extends Controller
             // ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
             ->get();
 
-
         $mea_dress = Dressmea::where('dress_id', $id)->get();
-        return view('admin.dressdetail', compact('date_reservations', 'datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now', 'history_reservation'));
+
+
+        $check_admin = Auth::user()->is_admin;
+        return view('admin.dressdetail', compact('date_reservations', 'datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now', 'history_reservation', 'check_admin'));
     }
 
     // แยกได้
@@ -433,7 +435,9 @@ class DressController extends Controller
             ->get();
 
 
-        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress', 'date_reservations_dress', 'date_reservations_shirt', 'date_reservations_skirt'));
+        $check_admin = Auth::user()->is_admin;
+
+        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress', 'date_reservations_dress', 'date_reservations_shirt', 'date_reservations_skirt','check_admin'));
     }
 
 
@@ -976,27 +980,56 @@ class DressController extends Controller
     {
         $dress = Dress::find($id);
         if ($dress->separable == 1) {
-            return $this->historydressrentNo($id) ; 
+            return $this->historydressrentNo($id);
         } elseif ($dress->separable == 2) {
-            return $this->historydressrentYes($id) ; 
+            return $this->historydressrentYes($id);
         }
     }
 
 
-    private function historydressrentNo($id){
+    private function historydressrentNo($id)
+    {
 
-        $dress = Dress::find($id) ; 
-        $typedress = Typedress::find($dress->type_dress_id) ; 
+        $dress = Dress::find($id);
+        $typedress = Typedress::find($dress->type_dress_id);
         $history_renrdress = Orderdetail::where('dress_id', $id)
             ->where('status_detail', 'คืนชุดแล้ว')
             ->get();
-
-      
-
-        return view('admin.his-dress-rent-history-no',compact('history_renrdress','dress','typedress')) ;  
+        return view('admin.his-dress-rent-history-no', compact('history_renrdress', 'dress', 'typedress'));
     }
 
+    private function historydressrentYes($id)
+    {
+
+        $dress = Dress::find($id);
+
+        $shirt_id = Shirtitem::where('dress_id', $id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $id)->value('id');
 
 
 
+        $typedress = Typedress::find($dress->type_dress_id);
+        $history_renrdress = Orderdetail::where('dress_id', $id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+
+        $history_rentshirt = Orderdetail::where('shirtitems_id', $shirt_id)
+            ->whereNull('skirtitems_id')
+            ->where('dress_id', $id)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+
+        $history_rentskirt = Orderdetail::where('skirtitems_id', $skirt_id)
+            ->whereNull('shirtitems_id')
+            ->where('dress_id', $id)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+
+
+
+
+        return view('admin.his-dress-rent-history-yes', compact('history_renrdress', 'dress', 'typedress', 'history_rentshirt', 'history_rentskirt'));
+    }
 }

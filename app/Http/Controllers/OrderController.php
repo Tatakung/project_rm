@@ -103,9 +103,9 @@ class OrderController extends Controller
         $create_status->save();
 
         // ตารางdate
-        $create_date = new Date() ; 
+        $create_date = new Date();
         $create_date->order_detail_id = $id;
-        $create_date->pickup_date = $request->input('new_date') ; 
+        $create_date->pickup_date = $request->input('new_date');
         $create_date->save();
 
         $round = AdjustmentRound::where('order_detail_id', $id)->max('round_number');
@@ -117,14 +117,17 @@ class OrderController extends Controller
         $create_round->round_number = $round;
         $create_round->save();
 
+
         if ($request->input('adjust_name_')) {
             $adjust_name = $request->input('adjust_name_');
             $old = $request->input('old_');
             $new = $request->input('new_');
+            $adjust_id = $request->input('adjust_id_');
             foreach ($adjust_name as $index => $name) {
+
                 if ($old[$index] != $new[$index]) {
                     $create_adjust = new Dressmeasurementcutedit();
-                    $create_adjust->adjustment_id = $request->input('adjust_id') ; 
+                    $create_adjust->adjustment_id = $adjust_id[$index];
                     $create_adjust->adjustment_round_id = $create_round->id;
                     $create_adjust->order_detail_id = $id;
                     $create_adjust->name = $name;
@@ -134,6 +137,9 @@ class OrderController extends Controller
                 }
             }
         }
+
+
+
         if ($request->input('dec_des_')) {
             $dec_des = $request->input('dec_des_');
             $dec_price = $request->input('dec_price_');
@@ -146,7 +152,7 @@ class OrderController extends Controller
                 $create_dec->save();
             }
         }
-    return redirect()->route('employee.ordertotaldetailshow',['id' => $id]) ; 
+        return redirect()->route('employee.ordertotaldetailshow', ['id' => $id]);
     }
 
 
@@ -276,7 +282,9 @@ class OrderController extends Controller
         $employee = User::find($orderdetail->employee_id);
         $fitting = Fitting::where('order_detail_id', $id)->get();
         $cost = Cost::where('order_detail_id', $id)->get();
-        $date = Date::where('order_detail_id', $id)->get();
+        $Date = Date::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
         $decoration = Decoration::where('order_detail_id', $id)->get();
         $imagerent = Imagerent::where('order_detail_id', $id)->get();
         $mea_dress = Dressmeasurement::where('dress_id', $orderdetail->dress_id)->get();
@@ -290,8 +298,16 @@ class OrderController extends Controller
             ->value('status');
         $dress_edit_cut = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
         $dress_adjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
-        $round = AdjustmentRound::where('order_detail_id',$id)->get() ;
-        return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut','round'));
+        $round = AdjustmentRound::where('order_detail_id', $id)->get();
+
+
+        $route_modal = AdjustmentRound::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+
+
+        return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal'));
     }
 
 
@@ -1038,19 +1054,37 @@ class OrderController extends Controller
                 }
             }
         } elseif ($status == 'แก้ไขชุด') {
+
+
+
             //ตารางorderdetail
             $orderdetail->status_detail = "แก้ไขชุดเสร็จสิ้น";
-            $orderdetail->status_fix_measurement = "แก้ไขแล้ว";
             $orderdetail->save();
             //ตารางorderdetailstatus
             $create_status = new Orderdetailstatus();
             $create_status->order_detail_id = $id;
             $create_status->status = "แก้ไขชุดเสร็จสิ้น";
             $create_status->save();
+
+
+            // เพิ่มว่าใครเป็นคนแก้ไขปรับเพิ่มเติม
+            $round_id = $request->input('round_id');
+            $update_round = AdjustmentRound::find($round_id);
+            $update_round->user_id = Auth::user()->id;
+            $update_round->save();
+
+            if ($request->input('adjust_id_')) {
+                $adjust_id = $request->input('adjust_id_');
+                $new_size = $request->input('new_size_');
+                foreach ($adjust_id as $index => $id) {
+                    $update_adjust_edit = Dressmeaadjustment::find($id);
+                    $update_adjust_edit->new_size = $new_size[$index];
+                    $update_adjust_edit->save();
+                }
+            }
         } elseif ($status == 'แก้ไขชุดเสร็จสิ้น') {
             //ตารางorderdetail
             $orderdetail->status_detail = "ส่งมอบชุดแล้ว";
-            $orderdetail->real_pickup_date = now();
             $orderdetail->save();
             //ตารางorderdetailstatus
             $order_detail_id_for_new = $id;
@@ -1058,6 +1092,7 @@ class OrderController extends Controller
             $create_status->order_detail_id = $order_detail_id_for_new;
             $create_status->status = "ส่งมอบชุดแล้ว";
             $create_status->save();
+
             if ($orderdetail->status_payment == 1) {
                 //ตารางpaymentstatus
                 $create_paymentstatus = new Paymentstatus();
@@ -1076,6 +1111,14 @@ class OrderController extends Controller
                 $create_price->financial_expenses = 0;
                 $create_price->save();
             }
+
+            // ตารางdate
+            $date_id = Date::where('order_detail_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->value('id');
+            $update_date = Date::find($date_id);
+            $update_date->actua_pickup_date = now();
+            $update_date->save();
         }
         return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ !');
     }
@@ -1401,6 +1444,8 @@ class OrderController extends Controller
 
                 //เช็คชุดเดี่ยว เช้คแค่คอลัมน์ dress_id อย่างเดียว เพราะบางทีเช่าทั้งชุดก็จริงแต่ว่า  ตอนเช่าทั้งชุดถึงแม้ว่าจะชุดจะแยกได้ มันระบุแค่ dress_id ฉะนั้น เราต้องเช้คด้วย
                 $reservation_dress = Reservation::where('dress_id', $index->id)
+                    ->whereNull('shirtitems_id')
+                    ->whereNull('skirtitems_id')
                     ->where('status_completed', 0)
                     ->get();
                 foreach ($reservation_dress as $check) {
@@ -1463,6 +1508,7 @@ class OrderController extends Controller
             //เช็คเสื้อก่อนติดไหม 
             $shirt = Shirtitem::where('dress_id', $index->id)->first();
             $reservation = Reservation::where('shirtitems_id', $shirt->id)
+                ->whereNull('skirtitems_id')
                 ->where('status_completed', 0)
                 ->get();
             $past_7_day_start = $pickupdate->copy()->subDays(7);
@@ -1495,6 +1541,8 @@ class OrderController extends Controller
             }
             //เช็คทั้งชุดด้วย เพราะจะเช่าแค่เสื้อได้ ต้องเช็คชุดก่อนว่ามันติดจองทั้งชุดไหม นึกออกปะ 
             $reservation_dress = Reservation::where('dress_id', $index->id)
+                ->whereNull('shirtitems_id')
+                ->whereNull('skirtitems_id')
                 ->where('status_completed', 0)
                 ->get();
             if ($reservation_dress->isNotEmpty()) {
@@ -1559,6 +1607,7 @@ class OrderController extends Controller
             //เช็คแค่กระโปรงก่อน
             $skirt = Shirtitem::where('dress_id', $index->id)->first();
             $reservation = Reservation::where('skirtitems_id', $skirt->id)
+                ->whereNull('shirtitems_id')
                 ->where('status_completed', 0)
                 ->get();
             $past_7_day_start = $pickupdate->copy()->subDays(7);
@@ -1592,6 +1641,8 @@ class OrderController extends Controller
             }
             // เช็คทั้งชุดด้วย  เพราะว่า ถ้าจะเช่ากระโปรงอะ จะไปเช็คแค่กระโปรงมันไม่ได้ มันต้องเช็คทั้งชุดก่อนว่าติดจองไหม 
             $reservation_dress = Reservation::where('dress_id', $index->id)
+                ->whereNull('shirtitems_id')
+                ->whereNull('skirtitems_id')
                 ->where('status_completed', 0)
                 ->get();
             if ($reservation_dress->isNotEmpty()) {

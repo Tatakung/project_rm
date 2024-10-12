@@ -22,7 +22,7 @@
                         @foreach ($dress_adjusts as $item)
                             <div class="col-md-3 mb-3">
                                 <label for="chest">{{ $item->name }}:</label>
-                                <input type="hidden" name="adjust_id" value="{{$item->id}}">
+                                <input type="hidden" name="adjust_id_[]" value="{{$item->id}}">
                                 <input type="hidden" name="adjust_name_[]" value="{{ $item->name }}">
                                 <input type="hidden" name="old_[]" value="{{ $item->new_size }}">
                                 <input type="number" class="form-control" name="new_[]" value="{{ $item->new_size }}"

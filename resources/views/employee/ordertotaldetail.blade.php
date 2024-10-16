@@ -35,26 +35,30 @@
                             @endif
                         </td>
                         <td>
-                            {{ \Carbon\Carbon::parse($orderdetail->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($orderdetail->pickup_date)->year + 543 }}
-                            <p style="color: rgb(195, 23, 23);" id="showday{{$orderdetail->id}}"></p>
+                            @php
+                                $DATE = App\Models\Date::where('order_detail_id', $orderdetail->id)
+                                    ->orderBy('created_at', 'desc')
+                                    ->first();
+                            @endphp
+
+
+                            {{ \Carbon\Carbon::parse($DATE->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($DATE->pickup_date)->year + 543 }}
+                            <p style="color: rgb(195, 23, 23);" id="showday{{ $orderdetail->id }}"></p>
                             <script>
-                                var pickup_date = new Date("{{$orderdetail->pickup_date}}") ; 
-                                var now = new Date() ; //วันที่ปัจจุบัน
+                                var pickup_date = new Date("{{ $DATE->pickup_date }}");
+                                var now = new Date(); //วันที่ปัจจุบัน
 
-                                var day = pickup_date - now ; 
-                                var totalday = Math.ceil(day / (1000 * 60 * 60 *24)) ; 
+                                var day = pickup_date - now;
+                                var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
 
-                                document.getElementById('showday{{$orderdetail->id}}').innerHTML = 'เหลืออีก '  +totalday+ ' วัน ' ; 
-
-
-
+                                document.getElementById('showday{{ $orderdetail->id }}').innerHTML = 'เหลืออีก ' + totalday + ' วัน ';
                             </script>
                         </td>
                         <td>
-                            @if ($orderdetail->return_date)
-                                {{ \Carbon\Carbon::parse($orderdetail->return_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($orderdetail->return_date)->year + 543 }}
+                            @if ($DATE->return_date)
+                                {{ \Carbon\Carbon::parse($DATE->return_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($DATE->return_date)->year + 543 }}
                             @else
                                 -
                             @endif

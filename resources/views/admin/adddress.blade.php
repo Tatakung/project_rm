@@ -57,7 +57,7 @@
         @csrf
 
         <div class="container mt-5">
-            <div class="card">
+            <div class="card shadow">
                 <div class="card-body">
 
                     <p style="text-align: center ;"><strong>เพิ่มชุด</strong></p>
@@ -102,7 +102,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="" class="form-label">ราคามัดจำ (บาท) 20% ของราคาเช่า</label>
+                            <label for="" class="form-label">ราคามัดจำ (บาท) 30% ของราคาเช่า</label>
                             <input type="number" class="form-control" name="dress_deposit" id="dress_deposit"
                                 min="0" step="0.01" required readonly>
                         </div>
@@ -130,7 +130,7 @@
                             var value_input_price = dress_price.value;
                             var convert_price = parseFloat(value_input_price);
                             if (convert_price) {
-                                dress_deposit.value = convert_price * 0.2;
+                                dress_deposit.value = convert_price * 0.3;
                                 damage_insurance.value = convert_price * 1;
                             }
                             else{
@@ -484,8 +484,8 @@
                                     shirt_price.addEventListener('input',function(){
                                         var convert_price_shirt = parseFloat(shirt_price.value) ; 
                                         if(convert_price_shirt){
-                                            shirt_deposit.value = convert_price_shirt*0.20 ; 
-                                            shirt_damage_insurance.value = convert_price_shirt*0.5 ; 
+                                            shirt_deposit.value = convert_price_shirt*0.3 ; 
+                                            shirt_damage_insurance.value = convert_price_shirt ; 
                                         }
                                         else{
                                             shirt_deposit.value = '' ; 
@@ -696,8 +696,8 @@
                                     skirt_price.addEventListener('input',function(){
                                         var convert_skirt_price = parseFloat(skirt_price.value) ; 
                                         if(convert_skirt_price){
-                                            skirt_deposit.value = convert_skirt_price*0.2 ; 
-                                            skirt_damage_insurance.value = convert_skirt_price*0.5 ; 
+                                            skirt_deposit.value = convert_skirt_price*0.3 ; 
+                                            skirt_damage_insurance.value = convert_skirt_price ; 
                                         }
                                         else{
                                             skirt_deposit.value = '' ;

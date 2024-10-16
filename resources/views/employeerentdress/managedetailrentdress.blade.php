@@ -832,7 +832,7 @@
 
 
     <div class="modal fade" id="updatestatus_return" tabindex="-1" role="dialog"
-        aria-labelledby="updatestatus_returnLabel" aria-hidden="true">
+        aria-labelledby="updatestatus_returnLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg" role="document">
             <form action="{{ route('employee.actionupdatestatusrentdress', ['id' => $orderdetail->id]) }}"
                 method="POST">
@@ -962,7 +962,7 @@
                             <label for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</label>
                             <input type="number" class="form-control" name="total_damage_insurance"
                                 id="total_damage_insurance" placeholder="กรอกจำนวนเงิน" min="0" step="0.01"
-                                required>
+                                required value="0">
                         </div>
 
                         <!-- สรุปการชำระเงิน -->

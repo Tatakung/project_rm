@@ -132,7 +132,7 @@
                 <div class="col-md-3">
                     <label for="" class="form-label" style="color: #848383 ;">วันนัดรับ - วันนัดคืน</label>
                     <input type="text" id="date-range" class="w-full p-2 border rounded"
-                        placeholder="เลือกวันที่รับและคืนชุด">
+                        placeholder="เลือกวันที่รับและคืนชุด"> 
                     <input type="hidden" name="start_date" id="start_date">
                     <input type="hidden" name="end_date" id="end_date">
                 </div>
@@ -151,7 +151,7 @@
                                 mode: "range",
                                 dateFormat: "d/m/Y",
                                 locale: "th",
-                                minDate: "today",
+                                // minDate: "today",
                                 altInput: true,
                                 altFormat: "j F Y",
                                 conjunction: " ถึง ",

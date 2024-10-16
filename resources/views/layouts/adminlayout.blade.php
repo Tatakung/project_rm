@@ -190,6 +190,12 @@
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             รายการชุด</a>
 
+
+                        <a href="{{ route('employeetotal') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            จัดการพนักงาน</a>
+
+
                     </div>
                 </div>
 
@@ -208,14 +214,14 @@
             <span class="ml-2">จัดการเครื่องประดับ</span>
             </a> --}}
 
-                <a href="{{ route('employeetotal') }}"
+                {{-- <a href="{{ route('employeetotal') }}"
                     class="list-group-item @if (Route::currentRouteName() == 'employeetotal') active @endif list-group-item-action border-0 align-items-center"
                     id="d1">
 
                     <i class="bi bi-person-circle"></i>
                     <span class="ml-2">จัดการพนักงาน</span>
                 </a>
-
+ --}}
 
 
                 <a href="{{ route('admin.expense') }}"
@@ -267,8 +273,7 @@
 
 
             <a href="{{ route('admin.dresstotal') }}"
-                class="list-group-item list-group-item-action border-0 align-items-center"
-                id="d1">
+                class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                 <span class="bi bi-list-ul"></span>
                 <span class="ml-2">รายการชุด</span>
             </a>

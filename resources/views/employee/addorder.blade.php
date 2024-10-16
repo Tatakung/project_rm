@@ -43,7 +43,8 @@
                             <h5 class="card-title mt-3">เช่าชุด</h5>
                         </div>
                         <button class="btn custom-btn mt-3">
-                            <a href="{{route('adddresstocart')}}" class="custom-link">เพิ่มออเดอร์</a>
+                            {{-- <a href="{{route('adddresstocart')}}" class="custom-link">เพิ่มออเดอร์</a> --}}
+                            <a href="{{route('employee.addrentdresstocard')}}" class="custom-link">เพิ่มออเดอร์</a>
                         </button>
                     </div>
                 </div>

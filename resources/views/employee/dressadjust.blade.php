@@ -28,9 +28,9 @@
 
 
 
-               
 
-                <form action="{{route('employee.dressadjustfilter')}}" method="GET">
+
+                <form action="{{ route('employee.dressadjustfilter') }}" method="GET">
                     @csrf
                     <div class="filter-buttons">
                         <button class="btn" type="submit" name="filter_click" value="total"
@@ -44,7 +44,7 @@
                     </div>
                 </form>
 
-    
+
             </div>
         </div>
     </div>
@@ -168,21 +168,147 @@
                             @php
                                 $status_now = App\Models\Reservation::where('status_completed', 0)
                                     ->where('dress_id', $reservation->dress_id)
+                                    ->whereNull('shirtitems_id')
+                                    ->whereNull('skirtitems_id')
+
                                     ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
                                     ->first();
                             @endphp
+                            @if ($reservation->shirtitems_id)
+                                @php
+                                    //  ตรวจสอบเฉพาะเสื้อก่อน
+                                    $status_shirt = App\Models\Reservation::where('status_completed', 0)
+                                        ->where('dress_id', $reservation->dress_id)
+                                        ->where('shirtitems_id', $reservation->shirtitems_id)
+                                        ->whereNull('skirtitems_id')
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->get();
+                                    // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะผ้าถุงมาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
+                                    $status_total_dress = App\Models\Reservation::where('status_completed', 0)
+                                        ->where('dress_id', $reservation->dress_id)
+                                        ->whereNull('shirtitems_id')
+                                        ->whereNull('skirtitems_id')
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->get();
+                                    $list__for__one = [];
 
-                            @if ($number == 1)
-                                @if ($status_now->status == 'ถูกจอง')
-                                    อยู่ในร้าน
-                                @elseif($status_now->status == 'กำลังเช่า')
-                                    ถูกเช่าโดยลูกค้าท่านก่อนหน้า
+                                    foreach ($status_shirt as $item) {
+                                        $list__for__one[] = $item->id;
+                                    }
+                                    foreach ($status_total_dress as $item) {
+                                        $list__for__one[] = $item->id;
+                                    }
+
+                                    $final = App\Models\reservation::whereIn('id', $list__for__one)
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->first();
+                                    $final_queue = App\Models\reservation::whereIn('id', $list__for__one)
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->where('status', 'ถูกจอง')
+                                        ->first();
+                                @endphp
+                                @if ($reservation->id == $final_queue->id)
+                                    @if ($final->status == 'ถูกจอง')
+                                        อยู่ในร้าน
+                                    @elseif($final->status == 'กำลังเช่า')
+                                        ถูกเช่าโดยลูกค้าท่านก่อนหน้า
+                                    @else
+                                        {{ $final->status }}
+                                    @endif
                                 @else
-                                    {{ $status_now->status }}
+                                    รอคิว
+                                @endif
+                            @elseif($reservation->skirtitems_id)
+                                @php
+                                    //  ตรวจสอบเฉพาะผ้าถุงก่อน
+                                    $status_skirt = App\Models\Reservation::where('status_completed', 0)
+                                        ->where('dress_id', $reservation->dress_id)
+                                        ->where('skirtitems_id', $reservation->skirtitems_id)
+                                        ->whereNull('shirtitems_id')
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->get();
+
+                                    // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะเสื้อมาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
+                                    $status_total_dress = App\Models\Reservation::where('status_completed', 0)
+                                        ->where('dress_id', $reservation->dress_id)
+                                        ->whereNull('shirtitems_id')
+                                        ->whereNull('skirtitems_id')
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->get();
+                                    $list__for__one = [];
+
+                                    foreach ($status_skirt as $item) {
+                                        $list__for__one[] = $item->id;
+                                    }
+                                    foreach ($status_total_dress as $item) {
+                                        $list__for__one[] = $item->id;
+                                    }
+                                    $final = App\Models\reservation::whereIn('id', $list__for__one)
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->first();
+                                    $final_queue = App\Models\reservation::whereIn('id', $list__for__one)
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->where('status', 'ถูกจอง')
+                                        ->first();
+                                @endphp
+                                @if ($reservation->id == $final_queue->id)
+                                    @if ($final->status == 'ถูกจอง')
+                                        อยู่ในร้าน
+                                    @elseif($final->status == 'กำลังเช่า')
+                                        ถูกเช่าโดยลูกค้าท่านก่อนหน้า
+                                    @else
+                                        {{ $final->status }}
+                                    @endif
+                                @else
+                                    รอคิว
                                 @endif
                             @else
-                                รอคิว
+                                @php
+                                    // ตรวจอสอบเช่าเฉพาะทั้งชุด  + เฉพาะเสื้อ + เฉพาะผ้าถุง  เราเลยเอาแค่ dress_id กำกับก็พอ เพราะ
+                                    // เช่าทั้งชุดหรือเช่าปแค่เื้อหือเช่าแค่ผ้าถุงมันก็มี dress_id กำกกับ
+                                    $status_total_dress = App\Models\Reservation::where('status_completed', 0)
+                                        ->where('dress_id', $reservation->dress_id)
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->get();
+                                    $list__for__one = [];
+
+                                    foreach ($status_total_dress as $item) {
+                                        $list__for__one[] = $item->id;
+                                    }
+                                    $final = App\Models\reservation::whereIn('id', $list__for__one)
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->first();
+
+                                    $final_queue = App\Models\reservation::whereIn('id', $list__for__one)
+                                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                                        ->where('status', 'ถูกจอง')
+                                        ->first();
+                                @endphp
+
+
+                                @if ($reservation->id == $final_queue->id)
+                                    @if ($final->status == 'ถูกจอง')
+                                        อยู่ในร้าน
+                                    @elseif($final->status == 'กำลังเช่า')
+                                        ถูกเช่าโดยลูกค้าท่านก่อนหน้า
+                                    @else
+                                        {{ $final->status }}
+                                    @endif
+                                @else
+                                    รอคิว
+                                @endif
                             @endif
+
+
+
+
+
+
+
+
+
+
+
 
 
 

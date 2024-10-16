@@ -79,7 +79,7 @@
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
-                                                                                                                            </p> -->
+                                                                                                                                                            </p> -->
                                 {{-- <p><strong>สถานะชุด:</strong> <span
                                         @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
                                         {{ $datadress->dress_status }}</span></p> --}}
@@ -98,7 +98,7 @@
 
 
                                 <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง
-                                    
+
                                 </p>
                                 <p><strong>คำอธิบายชุด:</strong> {{ $datadress->dress_description }}</p>
                             </div>
@@ -139,7 +139,7 @@
                                     class="btn btn-outline-primary mr-2">
                                     <i class="bi bi-clock-history"></i> ประวัติการเช่า
                                 </a>
-                                <a href="{{route('admin.historydressrepair', ['id' => $datadress->id])}}"
+                                <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}"
                                     class="btn btn-outline-secondary">
                                     <i class="bi bi-tools"></i> ประวัติการซ่อม
                                 </a>
@@ -357,7 +357,7 @@
             </div>
 
             {{-- modalแก้ไขชุด --}}
-            <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true">
+            <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header text-dark" style="background-color: #EAD8C0;">
@@ -379,7 +379,7 @@
                                             <label for="update_dress_price">ราคา</label>
                                             <input type="number" class="form-control" name="update_dress_price"
                                                 id="update_dress_price" value="{{ $datadress->dress_price }}"
-                                                placeholder="กรุณากรอกราคา">
+                                                placeholder="กรุณากรอกราคา" min="1" step="0.01">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -387,7 +387,7 @@
                                             <label for="update_dress_deposit">ราคามัดจำ</label>
                                             <input type="number" class="form-control" name="update_dress_deposit"
                                                 id="update_dress_deposit" value="{{ $datadress->dress_deposit }}"
-                                                placeholder="กรุณากรอกราคามัดจำ">
+                                                placeholder="กรุณากรอกราคามัดจำ" readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -396,60 +396,49 @@
                                             <input type="number" class="form-control"
                                                 name="update_dress_damage_insurance" id="update_dress_damage_insurance"
                                                 value="{{ $datadress->damage_insurance }}"
-                                                placeholder="กรุณากรอกราคาประกันค่าเสียหาย">
+                                                placeholder="กรุณากรอกราคาประกันค่าเสียหาย" readonly>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <label for="dress_status">สถานะชุด</label>
-                                            <select name="update_dress_status" id="update_dress_status"
-                                                class="form-control">
-                                                <option value="พร้อมให้เช่า"
-                                                    {{ $datadress->dress_status == 'พร้อมให้เช่า' ? 'selected' : '' }}>
-                                                    พร้อมให้เช่า</option>
-                                                <option value="ถูกจองแล้ว"
-                                                    {{ $datadress->dress_status == 'ถูกจองแล้ว' ? 'selected' : '' }}>
-                                                    ถูกจองแล้ว
-                                                </option>
-                                                <option value="กำลังเช่า"
-                                                    {{ $datadress->dress_status == 'กำลังเช่า' ? 'selected' : '' }}>
-                                                    กำลังเช่า
-                                                </option>
-                                                <option value="ส่งทำความสะอาด"
-                                                    {{ $datadress->dress_status == 'ส่งทำความสะอาด' ? 'selected' : '' }}>
-                                                    ส่งทำความสะอาด</option>
-                                                <option value="ซ่อมแซม"
-                                                    {{ $datadress->dress_status == 'ซ่อมแซม' ? 'selected' : '' }}>ซ่อมแซม
-                                                </option>
-                                                <option value="เลิกให้เช่า"
-                                                    {{ $datadress->dress_status == 'เลิกให้เช่า' ? 'selected' : '' }}>
-                                                    เลิกให้เช่า</option>
-                                                <option value="สูญหาย"
-                                                    {{ $datadress->dress_status == 'สูญหาย' ? 'selected' : '' }}>สูญหาย
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
+
+                                    <script>
+                                        var update_dress_price = document.getElementById('update_dress_price');
+                                        var update_dress_deposit = document.getElementById('update_dress_deposit');
+                                        var update_dress_damage_insurance = document.getElementById('update_dress_damage_insurance');
+                                        update_dress_price.addEventListener('input', function() {
+                                            var float_price = parseFloat(update_dress_price.value);
+
+                                            update_dress_deposit.value = float_price * 0.2;
+                                            update_dress_damage_insurance.value = float_price;
+
+                                        });
+                                    </script>
+
+
+
+
                                     <div class="row mb-3">
                                         <div class="col-12">
                                             <label for="update_dress_description">คำอธิบายชุด</label>
                                             <textarea name="update_dress_description" id="update_dress_description" class="form-control" rows="3">{{ $datadress->dress_description }}</textarea>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-success">บันทึก</button>
-                                </form>
-
-                                <hr>
 
 
+
+                                    <hr>
                             </div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                            <button type="submit" class="btn btn-success">บันทึก</button>
+                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
 
             {{-- modalแก้ไขเสื้อ+ข้อมูลการวัด --}}
-            <div class="modal fade" id="edittotalshirt" role="dialog" aria-hidden="true">
+            <div class="modal fade" id="edittotalshirt" role="dialog" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header text-dark" style="background-color: #EAD8C0;">
@@ -458,14 +447,12 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body">
-                            <div class="container-fluid">
-                                <!-- ข้อมูลชุด -->
-                                <h5 class="mb-4">ข้อมูลเสื้อ</h5>
-
-                                <form action="{{ route('admin.updatedressyesshirt', ['id' => $shirtitem->id]) }}"
-                                    method="POST">
-                                    @csrf
+                        <form action="{{ route('admin.updatedressyesshirt', ['id' => $shirtitem->id]) }}" method="POST">
+                            @csrf
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <!-- ข้อมูลชุด -->
+                                    <h5 class="mb-4">ข้อมูลเสื้อ</h5>
                                     <div class="row mb-3">
                                         <div class="col-12">
                                             <label for="update_shirt_price">ราคา</label>
@@ -479,114 +466,72 @@
                                             <label for="update_shirt_deposit">ราคามัดจำ</label>
                                             <input type="number" class="form-control" name="update_shirt_deposit"
                                                 id="update_shirt_deposit" value="{{ $shirtitem->shirtitem_deposit }}"
-                                                placeholder="กรุณากรอกราคามัดจำ" min="1" required>
+                                                placeholder="กรุณากรอกราคามัดจำ" min="1" required readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_shirt_deposit">ราคาประกันค่าเสียหาย</label>
+                                            <label for="update_shirt_damage_insurance">ราคาประกันค่าเสียหาย</label>
                                             <input type="number" class="form-control"
                                                 name="update_shirt_damage_insurance" id="update_shirt_damage_insurance"
                                                 value="{{ $shirtitem->shirt_damage_insurance }}"
-                                                placeholder="กรุณากรอกราคาประกันค่าเสียหาย" min="0" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <label for="update_shirt_status">สถานะชุด</label>
-                                            <select name="update_shirt_status" id="update_shirt_status"
-                                                class="form-control">
-                                                <option value="พร้อมให้เช่า"
-                                                    {{ $shirtitem->shirtitem_status == 'พร้อมให้เช่า' ? 'selected' : '' }}>
-                                                    พร้อมให้เช่า</option>
-                                                <option value="ถูกจองแล้ว"
-                                                    {{ $shirtitem->shirtitem_status == 'ถูกจองแล้ว' ? 'selected' : '' }}>
-                                                    ถูกจองแล้ว
-                                                </option>
-                                                <option value="กำลังเช่า"
-                                                    {{ $shirtitem->shirtitem_status == 'กำลังเช่า' ? 'selected' : '' }}>
-                                                    กำลังเช่า
-                                                </option>
-                                                <option value="ส่งทำความสะอาด"
-                                                    {{ $shirtitem->shirtitem_status == 'ส่งทำความสะอาด' ? 'selected' : '' }}>
-                                                    ส่งทำความสะอาด</option>
-                                                <option value="ซ่อมแซม"
-                                                    {{ $shirtitem->shirtitem_status == 'ซ่อมแซม' ? 'selected' : '' }}>
-                                                    ซ่อมแซม
-                                                </option>
-                                                <option value="เลิกให้เช่า"
-                                                    {{ $shirtitem->shirtitem_status == 'เลิกให้เช่า' ? 'selected' : '' }}>
-                                                    เลิกให้เช่า</option>
-                                                <option value="สูญหาย"
-                                                    {{ $shirtitem->shirtitem_status == 'สูญหาย' ? 'selected' : '' }}>สูญหาย
-                                                </option>
-                                            </select>
+                                                placeholder="กรุณากรอกราคาประกันค่าเสียหาย" min="0" required
+                                                readonly>
                                         </div>
                                     </div>
 
-                                    <!-- ข้อมูลการวัด -->
-                                    <h5 class="mb-4">ขนาดของชุด</h5>
+                                    <script>
+                                        var update_shirt_price = document.getElementById('update_shirt_price');
+                                        var update_shirt_deposit = document.getElementById('update_shirt_deposit');
+                                        var update_shirt_damage_insurance = document.getElementById('update_shirt_damage_insurance');
 
-                                    @foreach ($measument_yes_separate_now_shirt_modal as $measument_yes_separate_now_shirt_modal)
-                                        <div class="row mb-3">
-                                            <div class="col-md-4">
-                                                <input type="hidden" name="mea_now_id_[]"
-                                                    value="{{ $measument_yes_separate_now_shirt_modal->id }}">
-                                                <input type="text" class="form-control" name="mea_now_name_[]"
-                                                    value="{{ $measument_yes_separate_now_shirt_modal->measurementnow_dress_name }}"
-                                                    placeholder="ชื่อการวัด" readonly>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="number" class="form-control" name="mea_now_number_[]"
-                                                    value="{{ $measument_yes_separate_now_shirt_modal->measurementnow_dress_number }}"
-                                                    placeholder="ค่าการวัด" required step="0.01"
-                                                    min="{{ $measument_yes_separate_now_shirt_modal->measurementnow_dress_number_start - 4 }}"
-                                                    max="{{ $measument_yes_separate_now_shirt_modal->measurementnow_dress_number_start + 4 }}">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <p>นิ้ว</p>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                                        update_shirt_price.addEventListener('input', function() {
+                                            var float_shirt_price = parseFloat(update_shirt_price.value);
+                                            update_shirt_deposit.value = float_shirt_price * 0.2;
+                                            update_shirt_damage_insurance.value = float_shirt_price;
+                                        });
+                                    </script>
 
 
-                                    <button type="submit" class="btn btn-success ">บันทึก</button>
-                                </form>
-
-                                <hr>
 
 
+
+
+                                </div>
                             </div>
-                        </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                <button type="submit" class="btn btn-success ">บันทึก</button>
+                            </div>
+                        </form>
+
                     </div>
                 </div>
             </div>
 
 
             {{-- modalแก้ไขกระโปรง+ข้อมูลการวัด --}}
-            <div class="modal fade" id="edittotalskirt" role="dialog" aria-hidden="true">
+            <div class="modal fade" id="edittotalskirt" role="dialog" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header text-dark" style="background-color: #EAD8C0;">
-                            <h5 class="modal-title">แก้ไขข้อมูลกระโปรง/กางเกง</h5>
+                            <h5 class="modal-title">แก้ไขข้อมูลผ้าถุง</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body">
-                            <div class="container-fluid">
-                                <!-- ข้อมูลชุด -->
-                                <h5 class="mb-4">ข้อมูลผ้าถุง</h5>
-
-                                <form action="{{ route('admin.updatedressyesskirt', ['id' => $skirtitem->id]) }}"
-                                    method="POST">
-                                    @csrf
+                        <form action="{{ route('admin.updatedressyesskirt', ['id' => $skirtitem->id]) }}" method="POST">
+                            @csrf
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <!-- ข้อมูลชุด -->
+                                    <h5 class="mb-4">ข้อมูลผ้าถุง</h5>
                                     <div class="row mb-3">
                                         <div class="col-12">
                                             <label for="update_skirt_price">ราคา</label>
                                             <input type="number" class="form-control" name="update_skirt_price"
                                                 id="update_skirt_price" value="{{ $skirtitem->skirtitem_price }}"
-                                                placeholder="กรุณากรอกราคา">
+                                                placeholder="กรุณากรอกราคา" min="1" step="0.01" required>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -594,7 +539,7 @@
                                             <label for="update_skirt_deposit">ราคามัดจำ</label>
                                             <input type="number" class="form-control" name="update_skirt_deposit"
                                                 id="update_skirt_deposit" value="{{ $skirtitem->skirtitem_deposit }}"
-                                                placeholder="กรุณากรอกราคามัดจำ">
+                                                placeholder="กรุณากรอกราคามัดจำ" step="0.01" required readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -603,16 +548,36 @@
                                             <input type="number" class="form-control"
                                                 name="update_skirt_damage_insurance" id="update_skirt_damage_insurance"
                                                 value="{{ $skirtitem->skirt_damage_insurance }}"
-                                                placeholder="กรุณากรอกราคามัดจำ">
+                                                placeholder="กรุณากรอกราคามัดจำ" step="0.01" required readonly>
                                         </div>
                                     </div>
 
+                                    <script>
+                                        var update_skirt_price = document.getElementById('update_skirt_price') ; 
+                                        var update_skirt_deposit = document.getElementById('update_skirt_deposit') ; 
+                                        var update_skirt_damage_insurance = document.getElementById('update_skirt_damage_insurance') ; 
+                                        update_skirt_price.addEventListener('input',function(){
+                                            var float_skirt_price = parseFloat(update_skirt_price.value) ; 
+                                            update_skirt_deposit.value = float_skirt_price*0.2 ; 
+                                            update_skirt_damage_insurance.value = float_skirt_price ; 
 
-                                    <button type="submit" class="btn btn-success">บันทึก</button>
-                                </form>
-                                <hr>
+                                        }) ; 
+
+                                    </script>
+
+
+
+
+
+
+
+                                </div>
                             </div>
-                        </div>
+                            <div class="modal-footer">
+                                <button type="button" data-dismiss="modal" class="btn btn-danger">ยกเลิก</button>
+                                <button type="submit" class="btn btn-success">บันทึก</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -89,24 +89,125 @@
 
         {{-- เช็คว่ามันอยู่คิวไหน --}}
         @php
+
             $reservation_now = App\Models\Reservation::where('status_completed', 0)
                 ->where('dress_id', $orderdetail->dress_id)
                 ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
                 ->first();
 
-            if ($reservation_now) {
-                if ($reservation_now->id == $orderdetail->reservation_id) {
-                    $check_open_button = true;
-                } elseif ($reservation_now->id != $orderdetail->reservation_id) {
-                    $check_open_button = false;
+            // เช็คว่าเช่าทั้งชุด หรือ เช่าแค่เสื้อ หรือเช่าแค่ผ้าถุง
+            if ($orderdetail->skirtitems_id) {
+                //  ตรวจสอบเฉพาะผ้าถุงก่อน
+                $status_skirt = App\Models\Reservation::where('status_completed', 0)
+                    ->where('dress_id', $orderdetail->dress_id)
+                    ->where('skirtitems_id', $orderdetail->skirtitems_id)
+                    ->whereNull('shirtitems_id')
+                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                    ->get();
+
+                // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะเสื้อมาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
+                $status_total_dress = App\Models\Reservation::where('status_completed', 0)
+                    ->where('dress_id', $orderdetail->dress_id)
+                    ->whereNull('shirtitems_id')
+                    ->whereNull('skirtitems_id')
+                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                    ->get();
+                $list__for__one = [];
+
+                foreach ($status_skirt as $item) {
+                    $list__for__one[] = $item->id;
                 }
-            }
-            // เพื่อที่เข้ามาดูประวะัติการเช่าได้
-            else {
-                $check_open_button = true;
+                foreach ($status_total_dress as $item) {
+                    $list__for__one[] = $item->id;
+                }
+
+                $reservation_now = App\Models\reservation::whereIn('id', $list__for__one)
+                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                    ->first();
+                if ($reservation_now) {
+                    if ($reservation_now->id == $orderdetail->reservation_id) {
+                        $check_open_button = true;
+                    } elseif ($reservation_now->id != $orderdetail->reservation_id) {
+                        $check_open_button = false;
+                    }
+                }
+                // เพื่อที่เข้ามาดูประวะัติการเช่าได้
+                else {
+                    $check_open_button = true;
+                }
+            } elseif ($orderdetail->shirtitems_id) {
+                //  ตรวจสอบเฉพาะเสื้อก่อน
+                $status_shirt = App\Models\Reservation::where('status_completed', 0)
+                    ->where('dress_id', $orderdetail->dress_id)
+                    ->where('shirtitems_id', $orderdetail->shirtitems_id)
+                    ->whereNull('skirtitems_id')
+                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                    ->get();
+                // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะผ้าถุงมาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
+                $status_total_dress = App\Models\Reservation::where('status_completed', 0)
+                    ->where('dress_id', $orderdetail->dress_id)
+                    ->whereNull('shirtitems_id')
+                    ->whereNull('skirtitems_id')
+                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                    ->get();
+                $list__for__one = [];
+
+                foreach ($status_shirt as $item) {
+                    $list__for__one[] = $item->id;
+                }
+                foreach ($status_total_dress as $item) {
+                    $list__for__one[] = $item->id;
+                }
+                $reservation_now = App\Models\reservation::whereIn('id', $list__for__one)
+                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                    ->first();
+
+                if ($reservation_now) {
+                    if ($reservation_now->id == $orderdetail->reservation_id) {
+                        $check_open_button = true;
+                    } elseif ($reservation_now->id != $orderdetail->reservation_id) {
+                        $check_open_button = false;
+                    }
+                }
+                // เพื่อที่เข้ามาดูประวะัติการเช่าได้
+                else {
+                    $check_open_button = true;
+                }
+            } else {
+                $reservation_now = App\Models\Reservation::where('status_completed', 0)
+                    ->where('dress_id', $orderdetail->dress_id)
+                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                    ->first();
+                if ($reservation_now) {
+                    if ($reservation_now->id == $orderdetail->reservation_id) {
+                        $check_open_button = true;
+                    } elseif ($reservation_now->id != $orderdetail->reservation_id) {
+                        $check_open_button = false;
+                    }
+                }
+                // เพื่อที่เข้ามาดูประวะัติการเช่าได้
+                else {
+                    $check_open_button = true;
+                }
             }
 
         @endphp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         {{-- @php
             $check_open_button = true ; 
@@ -116,7 +217,7 @@
         <p>reservation_id : {{$orderdetail->reservation_id}}</p> --}}
 
 
-        {{-- เอาไว้เช็คว่่าถ้า reservation_id เป็น 1 อะ ไอ้พวกแจ้งเตือนต่างๆไม่ต้องให้มันแสดงผลขึ้นมา เพราะมันเป็นประวัติไปแล้ว ไม่จำเป็นต้องแจ้งเตือน --}}
+        {{-- เอาไว้เช็คว่่าถ้า reservation_id มีคอลัมน์ status_completed เป็น 1 อะ ไอ้พวกแจ้งเตือนต่างๆไม่ต้องให้มันแสดงผลขึ้นมา เพราะมันเป็นประวัติไปแล้ว ไม่จำเป็นต้องแจ้งเตือน --}}
         @php
             $check_reser_status_for_his = App\Models\Reservation::where('id', $orderdetail->reservation_id)->value(
                 'status_completed',
@@ -376,7 +477,7 @@
 
                         @php
                             $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)
-                                ->orderBy('created_at', 'asc')
+                                ->orderBy('created_at', 'desc')
                                 ->first();
                         @endphp
 
@@ -387,11 +488,16 @@
                             {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
 
-                            <span><a
+                            <span
+                            @if($orderdetail->status_detail == "ถูกจอง")
+                            style="display: block ; "
+                            @else
+                            style="display: none ; "
+                            @endif
+                                
+                            ><a
                                     href="{{ route('employee.ordertotaldetailpostpone', ['id' => $orderdetail->id]) }}">เลื่อนวัน</a></span>
                         </p>
-
-
 
 
 
@@ -575,7 +681,7 @@
 
 
 
-        
+
     </div>
 
 

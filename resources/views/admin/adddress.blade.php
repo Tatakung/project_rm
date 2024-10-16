@@ -111,7 +111,7 @@
 
                     <div class="row mt-4">
                         <div class="col-md-6">
-                            <label for="" class="form-label">ประกันค่าเสียหายชุด (บาท) 50% ของราคาเช่า</label>
+                            <label for="" class="form-label">ประกันค่าเสียหายชุด (บาท) เท่ากับราคาเช่า</label>
                             <input type="number" class="form-control" min="0" step="0.01" required
                                 name="damage_insurance" id="damage_insurance" readonly>
                         </div>
@@ -131,7 +131,7 @@
                             var convert_price = parseFloat(value_input_price);
                             if (convert_price) {
                                 dress_deposit.value = convert_price * 0.2;
-                                damage_insurance.value = convert_price * 0.5;
+                                damage_insurance.value = convert_price * 1;
                             }
                             else{
                                 dress_deposit.value = '' ; 

@@ -217,6 +217,13 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/employee/ordertotal/detail/show/postpone/{id}', [OrderController::class, 'ordertotaldetailpostpone'])->name('employee.ordertotaldetailpostpone'); //เลื่อนวันนัดรับ-คืน
     Route::get('/employee/ordertotal/detail/show/postpone/checked/{id}', [OrderController::class, 'ordertotaldetailpostponechecked'])->name('employee.ordertotaldetailpostponechecked'); //เช็คเลื่อนวันนัดรับ-คืน
+    Route::post('/employee/ordertotal/detail/show/postpone/checked/pass/{id}', [OrderController::class, 'postponecheckedpass'])->name('employee.postponecheckedpass'); //เช็คเลื่อนวันนัดรับ-คืน ผ่าน
+
+
+    Route::get('/employee/addorder/addrent-dresstocard', [OrderController::class, 'addrentdresstocard'])->name('employee.addrentdresstocard'); 
+    Route::get('/employee/addorder/addrent-dresstocardfilter', [OrderController::class, 'addrentdresstocardfilter'])->name('employee.addrentdresstocardfilter'); 
+
+
 
 
 
@@ -264,7 +271,6 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::get('/employee/adddresstocart', [OrderController::class, 'adddresstocart'])->name('adddresstocart'); 
-    Route::get('/employee/searchadddresstocart', [OrderController::class, 'searchadddresstocart'])->name('searchadddresstocart'); 
     Route::post('/employee/addtocart', [OrderController::class, 'addtocart'])->name('addtocart'); //เพิ่มชุด/เสื้อ/กระโปรง/ผผ้าถุง ลงบนตะกร้า 
 
 

@@ -463,24 +463,11 @@ class DressController extends Controller
             }
             $update_dress->dress_price = $request->input('update_dress_price');
             $update_dress->dress_deposit = $request->input('update_dress_deposit');
-            $update_dress->damage_insurance = $request->input('update_damage_insurance');
-            $update_dress->dress_status = $request->input('update_dress_status');
+            $update_dress->damage_insurance = $request->input('update_dress_damage_insurance');
             $update_dress->dress_description = $request->input('update_dress_description');
             $update_dress->save();
 
-            if ($request->input('mea_now_id_') != null) {
-                $mea_now_id = $request->input('mea_now_id_');
-                $mea_now_name = $request->input('mea_now_name_');
-                $mea_now_number = $request->input('mea_now_number_');
-                // $mea_now_unit = $request->input('mea_now_unit_');
-                foreach ($mea_now_id as $index => $mea_now_id) {
-                    $update_mea_now = Dressmeasurementnow::find($mea_now_id);
-                    $update_mea_now->measurementnow_dress_number = $mea_now_number[$index];
-                    $update_mea_now->measurementnow_dress_unit = "นิ้ว";
-                    $update_mea_now->save();
-                }
-            }
-
+        
             DB::commit();
             return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
         } catch (\Exception $e) {
@@ -502,22 +489,7 @@ class DressController extends Controller
             $update_shirt->shirtitem_price = $request->input('update_shirt_price');
             $update_shirt->shirtitem_deposit = $request->input('update_shirt_deposit');
             $update_shirt->shirt_damage_insurance = $request->input('update_shirt_damage_insurance');
-            $update_shirt->shirtitem_status = $request->input('update_shirt_status');
             $update_shirt->save();
-
-
-            if ($request->input('mea_now_id_') != null) {
-                $mea_now_id = $request->input('mea_now_id_');
-                $mea_now_name = $request->input('mea_now_name_');
-                $mea_now_number = $request->input('mea_now_number_');
-                // $mea_now_unit = $request->input('mea_now_unit_');
-                foreach ($mea_now_id as $index => $mea_now_id) {
-                    $update_mea_now = Dressmeasurementnow::find($mea_now_id);
-                    $update_mea_now->measurementnow_dress_number = $mea_now_number[$index];
-                    $update_mea_now->measurementnow_dress_unit = "นิ้ว";
-                    $update_mea_now->save();
-                }
-            }
 
             DB::commit();
             return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
@@ -541,7 +513,6 @@ class DressController extends Controller
             $update_skirt->skirtitem_price = $request->input('update_skirt_price');
             $update_skirt->skirtitem_deposit = $request->input('update_skirt_deposit');
             $update_skirt->skirt_damage_insurance = $request->input('update_skirt_damage_insurance');
-            $update_skirt->skirtitem_status = $request->input('update_skirt_status');
             $update_skirt->save();
 
             DB::commit();

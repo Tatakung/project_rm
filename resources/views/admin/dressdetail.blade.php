@@ -47,7 +47,7 @@
                 </button>
             </div>
 
-            <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true">
+            <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header text-dark"style="background-color: #EAD8C0;">
@@ -66,7 +66,7 @@
                                     @csrf
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_dress_price">ราคา</label>
+                                            <label for="update_dress_price">ราคาเช่า</label>
                                             <input type="number" class="form-control" name="update_dress_price"
                                                 id="update_dress_price" value="{{ $datadress->dress_price }}"
                                                 placeholder="กรุณากรอกราคา" required min="1" required>
@@ -78,7 +78,7 @@
                                             <label for="update_dress_deposit">ราคามัดจำ</label>
                                             <input type="number" class="form-control" name="update_dress_deposit"
                                                 id="update_dress_deposit" value="{{ $datadress->dress_deposit }}"
-                                                placeholder="กรุณากรอกราคามัดจำ" required min="1">
+                                                placeholder="กรุณากรอกราคามัดจำ" required min="1" readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -86,39 +86,34 @@
                                             <label for="update_dress_deposit">ราคาประกันค่าเสียหาย</label>
                                             <input type="number" class="form-control" name="update_damage_insurance"
                                                 id="update_damage_insurance" value="{{ $datadress->damage_insurance }}"
-                                                placeholder="กรุณากรอกราคาประกันค่าเสียหาย" min="0" required>
+                                                placeholder="กรุณากรอกราคาประกันค่าเสียหาย" min="0" required
+                                                readonly>
                                         </div>
                                     </div>
-                                    {{-- <div class="row mb-3">
-                                        <div class="col-12">
-                                            <label for="dress_status">สถานะชุด</label>
-                                            <select name="update_dress_status" id="update_dress_status"
-                                                class="form-control">
-                                                <option value="พร้อมให้เช่า"
-                                                    {{ $datadress->dress_status == 'พร้อมให้เช่า' ? 'selected' : '' }}>
-                                                    พร้อมให้เช่า</option>
-                                                <option value="ถูกจองแล้ว"
-                                                    {{ $datadress->dress_status == 'ถูกจองแล้ว' ? 'selected' : '' }}>
-                                                    ถูกจองแล้ว
-                                                </option>
-                                                <option value="กำลังเช่า"
-                                                    {{ $datadress->dress_status == 'กำลังเช่า' ? 'selected' : '' }}>
-                                                    กำลังเช่า</option>
-                                                <option value="ส่งทำความสะอาด"
-                                                    {{ $datadress->dress_status == 'ส่งทำความสะอาด' ? 'selected' : '' }}>
-                                                    ส่งทำความสะอาด</option>
-                                                <option value="ซ่อมแซม"
-                                                    {{ $datadress->dress_status == 'ซ่อมแซม' ? 'selected' : '' }}>ซ่อมแซม
-                                                </option>
-                                                <option value="เลิกให้เช่า"
-                                                    {{ $datadress->dress_status == 'เลิกให้เช่า' ? 'selected' : '' }}>
-                                                    เลิกให้เช่า</option>
-                                                <option value="สูญหาย"
-                                                    {{ $datadress->dress_status == 'สูญหาย' ? 'selected' : '' }}>สูญหาย
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div> --}}
+
+                                    <script>
+                                        var update_dress_price = document.getElementById('update_dress_price');
+                                        var update_dress_deposit = document.getElementById('update_dress_deposit');
+                                        var update_damage_insurance = document.getElementById('update_damage_insurance');
+
+
+                                        update_dress_price.addEventListener('input', function() {
+                                            
+                                            var float_price = parseFloat(update_dress_price.value);
+                                            var float_deposit = parseFloat(update_dress_deposit.value) ; 
+                                            var damage_insurance = parseFloat(update_damage_insurance.value) ; 
+
+                                            console.log(damage_insurance) ; 
+
+                                            update_dress_deposit.value = float_price*0.2 ; 
+                                            update_damage_insurance.value = float_price ; 
+                                        });
+                                    </script>
+
+
+
+
+
                                     <div class="row mb-4">
                                         <div class="col-12">
                                             <label for="dress_description">คำอธิบายชุด</label>
@@ -234,12 +229,6 @@
                             </tbody>
                         </table>
                     </div>
-
-
-
-
-
-
 
                     <div class="mt-3"
                         @if ($check_admin == 1) style="display: block ; "

@@ -320,7 +320,16 @@ class OrderController extends Controller
         if ($dress_check->separable == 1) {
             return $this->detailpostponeno($id);
         } elseif ($dress_check->separable == 2) {
-            return $this->detailpostponeyes($id);
+
+            $orderdetail = Orderdetail::find($id);
+
+            if ($orderdetail->shirtitems_id) {
+                return $this->detailpostponeyesshirt($id);
+            } elseif ($orderdetail->skirtitems_id) {
+                return $this->detailpostponeyesskirt($id);
+            } else {
+                return $this->detailpostponeyesdresstotal($id);
+            }
         }
     }
 
@@ -352,15 +361,15 @@ class OrderController extends Controller
         }
         $value_start_date = $reser->start_date;
         $value_end_date = $reser->end_date;
-        $condition = false;
+        $condition = 'no';
+        $value_start_date = $reser->start_date;
+        $value_end_date = $reser->end_date;
         return view('employeerentdress.postponeno', compact('reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'value_end_date', 'condition'));
     }
 
     //checkการแก้ไข
     public function ordertotaldetailpostponechecked(Request $request, $id)
     {
-
-
 
         $orderdetail = Orderdetail::find($id);
         $reservation_id = Reservation::where('id', $orderdetail->reservation_id)->value('id');
@@ -390,7 +399,6 @@ class OrderController extends Controller
         //เช็ควันที่
         $value_start_date = $request->input('new_pickup_date');
         $value_end_date = $request->input('new_return_date');
-
 
 
         $pickup = Carbon::parse($request->input('new_pickup_date'));
@@ -427,30 +435,52 @@ class OrderController extends Controller
                 break;
             }
         }
-        return view('employeerentdress.postponeno', compact('reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'value_end_date', 'condition'));
+
+        if ($condition == true) {
+            $condition = 'pass';
+        } elseif ($condition == false) {
+            $condition = 'fail';
+        }
+        return view('employeerentdress.postponeno', compact('reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'value_end_date', 'condition', 'value_start_date', 'value_end_date'));
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private function detailpostponeyes($id)
+    public function postponecheckedpass(Request $request, $id)
     {
-        dd($id);
+        $reservation_id = $request->input('reservation_id');
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+
+
+        $reservation = Reservation::find($reservation_id);
+        $reservation->start_date = $start_date;
+        $reservation->end_date = $end_date;
+        $reservation->save();
+
+
+        $date = new Date();
+        $date->order_detail_id = $id;
+        $date->pickup_date = $start_date;
+        $date->return_date = $end_date;
+        $date->save();
+
+        return redirect()->route('employee.ordertotaldetailpostpone', ['id' => $id])->with('success', 'เลื่อนวันนัดรับ - นัดคืนชุด สำเร็จ');
     }
 
 
+
+    private function detailpostponeyesshirt($id)
+    {
+        dd('เสื้อ');
+    }
+
+    private function detailpostponeyesskirt($id)
+    {
+        dd('ผ้าถุง');
+    }
+    private function detailpostponeyesdresstotal($id)
+    {
+        dd('ทั้งชุด');
+    }
 
 
 
@@ -1321,157 +1351,179 @@ class OrderController extends Controller
     }
 
 
-    public function searchadddresstocart(Request $request)
+    
+
+
+    public function addrentdresstocard()
     {
+        $typedress = Typedress::all();
+        $dress = Dress::where('type_dress_id', 111)->get();
+        $start_date = '';
+        $end_date = '';
+        $character = '';
+        $character = '';
+        $dress_type = '';
+        $dress_pass = null;
+        $textcharacter = null ; 
+        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass','textcharacter'));
+    }
+
+    public function addrentdresstocardfilter(Request $request)
+    {
+
         $character = $request->input('character');
-        // 10คือทั้งชุด 20เสื้อ 30 กระโปรงหรือผ้าถุง 
+        // 10 คือทั้งชุด 20เสื้อ 30 กระโปรงหรือผ้าถุง 
         if ($character == 10) {
-            return $this->searchadddresstocarttotaldress($request);
+            return $this->addrentdresstocardfilterdress($request);
         } elseif ($character == 20) {
-            return $this->searchadddresstocartshirt($request);
+            return $this->addrentdresstocardfiltershirt($request);
         } elseif ($character == 30) {
-            return $this->searchadddresstocartskirt($request);
+            return $this->addrentdresstocardfilterskirt($request);
         }
     }
 
-    //ทั้งชุด
-    public function searchadddresstocarttotaldress(Request $request)
+
+    public function addrentdresstocardfilterdress(Request $request)
     {
-        $text_startDate = $request->input('startDate');
-        $text_endDate = $request->input('endDate');
-        $text_totalDay = $request->input('totalDay');
         $typedress = Typedress::all();
         $dress_type = $request->input('dress_type');
-        $dress_type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
+        $character = $request->input('character');
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
 
-        $dress = Dress::where('type_dress_id', $dress_type_id)->get();
-        $pickupdate = Carbon::parse($request->input('startDate'));
-        $returndate = Carbon::parse($request->input('endDate'));
-        $list_dress_id_pass = [];
+        $star_date_filter = Carbon::parse($request->input('start_date'));
+        $end_date_filter = Carbon::parse($request->input('end_date'));
 
+        $type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
+        $dress = Dress::where('type_dress_id', $type_id)->get();
+        $fil_start_7 = $star_date_filter->copy()->subDays(7);
+        $fil_start_1 = $star_date_filter->copy()->subDays(1);
+        $fil_be_start = $star_date_filter->copy();
+        $fil_be_end = $end_date_filter->copy();
+        $fil_end_1 = $end_date_filter->copy()->addDays(1);
+        $fil_end_7 = $end_date_filter->copy()->addDays(7);
+
+        $list_pass_dress_id = [];
         foreach ($dress as $index) {
-            //แยกไม่ได้
+            // แยกเช่าไม่ได้
             if ($index->separable == 1) {
                 $reservation = Reservation::where('dress_id', $index->id)
-                    ->where('status_completed', 0)->get();
-                $past_7_day_start = $pickupdate->copy()->subDays(7);
-                $past_7_day_end = $pickupdate->copy()->subDays(1);
-                $pickup_day_start = $pickupdate;
-                $return_day_end = $returndate;
-                $future_7_day_start = $returndate->copy()->addDays(1);
-                $future_7_day_end = $returndate->copy()->addDays(7);
-                $is_avalable = true;
-                if ($reservation->isNotEmpty()) {
+                    ->where('status_completed', 0)
+                    ->get();
+                $validate_pass = true;
+                if ($reservation->isNotempty()) {
                     foreach ($reservation as $re) {
+                        $re_start = Carbon::parse($re->start_date);
+                        $re_end  = Carbon::parse($re->end_date);
 
-                        $reservation_start = Carbon::parse($re->start_date);
-                        $reservation_end = Carbon::parse($re->end_date);
-
-                        //เงื่อนไขหน้า
-                        if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
-                            $is_avalable = false;
+                        if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                            $validate_pass = false;
                             break;
                         }
-                        if ($reservation_start->between($pickup_day_start, $return_day_end) || $reservation_end->between($pickup_day_start, $return_day_end)) {
-                            $is_avalable = false;
-                            break;
+                        if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
+                            $validate_pass = false;
                         }
-                        if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
-                            $is_avalable = false;
-                            break;
+                        if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
+                            $validate_pass = false;
                         }
                     }
                 }
-                if ($is_avalable) {
-                    $list_dress_id_pass[] = $index->id;
+                if ($validate_pass) {
+                    $list_pass_dress_id[] = $index->id;
                 }
-            }
+            } elseif ($index->separable == 2) {
+                // ชุดแยกได้
+
+                $validate_pass = true;
+
+                $fil_start_7 = $star_date_filter->copy()->subDays(7);
+                $fil_start_1 = $star_date_filter->copy()->subDays(1);
+                $fil_be_start = $star_date_filter->copy();
+                $fil_be_end = $end_date_filter->copy();
+                $fil_end_1 = $end_date_filter->copy()->addDays(1);
+                $fil_end_7 = $end_date_filter->copy()->addDays(7);
 
 
-            //แยกได้
-            elseif ($index->separable == 2) {
 
-                $is_avalable = true;
-                //เช็คเสื้อ
-                $shirt = Shirtitem::where('dress_id', $index->id)->first();
-                $reservation_shirt = Reservation::where('shirtitems_id', $shirt->id)
-                    ->where('status_completed', 0)
-                    ->get();
-                $past_7_day_start = $pickupdate->copy()->subDays(7);
-                $past_7_day_end = $pickupdate->copy()->subDays(1);
-                $pickup_day_start = $pickupdate;
-                $return_day_end = $returndate;
-                $future_7_day_start = $returndate->copy()->addDays(1);
-                $future_7_day_end = $returndate->copy()->addDays(7);
-
-                foreach ($reservation_shirt as $check) {
-                    $reservation_start = Carbon::parse($check->start_date);
-                    $reservation_end = Carbon::parse($check->end_date);
-                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
-                        $is_avalable = false;
-                        break;
-                    }
-                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
-                        $is_avalable = false;
-                        break;
-                    }
-                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
-                        $is_avalable = false;
-                        break;
-                    }
-                }
-                //เช็คกระโปรง/ผ้าถุง
-                $skirt = Skirtitem::where('dress_id', $index->id)->first();
-                $reservation_skirt = Reservation::where('skirtitems_id', $skirt->id)
-                    ->where('status_completed', 0)
-                    ->get();
-                foreach ($reservation_skirt as $check) {
-                    $reservation_start = Carbon::parse($check->start_date);
-                    $reservation_end = Carbon::parse($check->end_date);
-                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
-                        $is_avalable = false;
-                        break;
-                    }
-                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
-                        $is_avalable = false;
-                        break;
-                    }
-                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
-                        $is_avalable = false;
-                        break;
-                    }
-                }
-
-                //เช็คชุดเดี่ยว เช้คแค่คอลัมน์ dress_id อย่างเดียว เพราะบางทีเช่าทั้งชุดก็จริงแต่ว่า  ตอนเช่าทั้งชุดถึงแม้ว่าจะชุดจะแยกได้ มันระบุแค่ dress_id ฉะนั้น เราต้องเช้คด้วย
+                // เช็คแค่เฉพาะเช่าทั้งชุดก่อน
                 $reservation_dress = Reservation::where('dress_id', $index->id)
                     ->whereNull('shirtitems_id')
                     ->whereNull('skirtitems_id')
                     ->where('status_completed', 0)
                     ->get();
-                foreach ($reservation_dress as $check) {
-                    $reservation_start = Carbon::parse($check->start_date);
-                    $reservation_end = Carbon::parse($check->end_date);
-                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
-                        $is_avalable = false;
-                        break;
-                    }
-                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
-                        $is_avalable = false;
-                        break;
-                    }
-                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
-                        $is_avalable = false;
-                        break;
+                if ($reservation_dress->isNotempty()) {
+                    foreach ($reservation_dress as $re) {
+                        $re_start = Carbon::parse($re->start_date);
+                        $re_end  = Carbon::parse($re->end_date);
+
+                        if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                            $validate_pass = false;
+                            break;
+                        }
+                        if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
+                            $validate_pass = false;
+                        }
+                        if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
+                            $validate_pass = false;
+                        }
                     }
                 }
 
-                if ($is_avalable) {
-                    $list_dress_id_pass[] = $index->id;
+
+                //เช็คเฉพาะเสื้อ
+                $shirt_id = Shirtitem::where('dress_id', $index->id)->value('id');
+                $reservation_shirt = Reservation::where('shirtitems_id', $shirt_id)
+                    ->where('status_completed', 0)
+                    ->get();
+                if ($reservation_shirt->isNotempty()) {
+                    foreach ($reservation_shirt as $re) {
+                        $re_start = Carbon::parse($re->start_date);
+                        $re_end  = Carbon::parse($re->end_date);
+
+                        if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                            $validate_pass = false;
+                            break;
+                        }
+                        if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
+                            $validate_pass = false;
+                        }
+                        if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
+                            $validate_pass = false;
+                        }
+                    }
+                }
+
+                //เช็คเฉพาะผ้าถุง
+                $skirt_id = Skirtitem::where('dress_id', $index->id)->value('id');
+                $reservation_skirt = Reservation::where('skirtitems_id', $skirt_id)
+                    ->where('status_completed', 0)
+                    ->get();
+                if ($reservation_skirt->isNotempty()) {
+                    foreach ($reservation_skirt as $re) {
+                        $re_start = Carbon::parse($re->start_date);
+                        $re_end  = Carbon::parse($re->end_date);
+
+                        if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                            $validate_pass = false;
+                            break;
+                        }
+                        if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
+                            $validate_pass = false;
+                        }
+                        if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
+                            $validate_pass = false;
+                        }
+                    }
+                }
+
+
+                if ($validate_pass) {
+                    $list_pass_dress_id[] = $index->id;
                 }
             }
         }
-        $character = $request->input('character');
-
+        
+        $dress_pass = Dress::whereIn('id', $list_pass_dress_id)->get();
         if ($character === "10") {
             $textcharacter = "ทั้งชุด";
         } elseif ($character === "20") {
@@ -1479,103 +1531,92 @@ class OrderController extends Controller
         } elseif ($character === "30") {
             $textcharacter = 'กระโปรง/ผ้าถุง';
         }
-
-        $avalable_rent_pass = Dress::whereIn('id', $list_dress_id_pass)->get();
-        return view('employeerentdress.adddresstocart', compact('typedress', 'dress', 'dress_type', 'avalable_rent_pass', 'textcharacter', 'text_startDate', 'text_endDate', 'text_totalDay'));
+        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass','textcharacter','start_date','end_date'));
     }
 
 
 
 
 
-    //เสื้อ
-    public function searchadddresstocartshirt(Request $request)
-    {
-        $text_startDate = $request->input('startDate');
-        $text_endDate = $request->input('endDate');
-        $text_totalDay = $request->input('totalDay');
 
+    public function addrentdresstocardfiltershirt(Request $request)
+    {
         $typedress = Typedress::all();
         $dress_type = $request->input('dress_type');
-        $dress_type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
-        $dress = Dress::where('type_dress_id', $dress_type_id)
+        $character = $request->input('character');
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+
+        $star_date_filter = Carbon::parse($request->input('start_date'));
+        $end_date_filter = Carbon::parse($request->input('end_date'));
+
+        $type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
+        $dress = Dress::where('type_dress_id', $type_id)
             ->where('separable', 2)
             ->get();
-        $pickupdate = Carbon::parse($request->input('startDate'));
-        $returndate = Carbon::parse($request->input('endDate'));
-        $list_dress_id_pass = [];
+        $fil_start_7 = $star_date_filter->copy()->subDays(7);
+        $fil_start_1 = $star_date_filter->copy()->subDays(1);
+        $fil_be_start = $star_date_filter->copy();
+        $fil_be_end = $end_date_filter->copy();
+        $fil_end_1 = $end_date_filter->copy()->addDays(1);
+        $fil_end_7 = $end_date_filter->copy()->addDays(7);
+
+        $list_pass_dress_id = [];
+
         foreach ($dress as $index) {
-            //เช็คเสื้อก่อนติดไหม 
-            $shirt = Shirtitem::where('dress_id', $index->id)->first();
-            $reservation = Reservation::where('shirtitems_id', $shirt->id)
-                ->whereNull('skirtitems_id')
+
+            $validate_pass = true;
+            //เช็คเฉพาะเสื้อ
+            $shirt_id = Shirtitem::where('dress_id', $index->id)->value('id');
+            $reservation_shirt = Reservation::where('shirtitems_id', $shirt_id)
                 ->where('status_completed', 0)
                 ->get();
-            $past_7_day_start = $pickupdate->copy()->subDays(7);
-            $past_7_day_end = $pickupdate->copy()->subDays(1);
-            $pickup_day_start = $pickupdate;
-            $return_day_end = $returndate;
-            $future_7_day_start = $returndate->copy()->addDays(1);
-            $future_7_day_end = $returndate->copy()->addDays(7);
-            $is_avalable = true;
-            if ($reservation->isNotEmpty()) {
-                foreach ($reservation as $check) {
-                    $reservation_start = Carbon::parse($check->start_date);
-                    $reservation_end = Carbon::parse($check->end_date);
+            if ($reservation_shirt->isNotempty()) {
+                foreach ($reservation_shirt as $re) {
+                    $re_start = Carbon::parse($re->start_date);
+                    $re_end  = Carbon::parse($re->end_date);
 
-                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
-                        $is_avalable = false;
+                    if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                        $validate_pass = false;
                         break;
                     }
-
-                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
-                        $is_avalable = false;
-                        break;
+                    if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
+                        $validate_pass = false;
                     }
-
-                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
-                        $is_avalable = false;
-                        break;
+                    if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
+                        $validate_pass = false;
                     }
                 }
             }
-            //เช็คทั้งชุดด้วย เพราะจะเช่าแค่เสื้อได้ ต้องเช็คชุดก่อนว่ามันติดจองทั้งชุดไหม นึกออกปะ 
+            // เช็คแค่เฉพาะเช่าทั้งชุด
             $reservation_dress = Reservation::where('dress_id', $index->id)
                 ->whereNull('shirtitems_id')
                 ->whereNull('skirtitems_id')
                 ->where('status_completed', 0)
                 ->get();
-            if ($reservation_dress->isNotEmpty()) {
-                foreach ($reservation_dress as $check) {
-                    $reservation_start = Carbon::parse($check->start_date);
-                    $reservation_end = Carbon::parse($check->end_date);
+            if ($reservation_dress->isNotempty()) {
+                foreach ($reservation_dress as $re) {
+                    $re_start = Carbon::parse($re->start_date);
+                    $re_end  = Carbon::parse($re->end_date);
 
-                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
-                        $is_avalable = false;
+                    if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                        $validate_pass = false;
                         break;
                     }
-
-                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
-                        $is_avalable = false;
-                        break;
+                    if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
+                        $validate_pass = false;
                     }
-
-                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
-                        $is_avalable = false;
-                        break;
+                    if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
+                        $validate_pass = false;
                     }
                 }
             }
-            if ($is_avalable) {
-                $list_dress_id_pass[] = $index->id;
+
+            if ($validate_pass) {
+                $list_pass_dress_id[] = $index->id;
             }
         }
-
-
-        $avalable_rent_pass = Dress::whereIn('id', $list_dress_id_pass)->get();
-
-        $character = $request->input('character');
-
+        $dress_pass = Dress::whereIn('id', $list_pass_dress_id)->get();
         if ($character === "10") {
             $textcharacter = "ทั้งชุด";
         } elseif ($character === "20") {
@@ -1583,95 +1624,85 @@ class OrderController extends Controller
         } elseif ($character === "30") {
             $textcharacter = 'กระโปรง/ผ้าถุง';
         }
-
-        return view('employeerentdress.adddresstocart', compact('typedress', 'dress', 'dress_type', 'avalable_rent_pass', 'textcharacter', 'text_startDate', 'text_endDate', 'text_totalDay'));
+        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass','textcharacter','start_date','end_date'));
     }
 
-    //กระโปรง/ผ้าถุง
-    public function searchadddresstocartskirt(Request $request)
-    {
-        $text_startDate = $request->input('startDate');
-        $text_endDate = $request->input('endDate');
-        $text_totalDay = $request->input('totalDay');
 
+    public function addrentdresstocardfilterskirt(Request $request)
+    {
         $typedress = Typedress::all();
         $dress_type = $request->input('dress_type');
-        $dress_type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
-        $dress = Dress::where('type_dress_id', $dress_type_id)
+        $character = $request->input('character');
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+
+        $star_date_filter = Carbon::parse($request->input('start_date'));
+        $end_date_filter = Carbon::parse($request->input('end_date'));
+
+        $type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
+        $dress = Dress::where('type_dress_id', $type_id)
             ->where('separable', 2)
             ->get();
-        $pickupdate = Carbon::parse($request->input('startDate'));
-        $returndate = Carbon::parse($request->input('endDate'));
-        $list_dress_id_pass = [];
+        $fil_start_7 = $star_date_filter->copy()->subDays(7);
+        $fil_start_1 = $star_date_filter->copy()->subDays(1);
+        $fil_be_start = $star_date_filter->copy();
+        $fil_be_end = $end_date_filter->copy();
+        $fil_end_1 = $end_date_filter->copy()->addDays(1);
+        $fil_end_7 = $end_date_filter->copy()->addDays(7);
+        $list_pass_dress_id = [];
+
         foreach ($dress as $index) {
-            //เช็คแค่กระโปรงก่อน
-            $skirt = Shirtitem::where('dress_id', $index->id)->first();
-            $reservation = Reservation::where('skirtitems_id', $skirt->id)
-                ->whereNull('shirtitems_id')
+            $validate_pass = true;
+            //เช็คเฉพาะผ้าถุง
+            $skirt_id = Skirtitem::where('dress_id', $index->id)->value('id');
+            $reservation_skirt = Reservation::where('skirtitems_id', $skirt_id)
                 ->where('status_completed', 0)
                 ->get();
-            $past_7_day_start = $pickupdate->copy()->subDays(7);
-            $past_7_day_end = $pickupdate->copy()->subDays(1);
-            $pickup_day_start = $pickupdate;
-            $return_day_end = $returndate;
-            $future_7_day_start = $returndate->copy()->addDays(1);
-            $future_7_day_end = $returndate->copy()->addDays(7);
-            $is_avalable = true;
-            if ($reservation->isNotEmpty()) {
+            if ($reservation_skirt->isNotempty()) {
+                foreach ($reservation_skirt as $re) {
+                    $re_start = Carbon::parse($re->start_date);
+                    $re_end  = Carbon::parse($re->end_date);
 
-                foreach ($reservation as $check) {
-                    $reservation_start = Carbon::parse($check->start_date);
-                    $reservation_end = Carbon::parse($check->end_date);
-
-                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
-                        $is_avalable = false;
+                    if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                        $validate_pass = false;
                         break;
                     }
-
-                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
-                        $is_avalable = false;
-                        break;
+                    if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
+                        $validate_pass = false;
                     }
-
-                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
-                        $is_avalable = false;
-                        break;
+                    if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
+                        $validate_pass = false;
                     }
                 }
             }
-            // เช็คทั้งชุดด้วย  เพราะว่า ถ้าจะเช่ากระโปรงอะ จะไปเช็คแค่กระโปรงมันไม่ได้ มันต้องเช็คทั้งชุดก่อนว่าติดจองไหม 
+            // เช็คแค่เฉพาะเช่าทั้งชุด
             $reservation_dress = Reservation::where('dress_id', $index->id)
                 ->whereNull('shirtitems_id')
                 ->whereNull('skirtitems_id')
                 ->where('status_completed', 0)
                 ->get();
-            if ($reservation_dress->isNotEmpty()) {
-                foreach ($reservation_dress as $check) {
-                    $reservation_start = Carbon::parse($check->start_date);
-                    $reservation_end = Carbon::parse($check->end_date);
-                    if ($reservation_start->between($past_7_day_start, $past_7_day_end) || $reservation_end->between($past_7_day_start, $past_7_day_end)) {
-                        $is_avalable = false;
+            if ($reservation_dress->isNotempty()) {
+                foreach ($reservation_dress as $re) {
+                    $re_start = Carbon::parse($re->start_date);
+                    $re_end  = Carbon::parse($re->end_date);
+
+                    if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                        $validate_pass = false;
                         break;
                     }
-                    if ($reservation_start->between($pickup_day_start, $return_day_end)  || $reservation_end->between($pickup_day_start, $return_day_end)) {
-                        $is_avalable = false;
-                        break;
+                    if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
+                        $validate_pass = false;
                     }
-                    if ($reservation_start->between($future_7_day_start, $future_7_day_end) || $reservation_end->between($future_7_day_start, $future_7_day_end)) {
-                        $is_avalable = false;
-                        break;
+                    if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
+                        $validate_pass = false;
                     }
                 }
             }
-            if ($is_avalable) {
-                $list_dress_id_pass[] = $index->id;
+            if ($validate_pass) {
+                $list_pass_dress_id[] = $index->id;
             }
         }
-
-        $avalable_rent_pass = Dress::whereIn('id', $list_dress_id_pass)->get();
-
-        $character = $request->input('character');
-
+        $dress_pass = Dress::whereIn('id', $list_pass_dress_id)->get();
         if ($character === "10") {
             $textcharacter = "ทั้งชุด";
         } elseif ($character === "20") {
@@ -1679,13 +1710,21 @@ class OrderController extends Controller
         } elseif ($character === "30") {
             $textcharacter = 'กระโปรง/ผ้าถุง';
         }
-        $text_startDate = $request->input('startDate');
-        $text_endDate = $request->input('endDate');
-        $text_totalDay = $request->input('totalDay');
-
-        return view('employeerentdress.adddresstocart', compact('typedress', 'dress', 'dress_type', 'avalable_rent_pass', 'textcharacter', 'text_startDate', 'text_endDate', 'text_totalDay'));
+        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass','textcharacter','start_date','end_date'));
     }
 
+
+
+
+
+
+
+
+
+
+   
+
+   
     //เพิ่มชุด/เสื้อ/ผผ้าถุง ลงบนตะกร้า 
     public function addtocart(Request $request)
     {
@@ -1693,7 +1732,7 @@ class OrderController extends Controller
         $dress_id = $request->input('dress_id');
         $pickupdate = $request->input('pickupdate');
         $returndate = $request->input('returndate');
-        $totalday = $request->input('totalday');
+        
         $shirt_id = $request->input('shirt_id');
         $skirt_id = $request->input('skirt_id');
         $employee_id = Auth::user()->id;

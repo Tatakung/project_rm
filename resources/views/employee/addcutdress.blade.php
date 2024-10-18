@@ -1,16 +1,74 @@
 @extends('layouts.adminlayout')
 @section('content')
-    <ol class="breadcrumb" style="background: white ; ">
+    <style>
+        #button_add_mea {
+            background-color: #3498db;
+            /* ปุ่มสีฟ้า */
+            color: #fff;
+            /* ตัวอักษรสีขาว */
+            border: none;
+            /* ลบขอบปุ่ม */
+            border-radius: 4px;
+            /* มุมปุ่มโค้ง */
+            padding: 8px 12px;
+            /* ระยะห่างด้านในของปุ่ม */
+            font-size: 14px;
+            /* ขนาดตัวอักษรของปุ่ม */
+            cursor: pointer;
+            /* เปลี่ยนเคอร์เซอร์เมื่อชี้ที่ปุ่ม */
+            margin-left: 10px;
+            /* ระยะห่างจากข้อความ */
+            transition: background-color 0.3s ease;
+            /* เอฟเฟกต์เปลี่ยนสี */
+        }
+
+        #button_add_mea:hover {
+            background-color: #2980b9;
+            /* เปลี่ยนสีเมื่อชี้ */
+        }
+
+        #button_add_image {
+            background-color: #3498db;
+            /* ปุ่มสีฟ้า */
+            color: #fff;
+            /* ตัวอักษรสีขาว */
+            border: none;
+            /* ลบขอบปุ่ม */
+            border-radius: 4px;
+            /* มุมปุ่มโค้ง */
+            padding: 8px 12px;
+            /* ระยะห่างด้านในของปุ่ม */
+            font-size: 14px;
+            /* ขนาดตัวอักษรของปุ่ม */
+            cursor: pointer;
+            /* เปลี่ยนเคอร์เซอร์เมื่อชี้ที่ปุ่ม */
+            margin-left: 10px;
+            /* ระยะห่างจากข้อความ */
+            transition: background-color 0.3s ease;
+            /* เอฟเฟกต์เปลี่ยนสี */
+        }
+
+        #button_add_image:hover {
+            background-color: #2980b9;
+            /* เปลี่ยนสีเมื่อชี้ */
+        }
+    </style>
+
+
+
+
+    <ol class="breadcrumb" style="background-color: transparent;">
         <li class="breadcrumb-item">
             <a href="{{ route('employee.addorder') }}" style="color: black ; ">เพิ่มออเดอร์ใหม่</a>
         </li>
         <li class="breadcrumb-item active">เพิ่มรายการตัดชุด</li>
     </ol>
+
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
             <div class="modal-content custom-modal-content"
                 style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
-                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                <div class="modal-body" style="padding: 5px; display: flex; align-items: center; justify-content: center;">
                     <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
                 </div>
             </div>
@@ -19,7 +77,7 @@
     <div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
             <div class="modal-content custom-modal-content"
-                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
+                style="max-width: 400px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
                 <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
                     <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
                 </div>
@@ -35,6 +93,15 @@
         @endif
     </script>
 
+
+
+
+
+
+
+
+
+
     <script>
         @if (session('success'))
             setTimeout(function() {
@@ -45,8 +112,8 @@
     <form action="{{ route('employee.savecutdress') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        <div class="container mt-5">
-            <div class="card">
+        <div class="container mt-2">
+            <div class="card shadow">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
@@ -55,7 +122,8 @@
                                 <option value="" disabled selected>เลือกรายการ</option>
                                 @foreach ($type_dress as $dressType)
                                     <option value="{{ $dressType->type_dress_name }}">
-                                        {{ $dressType->type_dress_name }}</option>
+                                        {{ $dressType->type_dress_name }}
+                                    </option>
                                 @endforeach
                                 <option value="other_type">อื่นๆ</option>
                             </select>
@@ -139,12 +207,10 @@
                                 deposit.value = convert_price;
                             }
                         });
-                        price.addEventListener('input',function(){
-                            deposit.value = '' ;
+                        price.addEventListener('input', function() {
+                            deposit.value = '';
 
-                        }) ; 
-
-
+                        });
                     </script>
 
 
@@ -309,10 +375,6 @@
                                                 class="form-control mb-3" accept="image/*">
                                             <textarea class="form-control" name="note_image_[1]" placeholder="ใส่รายละเอียดเกี่ยวกับรูปภาพ..."></textarea>
 
-                                            {{-- <button type="button" class="btn  btn-block mt-3" onclick="remove_image()">
-                                                <i class="bi bi-x-circle"></i> ลบ
-                                            </button> --}}
-
                                         </div>
                                     </div>
                                 </div>
@@ -360,12 +422,13 @@
                         </script>
 
                     </div>
-
-
+                    <div class="row mt-4">
+                        <div class="col-md-12" style="text-align: end ; ">
+                            <button type="submit" class="btn btn-success">บันทึกข้อมูลและเพิ่มลงในตะกร้า</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-
         </div>
-        <button type="submit" class="btn btn-lg w-100 btn btn-success">บันทึกข้อมูลและเพิ่มลงในตะกร้า</button>
     </form>
 @endsection

@@ -31,14 +31,15 @@
                 <form action="{{route('employee.listdressreturnfilter')}}" method="GET">
                     @csrf
                     <div class="filter-buttons">
-                        <button class="btn" type="submit" name="filter_click" value="total"
-                            @if ($filer == 'total') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
-                        @else
-                        style="border: 1px solid #ccc;" @endif>ทั้งหมด</button>
                         <button class="btn" type="submit" name="filter_click" value="today"
                             @if ($filer == 'today') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
                         @else
                         style="border: 1px solid #ccc;" @endif>เฉพาะวันนี้</button>
+                        <button class="btn" type="submit" name="filter_click" value="total"
+                            @if ($filer == 'total') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
+                        @else
+                        style="border: 1px solid #ccc;" @endif>ทั้งหมด</button>
+                        
                     </div>
                 </form>
 
@@ -47,13 +48,13 @@
         </div>
     </div>
 
+    
 
 
     @if($listdressreturns->count() > 0 )
-    <table class="table shadow-sm" style="width: 100%; background-color: #ffffff; border-collapse: collapse;">
+    <table class="table shadow-sm" style="width: 100%; ">
         <thead>
             <tr style="background-color: #f2f2f2;">
-                <th>ลำดับ</th>
                 <th>ชุด</th>
                 <th>ชื่อลูกค้า</th>
                 <th>วันที่คืนชุด</th>
@@ -74,9 +75,6 @@
 
 
 
-                    <td>
-                        {{ $index + 1 }}
-                    </td>
                     <td>
 
                         @php

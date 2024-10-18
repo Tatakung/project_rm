@@ -960,47 +960,229 @@ class DressController extends Controller
 
     private function historydressrentNo($id)
     {
-
         $dress = Dress::find($id);
         $typedress = Typedress::find($dress->type_dress_id);
         $history_renrdress = Orderdetail::where('dress_id', $id)
             ->where('status_detail', 'คืนชุดแล้ว')
+            ->whereMonth('updated_at', now()->month)
+            ->whereYear('updated_at', now()->year)
             ->get();
-        return view('admin.his-dress-rent-history-no', compact('history_renrdress', 'dress', 'typedress'));
+        $value_month = now()->month ; 
+        $value_year = now()->year ;
+        return view('admin.his-dress-rent-history-no', compact('history_renrdress', 'dress', 'typedress','value_month','value_year'));
     }
+
+    public function historydressrentnofilter(Request $request ,  $id){
+        $value_month = $request->input('month') ; 
+        $value_year = $request->input('year') ; 
+        $dress = Dress::find($id);
+        $typedress = Typedress::find($dress->type_dress_id);
+        $history_renrdress = Orderdetail::where('dress_id', $id)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->whereMonth('updated_at',$value_month)
+            ->whereYear('updated_at',$value_year)
+            ->get();
+            
+        return view('admin.his-dress-rent-history-no', compact('history_renrdress', 'dress', 'typedress','value_month','value_year'));
+    }
+
+
+
+
+
+
+
+
 
     private function historydressrentYes($id)
     {
-
         $dress = Dress::find($id);
-
         $shirt_id = Shirtitem::where('dress_id', $id)->value('id');
         $skirt_id = Skirtitem::where('dress_id', $id)->value('id');
-
-
 
         $typedress = Typedress::find($dress->type_dress_id);
         $history_renrdress = Orderdetail::where('dress_id', $id)
             ->whereNull('shirtitems_id')
             ->whereNull('skirtitems_id')
+            ->whereMonth('updated_at',now()->month)
+            ->whereYear('updated_at',now()->year)
             ->where('status_detail', 'คืนชุดแล้ว')
             ->get();
 
         $history_rentshirt = Orderdetail::where('shirtitems_id', $shirt_id)
             ->whereNull('skirtitems_id')
             ->where('dress_id', $id)
+            ->whereMonth('updated_at',now()->month)
+            ->whereYear('updated_at',now()->year)
             ->where('status_detail', 'คืนชุดแล้ว')
             ->get();
 
         $history_rentskirt = Orderdetail::where('skirtitems_id', $skirt_id)
             ->whereNull('shirtitems_id')
             ->where('dress_id', $id)
+            ->whereMonth('updated_at',now()->month)
+            ->whereYear('updated_at',now()->year)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+        
+        $value_month_dress = now()->month ;
+        $value_year_dress = now()->year ; 
+
+        $value_month_shirt = now()->month ; 
+        $value_year_shirt = now()->year ; 
+
+        $value_month_skirt = now()->month ; 
+        $value_year_skirt = now()->year ; 
+        $activetab = '1' ; 
+        return view('admin.his-dress-rent-history-yes', compact('history_renrdress', 'dress', 'typedress', 'history_rentshirt', 'history_rentskirt','value_month_dress','value_year_dress','value_month_shirt','value_year_shirt','value_month_skirt','value_year_skirt','activetab'));
+    }
+
+
+    public function historydressrentyesfilter(Request $request , $id){
+
+        $dress = Dress::find($id);
+        $shirt_id = Shirtitem::where('dress_id', $id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $id)->value('id');
+
+        $value_month_dress = $request->input('month_dress') ; 
+        $value_year_dress = $request->input('year_dress') ; 
+
+        $value_month_shirt = now()->month ; 
+        $value_year_shirt = now()->year ; 
+
+        $value_month_skirt = now()->month ; 
+        $value_year_skirt = now()->year ; 
+
+
+
+
+        $typedress = Typedress::find($dress->type_dress_id);
+        $history_renrdress = Orderdetail::where('dress_id', $id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->whereMonth('updated_at',$value_month_dress)
+            ->whereYear('updated_at',$value_year_dress)
             ->where('status_detail', 'คืนชุดแล้ว')
             ->get();
 
+        $history_rentshirt = Orderdetail::where('shirtitems_id', $shirt_id)
+            ->whereNull('skirtitems_id')
+            ->where('dress_id', $id)
+            ->whereMonth('updated_at',now()->month)
+            ->whereYear('updated_at',now()->year)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
 
-
-
-        return view('admin.his-dress-rent-history-yes', compact('history_renrdress', 'dress', 'typedress', 'history_rentshirt', 'history_rentskirt'));
+        $history_rentskirt = Orderdetail::where('skirtitems_id', $skirt_id)
+            ->whereNull('shirtitems_id')
+            ->where('dress_id', $id)
+            ->whereMonth('updated_at',now()->month)
+            ->whereYear('updated_at',now()->year)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+        
+        $activetab = '1' ; 
+        return view('admin.his-dress-rent-history-yes', compact('history_renrdress', 'dress', 'typedress', 'history_rentshirt', 'history_rentskirt','value_month_dress','value_year_dress','value_month_shirt','value_year_shirt','value_month_skirt','value_year_skirt','activetab'));
     }
+
+
+
+    public function historydressrentyesshirtfilter(Request $request , $id){
+
+        $dress = Dress::find($id);
+        $shirt_id = Shirtitem::where('dress_id', $id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $id)->value('id');
+
+        $value_month_dress = now()->month ; 
+        $value_year_dress = now()->year ; 
+
+        $value_month_shirt = $request->input('month_shirt') ; 
+        $value_year_shirt = $request->input('year_shirt') ; 
+
+        $value_month_skirt = now()->month ; 
+        $value_year_skirt = now()->year ; 
+
+        $typedress = Typedress::find($dress->type_dress_id);
+        $history_renrdress = Orderdetail::where('dress_id', $id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->whereMonth('updated_at',$value_month_dress)
+            ->whereYear('updated_at',$value_year_dress)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+
+        $history_rentshirt = Orderdetail::where('shirtitems_id', $shirt_id)
+            ->whereNull('skirtitems_id')
+            ->where('dress_id', $id)
+            ->whereMonth('updated_at',$value_month_shirt)
+            ->whereYear('updated_at',$value_year_shirt)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+
+        $history_rentskirt = Orderdetail::where('skirtitems_id', $skirt_id)
+            ->whereNull('shirtitems_id')
+            ->where('dress_id', $id)
+            ->whereMonth('updated_at',now()->month)
+            ->whereYear('updated_at',now()->year)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+        
+        $activetab = '2' ; 
+        return view('admin.his-dress-rent-history-yes', compact('history_renrdress', 'dress', 'typedress', 'history_rentshirt', 'history_rentskirt','value_month_dress','value_year_dress','value_month_shirt','value_year_shirt','value_month_skirt','value_year_skirt','activetab'));
+    }
+
+
+    public function historydressrentyesskirtfilter(Request $request , $id){
+
+        $dress = Dress::find($id);
+        $shirt_id = Shirtitem::where('dress_id', $id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $id)->value('id');
+
+        $value_month_dress = now()->month ; 
+        $value_year_dress = now()->year ; 
+
+        $value_month_shirt = now()->month ; 
+        $value_year_shirt = now()->year ; 
+
+        $value_month_skirt = $request->input('month_skirt') ;  
+        $value_year_skirt = $request->input('year_skirt') ; 
+
+        $typedress = Typedress::find($dress->type_dress_id);
+        $history_renrdress = Orderdetail::where('dress_id', $id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->whereMonth('updated_at',$value_month_dress)
+            ->whereYear('updated_at',$value_year_dress)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+
+        $history_rentshirt = Orderdetail::where('shirtitems_id', $shirt_id)
+            ->whereNull('skirtitems_id')
+            ->where('dress_id', $id)
+            ->whereMonth('updated_at',$value_month_shirt)
+            ->whereYear('updated_at',$value_year_shirt)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+
+        $history_rentskirt = Orderdetail::where('skirtitems_id', $skirt_id)
+            ->whereNull('shirtitems_id')
+            ->where('dress_id', $id)
+            ->whereMonth('updated_at',$value_month_skirt)
+            ->whereYear('updated_at',$value_year_skirt)
+            ->where('status_detail', 'คืนชุดแล้ว')
+            ->get();
+        
+        $activetab = '3' ; 
+        return view('admin.his-dress-rent-history-yes', compact('history_renrdress', 'dress', 'typedress', 'history_rentshirt', 'history_rentskirt','value_month_dress','value_year_dress','value_month_shirt','value_year_shirt','value_month_skirt','value_year_skirt','activetab'));
+    }
+
+
+
+
+
+
+
+
+
+
 }

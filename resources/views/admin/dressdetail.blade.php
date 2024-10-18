@@ -42,7 +42,13 @@
 
         <div class="card mb-4">
             <div class="card-header"><i class="bi bi-info-circle"></i>รายละเอียดชุด
-                <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal">
+                <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal"
+                @if($check_admin == 1 )
+                 style="display: block ; "
+                @elseif($check_admin == 0 )
+                style="display: none ; "
+                @endif
+                >
                     <i class="bi bi-pencil-square text-dark"></i>
                 </button>
             </div>
@@ -98,15 +104,15 @@
 
 
                                         update_dress_price.addEventListener('input', function() {
-                                            
+
                                             var float_price = parseFloat(update_dress_price.value);
-                                            var float_deposit = parseFloat(update_dress_deposit.value) ; 
-                                            var damage_insurance = parseFloat(update_damage_insurance.value) ; 
+                                            var float_deposit = parseFloat(update_dress_deposit.value);
+                                            var damage_insurance = parseFloat(update_damage_insurance.value);
 
-                                            console.log(damage_insurance) ; 
+                                            console.log(damage_insurance);
 
-                                            update_dress_deposit.value = float_price*0.2 ; 
-                                            update_damage_insurance.value = float_price ; 
+                                            update_dress_deposit.value = Math.ceil(float_price * 0.3);
+                                            update_damage_insurance.value = Math.ceil(float_price);
                                         });
                                     </script>
 
@@ -229,11 +235,14 @@
                             </tbody>
                         </table>
                     </div>
+                    
 
                     <div class="mt-3"
-                        @if ($check_admin == 1) style="display: block ; "
-                    @elseif($check_admin == 2)
-                    style="display: none ; " @endif>
+                        @if ($check_admin == 1) 
+                            style="display: block ; "
+                        @elseif($check_admin == 0)
+                            style="display: none ; " 
+                        @endif>
                         <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}"
                             class="btn btn-outline-primary mr-2">
                             <i class="bi bi-clock-history"></i> ประวัติการเช่า

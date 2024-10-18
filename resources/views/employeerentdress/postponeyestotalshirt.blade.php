@@ -41,6 +41,8 @@
         <div class="row">
             <div class="col-md-12" style="text-align: center ;">
                 <h2>เลื่อนวันนัดรับ - นัดคืนชุด</h2>
+                <p>{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
+
             </div>
         </div>
         <div class="row mt-5">
@@ -68,7 +70,7 @@
                         var calendar = new FullCalendar.Calendar(calendarEl, {
                             initialView: 'dayGridMonth',
                             events: [
-                                // ข้อมูลการจองจะถูกเพิ่มที่นี่
+                                // เช่าเฉพาะทั้งชุด
                                 @foreach ($reservation_dress_total as $reservation)
                                     {
                                         @php
@@ -77,14 +79,32 @@
                                             $customer = App\Models\Customer::find($customer_id);
                                         @endphp
 
+                                        title: 'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} - {{ $reservation->status }}',
+                                        start: '{{ $reservation->start_date }}',
+                                        end: '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
+                                            color: '{{ $reservation->status == 'ถูกจอง' ? '#ff0000' : '#257e4a' }}'
+                                    },
+                                @endforeach
+
+                                //เช่าเฉพาะเสื้อ
+                                @foreach ($reservation_dress_shirt as $reservation)
+                                    {
+                                        @php
+                                            $order_id = App\Models\Orderdetail::where('reservation_id', $reservation->id)->value('order_id');
+                                            $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
+                                            $customer = App\Models\Customer::find($customer_id);
+                                        @endphp
+
                                         title:
-                                            'คุณ {{ $customer->customer_fname }} {{ $customer->customer_lname }} - {{ $reservation->status }}',
+                                            'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} - {{ $reservation->status }}',
                                             start: '{{ $reservation->start_date }}',
                                             end:
                                             '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
-                                            color: '{{ $reservation->status == 'ถูกจอง' ? '#3788d8' : '#257e4a' }}'
+                                            color: '#3788d8' // สีน้ำเงินสำหรับเช่าเฉพาะเสื้อ
                                     },
                                 @endforeach
+                                
+
                                 // เพิ่ม event สำหรับวันที่ปัจจุบัน
                                 @if ($text_status != 'อยู่ในร้าน')
                                     {
@@ -99,6 +119,17 @@
                         calendar.render();
                     });
                 </script>
+                <p>
+                    <span
+                        style="display: inline-block; width: 12px; height: 12px; background-color: #ff0000; border-radius: 50%; margin-right: 5px;"></span>
+                    เช่าทั้งชุด
+                </p>
+                <p>
+                    <span
+                        style="display: inline-block; width: 12px; height: 12px; background-color: #3788d8; border-radius: 50%; margin-right: 5px;"></span>
+                    เช่าเฉพาะเสื้อ
+                </p>
+                
             </div>
             <div class="col-md-5">
                 <h2 class="card-title">ลำดับคิว</h2>
@@ -113,7 +144,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($reservation_dress_total as $index => $item)
+                        @foreach ($reservation_dress_index as $index => $item)
                             <tr>
 
                                 <td>{{ $index + 1 }}</td>
@@ -148,13 +179,10 @@
         <div class="row mt-5 mb-5">
             <div class="col-md-12">
                 <h3 style="text-align: start ; ">ข้อมูลการเช่า</h3>
-
-
-
-
+                
                 <div class="card shadow">
                     <div class="card-body">
-                        <p>{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
+                        <p>เช่า{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)</p>
 
 
                         <p>ผู้เช่า : คุณ{{ $cus->customer_fname }} {{ $cus->customer_lname }}</p>
@@ -170,7 +198,7 @@
                         @endphp
 
 
-                        <form action="{{ route('employee.ordertotaldetailpostponechecked', ['id' => $orderdetail->id]) }}"
+                        <form action="{{ route('employee.ordertotaldetailpostponecheckeddressshirt', ['id' => $orderdetail->id]) }}"
                             method="GET">
                             @csrf
                             <div class="form-group">
@@ -232,37 +260,22 @@
                         });
                     </script>
 
-
-
-
                 </div>
-
-
-
-
 
             </div>
         </div>
 
-
-
         <script>
             @if (session('condition') == 'passsuccesst')
                 setTimeout(function() {
-                    $('#rescheduleModal').modal('show'); 
-                }, 500); 
-        
+                    $('#rescheduleModal').modal('show');
+                }, 500);
             @elseif (session('condition') == 'failno')
                 setTimeout(function() {
-                    $('#rescheduleFailModal').modal('show'); 
-                }, 500); 
+                    $('#rescheduleFailModal').modal('show');
+                }, 500);
             @endif
         </script>
-        
-        
-
-
-
 
 
         <div class="modal fade" id="rescheduleFailModal" tabindex="-1" role="dialog"
@@ -287,8 +300,8 @@
         </div>
 
 
-        <div class="modal fade" id="rescheduleModal" tabindex="-1" role="dialog" aria-labelledby="rescheduleModalLabel"
-            aria-hidden="true" data-backdrop="static">
+        <div class="modal fade" id="rescheduleModal" tabindex="-1" role="dialog"
+            aria-labelledby="rescheduleModalLabel" aria-hidden="true" data-backdrop="static">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <form action="{{ route('employee.postponecheckedpass', ['id' => $orderdetail->id]) }}"
@@ -312,16 +325,16 @@
                             <div class="row mb-2">
                                 <div class="col-6 text-right">วันนัดรับใหม่:</div>
                                 <div class="col-6 text-left"><span id="newPickupDate">
-                                    {{ \Carbon\Carbon::parse($value_start_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($value_start_date)->year + 543 }}
-                                </span>
+                                        {{ \Carbon\Carbon::parse($value_start_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($value_start_date)->year + 543 }}
+                                    </span>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-6 text-right">วันนัดคืนใหม่:</div>
                                 <div class="col-6 text-left"><span id="newReturnDate">
-                                    {{ \Carbon\Carbon::parse($value_end_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($value_end_date)->year + 543 }}
+                                        {{ \Carbon\Carbon::parse($value_end_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($value_end_date)->year + 543 }}
                                     </span></div>
                             </div>
                         </div>

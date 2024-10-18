@@ -1,7 +1,48 @@
 @extends('layouts.adminlayout')
 @section('content')
-<div class="container-fluid px-4">
-    <h2 class="py-4 d-flex justify-content-center">รายการ Orders</h2>
+
+
+<style>
+
+ .form-control {
+        border-radius: 25px;
+        border: 1px solid #ced4da;
+        padding: 12px 20px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: none;
+    }
+
+    .btn-primary {
+        border-radius: 20px;
+        background-color: #007bff;
+        border: none;
+        padding: 5px 15px;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-primary i {
+        margin-right: 2px;
+        font-size: 14px;
+    }
+</style>
+<div class="container  mt-5">
+        <div class="col">
+            <h1 class="font-bold">รายการออเดอร์ทั้งหมด</h1>
+        </div>
+
+
+
     <div class="card mb-4">
 
         <div class="card-header ">
@@ -23,13 +64,12 @@
 
 
         <div class="card-body">
-            <table id="ordersTable" class="table table-striped table-bordered">
+            <table id="ordersTable" class="table table-striped">
                 <thead>
                     <tr>
                         <th>หมายเลขออเดอร์</th>
                         <th>วันที่ทำรายการ</th>
                         <th>ชื่อ-สกุลลูกค้า</th>
-                        {{-- <th>สถานะ</th> --}}
                         <th>ยอดรวม</th>
                         <th>รายการ</th>
                         <th>รายละเอียด</th>
@@ -41,11 +81,20 @@
                     @if ($order->order_status == 1)
                     <tr>
                         <td>OR{{ $order->id }}</td>
-                        {{-- <td>{{$customer->created_at}}</td> --}}
                         <td>
                             {{ \Carbon\Carbon::parse($order->created_at)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($order->created_at)->year + 543 }}
                         </td>
+
+
+
+
+
+
+
+
+
+                        
                         <td>คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</td>
                         <td>{{ number_format($order->total_price, 2) }} บาท</td>
                         <td>{{ $order->total_quantity }} รายการ</td>

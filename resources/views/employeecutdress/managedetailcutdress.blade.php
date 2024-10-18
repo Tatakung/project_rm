@@ -68,6 +68,49 @@
         <li class="breadcrumb-item active">{{ $orderdetail->title_name }}</li>
     </ol>
 
+    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content custom-modal-content"
+                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
+                <div class="modal-body" style="padding: 5px; display: flex; align-items: center; justify-content: center;">
+                    <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content custom-modal-content"
+                style="max-width: 400px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
+                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                    <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        @if(session('fail'))
+        setTimeout(function() {
+            $('#showfail').modal('show');
+        }, 500);
+        @endif
+    </script>
+    
+    <script>
+        @if(session('success'))
+        setTimeout(function() {
+            $('#showsuccess').modal('show');
+        }, 500);
+        @endif
+    </script>
+    
+
+
+
+
+
+
     <div class="container mt-4">
 
         @php
@@ -255,7 +298,7 @@
 
                             <!-- Modal -->
                             <div class="modal fade" id="updatestatus_to_deliver" tabindex="-1"
-                                aria-labelledby="updatestatus_to_deliverLabel" aria-hidden="true">
+                                aria-labelledby="updatestatus_to_deliverLabel" aria-hidden="true" data-backdrop="static">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <form
@@ -757,18 +800,31 @@
                 </div>
             </div>
         </div>
-
+        
         @if ($imagerent->count() > 0)
             <div class="row mt-3 mb-3">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <h5 class="card-title">รูปภาพแสดงตัวแบบสำหรับตัดเย็บ</h5>
+                                <div class="col-md-12">
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <h5 class="card-title">รูปภาพแสดงตัวแบบสำหรับตัดเย็บ</h5>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#add_image" 
+                                           @if($is_admin == 1  && $orderdetail->status_detail != "ส่งมอบชุดแล้ว")
+                                           style="display: block ; "
+                                           @elseif($who_login == $person_order && $orderdetail->status_detail != "ส่งมอบชุดแล้ว")
+                                           style="display: block ; "
+                                           @else
+                                           style="display: none ; "
+                                           @endif
+                                            >
+                                            +เพิ่มรูปภาพ
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-
                             <div class="row mb-3">
                                 @foreach ($imagerent as $item)
                                     <div class="col-md-6 col-lg-4 mb-4">
@@ -877,7 +933,8 @@
 
 
         <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
-            <div class="col-md-12" @if ($orderdetail->status_detail == 'ส่งมอบชุดแล้ว') style="display: block;" @else style="display: none;" @endif>
+            <div class="col-md-12"
+                @if ($orderdetail->status_detail == 'ส่งมอบชุดแล้ว') style="display: block;" @else style="display: none;" @endif>
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -885,11 +942,11 @@
                         </h5>
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>วันที่สั่งตัด:</strong> 
+                                <p><strong>วันที่สั่งตัด:</strong>
                                     {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
                                     {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
                                 </p>
-                                <p><strong>วันที่รับชุดจริง:</strong> 
+                                <p><strong>วันที่รับชุดจริง:</strong>
                                     {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
                                     {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}
                                 </p>
@@ -899,15 +956,58 @@
                             </div>
                             <div class="col-md-6">
                                 <p><strong>ราคาตัดชุด:</strong> {{ number_format($orderdetail->price, 2) }} บาท</p>
-                                <p><strong>ค่าใช้จ่ายเพิ่มเติม:</strong> {{ number_format($decoration->sum('decoration_price'), 2) }} บาท</p>
-                                <p><strong>รายได้รวมทั้งหมด:</strong> {{ number_format($orderdetail->price + $decoration->sum('decoration_price'), 2) }} บาท</p>
+                                <p><strong>ค่าใช้จ่ายเพิ่มเติม:</strong>
+                                    {{ number_format($decoration->sum('decoration_price'), 2) }} บาท</p>
+                                <p><strong>รายได้รวมทั้งหมด:</strong>
+                                    {{ number_format($orderdetail->price + $decoration->sum('decoration_price'), 2) }} บาท
+                                </p>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
         </div>
+
+
+        
+
+
+        <div class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static" id="add_image">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <form action="{{ route('employee.savecutdressaddimage',['id' => $orderdetail->id]) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title">เพิ่มรูปภาพตัวแบบสำหรับการตัดเย็บ</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col-md-12" id="div_image1">
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <input type="file" id="file_image" name="file_image"
+                                                    class="form-control mb-3" accept="image/*" required>
+                                                <textarea class="form-control" name="note_image" required placeholder="ใส่รายละเอียดเกี่ยวกับรูปภาพ..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
+                            <button class="btn btn-success" type="submit">ยืนยัน</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 
 
 

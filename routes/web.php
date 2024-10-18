@@ -44,8 +44,12 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/dresslist', [DressController::class, 'dresslist'])->name('admin.dresslist');
     Route::get('/admin/historydressadjust/{id}', [DressController::class, 'historydressadjust'])->name('admin.historydressadjust');
     Route::get('/admin/historydressrepair/{id}', [DressController::class, 'historydressrepair'])->name('admin.historydressrepair');
-    Route::get('/admin/admin/typedress/dressdetail/historydressrent/{id}', [DressController::class, 'historydressrent'])->name('admin.historydressrent');
+    Route::get('/admin/typedress/dressdetail/historydressrent/{id}', [DressController::class, 'historydressrent'])->name('admin.historydressrent');
+    Route::get('/admin/typedress/dressdetail/historydressrent/filter/{id}', [DressController::class, 'historydressrentnofilter'])->name('admin.historydressrentnofilter');
 
+    Route::get('/admin/typedress/dressdetail/historydressrentyestotal/filter/{id}', [DressController::class, 'historydressrentyesfilter'])->name('admin.historydressrentyestotalfilter');
+    Route::get('/admin/typedress/dressdetail/historydressrentyesshirt/filter/{id}', [DressController::class, 'historydressrentyesshirtfilter'])->name('admin.historydressrentyesshirtfilter');
+    Route::get('/admin/typedress/dressdetail/historydressrentyesskirt/filter/{id}', [DressController::class, 'historydressrentyesskirtfilter'])->name('admin.historydressrentyesskirtfilter');
 
     
     Route::post('/admin/adddress-form/save', [DressController::class, 'savedress'])->name('admin.savedress'); //บันทึกข้อมูล 
@@ -164,6 +168,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/addcutdress', [EmployeeController::class, 'addcutdress'])->name('employee.addcutdress'); //เพิ่มตัดชุด
     Route::post('/employee/addcutdress/savecutdress', [EmployeeController::class, 'savecutdress'])->name('employee.savecutdress');
 
+    Route::post('/employee/addcutdress/addimage/{id}', [EmployeeController::class, 'savecutdressaddimage'])->name('employee.savecutdressaddimage');
+
+
+
+
     Route::get('/employee/cart', [EmployeeController::class, 'cart'])->name('employee.cart'); //ตะกร้าสินค้า
     Route::post('/employee/cart/deletelist/{id}', [EmployeeController::class, 'deletelist'])->name('employee.deletelist'); //ลบรายการในตะกร้า
     Route::get('/employee/card/manageitem/{id}', [EmployeeController::class, 'manageitem'])->name('employee.manageitem'); //จัดการตาม item แยกตาม type_order
@@ -218,6 +227,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/ordertotal/detail/show/postpone/{id}', [OrderController::class, 'ordertotaldetailpostpone'])->name('employee.ordertotaldetailpostpone'); //เลื่อนวันนัดรับ-คืน
     Route::get('/employee/ordertotal/detail/show/postpone/checked/{id}', [OrderController::class, 'ordertotaldetailpostponechecked'])->name('employee.ordertotaldetailpostponechecked'); //เช็คเลื่อนวันนัดรับ-คืน
     Route::post('/employee/ordertotal/detail/show/postpone/checked/pass/{id}', [OrderController::class, 'postponecheckedpass'])->name('employee.postponecheckedpass'); //เช็คเลื่อนวันนัดรับ-คืน ผ่าน
+
+
+    Route::get('/employee/ordertotal/detail/show/postpone/checkeddresstotal/{id}', [OrderController::class, 'ordertotaldetailpostponecheckeddresstotal'])->name('employee.ordertotaldetailpostponecheckeddresstotal'); //เช็คเลื่อนวันนัดรับ-คืน
+    Route::get('/employee/ordertotal/detail/show/postpone/checkeddressshirt/{id}', [OrderController::class, 'ordertotaldetailpostponecheckeddressshirt'])->name('employee.ordertotaldetailpostponecheckeddressshirt'); //เช็คเลื่อนวันนัดรับ-คืน
+
+
+
 
 
     Route::get('/employee/addorder/addrent-dresstocard', [OrderController::class, 'addrentdresstocard'])->name('employee.addrentdresstocard'); 

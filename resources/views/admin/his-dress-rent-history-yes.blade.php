@@ -1,30 +1,144 @@
 @extends('layouts.adminlayout')
 @section('content')
+    <style>
+        .container h3 {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1rem;
+        }
 
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: none;
+        }
 
+        .card-body h5 {
+            font-weight: bold;
+            color: #4A4A4A;
+        }
+
+        .card-body p {
+            color: #6c757d;
+        }
+
+        .table-responsive {
+            margin-top: 2rem;
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border-color: #dee2e6;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table th {
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .status-late {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-on-time {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-early {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        p.centered {
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+    </style>
+
+    @php
+        $test_car = '2' ; 
+    @endphp
 
     <div class="container mt-5">
+        <h3>ประวัติการเช่าชุด </h3>
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a href="#dress_total" class="nav-link active" data-toggle="tab">ทั้งชุด</a>
+                <a href="#dress_total" class="nav-link @if($activetab === "1") active @endif" data-toggle="tab">เช่าทั้งชุด</a>
             </li>
             <li class="nav-item">
-                <a href="#dress_shirt" class="nav-link" data-toggle="tab">เสื้อ</a>
+                <a href="#dress_shirt" class="nav-link @if($activetab === "2") active @endif" data-toggle="tab">เช่าเฉพาะเสื้อ</a>
             </li>
             <li class="nav-item">
-                <a href="#dress_skirt" class="nav-link" data-toggle="tab">ผ้าถุง</a>
+                <a href="#dress_skirt" class="nav-link @if($activetab === "3") active @endif" data-toggle="tab">เช่าเฉพาะผ้าถุง</a>
             </li>
         </ul>
 
-
         <div class="tab-content">
-            <div class="tab-pane active" id="dress_total">
+            <div class="tab-pane @if($activetab === "1") active @endif" id="dress_total">
+                <div class="card mb-2 mt-2">
+                    <div class="card-body">
+                        <form action="{{route('admin.historydressrentyestotalfilter',['id' => $dress->id])}}" method="GET"
+                            class="form-inline">
+                            @csrf
+                            <div class="form-group mb-2">
+                                <label for="month" class="mr-2">ฟิลเตอร์:</label>
+                                <select class="form-control mr-2" name="month_dress" id="month_dress">
+                                    <option value="1" {{ $value_month_dress == 1 ? 'selected' : '' }}>มกราคม</option>
+                                    <option value="2" {{ $value_month_dress == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
+                                    <option value="3" {{ $value_month_dress == 3 ? 'selected' : '' }}>มีนาคม</option>
+                                    <option value="4" {{ $value_month_dress == 4 ? 'selected' : '' }}>เมษายน</option>
+                                    <option value="5" {{ $value_month_dress == 5 ? 'selected' : '' }}>พฤษภาคม</option>
+                                    <option value="6" {{ $value_month_dress == 6 ? 'selected' : '' }}>มิถุนายน</option>
+                                    <option value="7" {{ $value_month_dress == 7 ? 'selected' : '' }}>กรกฎาคม</option>
+                                    <option value="8" {{ $value_month_dress == 8 ? 'selected' : '' }}>สิงหาคม</option>
+                                    <option value="9" {{ $value_month_dress == 9 ? 'selected' : '' }}>กันยายน</option>
+                                    <option value="10" {{ $value_month_dress == 10 ? 'selected' : '' }}>ตุลาคม</option>
+                                    <option value="11" {{ $value_month_dress == 11 ? 'selected' : '' }}>พฤศจิกายน</option>
+                                    <option value="12" {{ $value_month_dress == 12 ? 'selected' : '' }}>ธันวาคม</option>
+                                </select>
+        
+                                <select class="form-control mr-2" name="year_dress" id="year_dress">
+                                    <option value="">ปี</option>
+                                    @for ($i = 2020; $i <= now()->year; $i++)
+                                        <option value="{{ $i }}" @if ($value_year_dress == $i) selected @endif>
+                                            {{ $i }}</option>
+                                    @endfor
+        
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mb-2">ใช้ฟิลเตอร์</button>
+                        </form>
+                    </div>
+                </div>
+
                 @if ($history_renrdress->count() > 0)
                     <div class="card">
                         <div class="card-body">
                             <h5>ข้อมูลสรุป</h5>
-                            <p>จำนวนครั้งที่ถูกเช่า {{ $history_renrdress->count() }} ครั้ง</p>
-                            <p>รายได้รวม {{ number_format($history_renrdress->sum('price'), 2) }} บาท</p>
+                            <p>จำนวนครั้งที่ถูกเช่า <strong>{{ $history_renrdress->count() }} ครั้ง</strong></p>
+                            <p>รายได้รวม <strong>{{ number_format($history_renrdress->sum('price'), 2) }} บาท</strong></p>
                             <p>อัตรราการเช่าต่อเดือน </p>
                         </div>
                     </div>
@@ -34,9 +148,8 @@
                             <thead">
                                 <tr>
                                     <th scope="col">วันที่เช่า</th>
-                                    <th scope="col">ชื่อลูกค้า</th>
-                                    <th scope="col">รวมระยะเวลา (วัน)</th>
                                     <th scope="col">วันที่คืน</th>
+                                    <th scope="col">รวมระยะเวลา (วัน)</th>
                                     <th scope="col">สถานะ</th>
                                     <th scope="col">ดูรายละเอียด</th>
                                 </tr>
@@ -54,18 +167,10 @@
                                                 {{ \Carbon\Carbon::parse($date->actua_pickup_date)->year + 543 }}
                                             </td>
                                             <td>
-
-                                                @php
-                                                    $order_id = App\Models\Orderdetail::where('id', $item->id)->value(
-                                                        'order_id',
-                                                    );
-                                                    $customer_id = App\Models\Order::where('id', $order_id)->value(
-                                                        'customer_id',
-                                                    );
-                                                    $customer = App\Models\Customer::find($customer_id);
-                                                @endphp
-                                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                                                {{ \carbon\carbon::parse($date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($date->actua_return_date)->year + 543 }}
                                             </td>
+                                            
                                             <td>
                                                 <span id="show_day{{ $item->id }}">
                                                     <script>
@@ -78,10 +183,7 @@
                                                     </script>
                                                 </span>
                                             </td>
-                                            <td>
-                                                {{ \carbon\carbon::parse($date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
-                                                {{ \Carbon\Carbon::parse($date->actua_return_date)->year + 543 }}
-                                            </td>
+                                            
                                             <td>
                                                 <span id="status_show{{ $item->id }}"></span>
 
@@ -115,16 +217,53 @@
                         </table>
                     </div>
                 @else
-                    <p style="text-align: center ; ">ไม่มีรายการประวัติการเช่าชุดนี้</p>
+                    <p class="centered">ไม่มีรายการประวัติการเช่าชุดนี้</p>
                 @endif
             </div>
-            <div class="tab-pane" id="dress_shirt">
+            <div class="tab-pane @if($activetab === "2") active @endif" id="dress_shirt">
+                <div class="card mb-2 mt-2">
+                    <div class="card-body">
+                        <form action="{{route('admin.historydressrentyesshirtfilter',['id' => $dress->id])}}" method="GET"
+                            class="form-inline">
+                            @csrf
+                            <div class="form-group mb-2">
+                                <label for="month" class="mr-2">ฟิลเตอร์:</label>
+                                <select class="form-control mr-2" name="month_shirt" id="month_shirt">
+                                    <option value="1" {{ $value_month_shirt == 1 ? 'selected' : '' }}>มกราคม</option>
+                                    <option value="2" {{ $value_month_shirt == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
+                                    <option value="3" {{ $value_month_shirt == 3 ? 'selected' : '' }}>มีนาคม</option>
+                                    <option value="4" {{ $value_month_shirt == 4 ? 'selected' : '' }}>เมษายน</option>
+                                    <option value="5" {{ $value_month_shirt == 5 ? 'selected' : '' }}>พฤษภาคม</option>
+                                    <option value="6" {{ $value_month_shirt == 6 ? 'selected' : '' }}>มิถุนายน</option>
+                                    <option value="7" {{ $value_month_shirt == 7 ? 'selected' : '' }}>กรกฎาคม</option>
+                                    <option value="8" {{ $value_month_shirt == 8 ? 'selected' : '' }}>สิงหาคม</option>
+                                    <option value="9" {{ $value_month_shirt == 9 ? 'selected' : '' }}>กันยายน</option>
+                                    <option value="10" {{ $value_month_shirt == 10 ? 'selected' : '' }}>ตุลาคม</option>
+                                    <option value="11" {{ $value_month_shirt == 11 ? 'selected' : '' }}>พฤศจิกายน</option>
+                                    <option value="12" {{ $value_month_shirt == 12 ? 'selected' : '' }}>ธันวาคม</option>
+                                </select>
+        
+                                <select class="form-control mr-2" name="year_shirt" id="year_shirt">
+                                    <option value="">ปี</option>
+                                    @for ($i = 2020; $i <= now()->year; $i++)
+                                        <option value="{{ $i }}" @if ($value_year_shirt == $i) selected @endif>
+                                            {{ $i }}</option>
+                                    @endfor
+        
+                                   
+        
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mb-2">ใช้ฟิลเตอร์</button>
+                        </form>
+                    </div>
+                </div>
                 @if ($history_rentshirt->count() > 0)
                     <div class="card">
                         <div class="card-body">
                             <h5>ข้อมูลสรุป</h5>
-                            <p>จำนวนครั้งที่ถูกเช่า {{ $history_rentshirt->count() }} ครั้ง</p>
-                            <p>รายได้รวม {{ number_format($history_rentshirt->sum('price'), 2) }} บาท</p>
+                            <p>จำนวนครั้งที่ถูกเช่า <strong>{{ $history_rentshirt->count() }} ครั้ง</strong></p>
+                            <p>รายได้รวม <strong>{{ number_format($history_rentshirt->sum('price'), 2) }} บาท</strong></p>
                             <p>อัตรราการเช่าต่อเดือน </p>
                         </div>
                     </div>
@@ -134,9 +273,8 @@
                             <thead">
                                 <tr>
                                     <th scope="col">วันที่เช่า</th>
-                                    <th scope="col">ชื่อลูกค้า</th>
-                                    <th scope="col">รวมระยะเวลา (วัน)</th>
                                     <th scope="col">วันที่คืน</th>
+                                    <th scope="col">รวมระยะเวลา (วัน)</th>
                                     <th scope="col">สถานะ</th>
                                     <th scope="col">ดูรายละเอียด</th>
                                 </tr>
@@ -154,18 +292,10 @@
                                                 {{ \Carbon\Carbon::parse($date->actua_pickup_date)->year + 543 }}
                                             </td>
                                             <td>
-
-                                                @php
-                                                    $order_id = App\Models\Orderdetail::where('id', $item->id)->value(
-                                                        'order_id',
-                                                    );
-                                                    $customer_id = App\Models\Order::where('id', $order_id)->value(
-                                                        'customer_id',
-                                                    );
-                                                    $customer = App\Models\Customer::find($customer_id);
-                                                @endphp
-                                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                                                {{ \carbon\carbon::parse($date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($date->actua_return_date)->year + 543 }}
                                             </td>
+                                            
                                             <td>
                                                 <span id="show_day{{ $item->id }}">
                                                     <script>
@@ -178,10 +308,7 @@
                                                     </script>
                                                 </span>
                                             </td>
-                                            <td>
-                                                {{ \carbon\carbon::parse($date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
-                                                {{ \Carbon\Carbon::parse($date->actua_return_date)->year + 543 }}
-                                            </td>
+                                            
                                             <td>
                                                 <span id="status_show{{ $item->id }}"></span>
 
@@ -215,16 +342,53 @@
                         </table>
                     </div>
                 @else
-                    <p style="text-align: center ; ">ไม่มีรายการประวัติการเช่าชุดนี้</p>
+                    <p class="centered">ไม่มีรายการประวัติการเช่าเสื้อนี้</p>
                 @endif
             </div>
-            <div class="tab-pane" id="dress_skirt">
+            <div class="tab-pane @if($activetab === "3") active @endif" id="dress_skirt">
+                <div class="card mb-2 mt-2">
+                    <div class="card-body">
+                        <form action="{{route('admin.historydressrentyesskirtfilter',['id' => $dress->id])}}" method="GET"
+                            class="form-inline">
+                            @csrf
+                            <div class="form-group mb-2">
+                                <label for="month" class="mr-2">ฟิลเตอร์:</label>
+                                <select class="form-control mr-2" name="month_skirt" id="month_skirt">
+                                    <option value="1" {{ $value_month_skirt == 1 ? 'selected' : '' }}>มกราคม</option>
+                                    <option value="2" {{ $value_month_skirt == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
+                                    <option value="3" {{ $value_month_skirt == 3 ? 'selected' : '' }}>มีนาคม</option>
+                                    <option value="4" {{ $value_month_skirt == 4 ? 'selected' : '' }}>เมษายน</option>
+                                    <option value="5" {{ $value_month_skirt == 5 ? 'selected' : '' }}>พฤษภาคม</option>
+                                    <option value="6" {{ $value_month_skirt == 6 ? 'selected' : '' }}>มิถุนายน</option>
+                                    <option value="7" {{ $value_month_skirt == 7 ? 'selected' : '' }}>กรกฎาคม</option>
+                                    <option value="8" {{ $value_month_skirt == 8 ? 'selected' : '' }}>สิงหาคม</option>
+                                    <option value="9" {{ $value_month_skirt == 9 ? 'selected' : '' }}>กันยายน</option>
+                                    <option value="10" {{ $value_month_skirt == 10 ? 'selected' : '' }}>ตุลาคม</option>
+                                    <option value="11" {{ $value_month_skirt == 11 ? 'selected' : '' }}>พฤศจิกายน</option>
+                                    <option value="12" {{ $value_month_skirt == 12 ? 'selected' : '' }}>ธันวาคม</option>
+                                </select>
+        
+                                <select class="form-control mr-2" name="year_skirt" id="year_skirt">
+                                    <option value="">ปี</option>
+                                    @for ($i = 2020; $i <= now()->year; $i++)
+                                        <option value="{{ $i }}" @if ($value_year_skirt == $i) selected @endif>
+                                            {{ $i }}</option>
+                                    @endfor
+        
+                                   
+        
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mb-2">ใช้ฟิลเตอร์</button>
+                        </form>
+                    </div>
+                </div>
                 @if ($history_rentskirt->count() > 0)
                     <div class="card">
                         <div class="card-body">
                             <h5>ข้อมูลสรุป</h5>
-                            <p>จำนวนครั้งที่ถูกเช่า {{ $history_rentskirt->count() }} ครั้ง</p>
-                            <p>รายได้รวม {{ number_format($history_rentskirt->sum('price'), 2) }} บาท</p>
+                            <p>จำนวนครั้งที่ถูกเช่า <strong>{{ $history_rentskirt->count() }} ครั้ง</strong></p>
+                            <p>รายได้รวม <strong>{{ number_format($history_rentskirt->sum('price'), 2) }} บาท</strong></p>
                             <p>อัตรราการเช่าต่อเดือน </p>
                         </div>
                     </div>
@@ -234,9 +398,8 @@
                             <thead">
                                 <tr>
                                     <th scope="col">วันที่เช่า</th>
-                                    <th scope="col">ชื่อลูกค้า</th>
-                                    <th scope="col">รวมระยะเวลา (วัน)</th>
                                     <th scope="col">วันที่คืน</th>
+                                    <th scope="col">รวมระยะเวลา (วัน)</th>
                                     <th scope="col">สถานะ</th>
                                     <th scope="col">ดูรายละเอียด</th>
                                 </tr>
@@ -254,17 +417,8 @@
                                                 {{ \Carbon\Carbon::parse($date->actua_pickup_date)->year + 543 }}
                                             </td>
                                             <td>
-
-                                                @php
-                                                    $order_id = App\Models\Orderdetail::where('id', $item->id)->value(
-                                                        'order_id',
-                                                    );
-                                                    $customer_id = App\Models\Order::where('id', $order_id)->value(
-                                                        'customer_id',
-                                                    );
-                                                    $customer = App\Models\Customer::find($customer_id);
-                                                @endphp
-                                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                                                {{ \carbon\carbon::parse($date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($date->actua_return_date)->year + 543 }}
                                             </td>
                                             <td>
                                                 <span id="show_day{{ $item->id }}">
@@ -278,10 +432,7 @@
                                                     </script>
                                                 </span>
                                             </td>
-                                            <td>
-                                                {{ \carbon\carbon::parse($date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
-                                                {{ \Carbon\Carbon::parse($date->actua_return_date)->year + 543 }}
-                                            </td>
+                                            
                                             <td>
                                                 <span id="status_show{{ $item->id }}"></span>
 
@@ -315,7 +466,7 @@
                         </table>
                     </div>
                 @else
-                    <p style="text-align: center ; ">ไม่มีรายการประวัติการเช่าชุดนี้</p>
+                    <p class="centered">ไม่มีรายการประวัติการเช่าผ้าถุงนี้</p>
                 @endif
             </div>
         </div>

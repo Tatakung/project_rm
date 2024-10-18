@@ -59,7 +59,7 @@
             color: #6c757d;
         }
     </style>
-    <ol class="breadcrumb">
+    <ol class="breadcrumb" style="background-color: transparent; ">
         <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
         <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
         <li class="breadcrumb-item"><a
@@ -296,7 +296,7 @@
 
         <div class="row mt-3">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
 
                         <div class="row">
@@ -442,7 +442,7 @@
 
         <div class="row mt-3 d-flex align-items-stretch">
             <div class="col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
 
                         <div class="row">
@@ -451,9 +451,7 @@
                                     height="auto">
                             </div>
                             <div class="col-md-8">
-
-
-                                <p><strong>ข้อมุลชุด</strong></p>
+                                <h5>ข้อมุลชุด</h5>
                                 <p>ประเภทชุด : {{ $typename }}</p>
                                 <p>หมายเลขชุด : {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
                                 {{-- <p>รายละเอียด : {{ $dress->dress_description }}</p> --}}
@@ -464,7 +462,7 @@
             </div>
 
             <div class="col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h5 class="card-title">ข้อมูลการเช่า</h5>
                         @php
@@ -528,7 +526,7 @@
 
         <div class="row mt-3">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">

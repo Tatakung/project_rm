@@ -79,7 +79,7 @@
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
-                                                                                                                                                            </p> -->
+                                                                                                                                                                        </p> -->
                                 {{-- <p><strong>สถานะชุด:</strong> <span
                                         @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
                                         {{ $datadress->dress_status }}</span></p> --}}
@@ -154,7 +154,6 @@
                     <div class="container">
                         <h3>คิวการเช่าทั้งชุด</h3>
                         <div id="calendar_dress">
-
                         </div>
                         <p>
                             <span
@@ -437,6 +436,10 @@
                 </div>
             </div>
 
+
+
+
+
             {{-- modalแก้ไขเสื้อ+ข้อมูลการวัด --}}
             <div class="modal fade" id="edittotalshirt" role="dialog" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-lg" role="document">
@@ -553,16 +556,15 @@
                                     </div>
 
                                     <script>
-                                        var update_skirt_price = document.getElementById('update_skirt_price') ; 
-                                        var update_skirt_deposit = document.getElementById('update_skirt_deposit') ; 
-                                        var update_skirt_damage_insurance = document.getElementById('update_skirt_damage_insurance') ; 
-                                        update_skirt_price.addEventListener('input',function(){
-                                            var float_skirt_price = parseFloat(update_skirt_price.value) ; 
-                                            update_skirt_deposit.value = float_skirt_price*0.2 ; 
-                                            update_skirt_damage_insurance.value = float_skirt_price ; 
+                                        var update_skirt_price = document.getElementById('update_skirt_price');
+                                        var update_skirt_deposit = document.getElementById('update_skirt_deposit');
+                                        var update_skirt_damage_insurance = document.getElementById('update_skirt_damage_insurance');
+                                        update_skirt_price.addEventListener('input', function() {
+                                            var float_skirt_price = parseFloat(update_skirt_price.value);
+                                            update_skirt_deposit.value = float_skirt_price * 0.2;
+                                            update_skirt_damage_insurance.value = float_skirt_price;
 
-                                        }) ; 
-
+                                        });
                                     </script>
 
 

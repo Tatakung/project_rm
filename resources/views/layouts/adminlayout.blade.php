@@ -68,7 +68,7 @@
         }
 
         nav {
-            background-color: #EAD8C0;
+            background-color: #ffffff;
             color: #000000;
             padding: 7mm;
             width: 100%;
@@ -141,7 +141,7 @@
 
     @if (Auth::user() && Auth::user()->is_admin == 1)
         <!-- sidebar -->
-        <div class="col-md-3 col-lg-2 px-0 position-fixed h-100 shadow-sm sidebar" id="sidebar">
+        <div class="col-md-3 col-lg-2 px-0 position-fixed h-100 shadow sidebar" id="sidebar">
             <h1 class="logo-container">
                 <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
             </h1>
@@ -155,7 +155,7 @@
                 <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
                     data-toggle="collapse" data-target="#sale-collapse" id="d1">
                     <div>
-                        <span class="bi bi-cart-dash"></span>
+                        <span class="bi bi-bar-chart-line"></span>
                         <span class="ml-2">Dashboard</span>
                     </div>
                     <span class="bi bi-chevron-down small"></span>
@@ -176,7 +176,7 @@
                 <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
                     data-toggle="collapse" data-target="#salee-collapse" id="d1">
                     <div>
-                        <span class="bi bi-cart-dash"></span>
+                        <span class="bi bi-card-checklist"></span>
                         <span class="ml-2">การจัดการ</span>
                     </div>
                     <span class="bi bi-chevron-down small"></span>
@@ -189,12 +189,6 @@
                         <a href="{{ route('admin.dresstotal') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             รายการชุด</a>
-
-
-                        <a href="{{ route('employeetotal') }}"
-                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
-                            จัดการพนักงาน</a>
-
 
                     </div>
                 </div>
@@ -214,14 +208,14 @@
             <span class="ml-2">จัดการเครื่องประดับ</span>
             </a> --}}
 
-                {{-- <a href="{{ route('employeetotal') }}"
+                <a href="{{ route('employeetotal') }}"
                     class="list-group-item @if (Route::currentRouteName() == 'employeetotal') active @endif list-group-item-action border-0 align-items-center"
                     id="d1">
 
                     <i class="bi bi-person-circle"></i>
                     <span class="ml-2">จัดการพนักงาน</span>
                 </a>
- --}}
+
 
 
                 <a href="{{ route('admin.expense') }}"
@@ -231,15 +225,15 @@
                     <span class="ml-2">ค่าใช้จ่าย</span>
                 </a>
 
-                <a href="{{ route('admin.dresslist') }}"
+                <!-- <a href="{{ route('admin.dresslist') }}"
                     class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
-                    <i class="bi bi-shirt"></i>
+                    <i class="bi bi-card-checklist"></i>
                     <span class="ml-2">รายการชุด</span>
-                </a>
+                </a> -->
 
                 <a href="{{ route('employee.addorder') }}"
                     class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
-                    <i class="bi bi-shirt"></i>
+                    <i class="bi bi-clipboard-plus"></i>
                     <span class="ml-2">เพิ่มออเดอร์</span>
                 </a>
 
@@ -303,15 +297,17 @@
                 class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                 <span class="bi bi-scissors"></span>
                 <span class="ml-2">จัดการคิวงานตัดชุด
-                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
-                        @php
-                            $cutdresss = App\Models\Orderdetail::where('type_order', 1)
-                                ->whereNotIn('status_detail', ['ส่งมอบชุดแล้ว', 'ตัดชุดเสร็จสิ้น'])
-                                ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
-                                ->get();
-                        @endphp
-                        {{ $cutdresss->count() }}
-                    </span>
+                    @php
+                        $cutdresss = App\Models\Orderdetail::where('type_order', 1)
+                            ->whereNotIn('status_detail', ['ส่งมอบชุดแล้ว', 'ตัดชุดเสร็จสิ้น'])
+                            ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+                            ->get();
+                    @endphp
+                    @if ($cutdresss->count() > 0)
+                        <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                            {{ $cutdresss->count() }}
+                        </span>
+                    @endif
                 </span>
             </a>
 
@@ -320,15 +316,17 @@
                 class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                 <span class="bi bi-calendar"></span>
                 <span class="ml-2">จัดการคิวงานเช่าชุด
-                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
-                        @php
-                            $count_reservations = App\Models\Reservation::where('status_completed', 0)
-                                ->where('status', 'ถูกจอง')
-                                ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
-                                ->get();
-                        @endphp
-                        {{ $count_reservations->count() }}
-                    </span>
+                    @php
+                        $count_reservations = App\Models\Reservation::where('status_completed', 0)
+                            ->where('status', 'ถูกจอง')
+                            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                            ->get();
+                    @endphp
+                    @if ($count_reservations->count() > 0)
+                        <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                            {{ $count_reservations->count() }}
+                        </span>
+                    @endif
                 </span>
             </a>
 
@@ -341,15 +339,17 @@
                 <!-- Replace 'bi-box-arrow-up' with your desired Bootstrap icon -->
                 <span class="bi bi-box-arrow-up"></span>
                 <span class="ml-2">รายการชุดที่รอส่งคืน
-                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
-                        @php
-                            $listdressreturns = App\Models\Reservation::where('status_completed', 0)
-                                ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
-                                ->where('status', 'กำลังเช่า')
-                                ->get();
-                        @endphp
-                        {{ $listdressreturns->count() }}
-                    </span>
+                    @php
+                        $listdressreturns = App\Models\Reservation::where('status_completed', 0)
+                            ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
+                            ->where('status', 'กำลังเช่า')
+                            ->get();
+                    @endphp
+                    @if ($listdressreturns->count() > 0)
+                        <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                            {{ $listdressreturns->count() }}
+                        </span>
+                    @endif
                 </span>
             </a>
             <a href="{{ route('employee.clean') }}"
@@ -357,15 +357,17 @@
                 id="d1">
                 <span class="bi bi-water"></span>
                 <span class="ml-2">รายการชุดซัก
-                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
-                        @php
-                            $cleancount = App\Models\Clean::whereIn('clean_status', [
-                                'รอดำเนินการ',
-                                'กำลังส่งซัก',
-                            ])->count();
-                        @endphp
-                        {{ $cleancount }}
-                    </span>
+                    @php
+                        $cleancount = App\Models\Clean::whereIn('clean_status', [
+                            'รอดำเนินการ',
+                            'กำลังส่งซัก',
+                        ])->count();
+                    @endphp
+                    @if ($cleancount != 0)
+                        <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                            {{ $cleancount }}
+                        </span>
+                    @endif
                 </span>
 
             </a>
@@ -375,15 +377,17 @@
                 id="d1">
                 <span class="bi bi-tools"></span>
                 <span class="ml-2">รายการซ่อมชุด
+                    @php
+                        $repaircount = App\Models\Repair::whereIn('repair_status', [
+                            'รอดำเนินการ',
+                            'กำลังซ่อม',
+                        ])->count();
+                    @endphp
+                    @if($repaircount != 0 )
                     <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
-                        @php
-                            $repaircount = App\Models\Repair::whereIn('repair_status', [
-                                'รอดำเนินการ',
-                                'กำลังซ่อม',
-                            ])->count();
-                        @endphp
                         {{ $repaircount }}
                     </span>
+                    @endif
                 </span>
             </a>
 
@@ -412,24 +416,14 @@
     <div class="col-md-9 col-lg-10 ml-md-auto px-0 ms-md-auto">
         <!-- top nav -->
         {{-- แอดมิน --}}
-        <nav class="d-flex shadow-sm">
+        <nav class="d-flex shadow">
 
             <button class="btn py-0 d-lg-none" id="open-sidebar">
                 <span class="bi bi-list text-primary h3"></span>
             </button>
 
             <div class="ml-auto d-flex">
-                <div class="d-flex align-items-center ml-3">
-                    @if (Auth::user()->is_admin == 0)
-                        <span class="text-dark h5" style="font-size: 16px;">
-                            ผู้ใช้งาน : คุณ{{ Auth::user()->name }} {{ Auth::user()->lname }}
-                        </span>
-                    @else
-                        <span class="text-dark h5" style="font-size: 16px;">
-                            ผู้ใช้งาน : Admin
-                        </span>
-                    @endif
-                </div>
+
                 <div class="dropdown">
                     <a class="btn py-0 d-flex align-items-center" id="cart-dropdown"
                         href="{{ route('employee.cart') }}" style="color: #000000">
@@ -441,6 +435,20 @@
                             </span>
                     </a>
                 </div>
+
+                <div class="d-flex align-items-center ml-3">
+                    @if (Auth::user()->is_admin == 0)
+                        <span class="text-dark h5" style="font-size: 16px;">
+                            คุณ{{ Auth::user()->name }} {{ Auth::user()->lname }}
+                        </span>
+                    @else
+                        <span class="text-dark h5" style="font-size: 16px;">
+                            Admin
+                        </span>
+                    @endif
+                </div>
+
+
 
                 <div class="dropdown ml-2">
                     <button class="btn py-0 d-flex" id="logout-dropdown" data-toggle="dropdown"

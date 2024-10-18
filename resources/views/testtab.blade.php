@@ -166,88 +166,56 @@
     </div>
 
 
+    @php
+        $mea = 10 ; 
+    @endphp
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+    <div class="container mt-2">
+        <div class="row">
+            <div class="col-md-6">
+                <input class="form-control" type="number" name="mea_number" id="mea_number" value="{{$mea}}">
+            </div>
+            <div class="col-md-6">
+                <span id="show_message"></span>
+            </div>
 
+            <script>
+                var mea_number = document.getElementById('mea_number') ; 
+                var show_message = document.getElementById('show_message') ; 
+                var local_number = '{{$mea}}' ; 
+                var convert_local_number = parseFloat(local_number) ; 
 
+                mea_number.addEventListener('input',function(){
+                    var convert_mea_number = parseFloat(mea_number.value) ; 
 
-        });
-    </script>
-
-
-
-    <table class="table shadow-sm" style="width: 100%; background-color: #ffffff; border-collapse: collapse;">
-        <thead>
-            <tr style="background-color: #f2f2f2;">
-                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ลำดับคิว</th>
-                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชุด</th>
-                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชื่อลูกค้า</th>
-                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">วันที่นัดรับ</th>
-                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">สถานะชุด</th>
-                <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ดูรายละเอียด</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($reservations as $index => $reservation)
-            <tr style="border-bottom: 1px solid #e6e6e6;">
-                @php
-                                $list_one = [];
-                                
-                                $find_shirt = App\Models\Reservation::where('status_completed', 0)
-                                    ->where('status', 'ถูกจอง')
-                                    ->where('shirtitems_id',$reservation->shirtitems_id)
-                                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
-                                    ->get();
-                                $find_skirt = App\Models\Reservation::where('status_completed', 0)
-                                    ->where('status', 'ถูกจอง')
-                                    ->where('skirtitems_id', $reservation->skirtitems_id)
-                                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
-                                    ->get();
-
-                                $find_dress = App\Models\Reservation::where('status_completed', 0)
-                                    ->where('status', 'ถูกจอง')
-                                    ->where('dress_id', $reservation->dress_id)
-                                    ->whereNull('shirtitems_id')
-                                    ->whereNull('skirtitems_id')
-                                    ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
-                                    ->get();
-                                
-      
-                                foreach ($find_shirt as $key => $value) {
-                                    $list_one[] = $value->id;
-                                }
-                                foreach ($find_skirt as $key => $value) {
-                                    $list_one[] = $value->id;
-                                }
-                                foreach ($find_dress as $key => $value) {
-                                    $list_one[] = $value->id;
-                                }
-                                $list_one = array_unique($list_one);
-
-                                $total = App\Models\Reservation::whereIn('id',$list_one)
-                                ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
-                                ->get() ; 
-
-                                foreach ($total as $index_dress => $item) {
-                                    if ($item->id == $reservation->id) {
-                                        $number = $index_dress + 1;
-                                        break;
-                                    }
-                                }
-                            @endphp
+                    if(convert_mea_number != convert_local_number ){
+                        show_message.innerHTML = 'ปรับแก้จาก ' + convert_local_number + ' เป็น ' + convert_mea_number + ' นิ้ว' ; 
+                    }
+                    else{
+                        show_message.innerHTML = 'ไม่ต้องปรับ' ; 
+                    }
 
 
 
-                            @if ($number == 1)
-                                คิวที่ {{ $number }} <span style="color: red; margin-left: 5px;">&#9733;</span>
-                            @else
-                                คิวที่ {{ $number }}
-                            @endif
+                }) ; 
+            </script>
 
-                        </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div>
+
+
+
+
+   
 @endsection

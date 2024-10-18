@@ -27,20 +27,18 @@
                 </button> --}}
 
 
-
-
-
                 <form action="{{ route('employee.dressadjustfilter') }}" method="GET">
                     @csrf
                     <div class="filter-buttons">
-                        <button class="btn" type="submit" name="filter_click" value="total"
-                            @if ($filer == 'total') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
-                        @else
-                        style="border: 1px solid #ccc;" @endif>ทั้งหมด</button>
                         <button class="btn" type="submit" name="filter_click" value="today"
                             @if ($filer == 'today') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
                         @else
                         style="border: 1px solid #ccc;" @endif>เฉพาะวันนี้</button>
+                        <button class="btn" type="submit" name="filter_click" value="total"
+                            @if ($filer == 'total') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
+                        @else
+                        style="border: 1px solid #ccc;" @endif>ทั้งหมด</button>
+                        
                     </div>
                 </form>
 
@@ -58,7 +56,7 @@
                     <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชุด</th>
                     <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชื่อลูกค้า</th>
                     <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">สถานะชุด</th>
-                    <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ดูรายละเอียด</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">action</th>
                 </tr>
             </thead>
             <tbody>
@@ -209,7 +207,7 @@
                                 @endphp
                                 @if ($reservation->id == $final_queue->id)
                                     @if ($final->status == 'ถูกจอง')
-                                        อยู่ในร้าน
+                                        อยู่ที่ร้าน
                                     @elseif($final->status == 'กำลังเช่า')
                                         ถูกเช่าโดยลูกค้าท่านก่อนหน้า
                                     @else
@@ -253,7 +251,7 @@
                                 @endphp
                                 @if ($reservation->id == $final_queue->id)
                                     @if ($final->status == 'ถูกจอง')
-                                        อยู่ในร้าน
+                                        อยู่ที่ร้าน
                                     @elseif($final->status == 'กำลังเช่า')
                                         ถูกเช่าโดยลูกค้าท่านก่อนหน้า
                                     @else
@@ -288,7 +286,7 @@
 
                                 @if ($reservation->id == $final_queue->id)
                                     @if ($final->status == 'ถูกจอง')
-                                        อยู่ในร้าน
+                                        อยู่ที่ร้าน
                                     @elseif($final->status == 'กำลังเช่า')
                                         ถูกเช่าโดยลูกค้าท่านก่อนหน้า
                                     @else
@@ -320,6 +318,12 @@
                                 class="btn btn-primary" style="padding: 6px 12px;">
                                 ดูรายละเอียด
                             </a>
+
+                            <a href="{{route('employee.ordertotaldetailpostpone',['id' => $orderdetail->id])}}"
+                                class="btn btn-primary" style="padding: 6px 12px;">
+                                เลื่อนวัน
+                            </a>
+
                         </td>
                     </tr>
                 @endforeach

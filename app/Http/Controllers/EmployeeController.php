@@ -63,28 +63,32 @@ class EmployeeController extends Controller
         $reservations = Reservation::where('status_completed', 0)
             ->where('status', 'ถูกจอง')
             ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+            ->whereDate('start_date',now())
             ->get();
-
-        $filer = 'total';
+        $filer = 'today';
         return view('employee.dressadjust', compact('reservations', 'filer'));
     }
+
+
 
     public function dressadjustfilter(Request $request)
     {
         $filter_click = $request->input('filter_click');
 
-        if ($filter_click == "today") {
+        if ($filter_click == "total") {
             $reservations = Reservation::where('status_completed', 0)
                 ->where('status', 'ถูกจอง')
                 ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
-                ->whereDate('start_date', now())
                 ->get();
-            $filer = 'today';
-        } elseif ($filter_click == "total") {
+            $filer = 'total';
+        } elseif ($filter_click == "today") {
             return $this->dressadjust();
         }
         return view('employee.dressadjust', compact('reservations', 'filer'));
     }
+
+
+
 
 
 
@@ -93,22 +97,22 @@ class EmployeeController extends Controller
         $listdressreturns = Reservation::where('status_completed', 0)
             ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
             ->where('status', 'กำลังเช่า')
+            ->whereDate('end_date',now())
             ->get();
-        $filer = 'total';
+        $filer = 'today';
         return view('employee.listdressreturn', compact('listdressreturns', 'filer'));
     }
 
     public function listdressreturnfilter(Request $request)
     {
         $filter_click = $request->input('filter_click');
-        if ($filter_click == 'today') {
+        if ($filter_click == 'total') {
             $listdressreturns = Reservation::where('status_completed', 0)
                 ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
                 ->where('status', 'กำลังเช่า')
-                ->whereDate('end_date', now())
                 ->get();
-            $filer = 'today';
-        } elseif ($filter_click == 'total') {
+            $filer = 'total';
+        } elseif ($filter_click == 'today') {
             return $this->listdressreturn();
         }
         return view('employee.listdressreturn', compact('listdressreturns', 'filer'));
@@ -685,6 +689,26 @@ class EmployeeController extends Controller
             DB::rollback();
         }
     }
+
+
+    
+    public function savecutdressaddimage(Request $request ,$id){
+        if($request->hasFile('file_image')){
+            $add_image = new Imagerent() ; 
+            $add_image->order_detail_id = $id ; 
+            $add_image->image = $request->file('file_image')->store('rent_images','public') ; 
+            $add_image->description = $request->input('note_image') ; 
+            $add_image->save() ; 
+        }
+        return redirect()->back()->with('success','เพิ่มรูปภาพสำเร็จ')  ;
+    }
+
+
+
+
+
+
+
 
     //เพิ่มการเช่าตัดชุดลงในตะกร้า บันทึก
     public function savecutrent(Request $request)

@@ -6,7 +6,7 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            background: linear-gradient(145deg, #ffffff, #ffffff);
         }
 
         .custom-card:hover {
@@ -83,7 +83,7 @@
 
     {{-- ส่วนฟิลเตอร์ --}}
     <div class="container  mt-5">
-        <h1 class=" font-bold mb-4 ">ร้านเช่าชุด</h1>
+        <h1 class=" font-bold mb-4 ">การเช่าชุด</h1>
         <form action="{{ route('employee.addrentdresstocardfilter') }}" method="GET">
             @csrf
             <div class="row">
@@ -129,10 +129,10 @@
 
 
 
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="" class="form-label" style="color: #848383 ;">วันนัดรับ - วันนัดคืน</label>
                     <input type="text" id="date-range" class="w-full p-2 border rounded"
-                        placeholder="เลือกวันที่รับและคืนชุด"> 
+                        placeholder="เลือกวันที่รับและคืนชุด">
                     <input type="hidden" name="start_date" id="start_date">
                     <input type="hidden" name="end_date" id="end_date">
                 </div>
@@ -151,7 +151,7 @@
                                 mode: "range",
                                 dateFormat: "d/m/Y",
                                 locale: "th",
-                                // minDate: "today",
+                                minDate: "today",
                                 altInput: true,
                                 altFormat: "j F Y",
                                 conjunction: " ถึง ",
@@ -185,8 +185,8 @@
 
 
 
-                <div class="col-md-3">
-                    <label for="" class="form-label" style="color: #ffffff">ค้นหาค้นหาค้นหาค้นหาค้นหา</label>
+                <div class="col-md-2">
+                    <label for="" class="form-label" style="color: #ffffff">ค้นหาค้นหาค้นหา</label>
                     <button type="submit" class="btn btn-success">ค้นหา</button>
                 </div>
 
@@ -195,23 +195,21 @@
 
     </div>
     </div>
-
-
-    @if ($dress_pass == null)
-        <div class="container mt-5">
-            <div class="card" style="margin-left: 150px; margin-right: 150px;">
-                <div class="card-body text-center">
-                    <p><strong>ยินดีต้อนรับสู่ระบบเช่าชุด</strong></p>
-                    <p>กรุณาเลือกประเภทชุด ลักษณะชุด และวันที่ต้องการเช่า</p>
-                    <p>แล้วกดปุ่ม "ค้นหา" เพื่อดูรายการชุดที่สามารถเช่าได้</p>
-                </div>
+    @if($dress_pass == null)
+    <div class="container mt-5">
+        <div class="card" style="margin-left: 150px; margin-right: 150px;">
+            <div class="card-body text-center">
+                <p><strong>ยินดีต้อนรับสู่ระบบเช่าชุด</strong></p>
+                <p>กรุณาเลือกประเภทชุด ลักษณะชุด และวันที่ต้องการเช่า</p>
+                <p>แล้วกดปุ่ม "ค้นหา" เพื่อดูรายการชุดที่สามารถเช่าได้</p>
             </div>
         </div>
-    @elseif ($dress_pass->count() > 0)
+    </div>
+    @elseif ($dress_pass->count() > 0 )
         <div class="container mt-5">
             <div class="row">
                 @foreach ($dress_pass as $dress)
-                    <div class="col-md-2 mb-4">
+                    <div class="col-md-3 mb-4">
                         <div class="card text-left custom-card">
                             @php
                                 $image = App\Models\Dressimage::where('dress_id', $dress->id)->first();
@@ -309,37 +307,28 @@
                                                 <form action="{{ route('addtocart') }}" method="POST">
                                                     @csrf
 
-                                                    <input type="hidden" name="textcharacter"
-                                                        value="{{ $textcharacter }}">
+                                                    <input type="hidden" name="textcharacter" value="{{ $textcharacter }}">
                                                     {{-- ทั้งชุด --}}
                                                     <input type="hidden" name="dress_id" value="{{ $dress->id }}">
                                                     <input type="hidden" name="pickupdate" value="{{ $start_date }}">
                                                     <input type="hidden" name="returndate" value="{{ $end_date }}">
-
+            
                                                     {{-- เสื้อ --}}
                                                     @php
-                                                        $shirt_form = App\Models\Shirtitem::where(
-                                                            'dress_id',
-                                                            $dress->id,
-                                                        )->first();
+                                                        $shirt_form = App\Models\Shirtitem::where('dress_id', $dress->id)->first();
                                                     @endphp
-                                                    @if ($shirt_form)
-                                                        <input type="hidden" name="shirt_id"
-                                                            value="{{ $shirt_form->id }}">
+                                                    @if($shirt_form)
+                                                    <input type="hidden" name="shirt_id" value="{{ $shirt_form->id }}">
                                                     @endif
-
+            
                                                     {{-- กระโปรง/ผ้าถุง --}}
                                                     @php
-                                                        $skirt_form = App\Models\Shirtitem::where(
-                                                            'dress_id',
-                                                            $dress->id,
-                                                        )->first();
+                                                        $skirt_form = App\Models\Shirtitem::where('dress_id', $dress->id)->first();
                                                     @endphp
-                                                    @if ($skirt_form)
-                                                        <input type="hidden" name="skirt_id"
-                                                            value="{{ $skirt_form->id }}">
+                                                    @if($skirt_form)
+                                                    <input type="hidden" name="skirt_id" value="{{ $skirt_form->id }}">
                                                     @endif
-
+            
 
 
 
@@ -357,18 +346,14 @@
                 @endforeach
             </div>
         </div>
-
-
-
-
-    @elseif($dress_pass->count() == 0)
-        <div class="container mt-5">
-            <div class="card" style="margin-left: 150px; margin-right: 150px;">
-                <div class="card-body text-center">
-                    <p><strong>ไม่พบรายการ</strong></p>
-
-                </div>
+    @elseif($dress_pass->count() == 0 )
+    <div class="container mt-5">
+        <div class="card" style="margin-left: 150px; margin-right: 150px;">
+            <div class="card-body text-center">
+                <p><strong>ไม่พบรายการ</strong></p>
+               
             </div>
         </div>
+    </div>
     @endif
 @endsection

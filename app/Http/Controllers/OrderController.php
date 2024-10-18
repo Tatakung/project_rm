@@ -230,7 +230,7 @@ class OrderController extends Controller
 
 
         $his_dress_adjust = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
-        
+
         return view('employeerentdress.managedetailrentdress', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust'));
     }
 
@@ -305,10 +305,12 @@ class OrderController extends Controller
         $route_modal = AdjustmentRound::where('order_detail_id', $id)
             ->orderBy('created_at', 'desc')
             ->first();
+        $is_admin = Auth::user()->is_admin;  //ตรวจสอบว่าเป็นแอดมินไหม
+        $who_login = Auth::user()->id; //คนที่กำลังlogin
+        $person_order = Order::where('id', $orderdetail->order_id)->value('user_id');  //คนที่รับ order
 
 
-
-        return view('employeecutdress.managedetailcutdress', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal'));
+        return view('employeecutdress.managedetailcutdress', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal'));
     }
 
 
@@ -324,11 +326,16 @@ class OrderController extends Controller
 
             $orderdetail = Orderdetail::find($id);
 
+            // เช่าแค่เสื้อ
             if ($orderdetail->shirtitems_id) {
                 return $this->detailpostponeyesshirt($id);
-            } elseif ($orderdetail->skirtitems_id) {
+            }
+            // เสื้อแค่ผ้าถุง
+            elseif ($orderdetail->skirtitems_id) {
                 return $this->detailpostponeyesskirt($id);
-            } else {
+            }
+            // เช่าทั้งชุด
+            else {
                 return $this->detailpostponeyesdresstotal($id);
             }
         }
@@ -336,7 +343,6 @@ class OrderController extends Controller
 
     private function detailpostponeno($id)
     {
-
         $orderdetail = Orderdetail::find($id);
         $reservation_id = Reservation::where('id', $orderdetail->reservation_id)->value('id');
         $reser = Reservation::find($reservation_id);
@@ -347,7 +353,7 @@ class OrderController extends Controller
         $reservation_dress_total = Reservation::where('status_completed', 0)
             ->where('dress_id', $orderdetail->dress_id)
             ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
-            // ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
             ->get();
         // สถานะชุดปัจจันตอนนี้อยู่ไหน
         $status_current  =
@@ -355,6 +361,9 @@ class OrderController extends Controller
             ->where('dress_id', $orderdetail->dress_id)
             ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
             ->value('status');
+
+
+
         if ($status_current == "ถูกจอง") {
             $text_status = "อยู่ในร้าน";
         } else {
@@ -368,7 +377,7 @@ class OrderController extends Controller
         return view('employeerentdress.postponeno', compact('reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'value_end_date', 'condition'));
     }
 
-    //checkการแก้ไข
+    //checkตรวจสอบก่อนว่า วันที่นัดใหม่ - คืนใหม่ มันทับกับคนอื่นไหมๆ (ของชุดที่แยกเช่าไม่ได้)
     public function ordertotaldetailpostponechecked(Request $request, $id)
     {
 
@@ -436,14 +445,169 @@ class OrderController extends Controller
                 break;
             }
         }
+        if ($condition == true) {
+            session()->flash('condition', 'passsuccesst');
+        } elseif ($condition == false) {
+            session()->flash('condition', 'failno');
+        }
+        return view('employeerentdress.postponeno', compact('reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'condition', 'value_end_date'));
+    }
+
+
+    public function ordertotaldetailpostponecheckeddresstotal(Request $request, $id)
+    {
+
+        $orderdetail = Orderdetail::find($id);
+        $reservation_id = Reservation::where('id', $orderdetail->reservation_id)->value('id');
+        $reser = Reservation::find($reservation_id);
+        $dress = Dress::find($orderdetail->dress_id);
+        $typedress = Typedress::find($dress->type_dress_id);
+        $cus_id = Order::where('id', $orderdetail->order_id)->value('customer_id');
+        $cus = Customer::find($cus_id);
+
+        $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
+
+
+        //เช่าเฉพาะทั้งชุด
+        $reservation_dress_total = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+        // เช่าเฉพะเสื้อ
+        $reservation_dress_shirt = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->where('shirtitems_id', $shirt_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+        // เช่าเฉพาะผ้าถุง
+        $reservation_dress_skirt = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->where('skirtitems_id', $skirt_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+
+
+        // สำหรับแสดงลำดับคิวที่ 1 2 3 
+        $reservation_dress_index = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+
+
+        // สถานะชุดปัจจันตอนนี้อยู่ไหน
+        $status_current  =
+            Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->value('status');
+        if ($status_current == "ถูกจอง") {
+            $text_status = "อยู่ในร้าน";
+        } else {
+            $text_status = $status_current;
+        }
+
+        //เช็ควันที่
+        $value_start_date = $request->input('new_pickup_date');
+        $value_end_date = $request->input('new_return_date');
+
+        $input_start = \Carbon\Carbon::parse($value_start_date);
+        $input_end = \Carbon\Carbon::parse($value_end_date);
+
+
+        $input_start_7 = $input_start->copy()->subDays(7);
+        $input_start_1 = $input_start->copy()->subDays(1);
+        $input_start_betwwen = $input_start->copy();
+        $input_end_between = $input_end->copy();
+        $input_end_1 = $input_end->copy()->addDays(1);
+        $input_end_7 = $input_end->copy()->addDays(7);
+
+        $condition = true;
+        // เช็คแค่ทั้งชุด
+        $reservation_check_total_dress = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->whereNot('id', $orderdetail->reservation_id)
+            ->get();
+        foreach ($reservation_check_total_dress as $item) {
+            $reser_start = \Carbon\Carbon::parse($item->start_date);
+            $reser_end = \Carbon\Carbon::parse($item->end_date);
+            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+                $condition = false;
+                break;
+            }
+        }
+
+        // เช็คแค่เฉพาะเสื้อ
+        $reservation_check_total_shirt = Reservation::where('status_completed', 0)
+            ->where('shirtitems_id', $shirt_id)
+            ->get();
+        foreach ($reservation_check_total_shirt as $item) {
+            $reser_start = \Carbon\Carbon::parse($item->start_date);
+            $reser_end = \Carbon\Carbon::parse($item->end_date);
+            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+                $condition = false;
+                break;
+            }
+        }
+
+        // เช็คแค่เฉพาะผ้าถุง
+        $reservation_check_total_skirt = Reservation::where('status_completed', 0)
+            ->where('skirtitems_id', $skirt_id)
+            ->get();
+        foreach ($reservation_check_total_skirt as $item) {
+            $reser_start = \Carbon\Carbon::parse($item->start_date);
+            $reser_end = \Carbon\Carbon::parse($item->end_date);
+            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+                $condition = false;
+                break;
+            }
+        }
+
 
         if ($condition == true) {
-            $condition = 'pass';
+            session()->flash('condition', 'passsuccesst');
         } elseif ($condition == false) {
-            $condition = 'fail';
+            session()->flash('condition', 'failno');
         }
-        return view('employeerentdress.postponeno', compact('reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'value_end_date', 'condition', 'value_start_date', 'value_end_date'));
+        return view('employeerentdress.postponeyestotaldress', compact('reservation_dress_index', 'reservation_dress_skirt', 'reservation_dress_shirt', 'reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'value_end_date', 'condition'));
     }
+
+
 
     public function postponecheckedpass(Request $request, $id)
     {
@@ -471,16 +635,317 @@ class OrderController extends Controller
 
     private function detailpostponeyesshirt($id)
     {
-        dd('เสื้อ');
+        $orderdetail = Orderdetail::find($id);
+        $reservation_id = Reservation::where('id', $orderdetail->reservation_id)->value('id');
+        $reser = Reservation::find($reservation_id);
+        $dress = Dress::find($orderdetail->dress_id);
+        $typedress = Typedress::find($dress->type_dress_id);
+        $cus_id = Order::where('id', $orderdetail->order_id)->value('customer_id');
+        $cus = Customer::find($cus_id);
+
+        $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
+
+
+        //เช่าเฉพาะทั้งชุด
+        $reservation_dress_total = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+        // เช่าเฉพะเสื้อ
+        $reservation_dress_shirt = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->where('shirtitems_id', $shirt_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+
+        // สำหรับแสดงลำดับคิวที่ 1 2 3 
+        $list_for_Queue = [];
+        $reserv_dress_index = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+        $reservation_dress_shirt = Reservation::where('status_completed', 0)
+            ->where('shirtitems_id', $shirt_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
+            ->get();
+        foreach ($reserv_dress_index as $item) {
+            $list_for_Queue[] = $item->id;
+        }
+        foreach ($reservation_dress_shirt as $item) {
+            $list_for_Queue[] = $item->id;
+        }
+
+        $reservation_dress_index = Reservation::whereIn('id', $list_for_Queue)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->get();
+        // สถานะชุดปัจจันตอนนี้อยู่ไหน
+        $status_current  =
+            Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->value('status');
+        if ($status_current == "ถูกจอง") {
+            $text_status = "อยู่ในร้าน";
+        } else {
+            $text_status = $status_current;
+        }
+
+        $value_start_date = $reser->start_date;
+        $value_end_date = $reser->end_date;
+        $condition = 'no';
+        return view('employeerentdress.postponeyestotalshirt', compact('reservation_dress_index', 'reservation_dress_shirt', 'reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'value_end_date', 'condition'));
     }
+
+    public function ordertotaldetailpostponecheckeddressshirt(Request $request, $id)
+    {
+        $orderdetail = Orderdetail::find($id);
+        $reservation_id = Reservation::where('id', $orderdetail->reservation_id)->value('id');
+        $reser = Reservation::find($reservation_id);
+        $dress = Dress::find($orderdetail->dress_id);
+        $typedress = Typedress::find($dress->type_dress_id);
+        $cus_id = Order::where('id', $orderdetail->order_id)->value('customer_id');
+        $cus = Customer::find($cus_id);
+
+        $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
+
+
+        //เช่าเฉพาะทั้งชุด
+        $reservation_dress_total = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+        // เช่าเฉพะเสื้อ
+        $reservation_dress_shirt = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->where('shirtitems_id', $shirt_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+
+        // สำหรับแสดงลำดับคิวที่ 1 2 3 
+        $list_for_Queue = [];
+        $reserv_dress_index = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+        $reservation_dress_shirt = Reservation::where('status_completed', 0)
+            ->where('shirtitems_id', $shirt_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
+            ->get();
+        foreach ($reserv_dress_index as $item) {
+            $list_for_Queue[] = $item->id;
+        }
+        foreach ($reservation_dress_shirt as $item) {
+            $list_for_Queue[] = $item->id;
+        }
+
+        $reservation_dress_index = Reservation::whereIn('id', $list_for_Queue)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->get();
+        // สถานะชุดปัจจันตอนนี้อยู่ไหน
+        $status_current  =
+            Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->value('status');
+        if ($status_current == "ถูกจอง") {
+            $text_status = "อยู่ในร้าน";
+        } else {
+            $text_status = $status_current;
+        }
+
+        //เช็ควันที่
+        $value_start_date = $request->input('new_pickup_date');
+        $value_end_date = $request->input('new_return_date');
+
+        $input_start = \Carbon\Carbon::parse($value_start_date);
+        $input_end = \Carbon\Carbon::parse($value_end_date);
+
+
+        $input_start_7 = $input_start->copy()->subDays(7);
+        $input_start_1 = $input_start->copy()->subDays(1);
+        $input_start_betwwen = $input_start->copy();
+        $input_end_between = $input_end->copy();
+        $input_end_1 = $input_end->copy()->addDays(1);
+        $input_end_7 = $input_end->copy()->addDays(7);
+
+        $condition = true;
+        // เช็คแค่ทั้งชุด
+        $reservation_check_total_dress = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->get();
+        foreach ($reservation_check_total_dress as $item) {
+            $reser_start = \Carbon\Carbon::parse($item->start_date);
+            $reser_end = \Carbon\Carbon::parse($item->end_date);
+            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+                $condition = false;
+                break;
+            }
+        }
+
+        // เช็คแค่เฉพาะเสื้อ
+        $reservation_check_total_shirt = Reservation::where('status_completed', 0)
+            ->where('shirtitems_id', $shirt_id)
+            ->whereNot('id',$orderdetail->reservation_id)
+            ->get();
+        foreach ($reservation_check_total_shirt as $item) {
+            $reser_start = \Carbon\Carbon::parse($item->start_date);
+            $reser_end = \Carbon\Carbon::parse($item->end_date);
+            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
+                $condition = false;
+                break;
+            }
+            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+                $condition = false;
+                break;
+            }
+        }
+
+
+        if ($condition == true) {
+            session()->flash('condition', 'passsuccesst');
+        } elseif ($condition == false) {
+            session()->flash('condition', 'failno');
+        }
+
+
+
+
+        return view('employeerentdress.postponeyestotalshirt', compact('reservation_dress_index', 'reservation_dress_shirt', 'reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'value_end_date', 'condition'));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private function detailpostponeyesskirt($id)
     {
         dd('ผ้าถุง');
     }
+
     private function detailpostponeyesdresstotal($id)
     {
-        dd('ทั้งชุด');
+        $orderdetail = Orderdetail::find($id);
+        $reservation_id = Reservation::where('id', $orderdetail->reservation_id)->value('id');
+        $reser = Reservation::find($reservation_id);
+        $dress = Dress::find($orderdetail->dress_id);
+        $typedress = Typedress::find($dress->type_dress_id);
+        $cus_id = Order::where('id', $orderdetail->order_id)->value('customer_id');
+        $cus = Customer::find($cus_id);
+
+        $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
+        $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
+
+
+        //เช่าเฉพาะทั้งชุด
+        $reservation_dress_total = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+        // เช่าเฉพะเสื้อ
+        $reservation_dress_shirt = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->where('shirtitems_id', $shirt_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+        // เช่าเฉพาะผ้าถุง
+        $reservation_dress_skirt = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->where('skirtitems_id', $skirt_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+
+
+        // สำหรับแสดงลำดับคิวที่ 1 2 3 
+        $reservation_dress_index = Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->get();
+
+
+
+        // สถานะชุดปัจจันตอนนี้อยู่ไหน
+        $status_current  =
+            Reservation::where('status_completed', 0)
+            ->where('dress_id', $orderdetail->dress_id)
+            ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+            ->value('status');
+        if ($status_current == "ถูกจอง") {
+            $text_status = "อยู่ในร้าน";
+        } else {
+            $text_status = $status_current;
+        }
+
+        $value_start_date = $reser->start_date;
+        $value_end_date = $reser->end_date;
+        $condition = 'no';
+
+        return view('employeerentdress.postponeyestotaldress', compact('reservation_dress_index', 'reservation_dress_skirt', 'reservation_dress_shirt', 'reservation_dress_total', 'orderdetail', 'reser', 'dress', 'typedress', 'cus', 'text_status', 'value_start_date', 'value_end_date', 'condition'));
     }
 
 
@@ -1352,7 +1817,7 @@ class OrderController extends Controller
     }
 
 
-    
+
 
 
     public function addrentdresstocard()
@@ -1365,8 +1830,8 @@ class OrderController extends Controller
         $character = '';
         $dress_type = '';
         $dress_pass = null;
-        $textcharacter = null ; 
-        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass','textcharacter'));
+        $textcharacter = null;
+        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass', 'textcharacter'));
     }
 
     public function addrentdresstocardfilter(Request $request)
@@ -1523,7 +1988,7 @@ class OrderController extends Controller
                 }
             }
         }
-        
+
         $dress_pass = Dress::whereIn('id', $list_pass_dress_id)->get();
         if ($character === "10") {
             $textcharacter = "ทั้งชุด";
@@ -1532,7 +1997,7 @@ class OrderController extends Controller
         } elseif ($character === "30") {
             $textcharacter = 'กระโปรง/ผ้าถุง';
         }
-        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass','textcharacter','start_date','end_date'));
+        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass', 'textcharacter', 'start_date', 'end_date'));
     }
 
 
@@ -1625,7 +2090,7 @@ class OrderController extends Controller
         } elseif ($character === "30") {
             $textcharacter = 'กระโปรง/ผ้าถุง';
         }
-        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass','textcharacter','start_date','end_date'));
+        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass', 'textcharacter', 'start_date', 'end_date'));
     }
 
 
@@ -1711,7 +2176,7 @@ class OrderController extends Controller
         } elseif ($character === "30") {
             $textcharacter = 'กระโปรง/ผ้าถุง';
         }
-        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass','textcharacter','start_date','end_date'));
+        return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass', 'textcharacter', 'start_date', 'end_date'));
     }
 
 
@@ -1723,9 +2188,9 @@ class OrderController extends Controller
 
 
 
-   
 
-   
+
+
     //เพิ่มชุด/เสื้อ/ผผ้าถุง ลงบนตะกร้า 
     public function addtocart(Request $request)
     {
@@ -1733,7 +2198,7 @@ class OrderController extends Controller
         $dress_id = $request->input('dress_id');
         $pickupdate = $request->input('pickupdate');
         $returndate = $request->input('returndate');
-        
+
         $shirt_id = $request->input('shirt_id');
         $skirt_id = $request->input('skirt_id');
         $employee_id = Auth::user()->id;

@@ -1,5 +1,80 @@
     @extends('layouts.adminlayout')
     @section('content')
+    <style>
+        .container h3 {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+    
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: none;
+        }
+        .card-body h5 {
+            font-weight: bold;
+            color: #4A4A4A;
+        }
+    
+        .card-body p {
+            color: #6c757d;
+        }
+    
+        .table-responsive {
+            margin-top: 2rem;
+        }
+    
+        .table thead {
+            background-color: #f8f9fa;
+        }
+    
+        .table-bordered th,
+        .table-bordered td {
+            border-color: #dee2e6;
+            vertical-align: middle;
+            text-align: center;
+        }
+    
+        .table th {
+            color: #6c757d;
+            font-weight: bold;
+        }
+    
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+    
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    
+        .status-late {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    
+        .status-on-time {
+            color: #28a745;
+            font-weight: bold;
+        }
+    
+        .status-early {
+            color: #ffc107;
+            font-weight: bold;
+        }
+    
+        p.centered {
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+    </style>
         <div class="container mt-5">
             <h2>ประวัติการซ่อมชุด</h2>
             <p>{{ $typedressname->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
@@ -19,7 +94,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>วันที่</th>
+                                    <th style="width: 200px;">วันที่</th>
                                     <th>รายละเอียด</th>
                                     <th>สถานะ</th>
                                 </tr>
@@ -27,7 +102,10 @@
                             <tbody>
                                 @foreach ($history_shirt as $item)
                                     <tr>
-                                        <td>{{ $item->created_at }}</td>
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                        </td>
                                         <td>{{ $item->repair_description }}</td>
                                         <td>{{ $item->repair_status }}</td>
                                     </tr>
@@ -43,7 +121,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>วันที่</th>
+                                    <th style="width: 200px;">วันที่</th>
                                     <th>รายละเอียด</th>
                                     <th>สถานะ</th>
                                 </tr>
@@ -51,7 +129,10 @@
                             <tbody>
                                 @foreach ($history_skirt as $item)
                                     <tr>
-                                        <td>{{ $item->created_at }}</td>
+                                        <td>
+                                            {{\Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM')}}
+                                            {{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                        </td>
                                         <td>{{ $item->repair_description }}</td>
                                         <td>{{ $item->repair_status }}</td>
                                     </tr>

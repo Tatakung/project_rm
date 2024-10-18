@@ -13,7 +13,7 @@
             @csrf
             <div class="row">
                 <div class="col-md-5" style="background-color: #F7F7F7">
-                    <p style="margin-top: 10px;">ข้อมูลลูกค้า</p>
+                    <h5 style="margin-top: 10px;">ข้อมูลลูกค้า</h5>
                     <hr>
                     <form action="{{ route('employee.confirmordersave', ['id' => $order_id]) }}" method="POST">
                         @csrf
@@ -33,9 +33,10 @@
                                 <input type="text" name="customer_phone" class="form-control" maxlength="10">
                             </div>
                         </div>
-                        <br>
-                        <p style="margin-top: 15px;">ข้อมูลการจ่ายชำระเงิน</p>
+                        
                         <hr>
+                        <h5 style="margin-top: 15px;">ข้อมูลการจ่ายชำระเงิน</h5>
+                        <br>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="card">
@@ -65,14 +66,14 @@
 
 
                 <div class="col-md-7">
-                    <p style="margin-top: 10px;">สรุปรายการ</p>
+                    <h5 style="margin-top: 10px;">สรุปรายการ</h5>
                     <hr>
 
                     @foreach ($orderdetail as $detail)
                         <div class="media">
                             @if ($detail->type_order == 2)
                                 <img src="{{ asset('storage/' . App\Models\Dressimage::where('dress_id', $detail->dress_id)->first()->dress_image) }}"
-                                    class="mr-5" alt="..." style="width: 96px; height: 145px; border-radius: 8px;">
+                                    class="mr-5" alt="..." style="width: 146px; height: 195px; border-radius: 8px;">
                             @elseif($detail->type_order == 1)
                                 <div class="mr-5"
                                     style="width: 96px; height: 145px; border-radius: 2px; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
@@ -162,7 +163,7 @@
 
 
                     <p style="margin-top: 10px; ">
-                    <h6>สรุปยอดเงินรวม</h6>
+                    <h5>สรุปยอดเงินรวม</h5>
                     </p>
                     <div class="media">
                         <div class="media-left">

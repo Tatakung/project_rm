@@ -30,6 +30,8 @@
                             </div>
                         @endforeach
                     </div> --}}
+
+
                     <div class="row">
                         @foreach ($dress_adjusts as $item)
                             <div class="col-md-6 mb-4"> <!-- ปรับจาก div ที่ไม่จำเป็นเป็น col-md-12 -->
@@ -46,28 +48,45 @@
                                             value="{{ $item->new_size }}">
                                     </div>
                                     <div class="col-md-6">
-                                        <span id="show_warn{{ $item->id }}"></span>
+                                        <span style="color: red ; " id="show_warn{{ $item->id }}"></span>
                                     </div>
                                 </div>
                             </div>
                             <script>
-                                var local = '{{$item->new_size}}';
-                                var convert_local = parseFloat(local);
-                                var input_new = document.getElementById('input_new{{$item->id}}');
-                                var show_warn = document.getElementById('show_warn{{ $item->id }}');
-                                input_new.addEventListener('input', function() {
-                                    var convert_input_new = parseFloat(this.value);
-                                    console.log('ค้าใหม่คือ' + convert_input_new) ; 
-                                    console.log('ค่าเก่าคือ' + convert_local) ; 
-                                    if (convert_input_new != convert_local) {
-                                        show_warn.innerHTML = 'ปรับแก้จาก ' + convert_local + ' เป็น ' + convert_input_new + ' นิ้ว';
-                                    }
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    var local = '{{ $item->new_size }}';
+                                    var convert_local = parseFloat(local);
+
+                                    var input_new = document.getElementById('input_new{{ $item->id }}');
+
+                                    var show_warn = document.getElementById('show_warn{{ $item->id }}');
+                                    var aria_show_modal = document.getElementById('aria_show_modal');
+                                    input_new.addEventListener('input', function() {
+                                        var this_now = parseFloat(this.value);
+                                        if (this_now != convert_local) {
+                                            show_warn.innerHTML = 'ปรับจาก ' + convert_local + ' เป็น ' + this_now + ' นิ้ว';
+                                        } else {
+                                            show_warn.innerHTML = '';
+                                        }
+                                    });
+
+
+                                  
+
+
+                                    
+
+
+
                                 });
                             </script>
                         @endforeach
                     </div>
 
                     
+                    <p>ปรับเป็น</p>
+
+
                 </div>
             </div>
 
@@ -155,10 +174,53 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary mb-3">บันทึกการแก้ไข</button>
+            <button type="submit" class="btn btn-primary mb-3"
+                id="button_save">บันทึกการแก้ไข</button>
             <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
                 class="btn btn-secondary mb-3">ยกเลิก</a>
 
         </div>
+
+
+        <div class="modal fade" id="show_modal_edit" role="dialog" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        หัว
+                    </div>
+                    <div class="modal-body">
+                        <div id="aria_show_modal">
+                            <p><strong>ส่วนที่ปรับแก้</strong></p>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-success">ยืนยัน</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </form>
 @endsection

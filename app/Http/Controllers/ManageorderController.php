@@ -1039,8 +1039,6 @@ class ManageorderController extends Controller
     //บันทึกของตัดชุดsavemanageitemcutdress
     public function savemanageitemcutdress(Request $request, $id)
     {
-
-       
         DB::beginTransaction();
         try {
 
@@ -1126,6 +1124,22 @@ class ManageorderController extends Controller
                     $add_measurement->save();
                 }
             }
+
+            if($request->hasFile('file_image_')){
+                $file_image = $request->file('file_image_') ; 
+                $note_image = $request->input('note_image_') ; 
+    
+                foreach($file_image as $index => $image){
+                    $create_image = new Imagerent() ; 
+                    $create_image->order_detail_id = $id ; 
+                    $create_image->image = $image->store('rent_images','public') ;
+                    $create_image->description = $note_image[$index] ; 
+                    $create_image->save() ; 
+                }   
+            }
+
+
+
             DB::commit();
             return redirect()->back()->with('success', 'จัดการสำเร็จ');
         } catch (\Exception $e) {

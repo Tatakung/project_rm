@@ -8,7 +8,7 @@
         <h2 class="py-4 text-center">เพิ่มออเดอร์ใหม่</h2>
         <div class="row">
             <!-- Card 1 -->
-            <div class="col-md-4 mb-4">
+            <div class="col-md-6 mb-4">
                 <div class="card custom-card">
                     <div class="card-body text-center d-flex flex-column justify-content-between">
                         <div>
@@ -35,7 +35,7 @@
                     </div>
                 </div>
             </div> --}}
-            <div class="col-md-4 mb-4">
+            <div class="col-md-6 mb-4">
                 <div class="card custom-card">
                     <div class="card-body text-center d-flex flex-column justify-content-between">
                         <div>
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <!-- Card 3 -->
-            <div class="col-md-4 mb-4">
+            {{-- <div class="col-md-4 mb-4">
                 <div class="card custom-card">
                     <div class="card-body text-center d-flex flex-column justify-content-between">
                         <div>
@@ -62,7 +62,7 @@
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             
         </div>
     </div>

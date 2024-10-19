@@ -226,7 +226,7 @@
                                     <tr>
                                         <td>{{ $mea_dress->mea_dress_name }}<span
                                                 style="font-size: 14px; color: rgb(197, 21, 21)"> (ปรับได้
-                                                {{ $mea_dress->initial_min }}-{{ $mea_dress->initial_max }})</span>
+                                                {{ $mea_dress->initial_min }}-{{ $mea_dress->initial_max }} นิ้ว)</span>
                                         </td>
                                         <td>{{ $mea_dress->current_mea }}</td>
                                         <td>นิ้ว</td>

@@ -612,7 +612,8 @@ class EmployeeController extends Controller
                 $checkdouble = Typedress::where('type_dress_name', $request->input('other_input'))->first();
                 if ($checkdouble) {
                     $TYPE_DRESS = $request->input('other_input');
-                } else {
+                }
+                else {
                     //สร้างตัวอักษรมา1ตัว
                     do {
                         $random = chr(65 + rand(0, 25));
@@ -632,7 +633,6 @@ class EmployeeController extends Controller
 
             $orderdetail = new Orderdetail();
             $orderdetail->order_id = $ID_ORDER;
-            $orderdetail->employee_id = $id_employee;
             $orderdetail->type_dress = $TYPE_DRESS;
             $orderdetail->type_order = 1; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4เช่าตัด
             $orderdetail->amount = $request->input('amount');
@@ -989,7 +989,11 @@ class EmployeeController extends Controller
         $measurementorderdetail  = Measurementorderdetail::where('order_detail_id', $id)->get();
         $fitting = Fitting::where('order_detail_id', $id)->get();
         $measurementadjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
-        return view('employeecutdress.manageitemcutdress', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fitting', 'measurementadjusts'));
+        $Date = Date::where('order_detail_id',$orderdetail->id)
+                    ->orderBy('created_at','desc')
+                    ->first() ; 
+        $image_rent = Imagerent::where('order_detail_id',$orderdetail->id)->get() ; 
+        return view('employeecutdress.manageitemcutdress', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fitting', 'measurementadjusts','Date','image_rent'));
     }
 
     //เช่าชุด
@@ -1003,7 +1007,10 @@ class EmployeeController extends Controller
         $imagedress = Dressimage::where('dress_id', $orderdetail->dress_id)->get();
         $dress_mea_adjust = Dressmeaadjustment::where('order_detail_id', $orderdetail->id)->get();
         $imagerent = Imagerent::where('order_detail_id', $id)->get();
-        return view('employeerentdress.manageitemrentdress', compact('orderdetail', 'type_dress', 'imagerent', 'dress', 'imagedress', 'dress_mea_adjust'));
+        $Date = Date::where('order_detail_id',$orderdetail->id)
+                        ->orderBy('created_at','desc')
+                        ->first() ; 
+        return view('employeerentdress.manageitemrentdress', compact('orderdetail', 'type_dress', 'imagerent', 'dress', 'imagedress', 'dress_mea_adjust','Date'));
     }
 
     //เช่าเครื่องประดับ
@@ -1035,6 +1042,7 @@ class EmployeeController extends Controller
     //ลบdeletemeasurementitem ใน item
     public function deletemeasurementitem($id)
     {
+        dd($id) ; 
         $delete_measuremen = Dressmeaadjustment::find($id);
         $delete_measuremen->delete();
         return redirect()->back();

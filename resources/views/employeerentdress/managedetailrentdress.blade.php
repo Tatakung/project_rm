@@ -59,6 +59,75 @@
             color: #6c757d;
         }
     </style>
+
+
+<div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
+    <div class="modal-dialog custom-modal-dialog" role="document">
+        <div class="modal-content custom-modal-content"
+            style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
+            <div class="modal-body" style="padding: 5px; display: flex; align-items: center; justify-content: center;">
+                <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
+    <div class="modal-dialog custom-modal-dialog" role="document">
+        <div class="modal-content custom-modal-content"
+            style="max-width: 400px; height: 50px; width: 100%; margin: auto; background-color: #EAD8C0; border: 2px solid #EAD8C0; ">
+            <div class="modal-body shadow" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                <p style="margin: 0; color: #000000;">{{ session('success') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    @if (session('fail'))
+        setTimeout(function() {
+            $('#showfail').modal('show');
+        }, 500);
+    @endif
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+    @if (session('success'))
+        setTimeout(function() {
+            $('#showsuccess').modal('show');
+        }, 500);
+    @endif
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <ol class="breadcrumb" style="background-color: transparent; ">
         <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
         <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
@@ -765,7 +834,7 @@
 
     <!-- Modal สำหรับยืนยันการอัปเดตสถานะพร้อมรายละเอียดเพิ่มเติม -->
     <div class="modal fade" id="updatestatus" tabindex="-1" role="dialog" aria-labelledby="updatestatusLabel"
-        aria-hidden="true">
+        aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <form action="{{ route('employee.actionupdatestatusrentdress', ['id' => $orderdetail->id]) }}"
@@ -977,8 +1046,7 @@
                         <div class="form-group">
                             <label for="return_status">เลือกการดำเนินการ:</label>
                             <select class="form-control" id="return_status" name="return_status" required>
-                                <option value="" selected disabled>เลือกรายการ</option>
-                                <option value="ส่งซัก">ส่งซัก</option>
+                                <option value="ส่งซัก" selected>ส่งซัก</option>
                                 <option value="ต้องซ่อมแซม">ส่งซ่อม</option>
                             </select>
                         </div>

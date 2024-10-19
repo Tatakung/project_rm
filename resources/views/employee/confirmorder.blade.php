@@ -15,8 +15,7 @@
                 <div class="col-md-5" style="background-color: #F7F7F7">
                     <h5 style="margin-top: 10px;">ข้อมูลลูกค้า</h5>
                     <hr>
-                    <form action="{{ route('employee.confirmordersave', ['id' => $order_id]) }}" method="POST">
-                        @csrf
+                
                         <div class="row">
                             <div class="col-md-6">
                                 <label for=""><span>ชื่อ</span></label>
@@ -58,7 +57,6 @@
                             </div>
                         </div>
 
-                    </form>
                 </div>
 
 
@@ -76,7 +74,7 @@
                                     class="mr-5" alt="..." style="width: 146px; height: 195px; border-radius: 8px;">
                             @elseif($detail->type_order == 1)
                                 <div class="mr-5"
-                                    style="width: 96px; height: 145px; border-radius: 2px; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
+                                    style="width: 146px; height: 195px; border-radius: 8px; border-radius: 2px; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
                                     <i class="bi bi-scissors" style="font-size: 48px;"></i>
                                 </div>
                             @endif
@@ -167,8 +165,8 @@
                     </p>
                     <div class="media">
                         <div class="media-left">
-                            <p style="font-size: 15px;  margin-bottom: 5px; ">ราคาค่าเช่า</p>
-                            <p style="font-size: 15px;  margin-bottom: 5px;">ค่ามัดจำ</p>
+                            <p style="font-size: 15px;  margin-bottom: 5px; ">ราคา</p>
+                            <p style="font-size: 15px;  margin-bottom: 5px;">เงินมัดจำ</p>
                             <p style="font-size: 15px;  margin-bottom: 5px;">ประกันค่าเสียหาย</p>
                             {{-- <p style="font-size: 15px;  margin-bottom: 5px;">ค่าบริการขยายเวลาเช่าชุด</p> --}}
                             {{-- <p style="font-size: 15px;  margin-bottom: 5px; color: crimson">จำนวนเงินที่ต้องชำระทั้งหมด</p> --}}

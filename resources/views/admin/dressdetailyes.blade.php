@@ -133,7 +133,7 @@
 
                             <div class="mt-3"
                                 @if ($check_admin == 1) style="display: block ; "
-                    @elseif($check_admin == 2)
+                    @elseif($check_admin == 0)
                     style="display: none ; " @endif>
                                 <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}"
                                     class="btn btn-outline-primary mr-2">

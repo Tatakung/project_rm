@@ -49,7 +49,7 @@
             <form action="{{ route('employee.searchordertotal') }}" class="d-flex justify-content-end">
                 <div class="row">
                     <div class="col-8">
-                        <input type="text" name="name_search" class="form-control" placeholder="กรอกชื่อ" value="{{$name_search}}">
+                        <input type="text" name="name_search" class="form-control" placeholder="ค้นหาชื่อ" value="{{$name_search}}">
                     </div>
                     <div class="col">
                         <button class="btn btn-primary">
@@ -85,18 +85,15 @@
                             {{ \Carbon\Carbon::parse($order->created_at)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($order->created_at)->year + 543 }}
                         </td>
-
-
-
-
-
-
-
-
-
                         
                         <td>คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</td>
-                        <td>{{ number_format($order->total_price, 2) }} บาท</td>
+                        <td>
+                            @php
+                                $orderdetail_price = App\Models\Orderdetail::where('order_id',$order->id)->sum('price') ; 
+                            @endphp
+
+                            {{ number_format($orderdetail_price)}}
+                        </td>
                         <td>{{ $order->total_quantity }} รายการ</td>
                         <td>
                             <a href="{{ route('employee.ordertotaldetail', ['id' => $order->id]) }}" class="btn btn-info btn-sm">

@@ -231,6 +231,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/employee/ordertotal/detail/show/postpone/checkeddresstotal/{id}', [OrderController::class, 'ordertotaldetailpostponecheckeddresstotal'])->name('employee.ordertotaldetailpostponecheckeddresstotal'); //เช็คเลื่อนวันนัดรับ-คืน
     Route::get('/employee/ordertotal/detail/show/postpone/checkeddressshirt/{id}', [OrderController::class, 'ordertotaldetailpostponecheckeddressshirt'])->name('employee.ordertotaldetailpostponecheckeddressshirt'); //เช็คเลื่อนวันนัดรับ-คืน
+    Route::get('/employee/ordertotal/detail/show/postpone/checkeddressskirt/{id}', [OrderController::class, 'ordertotaldetailpostponecheckeddressskirt'])->name('employee.ordertotaldetailpostponecheckeddressskirt'); //เช็คเลื่อนวันนัดรับ-คืน
 
 
 

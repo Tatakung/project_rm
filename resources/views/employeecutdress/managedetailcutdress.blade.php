@@ -364,7 +364,7 @@
 
 
                             <div class="modal fade" id="updatestatus_to_deliver_after_edit" tabindex="-1"
-                                aria-labelledby="confirmDeliveryModalLabel" aria-hidden="true">
+                                aria-labelledby="confirmDeliveryModalLabel" aria-hidden="true" data-backdrop="static">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <form
@@ -429,7 +429,7 @@
                                                 <button type="button" class="btn btn-secondary"
                                                     data-bs-dismiss="modal">ยกเลิก</button>
                                                 <button type="submit" class="btn btn-success"
-                                                    id="confirmDelivery">ยืนยันการส่งมอบและรับชำระเงิน</button>
+                                                    id="confirmDelivery">ยืนยันการส่งมอบ</button>
                                             </div>
                                         </form>
                                     </div>
@@ -716,12 +716,12 @@
                             {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }} <span id="span_still_one"></span>
                         </p>
-                        <script>
+                        {{-- <script>
                             var pickup_date = new Date('{{ $Date->pickup_date }}');
                             var date_now = new Date();
                             var still_one = Math.ceil((pickup_date - date_now) / (1000 * 60 * 60 * 24));
                             document.getElementById('span_still_one').innerHTML = ' (เหลือเวลาอีก ' + still_one + ' วัน)';
-                        </script>
+                        </script> --}}
 
                         <p><i class="bi bi-currency-dollar"></i> ราคาตัดชุด (บาท) :
                             {{ number_format($orderdetail->price, 2) }} บาท
@@ -731,7 +731,7 @@
                             {{ number_format($orderdetail->deposit, 2) }} บาท
                         </p>
 
-                        <p><i class="bi bi-file-earmark-text"></i> จำนวนชุด : {{ $orderdetail->amount }}</p>
+                        <p><i class="bi bi-file-earmark-text"></i> จำนวนชุด : {{ $orderdetail->amount }} ชุด</p>
                         <!-- ใช้ไอคอน file-earmark-text แทนจำนวนชุด -->
 
                         <p><i class="bi bi-text-left"></i> ผ้า :
@@ -773,7 +773,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 class="card-title">ข้อมูลการวัดตัวของลูกค้า (นิ้ว)</h5>
+                                <h5 class="card-title">ข้อมูลการวัดตัวสำหรับตัดชุด (นิ้ว)</h5>
                             </div>
                         </div>
 

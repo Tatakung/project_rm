@@ -100,7 +100,7 @@
 </script>
 
 
-<div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
+<div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #EAD8C0">
@@ -142,7 +142,7 @@
 
                     <p style="text-align: center ;"><strong>เพิ่มชุด</strong></p>
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="type_dress" class="form-label">เลือกประเภทชุดที่ต้องการเพิ่ม</label>
                             <select name="type_dress_id" id="type_dress_id" class="form-control" required>
                                 <option value="" disabled selected>ประเภทชุดที่ต้องการเพิ่ม</option>
@@ -153,7 +153,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-4" id="show_other_input" style="display: none;">
+                        <div class="col-md-6" id="show_other_input" style="display: none;">
                             <label for="" class="form-label">ระบุประเภทชุดที่ตัด</label>
                             <input type="text" name="inputother" id="other_input" class="form-control">
                         </div>
@@ -283,21 +283,21 @@
                                     <div class="row mb-3">
                                         <div class="col-md-2">
                                             <input type="text" class="form-control" name="name_total_[1]"
-                                                placeholder="ชื่อการวัด" value="รอบอก">
+                                                placeholder="ชื่อการวัด" value="รอบอก" required readonly>
                                         </div>
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_[1]"
-                                                placeholder="ขนาด" step="0.01" min="0">
+                                                placeholder="ขนาด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_min_[1]"
-                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_max_[1]"
-                                                placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
@@ -311,21 +311,21 @@
                                     <div class="row mb-3">
                                         <div class="col-md-2">
                                             <input type="text" class="form-control" name="name_total_[2]"
-                                                placeholder="ชื่อการวัด" value="รอบเอว">
+                                                placeholder="ชื่อการวัด" value="รอบเอว" required readonly>
                                         </div>
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_[2]"
-                                                placeholder="ขนาด" step="0.01" min="0">
+                                                placeholder="ขนาด" step="0.01" min="0" required> 
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_min_[2]"
-                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_max_[2]"
-                                                placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
@@ -339,21 +339,21 @@
                                     <div class="row mb-3">
                                         <div class="col-md-2">
                                             <input type="text" class="form-control" name="name_total_[3]"
-                                                placeholder="ชื่อการวัด" value="รอบสะโพก">
+                                                placeholder="ชื่อการวัด" value="รอบสะโพก" required readonly>
                                         </div>
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_[3]"
-                                                placeholder="ขนาด" step="0.01" min="0">
+                                                placeholder="ขนาด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_min_[3]"
-                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_max_[3]"
-                                                placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
@@ -367,21 +367,21 @@
                                     <div class="row mb-3">
                                         <div class="col-md-2">
                                             <input type="text" class="form-control" name="name_total_[4]"
-                                                placeholder="ชื่อการวัด" value="ความกว้างของไหล่">
+                                                placeholder="ชื่อการวัด" value="ความกว้างของไหล่" required readonly>
                                         </div>
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_[4]"
-                                                placeholder="ขนาด" step="0.01" min="0">
+                                                placeholder="ขนาด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_min_[4]"
-                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_max_[4]"
-                                                placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
@@ -395,21 +395,21 @@
                                     <div class="row mb-3">
                                         <div class="col-md-2">
                                             <input type="text" class="form-control" name="name_total_[5]"
-                                                placeholder="ชื่อการวัด" value="ความยาวชุด">
+                                                placeholder="ชื่อการวัด" value="ความยาวชุด" required readonly>
                                         </div>
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_[5]"
-                                                placeholder="ขนาด" step="0.01" min="0">
+                                                placeholder="ขนาด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_min_[5]"
-                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_max_[5]"
-                                                placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
@@ -424,21 +424,21 @@
                                     <div class="row mb-3">
                                         <div class="col-md-2">
                                             <input type="text" class="form-control" name="name_total_[6]"
-                                                placeholder="ชื่อการวัด" value="ความยาวแขน">
+                                                placeholder="ชื่อการวัด" value="ความยาวแขน" required readonly>
                                         </div>
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_[6]"
-                                                placeholder="ขนาด" step="0.01" min="0">
+                                                placeholder="ขนาด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_min_[6]"
-                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_max_[6]"
-                                                placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
@@ -452,21 +452,21 @@
                                     <div class="row mb-3">
                                         <div class="col-md-2">
                                             <input type="text" class="form-control" name="name_total_[7]"
-                                                placeholder="ชื่อการวัด" value="กระโปรงยาว">
+                                                placeholder="ชื่อการวัด" value="กระโปรงยาว" required readonly>
                                         </div>
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_[7]"
-                                                placeholder="ขนาด" step="0.01" min="0">
+                                                placeholder="ขนาด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_min_[7]"
-                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                         </div>
 
                                         <div class="col-md-2">
                                             <input type="number" class="form-control" name="number_total_max_[7]"
-                                                placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                         </div>
                                         <div class="col-md-2">
                                             <button class="btn" onclick="delete_dress_total(7)"><i
@@ -594,21 +594,21 @@
                                         <div class="row mb-3">
                                             <div class="col-md-2">
                                                 <input type="text" class="form-control" name="name_shirt_[1]"
-                                                    placeholder="ชื่อการวัด" value="รอบเอว">
+                                                    placeholder="ชื่อการวัด" value="รอบอก" required readonly>
                                             </div>
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_[1]"
-                                                    placeholder="ขนาด" step="0.01" min="0">
+                                                    placeholder="ขนาด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_min_[1]"
-                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_max_[1]"
-                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
@@ -621,21 +621,21 @@
                                         <div class="row mb-3">
                                             <div class="col-md-2">
                                                 <input type="text" class="form-control" name="name_shirt_[2]"
-                                                    placeholder="ชื่อการวัด" value="ความกว้างของไหล่">
+                                                    placeholder="ชื่อการวัด" value="ความกว้างของไหล่" required readonly>
                                             </div>
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_[2]"
-                                                    placeholder="ขนาด" step="0.01" min="0">
+                                                    placeholder="ขนาด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_min_[2]"
-                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_max_[2]"
-                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
@@ -648,21 +648,21 @@
                                         <div class="row mb-3">
                                             <div class="col-md-2">
                                                 <input type="text" class="form-control" name="name_shirt_[3]"
-                                                    placeholder="ชื่อการวัด" value="ความยาวเสื้อ">
+                                                    placeholder="ชื่อการวัด" value="ความยาวเสื้อ" required readonly>
                                             </div>
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_[3]"
-                                                    placeholder="ขนาด" step="0.01" min="0">
+                                                    placeholder="ขนาด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_min_[3]"
-                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_max_[3]"
-                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
@@ -675,21 +675,21 @@
                                         <div class="row mb-3">
                                             <div class="col-md-2">
                                                 <input type="text" class="form-control" name="name_shirt_[4]"
-                                                    placeholder="ชื่อการวัด" value="ความยาวแขน">
+                                                    placeholder="ชื่อการวัด" value="ความยาวแขน" required readonly>
                                             </div>
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_[4]"
-                                                    placeholder="ขนาด" step="0.01" min="0">
+                                                    placeholder="ขนาด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_min_[4]"
-                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_shirt_max_[4]"
-                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
@@ -808,21 +808,21 @@
                                         <div class="row mb-3">
                                             <div class="col-md-2">
                                                 <input type="text" class="form-control" name="name_skirt_[1]"
-                                                    placeholder="ชื่อการวัด" value="รอบอก">
+                                                    placeholder="ชื่อการวัด" value="รอบเอว" required readonly>
                                             </div>
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_skirt_[1]"
-                                                    placeholder="ขนาด" step="0.01" min="0">
+                                                    placeholder="ขนาด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_skirt_min_[1]"
-                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_skirt_max_[1]"
-                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
@@ -835,21 +835,21 @@
                                         <div class="row mb-3">
                                             <div class="col-md-2">
                                                 <input type="text" class="form-control" name="name_skirt_[2]"
-                                                    placeholder="ชื่อการวัด" value="รอบสะโพก">
+                                                    placeholder="ชื่อการวัด" value="รอบสะโพก" required readonly>
                                             </div>
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_skirt_[2]"
-                                                    placeholder="ขนาด" step="0.01" min="0">
+                                                    placeholder="ขนาด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_skirt_min_[2]"
-                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_skirt_max_[2]"
-                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
@@ -862,21 +862,21 @@
                                         <div class="row mb-3">
                                             <div class="col-md-2">
                                                 <input type="text" class="form-control" name="name_skirt_[3]"
-                                                    placeholder="ชื่อการวัด" value="กระโปรงยาว">
+                                                    placeholder="ชื่อการวัด" value="ความยาวผ้าถุง" required readonly>
                                             </div>
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_skirt_[3]"
-                                                    placeholder="ขนาด" step="0.01" min="0">
+                                                    placeholder="ขนาด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_skirt_min_[3]"
-                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดต่ำสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" class="form-control" name="number_skirt_max_[3]"
-                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0">
+                                                    placeholder="ขนาดสูงสุด" step="0.01" min="0" required>
                                             </div>
 
                                             <div class="col-md-2">
@@ -971,20 +971,11 @@
                 </div>
             </div>
 
-
-
-
             <div class="row mt-4">
                 <div class="col-md-12" style="text-align: end ; ">
                     <button type="submit" class="btn btn-success">ยืนยันการเพิ่มชุด</button>
                 </div>
             </div>
-
-
-
-
-
-
 
         </div>
     </form>

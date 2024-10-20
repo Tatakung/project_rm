@@ -174,14 +174,14 @@
                 </div>
 
                 <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
-                    data-toggle="collapse" data-target="#salee-collapse" id="d1">
+                    data-toggle="collapse" data-target="#saleey-collapse" id="d1">
                     <div>
                         <span class="bi bi-card-checklist"></span>
                         <span class="ml-2">การจัดการ</span>
                     </div>
                     <span class="bi bi-chevron-down small"></span>
                 </button>
-                <div class="collapse" id="salee-collapse" data-parent="#sidebar">
+                <div class="collapse" id="saleey-collapse" data-parent="#sidebar">
                     <div class="list-group">
                         <a href="{{ route('admin.formadddress') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
@@ -189,7 +189,12 @@
                         <a href="{{ route('admin.dresstotal') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             รายการชุด</a>
-
+                        <a href="{{ route('employeetotal') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            จัดการพนักงาน</a>
+                        <a href="{{ route('register') }}" class="list-group-item list-group-item-action border-0 pl-5"
+                            id="d">-
+                            เพิ่มพนักงาน</a>
                     </div>
                 </div>
 
@@ -208,34 +213,154 @@
             <span class="ml-2">จัดการเครื่องประดับ</span>
             </a> --}}
 
-                <a href="{{ route('employeetotal') }}"
+
+                {{-- <a href="{{ route('employeetotal') }}"
                     class="list-group-item @if (Route::currentRouteName() == 'employeetotal') active @endif list-group-item-action border-0 align-items-center"
                     id="d1">
 
                     <i class="bi bi-person-circle"></i>
                     <span class="ml-2">จัดการพนักงาน</span>
-                </a>
+                </a> --}}
 
 
 
-                <a href="{{ route('admin.expense') }}"
+                {{-- <a href="{{ route('admin.expense') }}"
                     class="list-group-item @if (Route::currentRouteName() == 'admin.expense') active @endif list-group-item-action border-0 align-items-center"
                     id="d1">
                     <i class="bi bi-cash-coin"></i>
                     <span class="ml-2">ค่าใช้จ่าย</span>
-                </a>
-
-                <!-- <a href="{{ route('admin.dresslist') }}"
+                </a> --}}
+                {{-- 
+                 <a href="{{ route('admin.dresslist') }}"
                     class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                     <i class="bi bi-card-checklist"></i>
                     <span class="ml-2">รายการชุด</span>
-                </a> -->
+                </a>  --}}
 
                 <a href="{{ route('employee.addorder') }}"
                     class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                     <i class="bi bi-clipboard-plus"></i>
                     <span class="ml-2">เพิ่มออเดอร์</span>
                 </a>
+
+
+                <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
+                    data-toggle="collapse" data-target="#rentadmin-collapse" id="d1">
+                    <div>
+                        <span class="bi bi-card-checklist"></span>
+                        <span class="ml-2">คิวงานตัดชุด/เช่าชุด</span>
+                    </div>
+                    <span class="bi bi-chevron-down small"></span>
+                </button>
+                <div class="collapse" id="rentadmin-collapse" data-parent="#sidebar">
+                    <div class="list-group">
+                        <a href="{{ route('employee.cutdressadjust') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            จัดการคิวงานตัดชุด
+                            @php
+                                $cutdresss = App\Models\Orderdetail::where('type_order', 1)
+                                    ->whereNotIn('status_detail', ['ส่งมอบชุดแล้ว', 'ตัดชุดเสร็จสิ้น'])
+                                    ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+                                    ->get();
+                            @endphp
+                            @if ($cutdresss->count() > 0)
+                                <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                    {{ $cutdresss->count() }}
+                                </span>
+                            @endif
+                        </a>
+                        <a href="{{ route('employee.dressadjust') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            จัดการคิวงานเช่าชุด
+                            @php
+                                $count_reservations = App\Models\Reservation::where('status_completed', 0)
+                                    ->where('status', 'ถูกจอง')
+                                    ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                    ->get();
+                            @endphp
+                            @if ($count_reservations->count() > 0)
+                                <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                    {{ $count_reservations->count() }}
+                                </span>
+                            @endif
+                        </a>
+                        <a href="{{ route('employee.listdressreturn') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            รายการชุดที่รอส่งคืน
+                            @php
+                                $listdressreturns = App\Models\Reservation::where('status_completed', 0)
+                                    ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
+                                    ->where('status', 'กำลังเช่า')
+                                    ->get();
+                            @endphp
+                            @if ($listdressreturns->count() > 0)
+                                <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                    {{ $listdressreturns->count() }}
+                                </span>
+                            @endif
+                        </a>
+
+                    </div>
+                </div>
+
+
+                <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
+                data-toggle="collapse" data-target="#saleesadmin-collapse" id="d1">
+                <div>
+                    <span class="bi bi-card-checklist"></span>
+                    <span class="ml-2">รายการซ่อม/ซัก</span>
+                </div>
+                <span class="bi bi-chevron-down small"></span>
+            </button>
+            <div class="collapse" id="saleesadmin-collapse" data-parent="#sidebar">
+                <div class="list-group">
+                    <a href="{{ route('employee.clean') }}"
+                        class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        รายการซักชุด
+                        @php
+                            $cleancount = App\Models\Clean::whereIn('clean_status', [
+                                'รอดำเนินการ',
+                                'กำลังส่งซัก',
+                            ])->count();
+                        @endphp
+                        @if ($cleancount != 0)
+                            <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                {{ $cleancount }}
+                            </span>
+                        @endif
+                    </a>
+                    <a href="{{ route('employee.repair') }}"
+                        class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        รายการซ่อมชุด
+                        @php
+                            $repaircount = App\Models\Repair::whereIn('repair_status', [
+                                'รอดำเนินการ',
+                                'กำลังซ่อม',
+                            ])->count();
+                        @endphp
+                        @if ($repaircount != 0)
+                            <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                {{ $repaircount }}
+                            </span>
+                        @endif
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             </div>
@@ -293,7 +418,9 @@
                     <span class="bi bi-arrow-return-left"></span>
                     <span class="ml-2">จัดการชุดที่คืนแล้ว</span>
                 </a> --}}
-            <a href="{{ route('employee.cutdressadjust') }}"
+
+            {{-- <a href="
+            "
                 class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                 <span class="bi bi-scissors"></span>
                 <span class="ml-2">จัดการคิวงานตัดชุด
@@ -328,13 +455,76 @@
                         </span>
                     @endif
                 </span>
-            </a>
+            </a> --}}
 
 
 
 
+            <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
+                data-toggle="collapse" data-target="#rent-collapse" id="d1">
+                <div>
+                    <span class="bi bi-card-checklist"></span>
+                    <span class="ml-2">คิวงานตัดชุด/เช่าชุด</span>
+                </div>
+                <span class="bi bi-chevron-down small"></span>
+            </button>
+            <div class="collapse" id="rent-collapse" data-parent="#sidebar">
+                <div class="list-group">
+                    <a href="{{ route('employee.cutdressadjust') }}"
+                        class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        จัดการคิวงานตัดชุด
+                        @php
+                            $cutdresss = App\Models\Orderdetail::where('type_order', 1)
+                                ->whereNotIn('status_detail', ['ส่งมอบชุดแล้ว', 'ตัดชุดเสร็จสิ้น'])
+                                ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+                                ->get();
+                        @endphp
+                        @if ($cutdresss->count() > 0)
+                            <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                {{ $cutdresss->count() }}
+                            </span>
+                        @endif
+                    </a>
+                    <a href="{{ route('employee.dressadjust') }}"
+                        class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        จัดการคิวงานเช่าชุด
+                        @php
+                            $count_reservations = App\Models\Reservation::where('status_completed', 0)
+                                ->where('status', 'ถูกจอง')
+                                ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                ->get();
+                        @endphp
+                        @if ($count_reservations->count() > 0)
+                            <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                {{ $count_reservations->count() }}
+                            </span>
+                        @endif
+                    </a>
+                    <a href="{{ route('employee.listdressreturn') }}"
+                        class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        รายการชุดที่รอส่งคืน
+                        @php
+                            $listdressreturns = App\Models\Reservation::where('status_completed', 0)
+                                ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
+                                ->where('status', 'กำลังเช่า')
+                                ->get();
+                        @endphp
+                        @if ($listdressreturns->count() > 0)
+                            <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                {{ $listdressreturns->count() }}
+                            </span>
+                        @endif
+                    </a>
 
-            <a href="{{ route('employee.listdressreturn') }}"
+                </div>
+            </div>
+
+
+
+
+            {{-- 65wq4f654wefa654wea6f46eaf465a4es56fd4 --}}
+
+            {{-- <a href="{{ route('employee.listdressreturn') }}"
                 class="list-group-item  list-group-item-action border-0 align-items-center" id="d1">
                 <!-- Replace 'bi-box-arrow-up' with your desired Bootstrap icon -->
                 <span class="bi bi-box-arrow-up"></span>
@@ -351,8 +541,8 @@
                         </span>
                     @endif
                 </span>
-            </a>
-            <a href="{{ route('employee.clean') }}"
+            </a> --}}
+            {{-- <a href="{{ route('employee.clean') }}"
                 class="list-group-item @if (Route::currentRouteName() == 'employee.clean') active @endif list-group-item-action border-0 align-items-center"
                 id="d1">
                 <span class="bi bi-water"></span>
@@ -383,13 +573,65 @@
                             'กำลังซ่อม',
                         ])->count();
                     @endphp
-                    @if($repaircount != 0 )
-                    <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
-                        {{ $repaircount }}
-                    </span>
+                    @if ($repaircount != 0)
+                        <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                            {{ $repaircount }}
+                        </span>
                     @endif
                 </span>
-            </a>
+            </a> --}}
+
+
+
+            <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
+                data-toggle="collapse" data-target="#salees-collapse" id="d1">
+                <div>
+                    <span class="bi bi-card-checklist"></span>
+                    <span class="ml-2">รายการซ่อม/ซัก</span>
+                </div>
+                <span class="bi bi-chevron-down small"></span>
+            </button>
+            <div class="collapse" id="salees-collapse" data-parent="#sidebar">
+                <div class="list-group">
+                    <a href="{{ route('employee.clean') }}"
+                        class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        รายการซักชุด
+                        @php
+                            $cleancount = App\Models\Clean::whereIn('clean_status', [
+                                'รอดำเนินการ',
+                                'กำลังส่งซัก',
+                            ])->count();
+                        @endphp
+                        @if ($cleancount != 0)
+                            <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                {{ $cleancount }}
+                            </span>
+                        @endif
+                    </a>
+                    <a href="{{ route('employee.repair') }}"
+                        class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        รายการซ่อมชุด
+                        @php
+                            $repaircount = App\Models\Repair::whereIn('repair_status', [
+                                'รอดำเนินการ',
+                                'กำลังซ่อม',
+                            ])->count();
+                        @endphp
+                        @if ($repaircount != 0)
+                            <span class="badge badge-danger ml-1" style="font-size: 0.8rem;">
+                                {{ $repaircount }}
+                            </span>
+                        @endif
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+
+
 
             {{-- <a href=""
                     class="list-group-item list-group-item-action border-0 align-items-center" id="d1">

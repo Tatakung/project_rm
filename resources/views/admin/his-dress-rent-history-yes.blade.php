@@ -120,10 +120,9 @@
                                 </select>
         
                                 <select class="form-control mr-2" name="year_dress" id="year_dress">
-                                    <option value="">ปี</option>
                                     @for ($i = 2020; $i <= now()->year; $i++)
                                         <option value="{{ $i }}" @if ($value_year_dress == $i) selected @endif>
-                                            {{ $i }}</option>
+                                            {{ $i + 543 }}</option>
                                     @endfor
         
                                 </select>
@@ -244,10 +243,10 @@
                                 </select>
         
                                 <select class="form-control mr-2" name="year_shirt" id="year_shirt">
-                                    <option value="">ปี</option>
+                                    
                                     @for ($i = 2020; $i <= now()->year; $i++)
                                         <option value="{{ $i }}" @if ($value_year_shirt == $i) selected @endif>
-                                            {{ $i }}</option>
+                                            {{ $i + 543 }}</option>
                                     @endfor
         
                                    
@@ -369,10 +368,10 @@
                                 </select>
         
                                 <select class="form-control mr-2" name="year_skirt" id="year_skirt">
-                                    <option value="">ปี</option>
+                                    
                                     @for ($i = 2020; $i <= now()->year; $i++)
                                         <option value="{{ $i }}" @if ($value_year_skirt == $i) selected @endif>
-                                            {{ $i }}</option>
+                                            {{ $i +543  }}</option>
                                     @endfor
         
                                    

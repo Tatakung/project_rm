@@ -75,7 +75,7 @@
                                             <label for="update_dress_price">ราคาเช่า</label>
                                             <input type="number" class="form-control" name="update_dress_price"
                                                 id="update_dress_price" value="{{ $datadress->dress_price }}"
-                                                placeholder="กรุณากรอกราคา" required min="1" required>
+                                                placeholder="กรุณากรอกราคา" required min="1" >
                                         </div>
                                     </div>
 

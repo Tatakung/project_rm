@@ -1,16 +1,34 @@
 @extends('layouts.adminlayout')
 
 @section('content')
-<style>
-    .card-header,
-    .card-body label,
-    .card-body input,
-    .card-body textarea,
-    .card-body .invalid-feedback,
-    .card-body button {
-        color: #000000;
-    }
-</style>
+    <style>
+        .card-header,
+        .card-body label,
+        .card-body input,
+        .card-body textarea,
+        .card-body .invalid-feedback,
+        .card-body button {
+            color: #000000;
+        }
+    </style>
+
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+
+
+
+
+
+
+
+
     <div class="container" style="margin-top : 10px ;">
         <div class="row">
             <div class="col-md-12">
@@ -18,7 +36,7 @@
                     <div class="card-header text-center" style="font-size: 24px;">
                         {{ __('เพิ่มบัญชีพนักงาน') }}
                     </div>
-                    
+
                     <div class="card-body">
                         <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
                             @csrf
@@ -122,7 +140,7 @@
                             </div>
 
                             @php
-                                $todays = \Carbon\Carbon::today()->toDateString();  
+                                $todays = \Carbon\Carbon::today()->toDateString();
                             @endphp
 
                             <div class="row mb-3">
@@ -132,7 +150,8 @@
                                 <div class="col-md-6">
                                     <input id="start_date" type="date"
                                         class="form-control @error('start_date') is-invalid @enderror shadow-sm p-3 mb-2 bg-body-tertiary rounded"
-                                        name="start_date" value="{{ old('start_date') }}" min="{{$todays}}" required>
+                                        name="start_date" value="{{ old('start_date') }}" min="{{ $todays }}"
+                                        required>
                                     @error('start_date')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -183,7 +202,7 @@
                                     class="col-md-4 col-form-label text-md-end">{{ __('รูปประจำตัว') }}</label>
 
                                 <div class="col-md-6">
-                                    <input id="image" type="file" name="image" accept="image/*">
+                                    <input id="image" type="file" name="image" accept="image/*" required>
 
                                     @error('image')
                                         <span class="invalid-feedback" role="alert">
@@ -199,7 +218,7 @@
                                     <button type="submit" class="btn btn-success" style="color: #ffffff;">
                                         {{ __('ยืนยัน') }}
                                     </button>
-                                    
+
                                 </div>
                             </div>
                         </form>

@@ -1872,13 +1872,7 @@ class OrderController extends Controller
         }
 
 
-
-
-
-
-
-
-        return redirect()->back()->with('อัพเดตสถานะของแก้ไขการวัดสำเร็จ');
+        return redirect()->back()->with('success','อัพเดตสถานะของแก้ไขการวัดสำเร็จ');
     }
 
 

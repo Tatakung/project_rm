@@ -61,38 +61,39 @@
     </style>
 
 
-<div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
-    <div class="modal-dialog custom-modal-dialog" role="document">
-        <div class="modal-content custom-modal-content"
-            style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
-            <div class="modal-body" style="padding: 5px; display: flex; align-items: center; justify-content: center;">
-                <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
+    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content custom-modal-content"
+                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
+                <div class="modal-body" style="padding: 5px; display: flex; align-items: center; justify-content: center;">
+                    <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
-    <div class="modal-dialog custom-modal-dialog" role="document">
-        <div class="modal-content custom-modal-content"
-            style="max-width: 400px; height: 50px; width: 100%; margin: auto; background-color: #EAD8C0; border: 2px solid #EAD8C0; ">
-            <div class="modal-body shadow" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                <p style="margin: 0; color: #000000;">{{ session('success') }}</p>
+    <div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content custom-modal-content"
+                style="max-width: 400px; height: 50px; width: 100%; margin: auto; background-color: #EAD8C0; border: 2px solid #EAD8C0; ">
+                <div class="modal-body shadow"
+                    style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                    <p style="margin: 0; color: #000000;">{{ session('success') }}</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 
 
 
-<script>
-    @if (session('fail'))
-        setTimeout(function() {
-            $('#showfail').modal('show');
-        }, 500);
-    @endif
-</script>
+    <script>
+        @if (session('fail'))
+            setTimeout(function() {
+                $('#showfail').modal('show');
+            }, 500);
+        @endif
+    </script>
 
 
 
@@ -103,13 +104,13 @@
 
 
 
-<script>
-    @if (session('success'))
-        setTimeout(function() {
-            $('#showsuccess').modal('show');
-        }, 500);
-    @endif
-</script>
+    <script>
+        @if (session('success'))
+            setTimeout(function() {
+                $('#showsuccess').modal('show');
+            }, 500);
+        @endif
+    </script>
 
 
 
@@ -556,13 +557,9 @@
                             {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
 
                             <span
-                            @if($orderdetail->status_detail == "ถูกจอง")
-                            style="display: block ; "
+                                @if ($orderdetail->status_detail == 'ถูกจอง') style="display: block ; "
                             @else
-                            style="display: none ; "
-                            @endif
-                                
-                            ><a
+                            style="display: none ; " @endif><a
                                     href="{{ route('employee.ordertotaldetailpostpone', ['id' => $orderdetail->id]) }}">เลื่อนวัน</a></span>
                         </p>
 
@@ -770,7 +767,7 @@
 
     {{-- modalปรับแก้ไขชุดสำเร็จ   --}}
     <div class="modal fade" id="updatestatusadjust" tabindex="-1" role="dialog"
-        aria-labelledby="updatestatusadjustLabel" aria-hidden="true">
+        aria-labelledby="updatestatusadjustLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form action="{{ route('employee.actionupdatestatusadjustdress', ['id' => $orderdetail->id]) }}"
@@ -979,43 +976,39 @@
                                     </th>
                                     <td style="padding: 10px;"><span id="rental_exte"></span></td>
                                 </tr>
-
                                 <script>
                                     var rr = new Date('{{ $Date->return_date }}');
                                     var pp = new Date('{{ $Date->pickup_date }}');
                                     rr.setHours(0, 0, 0, 0);
                                     pp.setHours(0, 0, 0, 0);
                                     var rr_pp = rr - pp;
-                                    var late_chart_day = Math.ceil(rr_pp / (1000 * 60 * 60 * 24) + 1);
-                                    var over_day = (late_chart_day - 3) * 100;
-                                    document.getElementById('late_chart').value = over_day;
+                                    var late_chart_day = Math.ceil(rr_pp / (1000 * 60 * 60 * 24));
 
-                                    //อิงจากวันที่นัดและคืนจริง
-                                    var r_pickup = new Date('{{ $Date->actua_pickup_date }}');
-                                    var r_return = new Date();
-                                    r_pickup.setHours(0, 0, 0, 0);
-                                    r_return.setHours(0, 0, 0, 0);
-                                    var r_return_r_pickup = r_return - r_pickup;
-                                    var total_r_return_r_pickup = Math.ceil(r_return_r_pickup / (1000 * 60 * 60 * 24) + 1);
+                                    if(late_chart_day > 3){
+                                        console.log('ในสัญญาเกิน 3 วัน ') ; 
+                                        var n = new Date('{{$Date->actua_pickup_date}}') ; //วันที่รับจริง
+                                        var nn = new Date() ;  //วันปัจจุบัน
+                                        n.setHours(0,0,0,0) ; 
+                                        nn.setHours(0,0,0,0) ; 
 
-                                    console.log("ดูตรงนี้" + total_r_return_r_pickup);
-
-
-                                    if (total_r_return_r_pickup > 3) {
-                                        if (late_chart_day - 3 == 0) {
-                                            document.getElementById('rental_exte').innerHTML = '0 บาท';
-                                        } else {
-                                            document.getElementById('rental_exte').innerHTML = over_day + ' บาท' + '   (ขยายเวลาเช่า ' + (
-                                                late_chart_day -
-                                                3) + ' วัน)';
-
+                                        var nn_n = Math.ceil( (nn - n)/(1000*60*60*24) ) ; 
+                                        
+                                        if(nn_n > 3 ){
+                                            document.getElementById('rental_exte').innerHTML = (nn_n-3)*100 + ' บาท' + '   (ขยายเวลาเช่า ' + (nn_n -3) + ' วัน)';
                                         }
-
-
-
-                                    } else {
-                                        document.getElementById('rental_exte').innerHTML = '0 บาท';
+                                        else if(nn_n <=3){
+                                            document.getElementById('rental_exte').innerHTML = '0 บาท' ; 
+                                        }
+                                                         
                                     }
+                                    else if(late_chart_day <= 3 ){
+                                        document.getElementById('rental_exte').innerHTML = '0 บาท' ; 
+                                    }
+
+
+
+
+
                                 </script>
 
 

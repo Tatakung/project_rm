@@ -84,6 +84,8 @@
     {{-- ส่วนฟิลเตอร์ --}}
     <div class="container  mt-5">
         <h1 class=" font-bold mb-4 ">การเช่าชุด</h1>
+        <p id="show_day"></p>
+
         <form action="{{ route('employee.addrentdresstocardfilter') }}" method="GET">
             @csrf
             <div class="row">
@@ -100,7 +102,6 @@
                 </div>
 
                 <div class="col-md-3">
-
                     <label for="" class="form-label" style="color: #848383 ; ">ลักษณะชุด</label>
                     <select class="form-control" name="character" id="character">
                         <option id="ten" value="10">ทั้งชุด</option>
@@ -138,11 +139,16 @@
                 </div>
 
 
+
+
+
                 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
                 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
                 <script>
                     var value_start = '{{ $start_date }}';
                     var value_end = '{{ $end_date }}';
+
+                    var show_day = document.getElementById('show_day');
 
                     document.addEventListener('DOMContentLoaded', function() {
                         var dateRangeInput = document.getElementById('date-range');
@@ -151,7 +157,7 @@
                                 mode: "range",
                                 dateFormat: "d/m/Y",
                                 locale: "th",
-                                minDate: "today",
+                                // minDate: "today",
                                 altInput: true,
                                 altFormat: "j F Y",
                                 conjunction: " ถึง ",
@@ -161,6 +167,17 @@
                                         var strenddate = instance.formatDate(selectedDates[1], 'Y-m-d');
                                         document.getElementById('start_date').value = strstartdate;
                                         document.getElementById('end_date').value = strenddate;
+
+                                        var startdate = new Date(strstartdate);
+                                        var enddate = new Date(strenddate);
+
+                                        var enddate_startdate = enddate - startdate;
+                                        var convert_enddate_startdate = Math.ceil(enddate_startdate / (1000 * 60 *
+                                            60 * 24));
+
+                                        show_day.innerHTML = 'ระยะเวลาเช่า ' + convert_enddate_startdate +' วัน';
+
+
                                     }
                                 }
                             });
@@ -195,17 +212,17 @@
 
     </div>
     </div>
-    @if($dress_pass == null)
-    <div class="container mt-5">
-        <div class="card" style="margin-left: 150px; margin-right: 150px;">
-            <div class="card-body text-center">
-                <p><strong>ยินดีต้อนรับสู่ระบบเช่าชุด</strong></p>
-                <p>กรุณาเลือกประเภทชุด ลักษณะชุด และวันที่ต้องการเช่า</p>
-                <p>แล้วกดปุ่ม "ค้นหา" เพื่อดูรายการชุดที่สามารถเช่าได้</p>
+    @if ($dress_pass == null)
+        <div class="container mt-5">
+            <div class="card" style="margin-left: 150px; margin-right: 150px;">
+                <div class="card-body text-center">
+                    <p><strong>ยินดีต้อนรับสู่ระบบเช่าชุด</strong></p>
+                    <p>กรุณาเลือกประเภทชุด ลักษณะชุด และวันที่ต้องการเช่า</p>
+                    <p>แล้วกดปุ่ม "ค้นหา" เพื่อดูรายการชุดที่สามารถเช่าได้</p>
+                </div>
             </div>
         </div>
-    </div>
-    @elseif ($dress_pass->count() > 0 )
+    @elseif ($dress_pass->count() > 0)
         <div class="container mt-5">
             <div class="row">
                 @foreach ($dress_pass as $dress)
@@ -307,28 +324,37 @@
                                                 <form action="{{ route('addtocart') }}" method="POST">
                                                     @csrf
 
-                                                    <input type="hidden" name="textcharacter" value="{{ $textcharacter }}">
+                                                    <input type="hidden" name="textcharacter"
+                                                        value="{{ $textcharacter }}">
                                                     {{-- ทั้งชุด --}}
                                                     <input type="hidden" name="dress_id" value="{{ $dress->id }}">
                                                     <input type="hidden" name="pickupdate" value="{{ $start_date }}">
                                                     <input type="hidden" name="returndate" value="{{ $end_date }}">
-            
+
                                                     {{-- เสื้อ --}}
                                                     @php
-                                                        $shirt_form = App\Models\Shirtitem::where('dress_id', $dress->id)->first();
+                                                        $shirt_form = App\Models\Shirtitem::where(
+                                                            'dress_id',
+                                                            $dress->id,
+                                                        )->first();
                                                     @endphp
-                                                    @if($shirt_form)
-                                                    <input type="hidden" name="shirt_id" value="{{ $shirt_form->id }}">
+                                                    @if ($shirt_form)
+                                                        <input type="hidden" name="shirt_id"
+                                                            value="{{ $shirt_form->id }}">
                                                     @endif
-            
+
                                                     {{-- กระโปรง/ผ้าถุง --}}
                                                     @php
-                                                        $skirt_form = App\Models\Shirtitem::where('dress_id', $dress->id)->first();
+                                                        $skirt_form = App\Models\Shirtitem::where(
+                                                            'dress_id',
+                                                            $dress->id,
+                                                        )->first();
                                                     @endphp
-                                                    @if($skirt_form)
-                                                    <input type="hidden" name="skirt_id" value="{{ $skirt_form->id }}">
+                                                    @if ($skirt_form)
+                                                        <input type="hidden" name="skirt_id"
+                                                            value="{{ $skirt_form->id }}">
                                                     @endif
-            
+
 
 
 
@@ -346,14 +372,14 @@
                 @endforeach
             </div>
         </div>
-    @elseif($dress_pass->count() == 0 )
-    <div class="container mt-5">
-        <div class="card" style="margin-left: 150px; margin-right: 150px;">
-            <div class="card-body text-center">
-                <p><strong>ไม่พบรายการ</strong></p>
-               
+    @elseif($dress_pass->count() == 0)
+        <div class="container mt-5">
+            <div class="card" style="margin-left: 150px; margin-right: 150px;">
+                <div class="card-body text-center">
+                    <p><strong>ไม่พบรายการ</strong></p>
+
+                </div>
             </div>
         </div>
-    </div>
     @endif
 @endsection

@@ -173,8 +173,16 @@
                         @endif
                     </p>
                     <p><strong>เบอร์ติดต่อ: </strong> {{ $data->phone }}</p>
-                    <p><strong>วันที่เริ่มทำงาน: </strong> {{ $data->start_date }}</p>
-                    <p><strong>วันเกิด: </strong> {{ $data->birthday }}</p>
+                    <p><strong>วันที่เริ่มทำงาน: </strong> 
+                        {{ \Carbon\Carbon::parse($data->start_date)->locale('th')->isoFormat('D MMM') }}
+                        {{ \Carbon\Carbon::parse($data->start_date)->year +543 }}
+                    
+                    </p>
+                    <p><strong>วันเกิด: </strong> 
+                        {{ \Carbon\Carbon::parse($data->birthday)->locale('th')->isoFormat('D MMM') }}
+                        {{ \Carbon\Carbon::parse($data->birthday)->year +543 }}
+                    
+                    </p>
                     <p><strong>ที่อยู่: </strong> {{ $data->address }}</p>
                     <button id="changeStatusBtn" class="btn btn-danger" data-toggle="modal"
                         data-target="#confirmModal">เปลี่ยนสถานะ</button>
@@ -189,7 +197,7 @@
 </div>
 
 {{-- modal --}}
-<div class="modal fade" id="confirmModal" role="dialog" aria-hidden="true">
+<div class="modal fade" id="confirmModal" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header alert alert-danger">

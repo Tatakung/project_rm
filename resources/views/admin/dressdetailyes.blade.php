@@ -97,7 +97,7 @@
                                     {{ number_format($datadress->damage_insurance, 2) }} บาท</p>
 
 
-                                <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง
+                                {{-- <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง --}}
 
                                 </p>
                                 <p><strong>คำอธิบายชุด:</strong> {{ $datadress->dress_description }}</p>
@@ -207,21 +207,15 @@
                                 </p>
                                 <p><strong>ค่าประกัน:</strong> {{ number_format($shirtitem->shirt_damage_insurance, 2) }}
                                     บาท</p>
-                                <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $shirtitem->shirtitem_rental }} ครั้ง
-                                    {{-- <a href="">
-                                        ดูประวัติ
-                                    </a> --}}
+                                {{-- <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $shirtitem->shirtitem_rental }} ครั้ง --}}
+                                  
                                 </p>
-                                <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ
-                                    {{-- <a href="">ดูประวัติ</a> --}}
-                                </p>
+                                {{-- <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ</p> --}}
                             </div>
                             <div class="col-md-5">
                                 <p>
                                     <strong>ขนาดของเสื้อ</strong> (ปรับแก้ ขยาย/ลด ได้):
-                                    {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea_shirt">
-                                        <i class="bi bi-plus-square text-dark"></i>
-                                    </button> --}}
+                                    
                                 <div class=" ">
                                     @php
                                         $list_check_name_shirt = [];
@@ -293,16 +287,10 @@
                                 </p>
                                 <p><strong>ค่าประกัน:</strong>
                                     {{ number_format($skirtitem->skirt_damage_insurance, 2) }} บาท</p>
-                                <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $skirtitem->skirtitem_rental }} ครั้ง
-                                    {{-- <span>
-                                        <a href="">ดูประวัติ</a>
-                                    </span> --}}
+                                {{-- <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $skirtitem->skirtitem_rental }} ครั้ง --}}
+                                   
                                 </p>
-                                <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ
-                                    {{-- <span>
-                                        <a href="">ดูประวัติ</a>
-                                    </span> --}}
-                                </p>
+                                {{-- <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ</p> --}}
                             </div>
                             <div class="col-md-5">
                                 <p>

@@ -90,6 +90,7 @@ class RegisterController extends Controller
             'birthday' => $data['birthday'],
             'image' => $imagepath
         ]);
+        return redirect()->back()->with('success','เพิ่มบัญชีพนักงานสำเร็จ') ; 
     }
 
 
@@ -156,7 +157,7 @@ class RegisterController extends Controller
         return redirect()->back()->with('success', 'เปลี่ยนรหัสผ่านสำเร็จ');
     }
 
-    
+
     //อัปเดตข้อมูล
     public function updateprofile(Request $request, User $user)
     {
@@ -176,8 +177,4 @@ class RegisterController extends Controller
         $user->update($input);
         return redirect()->back()->with('success', 'แก้ไขสำเร็จแล้ว');
     }
-
-    
-
-
 }

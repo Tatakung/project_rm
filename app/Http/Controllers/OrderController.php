@@ -218,7 +218,12 @@ class OrderController extends Controller
 
         $his_dress_adjust = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
 
-        return view('employeerentdress.managedetailrentdress', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust'));
+
+        $dateeee = Date::where('order_detail_id',$id)
+                ->orderBy('created_at','desc')
+                ->first() ; 
+
+        return view('employeerentdress.managedetailrentdress', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust','dateeee'));
     }
 
 
@@ -1320,8 +1325,8 @@ class OrderController extends Controller
                 $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
                 $orderdetail->save();
             }
-        } elseif ($status == "กำลังเช่า") {
-
+        }
+        elseif ($status == "กำลังเช่า") {
 
             $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
             $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
@@ -1407,9 +1412,6 @@ class OrderController extends Controller
                 }
             }
 
-
-
-
             if ($request->input('return_status') == "ส่งซัก") {
                 $next_message_index = 'ส่งซักต่อไป' ;
                 $text_for_reservation = "รอดำเนินการส่งซัก";
@@ -1423,7 +1425,8 @@ class OrderController extends Controller
                 $create_status->status = "รอดำเนินการ";
                 $create_status->clean_id = $create_clean->id;
                 $create_status->save();
-            } elseif ($request->input('return_status') == "ต้องซ่อมแซม") {
+            }
+            elseif ($request->input('return_status') == "ต้องซ่อมแซม") {
                 $next_message_index = 'ส่งซ่อม' ;
                 $text_for_reservation = "รอดำเนินการซ่อม";
                 //ตารางreqpair 
@@ -1437,14 +1440,15 @@ class OrderController extends Controller
                 $create_status = new Orderdetailstatus();
                 $create_status->status = "รอดำเนินการ";
                 $create_status->repair_id = $create_repair->id;
-                $create_status->save();
+                $create_status->save() ; 
             }
             //ตารางreservation 
             $reservation = Reservation::find($orderdetail->reservation_id);
             $reservation->status = $text_for_reservation;
             $reservation->save();
-            $message_session = 'ลูกค้าคืนชุดแล้ว และชุดจะถูก'.$next_message_index ; 
+            $message_session = 'ลูกค้าคืนชุดแล้ว และชุดจะถูก'.$request->input('return_status') .'ต่อไป' ; 
         }
+
         return redirect()->back()->with('success',$message_session);
     }
 

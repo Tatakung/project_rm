@@ -23,7 +23,7 @@
         }
 
         .status-icon.active {
-            background-color: #e2361b;
+            background-color: #6B5949;
             color: #000;
             /* เปลี่ยนสีตัวอักษรเป็นสีดำเพื่อให้เห็นชัดบนพื้นสีเหลือง */
         }
@@ -31,7 +31,7 @@
         .status-line {
             flex-grow: 1;
             height: 3px;
-            background-color: #007bff;
+            background-color: #EBC591;
             position: relative;
             top: 25px;
             z-index: 0;
@@ -44,7 +44,7 @@
             /* Adjust this value to align the arrow */
             top: 50%;
             transform: translateY(-50%);
-            border-left: 10px solid #007bff;
+            border-left: 10px solid #EBC591;
             /* Arrow color */
             border-top: 5px solid transparent;
             border-bottom: 5px solid transparent;
@@ -58,10 +58,11 @@
         .status-step small {
             color: #6c757d;
         }
+
     </style>
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
+    <ol class="breadcrumb"style="background-color: transparent;">
+        <li class="breadcrumb-item"><a href="" style="color: black ; ">หน้าแรก</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}" style="color: black ; ">รายการออเดอร์ทั้งหมด</a></li>
         <li class="breadcrumb-item"><a
                 href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">รายละเอียดออเดอร์ที่
                 {{ $orderdetail->order_id }}</a></li>
@@ -125,24 +126,24 @@
 
         <div class="row mt-3">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
 
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 class="card-title">สถานะการตัดเย็บชุด</h5>
+                                <h5 class="card-title">สถานะการตัดชุด</h5>
                             </div>
 
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'รอดำเนินการตัด') style="display: none;" @endif>
-                                <button class="btn" style="background: #3406dc; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัพเดตสถานะตัดเย็บ</button>
+                                <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus">อัพเดตสถานะชุด</button>
                             </div>
 
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'เริ่มดำเนินการตัด') style="display: none;" @endif>
-                                <button class="btn" style="background: #3406dc; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัพเดตสถานะตัดเย็บ</button>
+                                <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus">อัพเดตสถานะตัดชุด</button>
                             </div>
 
                             <div class="col-md-6 text-right"
@@ -183,7 +184,7 @@
                                             action="{{ route('employee.actionupdatestatuscutdress', ['id' => $orderdetail->id]) }}"
                                             method="POST">
                                             @csrf
-                                            <div class="modal-header">
+                                            <div class="modal-header text-dark" style="background-color:#EAD8C0 ;">
                                                 <h5 class="modal-title">ยืนยันการอัพเดตสถานะ</h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
@@ -203,9 +204,9 @@
                                             </div>
 
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
+                                                <button type="button" class="btn "style="background-color:#DADAE3;"
                                                     data-dismiss="modal">ยกเลิก</button>
-                                                <button type="submit" class="btn btn-primary"
+                                                <button type="submit" class="btn" style="background-color:#ACE6B7;"
                                                     id="confirmUpdateStatus">ยืนยัน</button>
                                             </div>
                                         </form>
@@ -226,8 +227,8 @@
                                             method="POST">
                                             @csrf
 
-                                            <div class="modal-header bg-primary text-white">
-                                                <h5 class="modal-title">ยืนยันการอัพเดตสถานะ</h5>
+                                            <div class="modal-header text-dark" style="background-color:#EAD8C0 ;">
+                                                <h5 class="modal-title" >ยืนยันการอัพเดตสถานะ</h5>
                                                 <button type="button" class="close text-white" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -700,9 +701,9 @@
         <div class="row mt-3 d-flex align-items-stretch">
 
             <div class="col-md-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
-                        <h5 class="card-title">ข้อมูลการตัดเย็บชุด</h5>
+                        <h5 class="card-title">ข้อมูลการตัดชุด</h5>
                         @php
                             $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
                             $customer = App\Models\Customer::find($customer_id);
@@ -769,7 +770,7 @@
 
         <div class="row mt-3">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -780,7 +781,7 @@
                         <div class="row mb-3">
                             @foreach ($dress_adjusts as $item)
                                 <div class="col-md-3 d-flex mt-3 ">
-                                    <div class="col-md-12"><strong>{{ $item->name }} {{ $item->new_size }} </strong>
+                                    <div class="col-md-12"><strong>{{ $item->name }} </strong> :{{ $item->new_size }}
                                     </div>
                                 </div>
                             @endforeach
@@ -789,7 +790,7 @@
                         @if ($orderdetail->note != null)
                             <div class="row mt-4">
                                 <div class="col-md-6">
-                                    <h5 class="card-title">โน๊ต</h5>
+                                    <h5 class="card-title">หมายเหตุ</h5>
                                     -{{ $orderdetail->note }}
                                 </div>
                             </div>
@@ -804,12 +805,12 @@
         @if ($imagerent->count() > 0)
             <div class="row mt-3 mb-3">
                 <div class="col-md-12">
-                    <div class="card">
+                    <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="d-flex justify-content-between align-items-center mt-2">
-                                        <h5 class="card-title">รูปภาพแสดงตัวแบบสำหรับตัดเย็บ</h5>
+                                        <h5 class="card-title">รูปภาพแสดงตัวแบบสำหรับ</h5>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#add_image" 
                                            @if($is_admin == 1  && $orderdetail->status_detail != "ส่งมอบชุดแล้ว")
@@ -848,7 +849,7 @@
         @if ($round->count() > 0)
             <div class="row mt-3 mb-3">
                 <div class="col-md-12">
-                    <div class="card">
+                    <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
@@ -935,7 +936,7 @@
         <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
             <div class="col-md-12"
                 @if ($orderdetail->status_detail == 'ส่งมอบชุดแล้ว') style="display: block;" @else style="display: none;" @endif>
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="bi bi-file-earmark-text"></i> สรุปข้อมูลตัดชุด
@@ -979,7 +980,7 @@
                     <form action="{{ route('employee.savecutdressaddimage',['id' => $orderdetail->id]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-header">
-                            <h5 class="modal-title">เพิ่มรูปภาพตัวแบบสำหรับการตัดเย็บ</h5>
+                            <h5 class="modal-title">เพิ่มรูปภาพตัวแบบสำหรับการ</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -988,8 +989,8 @@
                             <div class="col-md-12" id="div_image1">
                                 <div class="row mb-4">
                                     <div class="col-md-12">
-                                        <div class="card">
-                                            <div class="card-body">
+                                        <div class="card shadow">
+                                            <div class="card-body ">
                                                 <input type="file" id="file_image" name="file_image"
                                                     class="form-control mb-3" accept="image/*" required>
                                                 <textarea class="form-control" name="note_image" required placeholder="ใส่รายละเอียดเกี่ยวกับรูปภาพ..."></textarea>
@@ -1007,32 +1008,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     </div>
 @endsection

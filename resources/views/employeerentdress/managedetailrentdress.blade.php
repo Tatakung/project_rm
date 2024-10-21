@@ -376,13 +376,41 @@
                             {{-- <div class="col-md-6" style="text-align: right ;">
                                 <button type="button" class="btn btn-primary">อัพเดตสถานะการเช่า</button>
                             </div> --}}
+
+
+
+                            @php
+                                // $now_today = now()->setTime(0, 0)->format('Y-m-d');
+                                $now_today = now()->format('Y-m-d');
+
+
+
+                                // dd($dateeee->pickup_date) ;
+                                // dd($now_today) ; 
+
+                                // dd($now_today) ; 
+                            @endphp
+
+                            {{-- <div
+                                @if ($now_today == $dateeee->pickup_date) style="display: block ; "
+                            @else
+                            style="display: none ; " @endif>
+                            </div> --}}
+
+
                             <div class="col-md-6 text-right"
-                                @if ($orderdetail->status_detail == 'ถูกจอง' && $check_button_updatestatusadjust == false && $check_open_button == true) style="display: block ; "
-                                @else
-                                    style="display: none ; " @endif>
-                                <button class="btn" style="background: #3406dc; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัพเดตสถานะการเช่า</button>
-                            </div>
+                            @if ($orderdetail->status_detail == 'ถูกจอง' && $check_button_updatestatusadjust == false && $check_open_button == true ) 
+                                style="display: block ; "
+                            @else
+                                style="display: none ; " 
+                            @endif
+                            
+                            
+                            >
+                            <button class="btn" style="background: #3406dc; color: #ffffff;" data-toggle="modal"
+                                data-target="#updatestatus">อัพเดตสถานะการเช่าddsssd</button>
+                        </div>
+
 
 
 
@@ -426,7 +454,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    ->addHours(7)
+                                                    // ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -458,7 +486,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    ->addHours(7)
+                                                    // ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -490,7 +518,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    ->addHours(7)
+                                                    // ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -556,11 +584,12 @@
                             {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
 
-                            <span
+                            {{-- <span
                                 @if ($orderdetail->status_detail == 'ถูกจอง') style="display: block ; "
                             @else
-                            style="display: none ; " @endif><a
-                                    href="{{ route('employee.ordertotaldetailpostpone', ['id' => $orderdetail->id]) }}">เลื่อนวัน</a></span>
+                            style="display: none ; " @endif>
+                            <a
+                                    href="{{ route('employee.ordertotaldetailpostpone', ['id' => $orderdetail->id]) }}">เลื่อนวัน</a></span> --}}
                         </p>
 
 
@@ -698,7 +727,28 @@
                                     {{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
                                     {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}
                                 </p>
-                                <p><strong>จำนวนวันที่เช่าทั้งหมด:</strong> ยังไม่เชอร์ วัน</p>
+                                <p><strong>จำนวนวันที่เช่าทั้งหมด:</strong><span id="total_day_real"> </span></p>
+                                <script>
+                                    var total_day_real = document.getElementById('total_day_real');
+                                    var day_actua_pickup_date = new Date('{{ $Date->actua_pickup_date }}');
+                                    day_actua_pickup_date.setHours(0, 0, 0, 0);
+
+                                    var day_actua_return_date = new Date('{{ $Date->actua_return_date }}');
+                                    day_actua_return_date.setHours(0, 0, 0, 0);
+
+                                    var total_actua_pickup_date_return_date = Math.ceil((day_actua_return_date - day_actua_pickup_date) / (1000 * 60 *
+                                        60 * 24));
+                                    total_day_real.innerHTML = ' ' + total_actua_pickup_date_return_date + ' วัน';
+                                </script>
+
+
+
+
+
+
+
+
+
                             </div>
                             <div class="col-md-6">
                                 <p><strong>รายได้ค่าเช่าชุด:</strong> {{ number_format($orderdetail->price, 2) }} บาท</p>
@@ -724,7 +774,7 @@
                             </div>
                         </div>
 
-                        <p><strong>หมายเหตุ:</strong> ไม่มีความเสียหายหรือการปรับแต่งเพิ่มเติม เงินประกันคืนเต็มจำนวน</p>
+                        {{-- <p><strong>หมายเหตุ:</strong> ไม่มีความเสียหายหรือการปรับแต่งเพิ่มเติม เงินประกันคืนเต็มจำนวน</p> --}}
                     </div>
                 </div>
             </div>
@@ -984,31 +1034,25 @@
                                     var rr_pp = rr - pp;
                                     var late_chart_day = Math.ceil(rr_pp / (1000 * 60 * 60 * 24));
 
-                                    if(late_chart_day > 3){
-                                        console.log('ในสัญญาเกิน 3 วัน ') ; 
-                                        var n = new Date('{{$Date->actua_pickup_date}}') ; //วันที่รับจริง
-                                        var nn = new Date() ;  //วันปัจจุบัน
-                                        n.setHours(0,0,0,0) ; 
-                                        nn.setHours(0,0,0,0) ; 
+                                    if (late_chart_day > 3) {
+                                        console.log('ในสัญญาเกิน 3 วัน ');
+                                        var n = new Date('{{ $Date->actua_pickup_date }}'); //วันที่รับจริง
+                                        var nn = new Date(); //วันปัจจุบัน
+                                        n.setHours(0, 0, 0, 0);
+                                        nn.setHours(0, 0, 0, 0);
 
-                                        var nn_n = Math.ceil( (nn - n)/(1000*60*60*24) ) ; 
-                                        
-                                        if(nn_n > 3 ){
-                                            document.getElementById('rental_exte').innerHTML = (nn_n-3)*100 + ' บาท' + '   (ขยายเวลาเช่า ' + (nn_n -3) + ' วัน)';
+                                        var nn_n = Math.ceil((nn - n) / (1000 * 60 * 60 * 24));
+
+                                        if (nn_n > 3) {
+                                            document.getElementById('rental_exte').innerHTML = (nn_n - 3) * 100 + ' บาท' + '   (ขยายเวลาเช่า ' + (nn_n -
+                                                3) + ' วัน)';
+                                        } else if (nn_n <= 3) {
+                                            document.getElementById('rental_exte').innerHTML = '0 บาท';
                                         }
-                                        else if(nn_n <=3){
-                                            document.getElementById('rental_exte').innerHTML = '0 บาท' ; 
-                                        }
-                                                         
+
+                                    } else if (late_chart_day <= 3) {
+                                        document.getElementById('rental_exte').innerHTML = '0 บาท';
                                     }
-                                    else if(late_chart_day <= 3 ){
-                                        document.getElementById('rental_exte').innerHTML = '0 บาท' ; 
-                                    }
-
-
-
-
-
                                 </script>
 
 

@@ -1,5 +1,17 @@
 @extends('layouts.adminlayout')
 @section('content')
+<style>
+    .btn-c{
+        background-color: #EBDE88;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        
+    }
+    .btn-d{
+        background-color: #EB7E6D;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+    }
+</style>
     <div class="container mt-5">
 
     <div class="row">
@@ -87,14 +99,14 @@
                             style="display:inline;">
                             @csrf
                             <input type="hidden" name="type_order" value="{{ $detail->type_order }}">
-                            <button type="submit" class="btn btn-warning btn-sm">จัดการ</button>
+                            <button type="submit" class="btn btn-c btn-sm">จัดการ</button>
                         </form>
                         </p>
                         <p style="font-size: 15px;">
                         <form action="{{ route('employee.deletelist', ['id' => $detail->id]) }}" method="POST"
                             style="display:inline;">
                             @csrf
-                            <button type="submit" class="btn btn-danger btn-sm"
+                            <button type="submit" class="btn btn-d btn-sm"
                                 onclick="return confirm('แน่ใจใช่ไหมว่าคุณต้องการนำออก?')">ยกเลิกรายการ</button>
                         </form>
                         </p>

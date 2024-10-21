@@ -441,15 +441,6 @@ class DressController extends Controller
     }
 
 
-
-
-
-
-
-
-
-
-
     //อัปเดตชุดnoyes
     public function updatedressnoyes(Request $request, $id)
     {

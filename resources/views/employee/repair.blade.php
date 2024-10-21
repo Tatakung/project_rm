@@ -1,23 +1,42 @@
 @extends('layouts.adminlayout')
 @section('content')
-    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
-        <div class="modal-dialog custom-modal-dialog" role="document">
-            <div class="modal-content custom-modal-content"
-                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
-                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                    <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
-                </div>
+<div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
+    <div class="modal-dialog custom-modal-dialog" role="document">
+        <div class="modal-content custom-modal-content"
+            style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
+            <div class="modal-body" style="padding: 5px; display: flex; align-items: center; justify-content: center;">
+                <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
             </div>
         </div>
     </div>
+</div>
+<div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
+    <div class="modal-dialog custom-modal-dialog" role="document">
+        <div class="modal-content custom-modal-content"
+            style="max-width: 400px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
+            <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
-        @if (session('fail'))
-            setTimeout(function() {
-                $('#showfail').modal('show');
-            }, 500);
-        @endif
-    </script>
+<script>
+    @if (session('fail'))
+        setTimeout(function() {
+            $('#showfail').modal('show');
+        }, 500);
+    @endif
+</script>
+
+<script>
+    @if (session('success'))
+        setTimeout(function() {
+            $('#showsuccess').modal('show');
+        }, 500);
+    @endif
+</script>
+
 
 
 
@@ -83,20 +102,21 @@
                                 <table class="table table-striped table-bordered">
                                     <thead>
                                         <tr>
-                                            <th>เลือก</th>
+                                            {{-- <th>เลือก</th> --}}
                                             <th>รายการซ่อม</th>
                                             <th>รายละเอียดของการซ่อม</th>
                                             <th>สถานะ</th>
                                             <th>คิวเช่าต่อไป </th>
+                                            <th>action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($repair_pending as $repair)
                                             <tr>
-                                                <td>
+                                                {{-- <td>
                                                     <input type="checkbox" name="item_check_[]" value="{{ $repair->id }}"
                                                         class="class_page_one" onclick="page_one()">
-                                                </td>
+                                                </td> --}}
                                                 <script>
                                                     function page_one() {
                                                         var button_page_one = document.getElementById('button_page_one');
@@ -267,9 +287,9 @@
                                     </tbody>
                                 </table>
                                 <div class="col-md-12 d-flex justify-content-end">
-                                    <button type="button" id="button_page_one" data-toggle="modal" data-target="#showmodal"
+                                    {{-- <button type="button" id="button_page_one" data-toggle="modal" data-target="#showmodal"
                                         class="btn btn-primary" disabled
-                                        style="background: #A7567F; border: #A7567F">อัพเดตสถานะ</button>
+                                        style="background: #A7567F; border: #A7567F">อัพเดตสถานะ</button> --}}
                                 </div>
                             @else
                                 <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
@@ -312,30 +332,31 @@
                     <div class="card-body">
                         {{-- tableของ ยังไม่ได้ซัก --}}
                         @if ($repairs_null->count() > 0)
-                            <form action="{{ route('employee.repairupdatestatustoclean') }}" method="POST">
-                                @csrf
+                            {{-- <form action="{{ route('employee.repairupdatestatustoclean') }}" method="POST">
+                                @csrf --}}
                                 <div class="table-responsive">
                                     <h5 style="text-align: center ; ">ยังไม่ได้ซัก</h5>
                                     <table class="table table-striped table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>เลือก</th>
+                                                {{-- <th>เลือก</th> --}}
                                                 <th>รายการซ่อม</th>
                                                 <th>รายละเอียดของการซ่อม</th>
                                                 <th>สถานะ</th>
                                                 <th>คิวเช่าต่อไป </th>
+                                                <th>action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($repairs_null as $repair)
                                                 @if ($repair->clean_id == null)
                                                     <tr>
-                                                        <td>
+                                                        {{-- <td>
                                                             <input type="checkbox" name="item_check_[]"
                                                                 class="class_page_two_table_one"
                                                                 value="{{ $repair->id }}"
                                                                 onclick="checkbox_page_two_table_one()">
-                                                        </td>
+                                                        </td> --}}
 
 
                                                         <script>
@@ -470,15 +491,56 @@
                                                                 </span>
                                                             @endif
                                                         </td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#update_two_no_clean{{$repair->id}}">อัพเดตสถานะ</button>
+                                                        </td>
+
+                                                        <div class="modal fade" id="update_two_no_clean{{$repair->id}}" role="dialog" aria-hidden="true" data-backdrop="static">
+                                                            <div class="modal-dialog modal-lg" role="document">
+                                                                <div class="modal-content">
+                                                                    <form action="{{route('employee.repairupdatestatustocleanbutton',['id' => $repair->id])}}" method="POST">
+                                                                        @csrf
+                                                                    <div class="modal-header">
+                                                                        หัว
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        ยืนยันว่าจะเปลี่ยนสถานะจาก 'กำลังซ่อม'เป็น 'ซ่อมเสร็จแล้ว' และส่งซักต่อไป
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
+                                                                        <button class="btn btn-secondary" type="submit" >ยืนยัน</button>
+                                                                    </div>
+                                                                </form>
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                        
                                                     </tr>
                                                 @endif
                                             @endforeach
                                         </tbody>
                                     </table>
                                     <div class="col-md-12 d-flex justify-content-end">
-                                        <button type="button" class="btn btn-primary" id="button_page_two_table_one"
+                                        {{-- <button type="button" class="btn btn-primary" id="button_page_two_table_one"
                                             data-toggle="modal" data-target="#showmodalrepairupdatestatustoclean"
-                                            style="background: #A7567F; border: #A7567F" disabled>อัพเดตสถานะ</button>
+                                            style="background: #A7567F; border: #A7567F" disabled>อัพเดตสถานะfgfgfgfgfg</button> --}}
                                     </div>
 
                                     <div class="modal fade" id="showmodalrepairupdatestatustoclean" role="dialog"
@@ -501,36 +563,37 @@
                                             </div>
                                         </div>
                                     </div>
-                            </form>
+                            {{-- </form> --}}
                         @endif
 
 
                         @if ($repairs_not_null->count() > 0)
                             {{-- tableของ ซัก --}}
-                            <form action="{{ route('employee.repairupdatestatustocleanorready') }}" method="POST">
-                                @csrf
+                            {{-- <form action="{{ route('employee.repairupdatestatustocleanorready') }}" method="POST">
+                                @csrf --}}
                                 <div class="table-responsive">
                                     <h5 style="text-align: center ; ">ซักแล้ว</h5>
                                     <table class="table table-striped table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>เลือก</th>
+                                                {{-- <th>เลือก</th> --}}
                                                 <th>รายการซ่อม</th>
                                                 <th>รายละเอียดของการซ่อม</th>
                                                 <th>สถานะ</th>
                                                 <th>คิวเช่าต่อไป </th>
+                                                <th>action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($repairs_not_null as $repair)
                                                 @if ($repair->clean_id != null)
                                                     <tr>
-                                                        <td>
+                                                        {{-- <td>
                                                             <input type="checkbox" name="item_check_[]"
                                                                 value="{{ $repair->id }}"
                                                                 class="class_checkbox_page_two_table_two"
                                                                 onclick="checkbox_page_two_table_two()">
-                                                        </td>
+                                                        </td> --}}
 
                                                         <script>
                                                             function checkbox_page_two_table_two() {
@@ -664,16 +727,64 @@
                                                                 </span>
                                                             @endif
                                                         </td>
+
+                                                        <td>
+                                                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#butonpagetwocleanyes{{$repair->id}}">อัพเดตสถานะ</button>
+                                                        </td>
+
+                                                        <div class="modal fade" role="dialog" aria-hidden="true" id="butonpagetwocleanyes{{$repair->id}}" data-backdrop="static">
+                                                            <div class="modal-dialog modal-lg" role="document">
+                                                                <div class="modal-content">
+                                                                    <form action="{{route('employee.repairupdatestatustocleanorreadybutton',['id' => $repair->id])}}" method="POST">
+                                                                        @csrf
+                                                                    <div class="modal-header">
+                                                                        หัว
+                                                                        {{$repair->id}}
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p class="lead">ต้องการอัพเดตสถานะจาก "กำลังซ่อม" เป็น
+                                                                            "ซ่อมเสร็จแล้ว"
+                                                                        </p>
+                                                                        <p class="fw-bold mb-3">กระบวนการต่อไปคือ:</p>
+                                                                        <div class="form-check mb-2">
+                                                                            <input class="form-check-input" type="radio" name="status_next"
+                                                                                id="ready" value="1" style="accent-color: #0d6efd;"
+                                                                                checked>
+                                                                            <label class="form-check-label" for="ready">
+                                                                                พร้อมให้เช่าต่อ
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="radio" name="status_next"
+                                                                                id="toclean" value="2" style="accent-color: #0d6efd;">
+                                                                            <label class="form-check-label" for="toclean">
+                                                                                ส่งซักอีกครั้ง
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                                                        <button type="submit" class="btn btn-secondary" type="submit">ยืนยัน</button>
+                                                                    </div>
+                                                                </form>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+
+
+
                                                     </tr>
                                                 @endif
                                             @endforeach
                                         </tbody>
                                     </table>
                                     <div class="col-md-12 d-flex justify-content-end">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        {{-- <button type="button" class="btn btn-primary" data-toggle="modal"
                                             id="buttonmodalrepairupdatestatustocleanorready"
                                             data-target="#modalrepairupdatestatustocleanorready"
-                                            style="background: #A7567F; border: #A7567F" disabled>อัพเดตสถานะ</button>
+                                            style="background: #A7567F; border: #A7567F" disabled>อัพเดตสถานะซักแล้ว</button> --}}
                                     </div>
 
 
@@ -721,7 +832,7 @@
 
 
                                 </div>
-                            </form>
+                            {{-- </form> --}}
                         @endif
 
                     </div>

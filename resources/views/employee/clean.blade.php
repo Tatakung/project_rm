@@ -1,23 +1,41 @@
 @extends('layouts.adminlayout')
 @section('content')
-    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
-        <div class="modal-dialog custom-modal-dialog" role="document">
-            <div class="modal-content custom-modal-content"
-                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
-                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                    <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
-                </div>
+<div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
+    <div class="modal-dialog custom-modal-dialog" role="document">
+        <div class="modal-content custom-modal-content"
+            style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
+            <div class="modal-body" style="padding: 5px; display: flex; align-items: center; justify-content: center;">
+                <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
             </div>
         </div>
     </div>
+</div>
+<div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
+    <div class="modal-dialog custom-modal-dialog" role="document">
+        <div class="modal-content custom-modal-content"
+            style="max-width: 400px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
+            <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
-        @if (session('fail'))
-            setTimeout(function() {
-                $('#showfail').modal('show');
-            }, 500);
-        @endif
-    </script>
+<script>
+    @if (session('fail'))
+        setTimeout(function() {
+            $('#showfail').modal('show');
+        }, 500);
+    @endif
+</script>
+
+<script>
+    @if (session('success'))
+        setTimeout(function() {
+            $('#showsuccess').modal('show');
+        }, 500);
+    @endif
+</script>
 
 
 
@@ -83,7 +101,7 @@
                                 <table class="table table-striped table-bordered">
                                     <thead>
                                         <tr>
-                                            <th>เลือก</th>
+                                            {{-- <th>เลือก</th> --}}
                                             <th>รายการซัก</th>
                                             <th>สถานะ</th>
                                             <th>คิวเช่าต่อไป </th>
@@ -93,11 +111,11 @@
                                     <tbody>
                                         @foreach ($clean_pending as $clean)
                                             <tr>
-                                                <td>
+                                                {{-- <td>
                                                     <input type="checkbox" name="select_item_[]" value="{{ $clean->id }}"
                                                         class="select-item-class" data-status="{{ $clean->clean_status }}"
                                                         onclick="updatecheck()">
-                                                </td>
+                                                </td> --}}
                                                 <script>
                                                     function updatecheck() {
                                                         var alldata = document.getElementsByClassName('select-item-class');
@@ -266,8 +284,8 @@
                         @endforeach
                         </tbody>
                         </table>
-                        <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#showmodalwait"
-                            id="button_page_one" disabled>อัพเดตสถานะ</button>
+                        {{-- <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#showmodalwait"
+                            id="button_page_one" disabled>อัพเดตสถานะ</button> --}}
                     @else
                         <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
                         @endif
@@ -315,22 +333,22 @@
                             <table class="table table-striped table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>เลือก</th>
+                                        {{-- <th>เลือก</th> --}}
                                         <th>รายการซัก</th>
                                         <th>สถานะ</th>
-
                                         <th>คิวเช่าต่อไป </th>
+                                        <th>action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($clean_doing_wash as $clean)
                                         <tr>
 
-                                            <td>
+                                            {{-- <td>
                                                 <input type="checkbox" name="select_item_[]" value="{{ $clean->id }}"
                                                     class="select-item-class" data-status="{{ $clean->clean_status }}"
                                                     onclick="updatecheckdoingwash()">
-                                            </td>
+                                            </td> --}}
                                             <script>
                                                 function updatecheckdoingwash() {
 
@@ -478,8 +496,6 @@
 
 
 
-
-
                                             <div class="modal fade" id="modalbuttoncleanrowpagetwo{{ $clean->id }}"
                                                 role="dialog" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg" role="document">
@@ -509,16 +525,10 @@
 
 
 
-                                            @php
-                                                $reservation = App\Models\Reservation::find($clean->reservation_id);
-                                                $dress_id = $reservation->dress_id;
-                                                $shirt_id = $reservation->shirtitems_id;
-                                                $skirt_id = $reservation->skirtitems_id;
-                                            @endphp
 
 
                                             <div class="modal fade" id="need_to_repair{{ $clean->id }}"
-                                                role="dialog" aria-hidden="true">
+                                                role="dialog" aria-hidden="true" data-backdrop="static">
                                                 <div class="modal-dialog modal-lg" role="document">
                                                     <div class="modal-content">
                                                         <form action="{{ route('employee.afterwashtorepair') }}"
@@ -528,7 +538,24 @@
                                                                 ซักเสร็จแล้ว (ต้องซ่อมเนื่องจากเสียหาย)
                                                             </div>
                                                             <div class="modal-body">
-                                                                {{ $clean->id }}
+
+                                                                @php
+                                                                    $reservation = App\Models\Reservation::find(
+                                                                        $clean->reservation_id,
+                                                                    );
+                                                                    $dress_id = $reservation->dress_id;
+
+                                                                    $separable = App\Models\Dress::where(
+                                                                        'id',
+                                                                        $dress_id,
+                                                                    )->value('separable');
+
+                                                                    $shirt_id = $reservation->shirtitems_id;
+                                                                    $skirt_id = $reservation->skirtitems_id;
+                                                                @endphp
+
+
+
                                                                 รายละเอียดของการซ่อม
                                                                 <select name="typerepair">
                                                                     <option value="10"
@@ -564,6 +591,11 @@
                                                 var dress_id = '{{ $dress_id }}';
                                                 var shirt_id = '{{ $shirt_id }}';
                                                 var skirt_id = '{{ $skirt_id }}';
+
+                                                var Separable = '{{ $separable }}';
+
+
+
                                                 if (shirt_id) {
                                                     type_total_dress.style.display = 'none';
                                                     type_skirt.style.display = 'none';
@@ -573,18 +605,42 @@
                                                     type_shirt.style.display = 'none';
                                                     type_skirt.selected = true;
                                                 } else {
-                                                    type_total_dress.style.display = 'block';
-                                                    type_shirt.style.disabled = 'block';
-                                                    type_skirt.style.disabled = 'block';
-                                                    type_total_dress.selected = true;
+
+                                                    if (Separable == 1) {
+                                                        console.log('แยกไม่ได้');
+
+                                                        type_total_dress.style.display = 'block';
+                                                        type_shirt.style.disabled = 'block';
+                                                        type_skirt.style.disabled = 'block';
+                                                        type_total_dress.selected = true;
+
+                                                        type_skirt.style.display = 'none';
+
+                                                        type_shirt.style.display = 'none';
+
+
+                                                        
+
+
+
+
+                                                    } else if (Separable == 2) {
+                                                        type_total_dress.style.display = 'block';
+                                                        type_shirt.style.disabled = 'block';
+                                                        type_skirt.style.disabled = 'block';
+                                                        type_total_dress.selected = true;
+
+                                                    }
+
+
                                                 }
                                             </script>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
-                            <button class="btn btn-danger" type="button" data-toggle="modal"
-                                data-target="#showmodalwash" id="button_page_two" disabled>อัพเดตสถานะ</button>
+                            {{-- <button class="btn btn-danger" type="button" data-toggle="modal"
+                                data-target="#showmodalwash" id="button_page_two" disabled>อัพเดตสถานะ</button> --}}
                         @else
                             <p style="text-align: center ;">ไม่มีรายการแสดงผล</p>
                         @endif

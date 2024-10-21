@@ -106,16 +106,21 @@
                     </td>
                     <script>
                         var end_date = new Date('{{ $reservation->end_date }}');
+                        end_date.setHours(0,0,0,0) ; 
                         var now = new Date();
+                        now.setHours(0,0,0,0) ; 
                         var day = end_date - now;
                         var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
+
+                
                         document.getElementById('showday{{ $reservation->id }}').innerHTML
                         if (totalday == 0) {
                             document.getElementById('showday{{ $reservation->id }}').innerHTML = "คืนชุดวันนี้";
                             document.getElementById('late{{ $reservation->id }}').innerHTML = '-';
-                        } else if (totalday < 0) {
+                        } 
+                        else if (totalday < 0) {
                             document.getElementById('showday{{ $reservation->id }}').innerHTML = "เลยกำหนด " + Math.abs(totalday) + ' วัน';
-                            document.getElementById('late{{ $reservation->id }}').innerHTML = 300 * Math.abs(totalday) + ' บาท';
+                            document.getElementById('late{{ $reservation->id }}').innerHTML = 200 * Math.abs(totalday) + ' บาท';
                             console.log(typeof(totalday));
                         } else {
                             document.getElementById('showday{{ $reservation->id }}').innerHTML = 'อีก ' + totalday + ' วัน';

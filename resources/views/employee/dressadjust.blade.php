@@ -97,7 +97,11 @@
 
                             <script>
                                 var now = new Date();
+                                now.setHours(0, 0, 0, 0); // ตั้งเวลาให้เป็น 00:00:00
                                 var start_date = new Date("{{ $reservation->start_date }}");
+                                start_date.setHours(0,0,0,0) ; 
+
+                                console.log(start_date)  ;
                                 var day = start_date - now;
                                 var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
 
@@ -106,8 +110,9 @@
                                     document.getElementById('showday{{ $reservation->id }}').innerHTML = "เหลืออีก " + totalday + ' วัน ';
                                 } else if (totalday == 0) {
                                     document.getElementById('showday{{ $reservation->id }}').innerHTML = "มารับชุดวันนี้ ";
-                                } else {
-                                    document.getElementById('showday{{ $reservation->id }}').innerHTML = "เหลืออีก " + totalday + ' วัน ';
+                                }
+                                else {
+                                    document.getElementById('showday{{ $reservation->id }}').innerHTML = "เลยวันนัดรับชุด " + Math.abs(totalday) + ' วัน ';
 
                                 }
                             </script>

@@ -63,7 +63,7 @@ class EmployeeController extends Controller
         $reservations = Reservation::where('status_completed', 0)
             ->where('status', 'ถูกจอง')
             ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
-            ->whereDate('start_date',now())
+            ->whereDate('start_date', now())
             ->get();
         $filer = 'today';
         return view('employee.dressadjust', compact('reservations', 'filer'));
@@ -97,7 +97,7 @@ class EmployeeController extends Controller
         $listdressreturns = Reservation::where('status_completed', 0)
             ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
             ->where('status', 'กำลังเช่า')
-            ->whereDate('end_date',now())
+            ->whereDate('end_date', now())
             ->get();
         $filer = 'today';
         return view('employee.listdressreturn', compact('listdressreturns', 'filer'));
@@ -155,7 +155,7 @@ class EmployeeController extends Controller
 
 
 
-        return view('employee.cutdressadjust', compact('cutdresss_page_one', 'cutdresss_page_two', 'cutdresss_page_three', 'cutdresss_page_four','cutdresss_page_five'));
+        return view('employee.cutdressadjust', compact('cutdresss_page_one', 'cutdresss_page_two', 'cutdresss_page_three', 'cutdresss_page_four', 'cutdresss_page_five'));
     }
 
 
@@ -379,6 +379,7 @@ class EmployeeController extends Controller
     }
     public function repairupdatestatustoclean(Request $request)
     {
+        dd('หน้านี้นะ');
         $item_check = $request->input('item_check_');
         foreach ($item_check as $index => $repair_id) {
             // ตารางrepair
@@ -402,8 +403,41 @@ class EmployeeController extends Controller
         }
         return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
     }
+
+    public function repairupdatestatustocleanbutton($id)
+    {
+        // ตารางrepair
+        $repair = Repair::find($id);
+        $repair->repair_status = "ซ่อมเสร็จแล้ว";
+        $repair->save();
+        // ตารางstatus
+        $create_status = new Orderdetailstatus();
+        $create_status->repair_id = $repair->id;
+        $create_status->status = "ซ่อมเสร็จแล้ว";
+        $create_status->save();
+        // ตารางreservation
+        $reservation = Reservation::find($repair->reservation_id);
+        $reservation->status = "รอดำเนินการส่งซัก";
+        $reservation->save();
+        // ตารางclean
+        $create_clean = new Clean();
+        $create_clean->clean_status = "รอดำเนินการ";
+        $create_clean->reservation_id = $repair->reservation_id;
+        $create_clean->save();
+        return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ');
+    }
+
+
+
+
+
+
+
+
+
     public function repairupdatestatustocleanorready(Request $request)
     {
+        dd('เอฟ');
         $item_check = $request->input('item_check_');
         $status_next = $request->input('status_next');
         // พร้อมให้เช่าต่อ
@@ -502,15 +536,114 @@ class EmployeeController extends Controller
                 $create_status->save();
             }
         }
+
+
+
+
+
         return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
     }
 
 
+    public function repairupdatestatustocleanorreadybutton(Request $request, $id)
+    {
 
-
-
-
-
+        $status_next = $request->input('status_next');
+        // พร้อมให้เช่าต่อ
+        if ($status_next == 1) {
+            // ตารางrepair
+            $repair = Repair::find($id);
+            $repair->repair_status = "ซ่อมเสร็จแล้ว";
+            $repair->save();
+            // ตารางstatus
+            $create_status = new Orderdetailstatus();
+            $create_status->repair_id = $repair->id;
+            $create_status->status = "ซ่อมเสร็จแล้ว";
+            $create_status->save();
+            // ตารางreservation
+            $reservation = Reservation::find($repair->reservation_id);
+            $reservation->status = "ซ่อมเสร็จแล้ว";
+            $reservation->status_completed = 1;
+            $reservation->save();
+            // เพิ่มจำนวนครั้งในการแก้ไข  ทั้งชุด / เสื้อ /ผ้าถุง      
+            if ($reservation->shirtitems_id != null) {
+                $shirt = Shirtitem::find($reservation->shirtitems_id);
+                $shirt->repair_count = $shirt->repair_count + 1;
+                $shirt->save();
+            } elseif ($reservation->skirtitems_id != null) {
+                $skirt = Skirtitem::find($reservation->skirtitems_id);
+                $skirt->repair_count = $skirt->repair_count + 1;
+                $skirt->save();
+            } else {
+                $dress = Dress::find($reservation->dress_id);
+                if ($dress->separable == 1) {
+                    $dress->repair_count = $dress->repair_count + 1;
+                    $dress->save();
+                } elseif ($dress->separable == 2) {
+                    // ซ่อมทั้งชุด
+                    if ($repair->repair_type == 10) {
+                        // อัปเดตตาราง dress
+                        $dress->repair_count = $dress->repair_count + 1;
+                        $dress->save();
+                        // อัปเดตตารางshirt
+                        $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
+                        $shirt = Shirtitem::find($shirt_id);
+                        $shirt->repair_count = $shirt->repair_count + 1;
+                        $shirt->save();
+                        // อัปเดตตาราง skirt 
+                        $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
+                        $skirt = Skirtitem::find($skirt_id);
+                        $skirt->repair_count = $skirt->repair_count + 1;
+                        $skirt->save();
+                    }
+                    // ซ่อมแค่เสื้อ
+                    elseif ($repair->repair_type == 20) {
+                        // อัปเดตตารางshirt
+                        $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
+                        $shirt = Shirtitem::find($shirt_id);
+                        $shirt->repair_count = $shirt->repair_count + 1;
+                        $shirt->save();
+                    }
+                    // ซ่อมแค่ผ้าถุง
+                    elseif ($repair->repair_type == 30) {
+                        // อัปเดตตาราง skirt 
+                        $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
+                        $skirt = Skirtitem::find($skirt_id);
+                        $skirt->repair_count = $skirt->repair_count + 1;
+                        $skirt->save();
+                    }
+                }
+            }
+        }
+        // ส่งไปซักอีกครั้ง
+        elseif ($status_next == 2) {
+                // ตารางrepair
+                $repair = Repair::find($id);
+                $repair->repair_status = "ซ่อมเสร็จแล้ว";
+                $repair->save();
+                // ตารางstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->repair_id = $repair->id;
+                $create_status->status = "ซ่อมเสร็จแล้ว";
+                $create_status->save();
+                // ตารางreservation
+                $reservation = Reservation::find($repair->reservation_id);
+                $reservation->status = 'รอดำเนินการส่งซัก';
+                $reservation->save();
+                // ตารางclean
+                $create_clean = new Clean();
+                $create_clean->reservation_id = $repair->reservation_id;
+                $create_clean->clean_status = "รอดำเนินการ";
+                $create_clean->save();
+                // ตารางstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->clean_id = $create_clean->id;
+                $create_status->status = "รอดำเนินการ";
+                $create_status->save();
+            
+        }
+        return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
+    }
 
 
     public function clean()
@@ -612,8 +745,7 @@ class EmployeeController extends Controller
                 $checkdouble = Typedress::where('type_dress_name', $request->input('other_input'))->first();
                 if ($checkdouble) {
                     $TYPE_DRESS = $request->input('other_input');
-                }
-                else {
+                } else {
                     //สร้างตัวอักษรมา1ตัว
                     do {
                         $random = chr(65 + rand(0, 25));
@@ -691,16 +823,17 @@ class EmployeeController extends Controller
     }
 
 
-    
-    public function savecutdressaddimage(Request $request ,$id){
-        if($request->hasFile('file_image')){
-            $add_image = new Imagerent() ; 
-            $add_image->order_detail_id = $id ; 
-            $add_image->image = $request->file('file_image')->store('rent_images','public') ; 
-            $add_image->description = $request->input('note_image') ; 
-            $add_image->save() ; 
+
+    public function savecutdressaddimage(Request $request, $id)
+    {
+        if ($request->hasFile('file_image')) {
+            $add_image = new Imagerent();
+            $add_image->order_detail_id = $id;
+            $add_image->image = $request->file('file_image')->store('rent_images', 'public');
+            $add_image->description = $request->input('note_image');
+            $add_image->save();
         }
-        return redirect()->back()->with('success','เพิ่มรูปภาพสำเร็จ')  ;
+        return redirect()->back()->with('success', 'เพิ่มรูปภาพสำเร็จ');
     }
 
 
@@ -989,11 +1122,11 @@ class EmployeeController extends Controller
         $measurementorderdetail  = Measurementorderdetail::where('order_detail_id', $id)->get();
         $fitting = Fitting::where('order_detail_id', $id)->get();
         $measurementadjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
-        $Date = Date::where('order_detail_id',$orderdetail->id)
-                    ->orderBy('created_at','desc')
-                    ->first() ; 
-        $image_rent = Imagerent::where('order_detail_id',$orderdetail->id)->get() ; 
-        return view('employeecutdress.manageitemcutdress', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fitting', 'measurementadjusts','Date','image_rent'));
+        $Date = Date::where('order_detail_id', $orderdetail->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $image_rent = Imagerent::where('order_detail_id', $orderdetail->id)->get();
+        return view('employeecutdress.manageitemcutdress', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fitting', 'measurementadjusts', 'Date', 'image_rent'));
     }
 
     //เช่าชุด
@@ -1007,10 +1140,10 @@ class EmployeeController extends Controller
         $imagedress = Dressimage::where('dress_id', $orderdetail->dress_id)->get();
         $dress_mea_adjust = Dressmeaadjustment::where('order_detail_id', $orderdetail->id)->get();
         $imagerent = Imagerent::where('order_detail_id', $id)->get();
-        $Date = Date::where('order_detail_id',$orderdetail->id)
-                        ->orderBy('created_at','desc')
-                        ->first() ; 
-        return view('employeerentdress.manageitemrentdress', compact('orderdetail', 'type_dress', 'imagerent', 'dress', 'imagedress', 'dress_mea_adjust','Date'));
+        $Date = Date::where('order_detail_id', $orderdetail->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        return view('employeerentdress.manageitemrentdress', compact('orderdetail', 'type_dress', 'imagerent', 'dress', 'imagedress', 'dress_mea_adjust', 'Date'));
     }
 
     //เช่าเครื่องประดับ
@@ -1042,7 +1175,7 @@ class EmployeeController extends Controller
     //ลบdeletemeasurementitem ใน item
     public function deletemeasurementitem($id)
     {
-        dd($id) ; 
+        dd($id);
         $delete_measuremen = Dressmeaadjustment::find($id);
         $delete_measuremen->delete();
         return redirect()->back();

@@ -93,15 +93,6 @@
         @endif
     </script>
 
-
-
-
-
-
-
-
-
-
     <script>
         @if (session('success'))
             setTimeout(function() {

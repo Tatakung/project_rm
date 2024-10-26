@@ -12,14 +12,19 @@
             background-color: #f8f9fa;
             font-weight: bold;
         }
-        .custom-modal-body {
-    background-color: #28a745; /* สีเขียวเข้ม */
-    color: #fff; /* ข้อความสีขาว */
-    padding: 20px; /* ระยะห่างภายใน */
-    border-radius: 5px; /* ขอบโค้งมน */
-    text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
-}
 
+        .custom-modal-body {
+            background-color: #28a745;
+            /* สีเขียวเข้ม */
+            color: #fff;
+            /* ข้อความสีขาว */
+            padding: 20px;
+            /* ระยะห่างภายใน */
+            border-radius: 5px;
+            /* ขอบโค้งมน */
+            text-align: center;
+            /* จัดข้อความให้อยู่ตรงกลาง */
+        }
     </style>
 
 
@@ -51,12 +56,9 @@
         <div class="card mb-4 shadow">
             <div class="card-header"><i class="bi bi-info-circle"></i> รายละเอียดชุด
                 <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal"
-                @if($check_admin == 1 )
-                 style="display: block ; "
-                @elseif($check_admin == 0 )
-                style="display: none ; "
-                @endif
-                >
+                    @if ($check_admin == 1) style="display: block ; "
+                @elseif($check_admin == 0)
+                style="display: none ; " @endif>
                     <i class="bi bi-pencil-square text-dark"></i>
                 </button>
             </div>
@@ -96,7 +98,8 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_dress_deposit"style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
+                                            <label
+                                                for="update_dress_deposit"style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
                                             <input type="number" class="form-control" name="update_damage_insurance"
                                                 id="update_damage_insurance" value="{{ $datadress->damage_insurance }}"
                                                 placeholder="กรุณากรอกราคาประกันค่าเสียหาย" min="0" required
@@ -140,7 +143,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn" data-dismiss="modal" style="background-color:#DADAE3;">ยกเลิก</button>
+                            <button type="button" class="btn" data-dismiss="modal"
+                                style="background-color:#DADAE3;">ยกเลิก</button>
                             <button type="submit" class="btn" style="background-color:#ACE6B7;">บันทึก</button>
                         </div>
                         </form>
@@ -169,7 +173,7 @@
 
 
                         <!-- <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง -->
-                            {{-- <span
+                        {{-- <span
                                 @if ($check_admin == 1) style="display: block ; "
                             @elseif($check_admin == 2)
                             style="display: none ; " @endif><a
@@ -199,14 +203,14 @@
                             $historyrepair = App\Models\Repair::whereIn('id', $list_two)->get();
                         @endphp
                         <!-- <p><strong>จำนวนครั้งที่ซ่อม</strong>
-                            {{ $historyrepair->count() }} ครั้ง
-                            {{-- <span
+                                        {{ $historyrepair->count() }} ครั้ง
+                                        {{-- <span
                                 @if ($check_admin == 1) style="display: block ; "
                             @elseif($check_admin == 2)
                             style="display: none ; " @endif><a
                                     href="">ดูประวัติ</a></span> --}}
-                        </p>
-                        <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p> -->
+                                    </p>
+                                    <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p> -->
 
                     </div>
 
@@ -242,14 +246,12 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
 
                     <div class="ml-2"
-                        @if ($check_admin == 1) 
-                            style="display: block ; "
+                        @if ($check_admin == 1) style="display: block ; "
                         @elseif($check_admin == 0)
-                            style="display: none ; " 
-                        @endif>
+                            style="display: none ; " @endif>
                         <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}"
                             class="btn btn-outline-primary mr-2">
                             <i class="bi bi-clock-history"></i> ประวัติการเช่า
@@ -284,73 +286,7 @@
 
         </div>
     </div>
-    {{-- <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <h3>คิวการเช่าชุด</h3>
-            </div>
-            <div class="col-md-3" style="text-align: right ; ">
-                <button class="btn btn-primary" type="button" data-toggle="modal"
-                    data-target="#reservation_history">ประวัติเช่าชุดนี้</button>
-            </div>
-        </div>
-        @if ($reservations->count() > 0)
-            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                <thead>
-                    <tr style="background-color: #f2f2f2;">
-                        <th>ลำดับคิว</th>
-                        <th>ชื่อผู้จอง</th>
-                        <th>วันที่นัดรับชุด</th>
-                        <th>เหลือเวลาอีก (วัน)</th>
-                        <th>สถานะ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($reservations as $index => $reservation)
-                        <tr>
-                            <td>คิวที่ {{ $index + 1 }} </td>
-                            <td>
-                                @php
-                                    $order_id = App\Models\Orderdetail::where(
-                                        'reservation_id',
-                                        $reservation->id,
-                                    )->value('order_id');
-                                    $customer_id = App\Models\Order::where('id', $order_id)->value('customer_id');
-                                    $customer = App\Models\Customer::find($customer_id);
-                                @endphp
-                                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
-                            </td>
-                            <td>
-                                {{ \Carbon\Carbon::parse($reservation->start_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($reservation->start_date)->year + 543 }}
-                            </td>
-                            <td>
-                                <span id="showday{{ $reservation->id }}"></span>
-                                <script>
-                                    var now = new Date();
-                                    var start_date = new Date("{{ $reservation->start_date }}");
-                                    var day = start_date - now;
 
-                                    var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
-
-                                    document.getElementById('showday{{ $reservation->id }}').innerHTML = totalday + ' วัน ';
-                                </script>
-                            </td>
-                            <td>
-                                @if ($index == 0)
-                                    <span style="color: rgb(158, 41, 41)">{{ $reservation->status }}</span>
-                                @else
-                                    <span>{{ $reservation->status }}</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @else
-            <h6 style="text-align: center ; ">ไม่มีคิวการเช่าชุดนี้ !</h6>
-        @endif
-    </div> --}}
 
     <br>
 
@@ -699,14 +635,14 @@
 
     <!-- Modals for success and failure messages -->
     <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
-    <div class="modal-dialog custom-modal-dialog">
-        <div class="modal-content custom-modal-content">
-            <div class="modal-body custom-modal-body">
-                {{ session('success') }}
+        <div class="modal-dialog custom-modal-dialog">
+            <div class="modal-content custom-modal-content">
+                <div class="modal-body custom-modal-body">
+                    {{ session('success') }}
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog">

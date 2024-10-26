@@ -1,336 +1,244 @@
 @extends('layouts.adminlayout')
 @section('content')
     <style>
-        .table-container {
-            height: 400px;
-            /* กำหนดความสูงของตาราง */
-            overflow-y: scroll;
-            /* แสดงแถวเลื่อนแนวนอน */
+        .modal-body {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .table::-webkit-scrollbar {
-            width: 10px;
-            /* กำหนดความกว้างของลูกกลิ้ง */
-            height: 8px;
-            /* กำหนดความสูงของลูกกลิ้ง */
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
         }
 
-        .table::-webkit-scrollbar-thumb {
-            background: #888;
-            /* กำหนดสีพื้นหลังของลูกกลิ้ง */
+        .custom-modal-body {
+            background-color: #28a745;
+            /* สีเขียวเข้ม */
+            color: #fff;
+            /* ข้อความสีขาว */
+            padding: 20px;
+            /* ระยะห่างภายใน */
             border-radius: 5px;
-            /* กำหนดมุมโค้งมนของลูกกลิ้ง */
-        }
-
-        .table::-webkit-scrollbar-track {
-            background: #ccc;
-            /* กำหนดสีพื้นหลังของแถบเลื่อน */
+            /* ขอบโค้งมน */
+            text-align: center;
+            /* จัดข้อความให้อยู่ตรงกลาง */
         }
     </style>
-    <div class="container d-flex justify-content-start">
 
 
-        {{-- @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="" style="color: black ; ">จัดการเครื่องประดับ</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="" style="color: black ;">ประเภท{{ $data_type->type_jewelry_name }}</a>
+        </li>
+        <li class="breadcrumb-item active">
+            รายละเอียดของหมายเลขเครื่องประดับ {{ $data_type->specific_letter }}{{ $datajewelry->jewelry_code }}
+        </li>
+    </ol>
+
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h2 class="py-4" style="text-align: start">รายละเอียดของหมายเลขเครื่องประดับ
+                    {{ $data_type->specific_letter }}{{ $datajewelry->jewelry_code }}</h2>
             </div>
+        </div>
+
+
+
+        <div class="card mb-4 shadow">
+            <div class="card-header"><i class="bi bi-info-circle"></i> รายละเอียดเครื่องประดับ
+                <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal">
+                    <i class="bi bi-pencil-square text-dark"></i>
+                </button>
+            </div>
+
+            <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header text-dark"style="background-color: #BACEE6;">
+                            <h5 class="modal-title">แก้ไขข้อมูลเครื่องประดับ</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container">
+                                <!-- ข้อมูลชุด -->
+
+                                <form action="{{ route('admin.updatejewelry', ['id' => $datajewelry->id]) }}"
+                                    method="POST">
+                                    @csrf
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label for="update_price" style="font-weight:bold">ราคาเช่า</label>
+                                            <input type="number" class="form-control" name="update_price" id="update_price"
+                                                value="{{ $datajewelry->jewelry_price }}" placeholder="กรุณากรอกราคา"
+                                                required min="1" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label for="update_deposit"style="font-weight:bold">ราคามัดจำ</label>
+                                            <input type="number" class="form-control" name="update_deposit"
+                                                id="update_deposit" value="{{ $datajewelry->jewelry_deposit }}"
+                                                placeholder="กรุณากรอกราคามัดจำ" required min="1" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label
+                                                for="update_damage_insurance"style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
+                                            <input type="number" class="form-control" name="update_damage_insurance"
+                                                id="update_damage_insurance" value="{{ $datajewelry->damage_insurance }}"
+                                                placeholder="กรุณากรอกราคาประกันค่าเสียหาย" min="0" required
+                                                readonly>
+                                        </div>
+                                    </div>
+
+                                    <script>
+                                        var update_price = document.getElementById('update_price');
+                                        var update_deposit = document.getElementById('update_deposit');
+                                        var update_damage_insurance = document.getElementById('update_damage_insurance');
+
+
+                                        update_price.addEventListener('input', function() {
+
+                                            var float_price = parseFloat(update_price.value);
+
+                                            update_deposit.value = Math.ceil(float_price * 0.3);
+                                            update_damage_insurance.value = Math.ceil(float_price);
+                                        });
+                                    </script>
+
+
+
+
+
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <label for="dress_description"style="font-weight:bold">คำอธิบายเครื่องประดับ</label>
+                                            <textarea name="update_dress_description" id="update_dress_description" class="form-control" rows="3"
+                                                placeholder="กรุณากรอกคำอธิบาย">{{ $datajewelry->jewelry_description }}</textarea>
+                                        </div>
+                                    </div>
+
+
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn" data-dismiss="modal"
+                                style="background-color:#DADAE3;">ยกเลิก</button>
+                            <button type="submit" class="btn" style="background-color:#ACE6B7;">บันทึก</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="d-flex">
+
+                        <div class="p-2">
+                            <img src="{{ asset('storage/' . $dataimage->jewelry_image) }}" alt=""
+                                style="max-height: 350px; width: auto;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>ประเภทเครื่องประดับ:</strong> {{ $data_type->type_jewelry_name }}</p>
+                        <p><strong>ราคาเช่า:</strong> {{ number_format($datajewelry->jewelry_price, 2) }} บาท</p>
+                        <p><strong>เงินมัดจำ:</strong> {{ number_format($datajewelry->jewelry_deposit, 2) }} บาท</p>
+                        <p><strong>ค่าประกัน:</strong> {{ number_format($datajewelry->damage_insurance, 2) }} บาท
+                        <p><strong>คำอธิบายชุด: </strong>{{ $datajewelry->jewelry_description }}</p>
+
+
+
+
+
+                    </div>
+
+
+
+
+
+                    <div class="ml-2">
+                        <a href="" class="btn btn-outline-primary mr-2">
+                            <i class="bi bi-clock-history"></i> ประวัติการเช่า
+                        </a>
+                        <a href="" class="btn btn-outline-secondary">
+                            <i class="bi bi-tools"></i> ประวัติการซ่อม
+                        </a>
+                    </div>
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+        </div>
+    </div>
+    <!-- Modals for success and failure messages -->
+    <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog">
+            <div class="modal-content custom-modal-content">
+                <div class="modal-body custom-modal-body">
+                    {{ session('success') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog">
+            <div class="modal-content custom-modal-content fail">
+                <div class="modal-body">{{ session('fail') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        @if (session('success'))
+            setTimeout(function() {
+                $('#showsuccessss').modal('show');
+                setTimeout(function() {
+                    $('#showsuccessss').modal('hide');
+                }, 6000);
+            }, 500);
         @endif
-
         @if (session('fail'))
-            {{ session('fail') }}
-        @endif --}}
-
-        <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
-            <div class="modal-dialog custom-modal-dialog" role="document">
-                <div class="modal-content custom-modal-content"
-                    style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #53b007;">
-                    <div class="modal-body"
-                        style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                        <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-       
-
-
-
-
-        <script>
-            @if (session('success'))
+            setTimeout(function() {
+                $('#showfail').modal('show');
                 setTimeout(function() {
-                    $('#showsuccessss').modal('show');
-                    setTimeout(function() {
-                        $('#showsuccessss').modal('hide');
-                    }, 6000);
-                }, 500);
-            @endif
-        </script>
-
-
-
-        <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
-            <div class="modal-dialog custom-modal-dialog" role="document">
-                <div class="modal-content custom-modal-content"
-                    style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #db430c;">
-                    <div class="modal-body"
-                        style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                        <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            @if (session('fail'))
-                setTimeout(function() {
-                    $('#showfail').modal('show');
-                    setTimeout(function() {
-                        $('#showfail').modal('hide');
-                    }, 6000);
-                }, 500);
-            @endif
-        </script>
-
-        <div>
-
-        </div>
-
-
-
-
-        <div class="table-responsive text-start" style="width: 100%;">
-
-
-
-
-
-            @foreach ($dataimage as $imagedata)
-                <img src="{{ asset('storage/' . $imagedata->jewelry_image) }}" alt=""
-                    style="max-height: 300px; width: auto;">
-            @endforeach
-
-            <button class="btn btn-secondary" type="button" data-toggle="modal"
-                data-target="#modaladdimage">เพิ่มรูปภาพ</button>
-
-            {{-- modalเพิ่มรูปภาพ --}}
-            <div class="modal fade" id="modaladdimage" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            เพิ่มรูปภาพ?
-                        </div>
-                        <form action="{{ route('admin.addjewelryimage', ['id' => $datajewelry->id]) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <div class="modal-body">
-
-                                <p>เพิ่มรูปภาพ</p>
-                                <hr>
-                                <div class="row mb-3">
-                                    <div class="col-md-4"><strong>รูปภาพ:</strong></div>
-                                    <div class="col-md-8">
-                                        <input type="file" class="form-control" name="jewelry_image" id="jewelry_image" required>
-                                    </div>
-                                </div>
-
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                                <button type="submit" class="btn btn-secondary">ยืนยัน</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <h2 class="text text-start pt-5 ">รายละเอียดชุด</h2>
-            <div class=”grid-container”>
-                <div class="card mb-3 border-2" style="max-width: 1080px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-
-
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <button type="button" class="btn btn-danger" data-toggle="modal"
-                                    data-target="#showeditdress">แก้ไข</button>
-                                <button type="button" class="btn btn-danger" data-toggle="modal"
-                                    data-target="#showeditprice">ปรับเปลี่ยนราคา</button>
-                                <p class="card-text">
-                                    <span style="font-weight: bold;">ประเภทเครื่องประดับ : </span> {{ $data_type_name }}
-                                </p>
-
-                                <p class="card-text">
-                                    <span style="font-weight: bold;">รหัสเครื่องประดับ : </span>{{ $datajewelry->jewelry_code_new }}{{ $datajewelry->jewelry_code }}
-                                </p>
-
-                                <p class="card-text">
-                                    <span style="font-weight: bold;">ชื่อเครื่องประดับ : </span> {{ $datajewelry->jewelry_title_name }}
-                                </p>
-                                
-                                <p class="card-text">
-                                    <span style="font-weight: bold;">ราคา : </span> {{ $datajewelry->jewelry_price }}&nbsp;บาท
-                                </p>
-                                <p class="card-text">
-                                    <span style="font-weight: bold;">ราคามัดจำ : </span>
-                                    {{ $datajewelry->jewelry_deposit }}&nbsp;บาท
-                                </p>
-
-                                <p class="card-text">
-                                    <span style="font-weight: bold;">จำนวนเครื่องประดับ : </span>
-                                    {{ $datajewelry->jewelry_count }}&nbsp;ชิ้น
-                                </p>
-
-                                <p class="card-text">
-                                    <span style="font-weight: bold;">สถานะเครื่องประดับ : </span> {{ $datajewelry->jewelry_status }}
-                                </p>
-
-                                <p class="card-text">
-                                    <span style="font-weight: bold;">จำนวนครั้งที่เครื่องประดับถูกเช่า : </span>
-                                    {{ $datajewelry->jewelry_rental }} ครั้ง
-                                </p>
-
-
-                                <p class="card-text">
-                                    <span style="font-weight: bold;">คำอธิบายเครื่องประดับ : </span>
-                                    {{ $datajewelry->jewelry_description }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-
-
-                {{-- modalแก้ไขเครื่องประดับ --}}
-                <div class="modal fade" id="showeditdress" tabindex="-1" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">แก้ไขเครื่องประดับ</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-
-                            <form action="{{ route('admin.updatejewelry', ['id' => $datajewelry->id]) }}" method="POST">
-                                @csrf
-                                <div class="modal-body">
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="update_jewelry_type">ประเภทชุด:
-                                            {{ $data_type_name }}</label>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="update_dress_code">หมายเลขชุด:
-                                            {{ $datajewelry->jewelry_code_new }}{{ $datajewelry->jewelry_code }}</label>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="update_dress_price">ราคา:
-                                            {{ $datajewelry->jewelry_price }} บาท</label>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="update_dress_deposit">ราคามัดจำ:
-                                            {{ $datajewelry->jewelry_deposit }} บาท</label>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="update_dress_count">จำนวนชุด:
-                                            {{ $datajewelry->jewelry_count }} ชุด</label>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="update_dress_status">สถานะชุด:
-                                            {{ $datajewelry->jewelry_status }}</label>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="update_dress_rental">จำนวนครั้งที่ถูกเช่า:
-                                            {{ $datajewelry->jewelry_rental }} ครั้ง</label>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="update_jewelry_title_name">ชื่อชุด:</label>
-                                        <input type="text" class="form-control" id="update_jewelry_title_name"
-                                            name="update_jewelry_title_name" value="{{ $datajewelry->jewelry_title_name }}"
-                                            required>
-                                    </div>
-
-                                    
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="update_jewelry_description">คำอธิบายชุด:</label>
-                                        <textarea class="form-control" id="update_jewelry_description" name="update_jewelry_description" rows="3"
-                                            required>{{ $datajewelry->jewelry_description }}</textarea>
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger"
-                                            data-dismiss="modal">ยกเลิก</button>
-                                        <button type="submit" class="btn btn-secondary">ยืนยัน</button>
-                                    </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            {{-- modalแก้ไขราคา --}}
-            <div class="modal fade" id="showeditprice" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            แก้ไขราคา?
-                        </div>
-                        <form action="{{ route('admin.updatepricejewelry', ['id' => $datajewelry->id]) }}" method="POST">
-                            @csrf
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label class="form-label" for="update_jewelry_price">ราคา:</label>
-                                    <input type="number" class="form-control" id="update_jewelry_price"
-                                        name="update_jewelry_price" value="{{ $datajewelry->jewelry_price }}" required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label" for="update_jewelry_deposit">ราคามัดจำ:</label>
-                                    <input type="number" class="form-control" id="update_jewelry_deposit"
-                                        name="update_jewelry_deposit" value="{{ $datajewelry->jewelry_deposit }}" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                                <button type="submit" class="btn btn-secondary">ยืนยัน</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            
-
-
-          
-
-
-
-
-
-
-
-
-          
-
-
-
-        @endsection
+                    $('#showfail').modal('hide');
+                }, 6000);
+            }, 500);
+        @endif
+    </script>
+@endsection

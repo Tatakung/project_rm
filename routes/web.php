@@ -84,9 +84,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/jewelrytotal', [JewelryController::class, 'jewelrytotal'])->name('admin.jewelrytotal'); //เครื่องประดับทั้งหมด
     Route::get('/admin/typejewelry/{id}', [JewelryController::class, 'typejewelry'])->name('admin.typejewelry'); //หลังจากแยกประเภทเครื่องประดับ
     Route::get('/admin/typejewelry/jewelrydetail/{id}', [JewelryController::class, 'jewelrydetail'])->name('admin.jewelrydetail'); //รายะลเอียดย่อย
-    Route::post('/admin/typejewelry/jewelrydetail/addjewelryimage/{id}', [JewelryController::class, 'addjewelryimage'])->name('admin.addjewelryimage'); //เพิ่มรูปภาพ
     Route::post('/admin/typejewelry/jewelrydetail/updatejewelry/{id}', [JewelryController::class, 'updatejewelry'])->name('admin.updatejewelry'); //อัปเดตเครื่องประดับ
-    Route::post('/admin/typejewelry/jewelrydetail/updatepricejewelry/{id}', [JewelryController::class, 'updatepricejewelry'])->name('admin.updatepricejewelry'); //อัปเดตราคาเครื่องประดับ
 
 
     Route::get('/admin/profile', [RegisterController::class, 'profile'])->name('admin.adminprofile'); //โปรไฟล์แอดมิน

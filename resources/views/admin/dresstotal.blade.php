@@ -97,12 +97,7 @@
                     </div>
                     @endif
                     @if (($index + 1) % 4 == 0)
-                  
-
-
-
-
-
+                
             </div>
             <div class="row">
                 @endif

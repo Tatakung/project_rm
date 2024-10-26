@@ -1,5 +1,37 @@
 @extends('layouts.adminlayout')
 @section('content')
+<div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                บันทึกข้อมูลสำเร็จ
+            </div>
+            <div class="modal-body">
+                <strong>กรุณานำรหัสชุดเหล่านี้ไปติดไว้ กำกับกับชุดที่ท่านได้เพิ่ม:</strong>
+                <ul>
+                    @if (session('warn'))
+                        @foreach (session('warn') as $warn)
+                            <li>{{ $warn }}</li>
+                        @endforeach
+                    @endif
+                   
+
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">ตกลง</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    @if (session('warn'))
+        setTimeout(function() {
+            $('#showsuccessss').modal('show');
+        }, 500);
+    @endif
+</script>
     <form action="{{ route('admin.savejewelry') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="container mt-5">
@@ -7,10 +39,10 @@
             <div class="row">
                 <div class="col-md-6">
                     <label for="select_type" class="form-label">เลือกประเภทเครื่องประดับที่ต้องการเพิ่ม</label>
-                    <select name="select_type" id="select_type" class="form-control">
+                    <select name="select_type" id="select_type" class="form-control" required>
                         <option value="" disabled selected>ประเภทเครื่องประดับที่ต้องการเพิ่ม</option>
                         @foreach ($typejewelry as $item)
-                            <option value="{{ $item->type_jewelry_name }}">{{ $item->type_jewelry_name }}</option>
+                            <option value="{{ $item->id }}">{{ $item->type_jewelry_name }}</option>
                         @endforeach
                         <option value="select_other">อื่นๆ</option>
                     </select>
@@ -21,7 +53,6 @@
                     <label for="" class="form-label">ระบุประเภทเครื่องประดับที่เพิ่ม</label>
                     <input type="text" name="input_other" id="input_other" class="form-control">
                 </div>
-
                 <script>
                     var select_type = document.getElementById('select_type');
                     var show_input_other = document.getElementById('show_input_other');
@@ -87,19 +118,14 @@
             <div class="row mt-4">
                 <div class="col-md-12">
                     <label for="imageUpload" class="form-label">อัปโหลดรูปภาพเครื่องประดับ</label>
-                    <input type="file" class="form-control" accept="image/*" name="jewelry_image" id="jewelry_image"
-                        required>
+                    <input type="file" class="form-control" accept="image/*" name="jewelry_image" id="jewelry_image">
                 </div>
             </div>
         </div>
-
-        <div class="container mt-2">
-            <div class="col-">
-
+        <div class="container mt-5 mb-5" style="text-align: right ; ">
+            <div class="col-md-12">
+                <button class="btn btn-success" type="submit">ยืนยันการเพิ่มเครื่องประดับ</button>
             </div>
         </div>
-
-
-
     </form>
 @endsection

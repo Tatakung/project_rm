@@ -19,76 +19,65 @@ class JewelryController extends Controller
     public function savejewelry(Request $request)
     {
 
-        $count_direction = $request->input('jewelry_count');  //ตัวกำหนดทิศทางซึ่งก็คือ จำนวนเครื่องประดบัที่ทำการเพิ่ม
         $list_for_session =  [];
+        $select_type = $request->input('select_type');
+        if ($select_type === "select_other") {
+            $input_other = $request->input('input_other');
+            $check_type_name = Typejewelry::where('type_jewelry_name', $input_other)->value('id');
 
-        // dd($request->input('type_jewelry_id')) ; 
-        //เลือกอื่นๆ
-        if ($request->input('type_jewelry_id') == "select_other") {
-            $checkdata = Typejewelry::where('type_jewelry_name', $request->input('inputother'))->first();
-            if (!$checkdata) {
+            if ($check_type_name) {
+                $TYPE_JEW_ID = $check_type_name;
+                $maxcode = Jewelry::where('type_jewelry_id', $check_type_name)->max('jewelry_code');
 
-                //แรนด้อมอักษร1ตัว
+                $session_name_type = Typejewelry::where('id', $check_type_name)->value('type_jewelry_name');
+                $string_name = Typejewelry::where('id', $check_type_name)->value('specific_letter');    
+         
+            } else {
                 do {
                     $character = chr(65 + rand(0, 25));
-
-                    $check = Typejewelry::where('specific_letter', $character)->first();
-                } while ($check);
-
-                $CHR = $character; //เก็บตัวอักษร
-
-                $savetypejewelry = new Typejewelry();
-                $savetypejewelry->type_jewelry_name = $request->input('inputother');
-                $savetypejewelry->specific_letter = $CHR;
-                $savetypejewelry->save();
-                $TYPE_ID = $savetypejewelry->id;
-                $maxcode = 1;
-                $name_for_session = $request->input('inputother');
-            } else {
-                return redirect()->back()->with('fail', "เครื่องประดับซ้ำกับที่มีอยู่แล้ว โปรดออกเครื่องประดับที่ไม่ซ้ำ");
+                    $check_string = Typejewelry::where('specific_letter', $character)->first();
+                } while ($check_string);
+                $cre_type_jew = new Typejewelry();
+                $cre_type_jew->type_jewelry_name = $input_other;
+                $cre_type_jew->specific_letter = $character;
+                $cre_type_jew->save();
+                $TYPE_JEW_ID = $cre_type_jew->id;
+                $maxcode = 0;
+                $session_name_type = $input_other;
+                $string_name = $character;
             }
         }
-        //เลือกในดรอปดาว
         else {
-            $TYPE_ID = $request->input('type_jewelry_id');
-            $CHR = Typejewelry::where('id', $request->input('type_jewelry_id'))->value('specific_letter');
-            $name_for_session = Typejewelry::where('id', $request->input('type_jewelry_id'))->value('type_jewelry_name');
-            $maxcode = Jewelry::where('type_jewelry_id', $request->input('type_jewelry_id'))->max('jewelry_code');
-            $maxcode = $maxcode + 1;
+            $session_name_type = Typejewelry::where('id', $select_type)->value('type_jewelry_name');
+            $TYPE_JEW_ID = $select_type;
+            $maxcode = Jewelry::where('type_jewelry_id', $select_type)->max('jewelry_code');
+            $string_name = Typejewelry::where('id', $select_type)->value('specific_letter');
         }
+        $jewelry_count = $request->input('jewelry_count'); //ตัวหมุน
 
-        for ($i = 0; $i < $count_direction; $i++) {
-            //ตารางjewelry
-            $jewelry = new Jewelry();
-            $jewelry->type_jewelry_id  = $TYPE_ID;
-            $jewelry->jewelry_code =  $maxcode;
-            $jewelry->jewelry_title_name = $request->input('jewelry_title_name');
-            $jewelry->jewelry_code_new = $CHR;
-            // $jewelry->jewelry_price = $request->input('jewelry_price');
-            // $jewelry->jewelry_deposit = $request->input('jewelry_deposit');
-            if ($request->input('jewelry_deposit') > $request->input('jewelry_price')) {
-                return redirect()->back()->with('fail', "ราคาเครื่องประดับจะต้องมีการค่ามากกว่าราคามัดจำเครื่องประดับ !");
-            } else {
-                $jewelry->jewelry_price = $request->input('jewelry_price');
-                $jewelry->jewelry_deposit = $request->input('jewelry_deposit');
-            }
 
-            $jewelry->jewelry_count = 1;
-            $jewelry->jewelry_status = "พร้อมให้เช่า";
-            $jewelry->jewelry_description = $request->input('jewelry_description');
-            $jewelry->jewelry_rental = 0;
-            $jewelry->save();
-            $list_for_session[] = $name_for_session . ' รหัสเครื่องประดับ ' . $CHR . '' . $maxcode; //ส่งข้อมูลไปแจ้งให้แอดมินทราบ
-            $maxcode++;
-            //ตารางjewelryimage
-            if ($request->hasFile('jewelry_image_')) {
-                $jewelry_image_turn = $request->file('jewelry_image_');
-                foreach ($jewelry_image_turn as $index => $image) {
-                    $saveimage = new Jewelryimage();
-                    $saveimage->jewelry_id = $jewelry->id;
-                    $saveimage->jewelry_image = $image->store('jewelry_images', 'public');
-                    $saveimage->save();
-                }
+        for ($i = 0; $i < $jewelry_count; $i++) {
+            $maxcode = $maxcode + 1;
+            $create_jew = new Jewelry();
+            $create_jew->type_jewelry_id = $TYPE_JEW_ID;
+            $create_jew->jewelry_code = $maxcode;
+            $create_jew->jewelry_price = $request->input('jewelry_price');
+            $create_jew->jewelry_deposit = $request->input('jewelry_deposit');
+            $create_jew->damage_insurance = $request->input('damage_insurance');
+            $create_jew->jewelry_count = 1;
+            $create_jew->jewelry_status = 'พร้อมให้เช่า';
+            $create_jew->jewelry_description = $request->input('jewelry_description');
+            $create_jew->jewelry_rental = 0;
+            $create_jew->save();
+
+            $list_for_session[] = $session_name_type . ' รหัสเครื่องประดับ ' . $string_name . '' . $maxcode;
+
+            // ตารางรูปภาพ
+            if ($request->hasFile('jewelry_image')) {
+                $create_image = new Jewelryimage();
+                $create_image->jewelry_id = $create_jew->id;
+                $create_image->jewelry_image = $request->file('jewelry_image')->store('jewelry_images', 'public');
+                $create_image->save();
             }
         }
         return redirect()->back()->with('warn', $list_for_session);
@@ -104,50 +93,36 @@ class JewelryController extends Controller
     //แสดงเฉพาะประเภทชุดทั้งหมดที่เลือกนะ
     public function typejewelry($id)
     {
+        $typename = Typejewelry::where('id',$id)->value('type_jewelry_name') ; 
         $datajewelry = Jewelry::where('type_jewelry_id', $id)->with('jewelryimages')->get();
-        return view('adminjewelry.typejewelry', compact('datajewelry'));
+        return view('adminjewelry.typejewelry', compact('datajewelry','typename'));
     }
 
     //รายละเอียดย่อยที่สุดแล้ว
     public function jewelrydetail($id)
     {
         $datajewelry = Jewelry::find($id);
-        $data_type_name = Typejewelry::where('id', $datajewelry->type_jewelry_id)->value('type_jewelry_name');
-        $dataimage = Jewelryimage::where('jewelry_id', $id)->get();
-        return view('adminjewelry.jewelrydetail', compact('datajewelry', 'dataimage', 'data_type_name'));
+        $data_type = Typejewelry::where('id', $datajewelry->type_jewelry_id)->first();
+
+        $dataimage = Jewelryimage::where('jewelry_id', $id)->first();
+        return view('adminjewelry.jewelrydetail', compact('datajewelry', 'dataimage', 'data_type'));
     }
-    //เพิ่มรูปภาพเครื่องประดับ
-    public function addjewelryimage(Request $request, $id)
-    {
-        $save = new Jewelryimage();
-        $save->jewelry_id = $id;
-        if ($request->file('jewelry_image')) {
-            $save->jewelry_image = $request->file('jewelry_image')->store('jewelry_images', 'public');
-            $save->save();
-        }
-        return redirect()->back()->with('success', 'เพิ่มรูปภาพสำเร็จ !');
-    }
+    
 
     //อัปเดตเครื่องประดับ
     public function updatejewelry(Request $request, $id)
     {
         $savedata = Jewelry::find($id);
-        $savedata->jewelry_title_name = $request->input('update_jewelry_title_name');
-        $savedata->jewelry_description = $request->input('update_jewelry_description');
+        $savedata->jewelry_price = $request->input('update_price') ; 
+        $savedata->jewelry_deposit = $request->input('update_deposit') ; 
+        $savedata->damage_insurance = $request->input('update_damage_insurance') ; 
+        $savedata->jewelry_description = $request->input('update_dress_description');
         $savedata->save();
         return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
     }
-    //อัปเดตราคาเครื่องประดับ
-    public function updatepricejewelry(Request  $request,  $id)
-    {
-        $update = Jewelry::find($id);
-        if ($request->input('update_jewelry_deposit') > $request->input('update_jewelry_price')) {
-            return redirect()->back()->with('fail', "ราคามัดจำต้องมากกว่าราคาเต็มของเครื่องประดับ");
-        } else {
-            $update->jewelry_price = $request->input('update_jewelry_price') ; 
-            $update->jewelry_deposit = $request->input('update_jewelry_deposit') ; 
-            $update->save();
-        }
-        return redirect()->back()->with('success', "อัปเดตราคาสำเร็จ !");
-    }
+    
+
+
+
+    
 }

@@ -12,10 +12,18 @@
             background-color: #f8f9fa;
             font-weight: bold;
         }
+        .custom-modal-body {
+    background-color: #28a745; /* สีเขียวเข้ม */
+    color: #fff; /* ข้อความสีขาว */
+    padding: 20px; /* ระยะห่างภายใน */
+    border-radius: 5px; /* ขอบโค้งมน */
+    text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
+}
+
     </style>
 
 
-    <ol class="breadcrumb" style="background: white ; ">
+    <ol class="breadcrumb" style="background-color: transparent;">
         <li class="breadcrumb-item">
             <a href="{{ route('admin.dresstotal') }}" style="color: black ; ">จัดการชุด</a>
         </li>
@@ -33,15 +41,15 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h2 class="py-4" style="text-align: center">รายละเอียดของหมายเลขชุด
+                <h2 class="py-4" style="text-align: start">รายละเอียดของหมายเลขชุด
                     {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h2>
             </div>
         </div>
 
 
 
-        <div class="card mb-4">
-            <div class="card-header"><i class="bi bi-info-circle"></i>รายละเอียดชุด
+        <div class="card mb-4 shadow">
+            <div class="card-header"><i class="bi bi-info-circle"></i> รายละเอียดชุด
                 <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal"
                 @if($check_admin == 1 )
                  style="display: block ; "
@@ -56,7 +64,7 @@
             <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
-                        <div class="modal-header text-dark"style="background-color: #EAD8C0;">
+                        <div class="modal-header text-dark"style="background-color: #BACEE6;">
                             <h5 class="modal-title">แก้ไขข้อมูลชุด</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -65,23 +73,22 @@
                         <div class="modal-body">
                             <div class="container">
                                 <!-- ข้อมูลชุด -->
-                                <h5 class="mb-4">ข้อมูลชุด</h5>
 
                                 <form action="{{ route('admin.updatedressnoyes', ['id' => $datadress->id]) }}"
                                     method="POST">
                                     @csrf
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_dress_price">ราคาเช่า</label>
+                                            <label for="update_dress_price" style="font-weight:bold">ราคาเช่า</label>
                                             <input type="number" class="form-control" name="update_dress_price"
                                                 id="update_dress_price" value="{{ $datadress->dress_price }}"
-                                                placeholder="กรุณากรอกราคา" required min="1" >
+                                                placeholder="กรุณากรอกราคา" required min="1" required>
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_dress_deposit">ราคามัดจำ</label>
+                                            <label for="update_dress_deposit"style="font-weight:bold">ราคามัดจำ</label>
                                             <input type="number" class="form-control" name="update_dress_deposit"
                                                 id="update_dress_deposit" value="{{ $datadress->dress_deposit }}"
                                                 placeholder="กรุณากรอกราคามัดจำ" required min="1" readonly>
@@ -89,7 +96,7 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_dress_deposit">ราคาประกันค่าเสียหาย</label>
+                                            <label for="update_dress_deposit"style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
                                             <input type="number" class="form-control" name="update_damage_insurance"
                                                 id="update_damage_insurance" value="{{ $datadress->damage_insurance }}"
                                                 placeholder="กรุณากรอกราคาประกันค่าเสียหาย" min="0" required
@@ -122,7 +129,7 @@
 
                                     <div class="row mb-4">
                                         <div class="col-12">
-                                            <label for="dress_description">คำอธิบายชุด</label>
+                                            <label for="dress_description"style="font-weight:bold">คำอธิบายชุด</label>
                                             <textarea name="update_dress_description" id="update_dress_description" class="form-control" rows="3"
                                                 placeholder="กรุณากรอกคำอธิบาย">{{ $datadress->dress_description }}</textarea>
                                         </div>
@@ -133,8 +140,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-                            <button type="submit" class="btn btn-success">บันทึก</button>
+                            <button type="button" class="btn" data-dismiss="modal" style="background-color:#DADAE3;">ยกเลิก</button>
+                            <button type="submit" class="btn" style="background-color:#ACE6B7;">บันทึก</button>
                         </div>
                         </form>
                     </div>
@@ -161,7 +168,7 @@
                         </p>
 
 
-                        <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง
+                        <!-- <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง -->
                             {{-- <span
                                 @if ($check_admin == 1) style="display: block ; "
                             @elseif($check_admin == 2)
@@ -191,7 +198,7 @@
 
                             $historyrepair = App\Models\Repair::whereIn('id', $list_two)->get();
                         @endphp
-                        <p><strong>จำนวนครั้งที่ซ่อม</strong>
+                        <!-- <p><strong>จำนวนครั้งที่ซ่อม</strong>
                             {{ $historyrepair->count() }} ครั้ง
                             {{-- <span
                                 @if ($check_admin == 1) style="display: block ; "
@@ -199,7 +206,7 @@
                             style="display: none ; " @endif><a
                                     href="">ดูประวัติ</a></span> --}}
                         </p>
-                        <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p>
+                        <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p> -->
 
                     </div>
 
@@ -237,7 +244,7 @@
                     </div>
                     
 
-                    <div class="mt-3"
+                    <div class="ml-2"
                         @if ($check_admin == 1) 
                             style="display: block ; "
                         @elseif($check_admin == 0)
@@ -692,12 +699,14 @@
 
     <!-- Modals for success and failure messages -->
     <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
-        <div class="modal-dialog custom-modal-dialog">
-            <div class="modal-content custom-modal-content">
-                <div class="modal-body">{{ session('success') }}</div>
+    <div class="modal-dialog custom-modal-dialog">
+        <div class="modal-content custom-modal-content">
+            <div class="modal-body custom-modal-body">
+                {{ session('success') }}
             </div>
         </div>
     </div>
+</div>
 
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog">

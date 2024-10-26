@@ -1,4 +1,4 @@
-    @extends('layouts.adminlayout')
+@extends('layouts.adminlayout')
     @section('content')
     <style>
         .container h3 {
@@ -76,8 +76,8 @@
         }
     </style>
         <div class="container mt-5">
-            <h2>ประวัติการซ่อมชุด</h2>
-            <p>{{ $typedressname->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
+            <h2>ประวัติการซ่อมชุด{{ $typedressname->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</h2>
+            
 
             <ul class="nav nav-tabs">
                 <li class="nav-item">
@@ -91,7 +91,7 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="one">
                     @if ($history_shirt->count() > 0)
-                        <table class="table">
+                        <table class="table table-striped text-start">
                             <thead>
                                 <tr>
                                     <th style="width: 200px;">วันที่</th>

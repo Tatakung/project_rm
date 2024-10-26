@@ -28,9 +28,9 @@
             /* ลบขอบปุ่ม */
             border-radius: 4px;
             /* มุมปุ่มโค้ง */
-            padding: 8px 12px;
+            padding: 6px 10px;
             /* ระยะห่างด้านในของปุ่ม */
-            font-size: 14px;
+            font-size: 12px;
             /* ขนาดตัวอักษรของปุ่ม */
             cursor: pointer;
             /* เปลี่ยนเคอร์เซอร์เมื่อชี้ที่ปุ่ม */
@@ -54,9 +54,9 @@
             /* ลบขอบปุ่ม */
             border-radius: 4px;
             /* มุมปุ่มโค้ง */
-            padding: 8px 12px;
+            padding: 6px 10px;
             /* ระยะห่างด้านในของปุ่ม */
-            font-size: 14px;
+            font-size: 12px;
             /* ขนาดตัวอักษรของปุ่ม */
             cursor: pointer;
             /* เปลี่ยนเคอร์เซอร์เมื่อชี้ที่ปุ่ม */
@@ -123,17 +123,9 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="media">
-                                {{-- <img src="{{ asset('storage/' . $imagedress->first()->dress_image) }}" class="mr-5"
-                                    alt="..." style="max-height: 350px; width: auto;"> --}}
-                                <div
-                                    style="max-height: 350px; width: auto; border-radius: 2px; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
-                                    <i class="bi bi-scissors" style="font-size: 48px;"></i>
-                                </div>
+                                <div class="card-body">
 
-
-                                <div class="media-left">
-
-                                    <p><strong>รายการ : ตัด{{ $orderdetail->type_dress }}</strong></p>
+                                    <p><strong>รายการ :</strong> ตัด{{ $orderdetail->type_dress }}</p>
 
 
                                     <p class="d-flex align-items-center">
@@ -178,8 +170,8 @@
                                     </p>
 
                                     <p class="d-flex align-items-center">
-                                        <strong>ที่มาของผ้า :</strong>
-                                        <select name="update_cloth" id="update_cloth" class="form-control">
+                                        <strong>ที่มาของผ้า : </strong>
+                                        <select name="update_cloth" id="update_cloth" class="form-control "style="width: 200px;">
                                             <option value="1" {{ $orderdetail->cloth == 1 ? 'selected' : '' }}>
                                                 ลูกค้านำผ้ามาเอง</option>
                                             <option value="2" {{ $orderdetail->cloth == 2 ? 'selected' : '' }}>
@@ -209,7 +201,7 @@
                 <div class="card-header">
                     {{-- <p>ข้อมูลการวัดตัวสำหรับตัดชุด (นิ้ว)</p> --}}
                     <div class="col-md-12">
-                        <p><strong>ข้อมูลการวัดตัว (หน่วยเป็นนิ้ว)</strong>
+                        <p>ข้อมูลการวัดตัว (หน่วยเป็นนิ้ว)
                             <button type="button" id="button_add_mea">+ เพิ่มการวัดเพิ่มเติม</button>
                         </p>
                     </div>
@@ -227,7 +219,7 @@
                                         value="{{ $measurementorderdetail->name }}" placeholder="ชื่อการวัด" required>
                                 </div>
 
-                                <div class="col-md-4" style="display: flex; align-items: center;">
+                                <div class="col-md-3" style="display: flex; align-items: center;">
                                     <input type="hidden" value="{{ $measurementorderdetail->id }}"
                                         name="mea_order_detail_id_[]">
 
@@ -237,11 +229,11 @@
                                         step="0.01" required>
                                 </div>
 
-                                <div class="col-md-4" style="padding-left: 1px; margin-top: 12px;">
+                                <div class="col-md-2" style="padding-left: 1px; margin-top: 12px;">
 
                                     <a
                                         href="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}">
-                                        <button class="btn btn-danger"><i class="bi bi-x-circle"></i></button>
+                                        <button class="btn"><i class="bi bi-x-circle"></i></button>
                                     </a>
 
                                 </div>
@@ -292,7 +284,7 @@
 
                 <div class="card-body">
                     <div class="col-md-8">
-                        <p>รายละเอียดอื่นๆ</p>
+                        <p style="font-weight: bold;">รายละเอียดอื่นๆ</p>
                         <textarea name="update_note" id="" cols="1" rows="4" class="form-control">{{ $orderdetail->note }}</textarea>
 
                     </div>

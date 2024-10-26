@@ -17,7 +17,7 @@
         box-shadow: none;
     }
 
-    .btn-primary {
+    .btn-s {
         border-radius: 20px;
         background-color: #007bff;
         border: none;
@@ -27,11 +27,11 @@
         transition: background-color 0.3s ease;
     }
 
-    .btn-primary:hover {
+    .btn-s:hover {
         background-color: #0056b3;
     }
 
-    .btn-primary i {
+    .btn-s i {
         margin-right: 2px;
         font-size: 14px;
     }
@@ -49,10 +49,10 @@
             <form action="{{ route('employee.searchordertotal') }}" class="d-flex justify-content-end">
                 <div class="row">
                     <div class="col-8">
-                        <input type="text" name="name_search" class="form-control" placeholder="ค้นหาชื่อ" value="{{$name_search}}">
+                        <input type="text" name="name_search" class="form-control" placeholder="ค้นหาชื่อ" value="{{$name_search}}" >
                     </div>
                     <div class="col">
-                        <button class="btn btn-primary">
+                        <button class="btn btn-s" style="background-color:#BACEE6 ;">
                             <i class="bi bi-search"></i> ค้นหา
                         </button>
                     </div>
@@ -96,8 +96,8 @@
                         </td>
                         <td>{{ $order->total_quantity }} รายการ</td>
                         <td>
-                            <a href="{{ route('employee.ordertotaldetail', ['id' => $order->id]) }}" class="btn btn-info btn-sm">
-                                <i class="fas fa-eye"></i> ดูรายละเอียด
+                            <a href="{{ route('employee.ordertotaldetail', ['id' => $order->id]) }}" class="btn btn-sm" style="background-color:#DADAE3;">
+                                ดูรายละเอียด
                             </a>
                         </td>
                     </tr>

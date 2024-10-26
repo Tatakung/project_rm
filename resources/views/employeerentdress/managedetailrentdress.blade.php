@@ -23,7 +23,7 @@
         }
 
         .status-icon.active {
-            background-color: #0c7ab6;
+            background-color: #6B5949;
             color: #000;
             /* เปลี่ยนสีตัวอักษรเป็นสีดำเพื่อให้เห็นชัดบนพื้นสีเหลือง */
         }
@@ -31,7 +31,7 @@
         .status-line {
             flex-grow: 1;
             height: 3px;
-            background-color: #e9ecef;
+            background-color: #EBC591;
             position: relative;
             top: 25px;
             z-index: 0;
@@ -44,7 +44,7 @@
             /* Adjust this value to align the arrow */
             top: 50%;
             transform: translateY(-50%);
-            border-left: 10px solid #e9ecef;
+            border-left: 10px solid #EBC591;
             /* Arrow color */
             border-top: 5px solid transparent;
             border-bottom: 5px solid transparent;
@@ -373,9 +373,7 @@
                             <div class="col-md-6">
                                 <h5 class="card-title">สถานะการเช่า</h5>
                             </div>
-                            {{-- <div class="col-md-6" style="text-align: right ;">
-                                <button type="button" class="btn btn-primary">อัพเดตสถานะการเช่า</button>
-                            </div> --}}
+
 
 
 
@@ -383,41 +381,30 @@
                                 // $now_today = now()->setTime(0, 0)->format('Y-m-d');
                                 $now_today = now()->format('Y-m-d');
 
+                                // dd($now_today) ;
 
-
-                                // dd($dateeee->pickup_date) ;
-                                // dd($now_today) ; 
-
-                                // dd($now_today) ; 
                             @endphp
 
-                            {{-- <div
-                                @if ($now_today == $dateeee->pickup_date) style="display: block ; "
-                            @else
-                            style="display: none ; " @endif>
-                            </div> --}}
+                            {{-- && $now_today == $dateeee->pickup_date --}}
+
+
 
 
                             <div class="col-md-6 text-right"
-                            @if ($orderdetail->status_detail == 'ถูกจอง' && $check_button_updatestatusadjust == false && $check_open_button == true ) 
-                                style="display: block ; "
+                                @if ($orderdetail->status_detail == 'ถูกจอง' && $check_button_updatestatusadjust == false && $check_open_button == true) style="display: block ; "
                             @else
-                                style="display: none ; " 
-                            @endif
-                            
-                            
-                            >
-                            <button class="btn" style="background: #3406dc; color: #ffffff;" data-toggle="modal"
-                                data-target="#updatestatus">อัพเดตสถานะการเช่าddsssd</button>
-                        </div>
+                                style="display: none ; " @endif>
+                                <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus">อัปเดตสถานะการเช่า</button>
+                            </div>
 
 
 
 
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail == 'กำลังเช่า') style="display: block ; "@else style="display: none ; " @endif>
-                                <button class="btn" style="background: #3406dc; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus_return">อัพเดตการรับชุดคืน</button>
+                                <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus_return">อัปเดตการรับชุดคืน</button>
                             </div>
 
 
@@ -577,20 +564,20 @@
                                 ->first();
                         @endphp
 
-                        <p><i class="bi bi-calendar"></i> วันที่นัดรับ - นัดคืน :
+                        {{-- <p><i class="bi bi-calendar"></i> วันที่นัดรับ - นัดคืน :
                             {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
                             -
                             {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
 
-                            {{-- <span
+                            <span
                                 @if ($orderdetail->status_detail == 'ถูกจอง') style="display: block ; "
                             @else
                             style="display: none ; " @endif>
                             <a
-                                    href="{{ route('employee.ordertotaldetailpostpone', ['id' => $orderdetail->id]) }}">เลื่อนวัน</a></span> --}}
-                        </p>
+                                    href="{{ route('employee.ordertotaldetailpostpone', ['id' => $orderdetail->id]) }}">เลื่อนวัน</a></span>
+                        </p> --}}
 
 
 
@@ -677,8 +664,8 @@
                                 style="display: none ; text-align: right ; " @endif
                         @else style="display: none ; text-align: right ; " @endif
                             >
-                            <button class="btn btn-success" data-toggle='modal' data-target="#updatestatusadjust"
-                                type="button">ปรับแก้ไขนาดสำเร็จ</button>
+                            <button class="btn " data-toggle='modal' data-target="#updatestatusadjust"
+                                style="background-color:#ACE6B7;" type="button">ปรับแก้ไขขนาดสำเร็จ</button>
                         </div>
 
                         @if ($his_dress_adjust->count() > 0)
@@ -752,7 +739,7 @@
                             </div>
                             <div class="col-md-6">
                                 <p><strong>รายได้ค่าเช่าชุด:</strong> {{ number_format($orderdetail->price, 2) }} บาท</p>
-                                <p><strong>เงินประกัน:</strong> {{ number_format($orderdetail->deposit, 2) }} บาท</p>
+                                <p><strong>เงินมัดจำ:</strong> {{ number_format($orderdetail->deposit, 2) }} บาท</p>
 
                                 @if ($additional->count() > 0)
                                     @foreach ($additional as $item)
@@ -833,7 +820,7 @@
                         <input type="hidden" name="new_size_[]" value="{{ $dress_mea_adjust_modal->new_size }}">
                     @endforeach
 
-                    <div class="modal-header">
+                    <div class="modal-header"style="background-color:#EAD8C0 ;">
                         <h5 class="modal-title" id="adjustmentModalLabel">การปรับแก้ไขขนาดชุด</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -841,7 +828,7 @@
                     </div>
 
                     <div class="modal-body">
-                        <p>คุณได้ทำการปรับแก้ไขขนาดชุดสำเร็จแล้ว!</p>
+
                         <p>รายละเอียดการปรับแก้:</p>
                         <table class="table">
                             <thead>
@@ -869,9 +856,9 @@
                         </table>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" type="button" class="btn btn-secondary"
+                        <button type="button" type="button" class="btn " style="background-color:#DADAE3;"
                             data-dismiss="modal">ปิด</button>
-                        <button type="submit" class="btn btn-primary">บันทึก</button>
+                        <button type="submit" class="btn "style="background-color:#ACE6B7;">บันทึก</button>
                     </div>
                 </form>
             </div>
@@ -888,8 +875,8 @@
                     method="POST">
                     @csrf
 
-                    <div class="modal-header" style="background-color: #007bff; color: white;">
-                        <h5 class="modal-title" id="updatestatusLabel" style="font-weight: bold; font-size: 1.5rem;">
+                    <div class="modal-header" style="background-color:#EAD8C0 ;">
+                        <h5 class="modal-title" id="updatestatusLabel">
                             อัปเดตสถานะการเช่า</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                             style="color: white;">
@@ -934,10 +921,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                            style="background-color: #6c757d; border-color: #6c757d;">ยกเลิก</button>
-                        <button type="submit" class="btn btn-primary" id="confirmUpdateButton"
-                            style="background-color: #28a745; border-color: #28a745;">ยืนยันการอัปเดตสถานะ</button>
+                        <button type="button" class="btn " data-dismiss="modal"
+                            style="background-color:#DADAE3;">ยกเลิก</button>
+                        <button type="submit" class="btn " id="confirmUpdateButton"
+                            style="background-color:#ACE6B7;">ยืนยันการอัปเดตสถานะ</button>
                     </div>
                 </form>
             </div>
@@ -952,8 +939,8 @@
                 method="POST">
                 @csrf
                 <div class="modal-content">
-                    <div class="modal-header" style="background-color: #28a745; color: white;">
-                        <h5 class="modal-title" id="returnModalLabel" style="font-weight: bold; font-size: 1.5rem;">
+                    <div class="modal-header" style="background-color:#EAD8C0 ;">
+                        <h5 class="modal-title" id="returnModalLabel">
                             ยืนยันการคืนชุด</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                             style="color: white;">
@@ -962,7 +949,7 @@
                     </div>
                     <div class="modal-body">
                         <!-- แสดงรายละเอียดการเช่าและการคืน -->
-                        <h6 class="mb-3">รายละเอียดการเช่าและการคืน:</h6>
+                        <strong class="mb-3">รายละเอียดการเช่าและการคืน:</strong>
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
@@ -1060,26 +1047,26 @@
                         </table>
 
                         <!-- ฟิลด์สำหรับพนักงานกรอกค่าธรรมเนียมการเสียหาย -->
-                        <h6 class="mb-3">กรอกข้อมูลค่าธรรมเนียม:</h6>
+                        <strong class="mb-3">กรอกข้อมูลค่าธรรมเนียม:</strong>
                         <div class="form-group">
                             <p>เก็บประกันจากลูกค้า : <span>{{ $orderdetail->damage_insurance }} บาท</span></p>
-                            <label for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</label>
+                            <strong for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</strong>
                             <input type="number" class="form-control" name="total_damage_insurance"
                                 id="total_damage_insurance" placeholder="กรอกจำนวนเงิน" min="0" step="0.01"
                                 required value="0">
                         </div>
 
                         <!-- สรุปการชำระเงิน -->
-                        <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
+                        <strong class="mt-4 mb-3">สรุปการชำระเงิน:</strong>
                         {{-- <div class="alert alert-warning" style="font-size: 1.2rem; padding: 10px;">
                         <p>ยอดประกันชุดต้องคืนให้กับลูกค้า: <strong id="total_return_to_customer"></strong></p>
                         <p>ยอดเงินที่ลูกค้าต้องจ่ายเพิ่มเติม: <strong id="total_customer_to_pay_shop"></strong></p>
                     </div> --}}
 
 
-                        <hr>
+
                         <!-- ฟิลด์สำหรับเลือกสถานะการดำเนินการหลังคืนชุด -->
-                        <h6 class="mb-3">การดำเนินการหลังจากคืนชุด:</h6>
+
                         <div class="form-group">
                             <label for="return_status">เลือกการดำเนินการ:</label>
                             <select class="form-control" id="return_status" name="return_status" required>
@@ -1156,10 +1143,10 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                            style="background-color: #6c757d; border-color: #6c757d;">ยกเลิก</button>
-                        <button type="submit" class="btn btn-primary" id="confirmReturnButton"
-                            style="background-color: #007bff; border-color: #007bff;">ยืนยันการคืนชุด</button>
+                        <button type="button" class="btn " data-dismiss="modal"
+                            style="background-color:#DADAE3;">ยกเลิก</button>
+                        <button type="submit" class="btn " id="confirmReturnButton"
+                            style="background-color:#ACE6B7;">ยืนยันการคืนชุด</button>
                     </div>
                 </div>
             </form>

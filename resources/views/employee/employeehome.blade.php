@@ -1,6 +1,6 @@
 @extends('layouts.adminlayout')
 @section('content')
-   
+{{--    
     <div class="container mt-5">
         <div class="row mb-4">
             <div class="col-md-3 mb-3">
@@ -38,24 +38,7 @@
         </div>
 
 
-        {{-- <div class="row mb-4">
-            <div class="col-md-6 mb-3">
-                <div class="card  text-black">
-                    <div class="card-body">
-                        <h5 class="card-title">การนัดหมายที่ใกล้จะถึง</h5>
-                        <p class="card-text display-4">1</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="card  text-black">
-                    <div class="card-body">
-                        <h5 class="card-title">งานด่วนที่ต้องทำ </h5>
-                        <p class="card-text display-4">1</p>
-                    </div>
-                </div>
-            </div>
- --}}
+        
 
         </div>
 
@@ -67,5 +50,5 @@
 
 
 
-    </div>
+    </div> --}}
 @endsection

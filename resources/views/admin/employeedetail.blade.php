@@ -184,8 +184,8 @@
                     
                     </p>
                     <p><strong>ที่อยู่: </strong> {{ $data->address }}</p>
-                    <button id="changeStatusBtn" class="btn btn-danger" data-toggle="modal"
-                        data-target="#confirmModal">เปลี่ยนสถานะ</button>
+                    {{-- <button id="changeStatusBtn" class="btn btn-danger" data-toggle="modal"
+                        data-target="#confirmModal">เปลี่ยนสถานะ</button> --}}
 
                 </div>
 

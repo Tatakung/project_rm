@@ -174,12 +174,12 @@
         </div>
         <div class="card-body">
             <div class="col-md-8">
-                <p>รายละเอียดอื่นๆ</p><textarea name="note" id="" cols="1" rows="4" class="form-control">{{ $orderdetail->note }}</textarea>
+                <strong >รายละเอียดอื่นๆ</strong><textarea name="note" id="" cols="1" rows="4" class="form-control">{{ $orderdetail->note }}</textarea>
                 
             </div>
             <div class="row">
                 <div class="col-md-12 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-success">ยืนยัน</button>
+                    <button type="submit" class="btn " style="background-color:#ACE6B7;">ยืนยัน</button>
                 </div>
             </div>
         </div>

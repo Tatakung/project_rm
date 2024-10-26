@@ -158,7 +158,7 @@
                         </div>
 
                         <div class="col-md-6" id="show_other_input" style="display: none;">
-                            <label for="" class="form-label">ระบุประเภทชุดที่ตัด</label>
+                            <label for="" class="form-label">ระบุประเภทชุดที่เพิ่ม</label>
                             <input type="text" name="inputother" id="other_input" class="form-control">
                         </div>
                         <script>

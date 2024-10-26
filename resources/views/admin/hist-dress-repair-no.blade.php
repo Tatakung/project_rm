@@ -76,12 +76,12 @@
     }
 </style>
     <div class="container mt-5">
-        <h2>ประวัติการซ่อมชุด</h2>
-        <p>{{ $typedressname->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
+        <h2>ประวัติการซ่อมชุด{{ $typedressname->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</h2>
+        
 
         @if ($history->count() > 0)
             <div class="table-responsive mt-4">
-                <table class="table table-bordered">
+                <table class="table table-striped text-start">
                     <thead>
                         <tr>
                             <th scope="col">วันที่</th>

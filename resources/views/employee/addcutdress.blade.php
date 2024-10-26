@@ -52,6 +52,9 @@
             background-color: #2980b9;
             /* เปลี่ยนสีเมื่อชี้ */
         }
+        .form-label{
+            font-weight: bold;
+        }
     </style>
 
 
@@ -121,7 +124,7 @@
                         </div>
 
                         <div class="col-md-4" id="show_other_input" style="display: none;">
-                            <label for="" class="form-label">ระบุประเภทชุดที่ตัด</label>
+                            <label for="" class="form-label">ระบุประเภทชุด</label>
                             <input type="text" name="other_input" id="other_input" class="form-control">
                         </div>
                         <script>
@@ -168,7 +171,7 @@
                         @endphp
 
                         <div class="col-md-6">
-                            <label for="" class="form-labe">วันที่นัดส่งมอบชุด</label>
+                            <label for="" class="form-label">วันที่นัดส่งมอบชุด</label>
                             <input type="date" name="pickup_date" class="form-control" min="{{ $today }}"
                                 required>
                         </div>
@@ -178,7 +181,7 @@
                         <div class="col-md-6">
                             <label for="" class="form-label">ราคาตัดชุด (บาท)</label>
                             <input type="number" name="price" id="price" class="form-control" min="0"
-                                step="0.01" required placeholder="กรอกกจำนวนเงิน">
+                                step="0.01" required placeholder="กรอกจำนวนเงิน">
                         </div>
 
                         <div class="col-md-6">
@@ -219,7 +222,7 @@
 
                     <div class="row mt-4">
                         <div class="col-md-12">
-                            <label for="">รายละเอียดเพิ่มเติม</label>
+                            <label class="form-label">รายละเอียดเพิ่มเติม</label>
                             <textarea class="form-control" id="note" name="note" rows="3" placeholder="ใส่รายละเอียด(หากมี)"></textarea>
 
                         </div>

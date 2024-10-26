@@ -1,23 +1,36 @@
 @extends('layouts.adminlayout')
 
 @section('content')
-    <h1 class="text-center my-4" style="color: #3d3d3d; font-family: 'Prompt', sans-serif; font-weight: 600;">
+
+
+<style>
+    .btn-s {
+        border-radius: 10px;
+    }
+
+    .btn-s:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-s i {
+        margin-right: 2px;
+        font-size: 14px;
+    }
+</style>
+
+
+
+
+
+<div class="container">
+    <h1 class="text-start my-4">
         คิวรอลูกค้าส่งคืนชุด
     </h1>
 
-    <div class="alert alert-info" role="alert" style="font-family: 'Prompt', sans-serif;">
-        <h4 class="alert-heading">คำแนะนำสำหรับพนักงาน</h4>
-        <p>รายการนี้แสดงการรับคืนชุดจากลูกค้า โดยเรียงตามวันที่ลูกค้าจะมาคืนชุด</p>
-        {{-- <hr>
-        <p class="mb-0">กรุณาจัดเตรียมชุดตามลำดับคิว <strong>คิวที่ 1 <span style="color: red;">&#9733;</span>
-                มีความสำคัญสูงสุดและต้องจัดเตรียมก่อน</strong></p> --}}
-    </div>
-
-
-    <div class="coontainer mr-4 mb-2">
-        <div class="row mt-5 ">
-            <div class="col-md-12" style="text-align: right ; ">
-                {{-- <button>
+    <p>รายการนี้แสดงการรับคืนชุดจากลูกค้า โดยเรียงตามวันที่ลูกค้าจะมาคืนชุด</p>
+    <div class="row mb-3 ">
+        <div class="col-md-12" style="text-align: right ; ">
+            {{-- <button>
                     เฉพาะวันนี้
                 </button>
                 <button>
@@ -26,122 +39,122 @@
 
 
 
-               
 
-                <form action="{{route('employee.listdressreturnfilter')}}" method="GET">
-                    @csrf
-                    <div class="filter-buttons">
-                        <button class="btn" type="submit" name="filter_click" value="today"
-                            @if ($filer == 'today') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
+
+            <form action="{{route('employee.listdressreturnfilter')}}" method="GET">
+                @csrf
+                <div class="filter-buttons">
+                    <button class="btn" type="submit" name="filter_click" value="today"
+                        @if ($filer=='today' ) style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
                         @else
                         style="border: 1px solid #ccc;" @endif>เฉพาะวันนี้</button>
-                        <button class="btn" type="submit" name="filter_click" value="total"
-                            @if ($filer == 'total') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
+                    <button class="btn" type="submit" name="filter_click" value="total"
+                        @if ($filer=='total' ) style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
                         @else
                         style="border: 1px solid #ccc;" @endif>ทั้งหมด</button>
-                        
-                    </div>
-                </form>
 
-    
-            </div>
+                </div>
+            </form>
+
+
         </div>
     </div>
 
-    
-
-
-    @if($listdressreturns->count() > 0 )
-    <table class="table shadow-sm" style="width: 100%; ">
-        <thead>
-            <tr style="background-color: #f2f2f2;">
-                <th>ชุด</th>
-                <th>ชื่อลูกค้า</th>
-                <th>วันที่คืนชุด</th>
-                <th>ค่าปรับ(หากล่าช้า)</th>
-                <th>สถานะชุด</th>
-                <th>ดูรายละเอียด</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($listdressreturns as $index => $reservation)
-                <tr style="border-bottom: 1px solid #e6e6e6;">
-
-                    @php
-                        $orderdetail = App\Models\Orderdetail::where('reservation_id', $reservation->id)->first();
-                        $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
-                        $customer = App\Models\Customer::find($customer_id);
-                    @endphp
 
 
 
-                    <td>
 
-                        @php
-                            $dress = App\Models\Dress::where('id', $reservation->dress_id)->first();
-                            $typedress = App\Models\Typedress::where('id', $dress->type_dress_id)->first();
-                        @endphp
-                        {{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+@if($listdressreturns->count() > 0 )
+<table class="table shadow-sm" style="width: 100%; ">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th>ชุด</th>
+            <th>ชื่อลูกค้า</th>
+            <th>วันที่คืนชุด</th>
+            <th>ค่าปรับ(หากล่าช้า)</th>
+            <th>สถานะชุด</th>
+            <th>ดูรายละเอียด</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($listdressreturns as $index => $reservation)
+        <tr style="border-bottom: 1px solid #e6e6e6;">
 
-                        @if ($reservation->shirtitems_id)
-                            (เสื้อ)
-                        @elseif($reservation->skirtitems_id)
-                            (ผ้าถุง)
-                        @elseif($reservation->dress_id)
-                            (ทั้งชุด)
-                        @endif
-                    </td>
+            @php
+            $orderdetail = App\Models\Orderdetail::where('reservation_id', $reservation->id)->first();
+            $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
+            $customer = App\Models\Customer::find($customer_id);
+            @endphp
 
-                    <td>
-                        คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
-                    </td>
 
-                    <td style="width: 120px;">
-                        {{ \Carbon\Carbon::parse($reservation->end_date)->locale('th')->isoFormat('D MMM') }}
-                        {{ \Carbon\Carbon::parse($reservation->end_date)->year + 543 }}
-                        <span style="color: red ; " id="showday{{ $reservation->id }}"></span>
-                    </td>
-                    <td style="width: 300px;">
-                        <p id="late{{ $reservation->id }}"></p>
-                    </td>
-                    <script>
-                        var end_date = new Date('{{ $reservation->end_date }}');
-                        end_date.setHours(0,0,0,0) ; 
-                        var now = new Date();
-                        now.setHours(0,0,0,0) ; 
-                        var day = end_date - now;
-                        var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
 
-                
-                        document.getElementById('showday{{ $reservation->id }}').innerHTML
-                        if (totalday == 0) {
-                            document.getElementById('showday{{ $reservation->id }}').innerHTML = "คืนชุดวันนี้";
-                            document.getElementById('late{{ $reservation->id }}').innerHTML = '-';
-                        } 
-                        else if (totalday < 0) {
-                            document.getElementById('showday{{ $reservation->id }}').innerHTML = "เลยกำหนด " + Math.abs(totalday) + ' วัน';
-                            document.getElementById('late{{ $reservation->id }}').innerHTML = 200 * Math.abs(totalday) + ' บาท';
-                            console.log(typeof(totalday));
-                        } else {
-                            document.getElementById('showday{{ $reservation->id }}').innerHTML = 'อีก ' + totalday + ' วัน';
-                            document.getElementById('late{{ $reservation->id }}').innerHTML = '-';
-                        }
-                    </script>
-                    <td>
-                        <span style="color: darkorange;">{{ $reservation->status }}</span>
-                    </td>
-                    <td style="padding: 16px;">
-                        <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
-                            class="btn btn-primary" style="padding: 6px 12px;">
-                            ดูรายละเอียด
-                        </a>
-                    </td>
+            <td>
 
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-    @else
-    <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
-    @endif
+                @php
+                $dress = App\Models\Dress::where('id', $reservation->dress_id)->first();
+                $typedress = App\Models\Typedress::where('id', $dress->type_dress_id)->first();
+                @endphp
+                {{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+
+                @if ($reservation->shirtitems_id)
+                (เสื้อ)
+                @elseif($reservation->skirtitems_id)
+                (ผ้าถุง)
+                @elseif($reservation->dress_id)
+                (ทั้งชุด)
+                @endif
+            </td>
+
+            <td>
+                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+            </td>
+
+            <td style="width: 120px;">
+                {{ \Carbon\Carbon::parse($reservation->end_date)->locale('th')->isoFormat('D MMM') }}
+                {{ \Carbon\Carbon::parse($reservation->end_date)->year + 543 }}
+                <span style="color: red ; " id="showday{{ $reservation->id }}"></span>
+            </td>
+            <td style="width: 300px;">
+                <p id="late{{ $reservation->id }}"></p>
+            </td>
+            <script>
+                var end_date = new Date('{{ $reservation->end_date }}');
+                end_date.setHours(0, 0, 0, 0);
+                var now = new Date();
+                now.setHours(0, 0, 0, 0);
+                var day = end_date - now;
+                var totalday = Math.ceil(day / (1000 * 60 * 60 * 24));
+
+
+                document.getElementById('showday{{ $reservation->id }}').innerHTML
+                if (totalday == 0) {
+                    document.getElementById('showday{{ $reservation->id }}').innerHTML = "คืนชุดวันนี้";
+                    document.getElementById('late{{ $reservation->id }}').innerHTML = '-';
+                } else if (totalday < 0) {
+                    document.getElementById('showday{{ $reservation->id }}').innerHTML = "เลยกำหนด " + Math.abs(totalday) + ' วัน';
+                    document.getElementById('late{{ $reservation->id }}').innerHTML = 200 * Math.abs(totalday) + ' บาท';
+                    console.log(typeof(totalday));
+                } else {
+                    document.getElementById('showday{{ $reservation->id }}').innerHTML = 'อีก ' + totalday + ' วัน';
+                    document.getElementById('late{{ $reservation->id }}').innerHTML = '-';
+                }
+            </script>
+            <td>
+                <span style="color: darkorange;">{{ $reservation->status }}</span>
+            </td>
+            <td style="padding: 16px;">
+                <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
+                    class="btn btn-s" style="background-color:#DADAE3;">
+                    ดูรายละเอียด
+                </a>
+            </td>
+
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+@else
+<p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
+</div>
+@endif
 @endsection

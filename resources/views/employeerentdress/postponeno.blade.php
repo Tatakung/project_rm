@@ -207,6 +207,7 @@
                                     <button type="submit" class="btn btn-secondary mb-2">ตรวจสอบ</button>
                         </form>
 
+
                     </div>
 
 
@@ -249,17 +250,16 @@
         <script>
             @if (session('condition') == 'passsuccesst')
                 setTimeout(function() {
-                    $('#rescheduleModal').modal('show'); 
-                }, 500); 
-        
+                    $('#rescheduleModal').modal('show');
+                }, 500);
             @elseif (session('condition') == 'failno')
                 setTimeout(function() {
-                    $('#rescheduleFailModal').modal('show'); 
-                }, 500); 
+                    $('#rescheduleFailModal').modal('show');
+                }, 500);
             @endif
         </script>
-        
-        
+
+
 
 
 
@@ -312,16 +312,16 @@
                             <div class="row mb-2">
                                 <div class="col-6 text-right">วันนัดรับใหม่:</div>
                                 <div class="col-6 text-left"><span id="newPickupDate">
-                                    {{ \Carbon\Carbon::parse($value_start_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($value_start_date)->year + 543 }}
-                                </span>
+                                        {{ \Carbon\Carbon::parse($value_start_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($value_start_date)->year + 543 }}
+                                    </span>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-6 text-right">วันนัดคืนใหม่:</div>
                                 <div class="col-6 text-left"><span id="newReturnDate">
-                                    {{ \Carbon\Carbon::parse($value_end_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($value_end_date)->year + 543 }}
+                                        {{ \Carbon\Carbon::parse($value_end_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($value_end_date)->year + 543 }}
                                     </span></div>
                             </div>
                         </div>
@@ -334,6 +334,13 @@
                                 id="confirmReschedule">ยืนยันการเลื่อนวัน</button>
                         </div>
                     </form>
+
+
+
+
+
+
+
                 </div>
             </div>
         </div>

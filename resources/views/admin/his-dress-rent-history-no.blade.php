@@ -3,21 +3,21 @@
 
     <style>
         .container h3 {
-            font-weight: bold;
+
             color: #333;
             margin-bottom: 1rem;
         }
 
         .card {
-            border-radius: 15px;
+            border-radius: 10px;
             box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             border: none;
         }
 
         .card-body h5 {
-            font-weight: bold;
-            color: #4A4A4A;
+
+            color: #333;
         }
 
         .card-body p {
@@ -44,17 +44,6 @@
             font-weight: bold;
         }
 
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
         .status-late {
             color: #dc3545;
             font-weight: bold;
@@ -75,7 +64,26 @@
             color: #6c757d;
             font-size: 1.1rem;
             margin-top: 20px;
+            
         }
+        .btn-s {
+        border-radius: 20px;
+        background-color: #007bff;
+        border: none;
+        padding: 5px 15px;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-s:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-s i {
+        margin-right: 2px;
+        font-size: 14px;
+    }
     </style>
     <div class="container mt-5">
         <h3>ประวัติการเช่าชุด </h3>
@@ -87,8 +95,9 @@
                     class="form-inline">
                     @csrf
                     <div class="form-group mb-2">
-                        <label for="month" class="mr-2">ฟิลเตอร์:</label>
+                        <label for="month" class="mr-2"></label>
                         <select class="form-control mr-2" name="month" id="month">
+                            <option value="0" {{ $value_month == 0 ? 'selected' : '' }}>ทุกเดือน</option>
                             <option value="1" {{ $value_month == 1 ? 'selected' : '' }}>มกราคม</option>
                             <option value="2" {{ $value_month == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
                             <option value="3" {{ $value_month == 3 ? 'selected' : '' }}>มีนาคม</option>
@@ -104,13 +113,14 @@
                         </select>
 
                         <select class="form-control mr-2" name="year" id="year">
+                            <option value="0">ทุกปี</option>
                             @for ($i = 2020; $i <= now()->year; $i++)
                                 <option value="{{ $i }}" @if ($value_year == $i) selected @endif>
-                                    {{ $i +543 }}</option>
+                                    {{ $i + 543 }}</option>
                             @endfor
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary mb-2">ใช้ฟิลเตอร์</button>
+                    <button type="submit" class="btn btn-s mb-2" style="background-color:#BACEE6 ;"><i class="bi bi-search"></i> ค้นหา</button>
                 </form>
             </div>
         </div>
@@ -120,16 +130,15 @@
         @if ($history_renrdress->count() > 0)
             <div class="card">
                 <div class="card-body">
-                    <h5>ข้อมูลสรุปของ{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}
-                        {{ $dress->dress_code }}
+                    <h5>ข้อมูลสรุปของ{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
                     </h5>
-                    <p>จำนวนครั้งที่ถูกเช่า: <strong>{{ $history_renrdress->count() }} ครั้ง</strong></p>
-                    <p>รายได้รวม: <strong>{{ number_format($history_renrdress->sum('price'), 2) }} บาท</strong></p>
-                    <p>อัตราการเช่าต่อเดือน: <strong>ข้อมูลเพิ่มเติม (หากมี)</strong></p>
+                    <p>จำนวนครั้งที่ถูกเช่า:   <strong>{{ $history_renrdress->count() }} ครั้ง</strong></p>
+                    <p>รายได้รวม:   <strong>{{ number_format($history_renrdress->sum('price'), 2) }} บาท</strong></p>
+                    {{-- <p>อัตราการเช่าต่อเดือน:   <strong>ข้อมูลเพิ่มเติม (หากมี)</strong></p> --}}
                 </div>
             </div>
             <div class="table-responsive mt-4">
-                <table class="table table-bordered">
+                <table class="table table-striped text-start">
                     <thead>
                         <tr>
                             <th scope="col">วันที่เช่า</th>
@@ -193,7 +202,7 @@
                                 </td>
                                 <td>
                                     <a href="{{ route('employee.ordertotaldetailshow', ['id' => $item->id]) }}"
-                                        class="btn btn-primary btn-sm">ดูรายละเอียด</a>
+                                        class="btn btn-secondary btn-sm">ดูรายละเอียด</a>
                                 </td>
                             </tr>
                         @endforeach

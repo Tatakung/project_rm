@@ -11,12 +11,13 @@
                 $round = $round + 1;
             @endphp
 
-            <h2 class="mb-4" style="text-align: center;">รายละเอียดการปรับแก้ตัดชุด ครั้งที่ {{ $round }} </h2>
+            <h2 class="mb-4" style="text-align: start;">รายละเอียดการปรับแก้ตัดชุด ครั้งที่ {{ $round }} </h2>
 
-            <div class="card mb-4">
-                <div class="card-header">
-                    ข้อมูลการวัดตัวของลูกค้า (นิ้ว)
-                </div>
+            <div class="card mb-4 shadow">
+                
+                <div class="modal-header">
+                                                                <h5 class="modal-title">ข้อมูลการวัดตัวของลูกค้า (นิ้ว)</h5>
+                                                            </div>
                 <div class="card-body">
                     {{-- <div class="row">
                         @foreach ($dress_adjusts as $item)
@@ -84,13 +85,13 @@
                     </div>
 
                     
-                    <p>ปรับเป็น</p>
+            
 
 
                 </div>
             </div>
 
-            {{-- <div class="card mb-4">
+            {{-- <div class="card mb-4 shadow">
             <div class="card-header">
                 รายละเอียดการแก้ไข/หรือเพิ่มเติม
             </div>
@@ -102,13 +103,14 @@
             </div>
         </div> --}}
 
-            <div class="card mb-4">
-                <div class="card-header">
-                    รายการเพิ่มเติมพิเศษ
-                </div>
+            <div class="card mb-4 shadow">
+               
+                <div class="modal-header">
+                                                                <h5 class="modal-title">รายการเพิ่มเติมพิเศษ</h5>
+                                                            </div>
                 <div class="card-body">
                     <div id="special-items">
-                        <button type="button" class="btn btn-secondary mb-2" id="add_decoration">+เพิ่มรายการพิเศษ</button>
+                        <button type="button" class="btn btn-primary mb-2" id="add_decoration">+ เพิ่มรายการพิเศษ</button>
 
 
                         <div id="aria_show_dec">
@@ -164,7 +166,11 @@
                 $today = \Carbon\Carbon::today()->toDateString();
             @endphp
 
-
+            <div class="card mb-4 shadow">
+                <div class="card-header">
+                    <h5 class="modal-title">ข้อมูลการวัดตัวของลูกค้า (นิ้ว)</h5>
+                </div>
+                <div class="card-body">
             <div class="form-group">
                 <div class="col-md-6">
                     <label for="new_date">วันที่นัดส่งมอบใหม่:</label>
@@ -174,10 +180,10 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary mb-3"
+            <button type="submit" class="btn mb-3" style="background-color:#ACE6B7;"
                 id="button_save">บันทึกการแก้ไข</button>
             <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
-                class="btn btn-secondary mb-3">ยกเลิก</a>
+                class="btn  mb-3" style="background-color:#DADAE3;" >ยกเลิก</a>
 
         </div>
 
@@ -203,7 +209,8 @@
             </div>
         </div>
 
-
+        </div>
+        </div>
 
 
 

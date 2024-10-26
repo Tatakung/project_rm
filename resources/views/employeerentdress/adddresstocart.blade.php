@@ -42,6 +42,27 @@
             color: #dc3545;
             font-weight: bold;
         }
+        .modal-header{
+            background:#EAD8C0;
+        }
+        .btn-s {
+        border-radius: 20px;
+        background-color: #007bff;
+        border: none;
+        padding: 5px 15px;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-s:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-s i {
+        margin-right: 2px;
+        font-size: 14px;
+    }
     </style>
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
@@ -157,7 +178,8 @@
                                 mode: "range",
                                 dateFormat: "d/m/Y",
                                 locale: "th",
-                                // minDate: "today",
+                                minDate: "today",
+                                // maxDate: new Date().fp_incr(60),
                                 altInput: true,
                                 altFormat: "j F Y",
                                 conjunction: " ถึง ",
@@ -175,7 +197,7 @@
                                         var convert_enddate_startdate = Math.ceil(enddate_startdate / (1000 * 60 *
                                             60 * 24));
 
-                                        show_day.innerHTML = 'ระยะเวลาเช่า ' + convert_enddate_startdate +' วัน';
+                                        // show_day.innerHTML = 'ระยะเวลาเช่า ' + convert_enddate_startdate +' วัน';
 
 
                                     }
@@ -204,7 +226,7 @@
 
                 <div class="col-md-2">
                     <label for="" class="form-label" style="color: #ffffff">ค้นหาค้นหาค้นหา</label>
-                    <button type="submit" class="btn btn-success">ค้นหา</button>
+                    <button type="submit" class="btn btn-s"style="background-color:#BACEE6 ;">ค้นหา</button>
                 </div>
 
         </form>
@@ -358,9 +380,9 @@
 
 
 
-                                                    <button type="submit" class="btn btn-primary">เพิ่มลงตะกร้า</button>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">ปิด</button>
+                                                    <button type="submit" class="btn"  style="background-color:#ACE6B7;">เพิ่มลงตะกร้า</button>
+                                                    <!-- <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">ปิด</button> -->
                                                 </form>
                                             </div>
                                         </div>

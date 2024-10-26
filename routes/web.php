@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DressController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\JewelryController;
@@ -106,6 +107,17 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/search', [DressController::class, 'search'])->name('admin.search');
 
     Route::get('/admin/searchstatusdress', [DressController::class, 'searchstatusdress'])->name('admin.searchstatusdress');
+
+
+
+    Route::get('/admin/dashboardcutdress', [DashboardController::class, 'dashboardcutdress'])->name('admin.dashboardcutdress');
+
+
+
+
+
+
+
 });
 
 

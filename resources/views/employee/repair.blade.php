@@ -40,9 +40,9 @@
 
 
 
-    <div class="container-fluid px-4">
+    <div class="container">
         <!-- Header -->
-        <div class="row mb-4">
+        <div class="row mt-4">
             <div class="col-12 text-center">
                 <h1 class="display-4">จัดการการซ่อมชุด</h1>
                 <p class="lead">ดูและอัพเดตสถานะการซ่อมของชุด</p>
@@ -52,16 +52,16 @@
         <!-- Status Summary Cards -->
         <div class="row mb-4">
             <div class="col-md-6 mb-3">
-                <div class="card bg-danger text-white">
-                    <div class="card-body">
+                <div class="card">
+                <div class="card-body"style="background-color:#EBE5B2; border:0;">
                         <h5 class="card-title">รอดำเนินการ</h5>
                         <p class="card-text display-4">{{ $countwait }} รายการ</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 mb-3">
-                <div class="card bg-warning text-white">
-                    <div class="card-body">
+                <div class="card">
+                <div class="card-body "style="background-color:#EAC39D ; border:0;">
                         <h5 class="card-title">กำลังซ่อม</h5>
                         <p class="card-text display-4">{{ $countdoing }} รายการ</p>
                     </div>
@@ -75,11 +75,7 @@
         </div>
 
         <!-- Laundry List -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-tshirt me-1"></i>
-                รายการชุดที่รอดำเนินการ/กำลังซ่อม
-            </div>
+
 
 
             <ul class="nav nav-tabs">
@@ -95,11 +91,11 @@
             <div class="tab-content">
                 {{-- หน้าแรก --}}
                 <div class="tab-pane active" id="one">
-                    <div class="card-body">
+                    
 
                         <div class="table-responsive">
                             @if ($repair_pending->count() > 0)
-                                <table class="table table-striped table-bordered">
+                                <table class="table table-striped">
                                     <thead>
                                         <tr>
                                             {{-- <th>เลือก</th> --}}
@@ -107,7 +103,7 @@
                                             <th>รายละเอียดของการซ่อม</th>
                                             <th>สถานะ</th>
                                             <th>คิวเช่าต่อไป </th>
-                                            <th>action</th>
+                                            <th>จัดการ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -259,8 +255,8 @@
                                                             <div class="modal-content">
                                                                 <form action="{{ route('employee.buttonrepairrowpageone',['id' => $repair->id]) }}" method="POST">
                                                                     @csrf
-                                                                    <div class="modal-header">
-                                                                        <p>หัว</p>
+                                                                    <div class="modal-header"style="background-color:#EAD8C0 ;">
+                                                                        <h5 class="modal-title">อัพเดตสถานะ</h5>
                                                                     </div>
                                                                     <div class="modal-body">
                                                                        
@@ -268,9 +264,9 @@
                                                                         
                                                                     </div>
                                                                     <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-danger"
+                                                                        <button type="button" class="btn " style="background-color:#DADAE3;" 
                                                                             data-dismiss="modal">ยกเลิก</button>
-                                                                        <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                                                        <button type="submit" class="btn " style="background-color:#ACE6B7;">ยืนยัน</button>
                                                                     </div>
                                                                 </form>
                                                             </div>
@@ -303,17 +299,17 @@
                                     <div class="modal-content">
                                         <form action="{{ route('employee.repairupdatestatus') }}" method="POST">
                                             @csrf
-                                            <div class="modal-header">
-                                                <p>หัว</p>
-                                            </div>
+                                            <div class="modal-header"style="background-color:#EAD8C0 ;">
+                                                                <h5 class="modal-title">การอัพเดตสถานะ</h5>
+                                                            </div>
                                             <div class="modal-body" id="statusmessage">
                                                 ยืนยันว่าจะเปลี่ยนสถานะจาก 'รอดำเนินการ'เป็น 'กำลังซ่อม'
                                                 <span id="aira_page_one"></span>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger"
+                                                <button type="button" class="btn"style="background-color:#DADAE3;" 
                                                     data-dismiss="modal">ยกเลิก</button>
-                                                <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                                <button type="submit" class="btn" style="background-color:#ACE6B7;">ยืนยัน</button>
                                             </div>
                                         </form>
                                     </div>
@@ -321,7 +317,7 @@
                             </div>
                         </div>
                         
-                    </div>
+                    
                 </div>
 
 
@@ -336,7 +332,7 @@
                                 @csrf --}}
                                 <div class="table-responsive">
                                     <h5 style="text-align: center ; ">ยังไม่ได้ซัก</h5>
-                                    <table class="table table-striped table-bordered">
+                                    <table class="table table-striped">
                                         <thead>
                                             <tr>
                                                 {{-- <th>เลือก</th> --}}
@@ -344,7 +340,7 @@
                                                 <th>รายละเอียดของการซ่อม</th>
                                                 <th>สถานะ</th>
                                                 <th>คิวเช่าต่อไป </th>
-                                                <th>action</th>
+                                                <th>จัดการ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -500,15 +496,15 @@
                                                                 <div class="modal-content">
                                                                     <form action="{{route('employee.repairupdatestatustocleanbutton',['id' => $repair->id])}}" method="POST">
                                                                         @csrf
-                                                                    <div class="modal-header">
-                                                                        หัว
-                                                                    </div>
+                                                                        <div class="modal-header"style="background-color:#EAD8C0 ;">
+                                                                <h5 class="modal-title">การอัพเดตสถานะ</h5>
+                                                            </div>
                                                                     <div class="modal-body">
                                                                         ยืนยันว่าจะเปลี่ยนสถานะจาก 'กำลังซ่อม'เป็น 'ซ่อมเสร็จแล้ว' และส่งซักต่อไป
                                                                     </div>
                                                                     <div class="modal-footer">
-                                                                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
-                                                                        <button class="btn btn-secondary" type="submit" >ยืนยัน</button>
+                                                                        <button class="btn" type="button" data-dismiss="modal" style="background-color:#DADAE3;" >ยกเลิก</button>
+                                                                        <button class="btn" type="submit" style="background-color:#ACE6B7;">ยืนยัน</button>
                                                                     </div>
                                                                 </form>
                                                                 </div>
@@ -547,8 +543,8 @@
                                         aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <p>หัว</p>
+                                                <div class="modal-header"style="background-color:#EAD8C0 ;">
+                                                    <h5 class="modal-title">อัพเดตสถานะ</h5>
                                                 </div>
                                                 <div class="modal-body" id="statusmessage">
                                                     ยืนยันว่าจะเปลี่ยนสถานะจาก 'กำลังซ่อม'เป็น 'ซ่อมเสร็จแล้ว'
@@ -556,8 +552,8 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-danger"
-                                                        data-dismiss="modal">ยกเลิก</button>
-                                                    <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                                        data-dismiss="modal"style="background-color:#DADAE3;" >ยกเลิก</button>
+                                                    <button type="submit" class="btn" style="background-color:#ACE6B7;">ยืนยัน</button>
                                                 </div>
 
                                             </div>
@@ -573,7 +569,7 @@
                                 @csrf --}}
                                 <div class="table-responsive">
                                     <h5 style="text-align: center ; ">ซักแล้ว</h5>
-                                    <table class="table table-striped table-bordered">
+                                    <table class="table table-striped">
                                         <thead>
                                             <tr>
                                                 {{-- <th>เลือก</th> --}}
@@ -581,7 +577,7 @@
                                                 <th>รายละเอียดของการซ่อม</th>
                                                 <th>สถานะ</th>
                                                 <th>คิวเช่าต่อไป </th>
-                                                <th>action</th>
+                                                <th>จัดการ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -737,8 +733,9 @@
                                                                 <div class="modal-content">
                                                                     <form action="{{route('employee.repairupdatestatustocleanorreadybutton',['id' => $repair->id])}}" method="POST">
                                                                         @csrf
-                                                                    <div class="modal-header">
-                                                                        หัว
+                                                                        <div class="modal-header"style="background-color:#EAD8C0 ;">
+                                                                <h5 class="modal-title">การอัพเดตสถานะ</h5>
+                                                            
                                                                         {{$repair->id}}
                                                                     </div>
                                                                     <div class="modal-body">
@@ -763,8 +760,8 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                                                                        <button type="submit" class="btn btn-secondary" type="submit">ยืนยัน</button>
+                                                                        <button type="button" class="btn" data-dismiss="modal"style="background-color:#DADAE3;" >ยกเลิก</button>
+                                                                        <button type="submit" class="btn" type="submit" style="background-color:#ACE6B7;">ยืนยัน</button>
                                                                     </div>
                                                                 </form>
                                                                 </div>
@@ -822,9 +819,9 @@
                                                 </div>
                                                 <div class="modal-footer"
                                                     style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
-                                                    <button class="btn btn-danger" type="button"
+                                                    <button class="btn" type="button" style="background-color:#DADAE3;" 
                                                         data-dismiss="modal">ยกเลิก</button>
-                                                    <button class="btn btn-primary" type="submit">ยืนยัน</button>
+                                                    <button class="btn " type="submit" style="background-color:#ACE6B7;">ยืนยัน</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -838,6 +835,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+
     </div>
 @endsection

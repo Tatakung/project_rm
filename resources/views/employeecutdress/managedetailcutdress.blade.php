@@ -58,6 +58,7 @@
         .status-step small {
             color: #6c757d;
         }
+        
 
     </style>
     <ol class="breadcrumb"style="background-color: transparent;">
@@ -137,31 +138,31 @@
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'รอดำเนินการตัด') style="display: none;" @endif>
                                 <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัพเดตสถานะชุด</button>
+                                    data-target="#updatestatus">อัปเดตสถานะชุด</button>
                             </div>
 
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'เริ่มดำเนินการตัด') style="display: none;" @endif>
                                 <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัพเดตสถานะตัดชุด</button>
+                                    data-target="#updatestatus">อัปเดตสถานะตัดชุด</button>
                             </div>
 
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'ตัดชุดเสร็จสิ้น') style="display: none;" @endif>
-                                <button class="btn" style="background: #24a30e; color: #ffffff;" data-toggle="modal"
+                                <button class="btn" style="background: #ACE6B7;" data-toggle="modal"
                                     data-target="#updatestatus_to_deliver">ส่งมอบชุด</button>
                                 <a href="{{ route('employee.cutadjust', ['id' => $orderdetail->id]) }}"class="btn"
-                                    style="background: #a01919; color: #ffffff;">ชุดต้องมีการปรับแก้ไข</a>
+                                    style="background: #E3A499;">ชุดต้องมีการปรับแก้ไข</a>
                             </div>
 
 
 
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'แก้ไขชุดเสร็จสิ้น') style="display: none;" @endif>
-                                <button class="btn" style="background: #24a30e; color: #ffffff;" data-toggle="modal"
+                                <button class="btn" style="background-color:#ACE6B7;" data-toggle="modal"
                                     data-target="#updatestatus_to_deliver_after_edit">ส่งมอบชุด</button>
                                 <a href="{{ route('employee.cutadjust', ['id' => $orderdetail->id]) }}"class="btn"
-                                    style="background: #a01919; color: #ffffff;">ชุดต้องมีการปรับแก้ไข</a>
+                                    style="background: #E3A499;">ชุดต้องมีการปรับแก้ไข</a>
                             </div>
 
 
@@ -185,7 +186,7 @@
                                             method="POST">
                                             @csrf
                                             <div class="modal-header text-dark" style="background-color:#EAD8C0 ;">
-                                                <h5 class="modal-title">ยืนยันการอัพเดตสถานะ</h5>
+                                                <h5 class="modal-title">ยืนยันการอัปเดตสถานะ</h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -228,7 +229,7 @@
                                             @csrf
 
                                             <div class="modal-header text-dark" style="background-color:#EAD8C0 ;">
-                                                <h5 class="modal-title" >ยืนยันการอัพเดตสถานะ</h5>
+                                                <h5 class="modal-title" >ยืนยันการอัปเดตสถานะ</h5>
                                                 <button type="button" class="close text-white" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -278,10 +279,10 @@
                                                 @endif
                                             </div>
 
-                                            <div class="modal-footer justify-content-between">
+                                            <div class="modal-footer justify-content-end">
                                                 <button type="button" class="btn btn-secondary"
                                                     data-dismiss="modal">ยกเลิก</button>
-                                                <button type="submit" class="btn btn-primary">ยืนยัน</button>
+                                                <button type="submit" class="btn" style="background-color:#ACE6B7;">ยืนยัน</button>
                                             </div>
                                         </form>
                                     </div>
@@ -306,14 +307,13 @@
                                             action="{{ route('employee.actionupdatestatuscutdress', ['id' => $orderdetail->id]) }}"
                                             method="POST">
                                             @csrf
-                                            <div class="modal-header bg-success text-white">
+                                            <div class="modal-header"  style="background-color:#EAD8C0 ;">
                                                 <h5 class="modal-title" id="readyToDeliverModalLabel">ยืนยันการส่งมอบชุด
                                                 </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
+                                           
                                             </div>
                                             <div class="modal-body">
-                                                <h6 class="mb-3">รายละเอียดการสั่งตัด</h6>
+                                                <h5 class="mb-3">รายละเอียดการสั่งตัด</h5>
                                                 <div class="row mb-2">
                                                     <div class="col-md-6">
                                                         <p><strong>ชื่อลูกค้า:</strong>
@@ -351,11 +351,19 @@
                                                     </div>
                                                 </div>
 
+                                                <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
+                                                <div class="alert alert-info"
+                                                    style="background-color: #e9f7f9; border-color: #bee5eb; color: #0c5460; font-size: 1.2rem; padding: 10px;">
+                                                    <p>ยอดคงเหลือที่ต้องชำระ: <strong
+                                                            id="totalDue">{{ number_format($orderdetail->price - $orderdetail->deposit) }}
+                                                            บาท</strong></p>
+                                                </div>
+
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
+                                                <button type="button" class="btn" style="background-color:#DADAE3;" 
                                                     data-dismiss="modal">ยกเลิก</button>
-                                                <button type="submit" class="btn btn-success"
+                                                <button type="submit" class="btn"  style="background-color:#ACE6B7;"
                                                     id="confirmDelivery">ยืนยันการส่งมอบ</button>
                                             </div>
                                         </form>
@@ -373,11 +381,10 @@
                                             method="POST">
                                             @csrf
 
-                                            <div class="modal-header bg-success text-white">
+                                            <div class="modal-header " style="background-color:#EAD8C0 ;">
                                                 <h5 class="modal-title" id="confirmDeliveryModalLabel">ยืนยันการส่งมอบชุด
                                                 </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
+                                                
                                             </div>
                                             <div class="modal-body">
                                                 <h6 class="mb-3">รายละเอียดการสั่งตัด</h6>
@@ -398,9 +405,9 @@
                                                             {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}</p>
                                                         <p><strong>เงินมัดจำ:</strong>
                                                             {{ number_format($orderdetail->deposit, 2) }} บาท</p>
-                                                        <p><strong>ยอดคงเหลือ:</strong>
+                                                        {{-- <p><strong>ยอดคงเหลือ:</strong>
                                                             {{ number_format($orderdetail->price - $orderdetail->deposit, 2) }}
-                                                            บาท</p>
+                                                            บาท</p> --}}
                                                     </div>
                                                 </div>
 
@@ -417,19 +424,29 @@
                                                     </p>
                                                 @endif
 
-                                                <h6 class="mt-3 mb-2">สรุปยอดชำระ</h6>
+                                                {{-- <h6 class="mt-3 mb-2">สรุปยอดชำระ</h6>
                                                 <p><strong>ยอดรวมทั้งหมด:</strong>
                                                     {{ number_format($orderdetail->price + $decoration->sum('decoration_price'), 2) }}
-                                                    บาท</p>
-                                                <p><strong>ยอดที่ต้องชำระ:</strong>
-                                                    {{ number_format($decoration->sum('decoration_price')), 2 }} บาท</p>
+                                                    บาท</p> --}}
+
+
+                                                    <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
+                                                    <div class="alert alert-info"
+                                                        style="background-color: #e9f7f9; border-color: #bee5eb; color: #0c5460; font-size: 1.2rem; padding: 10px;">
+                                                        <p>ยอดคงเหลือที่ต้องชำระ: <strong
+                                                                id="totalDue">{{ number_format($decoration->sum('decoration_price')), 2 }}
+                                                                บาท</strong></p>
+                                                    </div>
+    
+
 
 
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">ยกเลิก</button>
-                                                <button type="submit" class="btn btn-success"
+                                                <button type="button" class="btn" style="background-color:#DADAE3;" 
+                                                    data-dismiss="modal">ยกเลิก</button>
+                                                <button type="submit" class="btn "  style="background-color:#ACE6B7;"
+
                                                     id="confirmDelivery">ยืนยันการส่งมอบ</button>
                                             </div>
                                         </form>
@@ -980,7 +997,7 @@
                     <form action="{{ route('employee.savecutdressaddimage',['id' => $orderdetail->id]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-header">
-                            <h5 class="modal-title">เพิ่มรูปภาพตัวแบบสำหรับการ</h5>
+                            <h5 class="modal-title">รูปภาพตัวแบบสำหรับการตัดชุด</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>

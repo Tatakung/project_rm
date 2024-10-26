@@ -17,6 +17,7 @@ class Jewelry extends Model
         'jewelry_code_new' , 
         'jewelry_price',
         'jewelry_deposit',
+        'damage_insurance',
         'jewelry_count',
         'jewelry_status',
         'jewelry_description',

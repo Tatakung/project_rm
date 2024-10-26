@@ -1,6 +1,12 @@
 @extends('layouts.adminlayout')
 
 @section('content')
+<style>
+        .btn-c{
+        background-color: #EBDE88;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
     <ol class="breadcrumb" style="background-color: transparent; ">
         <li class="breadcrumb-item"><a href=""style="color: black ;">หน้าแรก</a></li>
         <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}" style="color: black ;">รายการออเดอร์ทั้งหมด</a></li>
@@ -70,7 +76,7 @@
 
                         <td>
                             <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
-                                class="btn btn-info btn-sm">จัดการ</a>
+                                class="btn btn-c btn-sm">จัดการ</a>
                         </td>
                     </tr>
                 @endforeach

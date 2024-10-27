@@ -30,6 +30,10 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
+
+
+
+                                        
                                         <th>เลือก</th>
                                         <th>หมายเลขเครื่องประดับ</th>
                                         <th>ประเภท</th>

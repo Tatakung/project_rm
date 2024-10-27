@@ -30,7 +30,6 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>jew_id</th>
                                         <th>เลือก</th>
                                         <th>หมายเลขเครื่องประดับ</th>
                                         <th>ประเภท</th>
@@ -41,9 +40,7 @@
                                     @foreach ($jewtotal as $type)
                                         @foreach ($type->jewelrys as $jew)
                                             <tr>
-                                                <td>
-                                                    {{ $jew->id }}
-                                                </td>
+                                                
                                                 <td>
                                                     <input type="checkbox" name="jew_id" id="{{ $jew->id }}" data-typename="-{{$type->type_jewelry_name}} {{$type->specific_letter}}{{$jew->jewelry_code}} ราคา {{$jew->jewelry_price}} บาท"
                                                         class="class_name" onclick="list_id_to_click()" data-price="{{$jew->jewelry_price}}">
@@ -188,7 +185,7 @@
 
 
 
-    
+
 
     <script>
         @if (session('fail'))

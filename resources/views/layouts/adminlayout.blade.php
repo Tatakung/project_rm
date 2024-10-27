@@ -211,9 +211,13 @@
                         <a href="{{ route('admin.dresstotal') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             รายการชุด</a>
-                        <a href="{{route('admin.jewelrytotal')}}"
+                        <a href="{{ route('admin.jewelrytotal') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             รายการเครื่องประดับ</a>
+
+                        <a href="{{route('admin.managesetjewelry')}}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            จัดเซตเครื่องประดับ</a>
 
                         <a href="{{ route('employeetotal') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Jewelry;
 use App\Models\Jewelryimage;
+use App\Models\Jewelryset;
+use App\Models\Jewelrysetitem;
 use App\Models\Typejewelry;
 use Illuminate\Http\Request;
 
@@ -122,6 +124,48 @@ class JewelryController extends Controller
     }
     
 
+    // หน้าสำหรับแสดงจัดเซต
+    public function managesetjewelry(){
+        $typejewelry = Typejewelry::all() ; 
+        $jewtotal = Typejewelry::with('jewelrys')->get() ; 
+        $typeJewelry_id = '01' ; 
+        return view('adminjewelry.managesetjewelry',compact('typejewelry','jewtotal','typeJewelry_id')) ; 
+    }
+    // หน้าหลังจากฟิลเตอร์ประเภทแล้ว
+    public function managesetjewelryfilter(Request $request){
+        $typeJewelry_id = $request->input('typeJewelry_id') ; 
+        if($typeJewelry_id == '01'){
+            return $this->managesetjewelry() ; 
+        }
+        else{
+            $jewtotal = Typejewelry::with('jewelrys')
+                            ->where('id',$typeJewelry_id)
+                            ->get() ;
+        }
+        $typejewelry = Typejewelry::all() ; 
+        return view('adminjewelry.managesetjewelry',compact('typejewelry','jewtotal','typeJewelry_id')) ; 
+    }
+
+    public function managesetjewelrysubmit(Request $request){
+        $list_select_jew_id = $request->input('list_select_jew_id') ;
+        $list_select_jew_id_replace = explode(',',$list_select_jew_id) ; 
+
+        $create_set_jew = new Jewelryset() ;
+        $create_set_jew->set_name = $request->input('set_name') ; 
+        $create_set_jew->set_price = $request->input('set_price') ; 
+        $create_set_jew->set_status = 'พร้อมให้เช่า' ; 
+        $create_set_jew->save() ; 
+        
+        
+        $set_id = $create_set_jew->id ; 
+        foreach($list_select_jew_id_replace as $item){
+            $create_set_item_jew = new Jewelrysetitem() ; 
+            $create_set_item_jew->jewelry_set_id = $set_id ; 
+            $create_set_item_jew->jewelry_id = $item ; 
+            $create_set_item_jew->save() ; 
+        }
+        return redirect()->back()->with('success','เพิ่มเช็ตสำเร็จแล้ว') ; 
+    }
 
 
     

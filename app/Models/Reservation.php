@@ -13,6 +13,7 @@ class Reservation extends Model
     protected $fillable = [
         'dress_id',
         'jewelry_id',
+        'jewelry_set_id',
         'shirtitems_id',
         'skirtitems_id',
         'start_date',

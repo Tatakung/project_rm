@@ -73,7 +73,7 @@
                         $jewelry = App\Models\Jewelry::where('type_jewelry_id', $item->id)->get();
                     @endphp
                     @if ($jewelry->count() > 0)
-                        <div class="col-md-3 mb-4">
+                        <div class="col-md-4 mb-4">
                             <div class="card text-left custom-card">
                                 <button type="button" class="btn p-0" style="border: none; background: none;"
                                     onclick="window.location='{{ route('admin.typejewelry', ['id' => $item->id]) }}'">
@@ -91,11 +91,28 @@
                             </div>
                         </div>
         
-                        @if (($index + 1) % 4 == 0)
+                        {{-- @if (($index + 1) % 4 == 0)
                             </div><div class="row">
-                        @endif
+                        @endif --}}
                     @endif
                 @endforeach
+
+                <div class="col-md-4 mb-4">
+                    <div class="card text-left custom-card">
+                        <button type="button" class="btn p-0" style="border: none; background: none;"
+                            onclick="window.location='{{ route('admin.setjewelry') }}'">
+                            
+                            <img src="{{ asset('images/setjewelry.jpg') }}" alt="เซต"
+                                class="card-img-top custom-img">
+                        </button>
+                        <div class="card-body">
+                            <h5 class="card-title text-center">เซตเครื่องประดับ</h5>
+                        </div>
+                    </div>
+                </div>
+
+
+
             </div>
         </div>
         

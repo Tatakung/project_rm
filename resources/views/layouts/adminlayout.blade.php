@@ -428,6 +428,13 @@
             </a>
 
 
+            <a href="{{route('admin.jewelrytotal')}}"
+            class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
+            <span class="bi bi-list-ul"></span>
+            <span class="ml-2">รายการเครื่องประดับ</span>
+        </a>
+
+
 
 
             <a href="{{ route('employee.addorder') }}"

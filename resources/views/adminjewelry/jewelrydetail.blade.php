@@ -124,7 +124,8 @@
 
                                     <div class="row mb-4">
                                         <div class="col-12">
-                                            <label for="dress_description"style="font-weight:bold">คำอธิบายเครื่องประดับ</label>
+                                            <label
+                                                for="dress_description"style="font-weight:bold">คำอธิบายเครื่องประดับ</label>
                                             <textarea name="update_dress_description" id="update_dress_description" class="form-control" rows="3"
                                                 placeholder="กรุณากรอกคำอธิบาย">{{ $datajewelry->jewelry_description }}</textarea>
                                         </div>
@@ -204,6 +205,43 @@
 
         </div>
     </div>
+
+
+
+
+
+
+
+    
+    @if($jew_in_set->count() > 0 )
+    <div class="container mt-2">
+        <div class="card mb-3">
+            <div class="card-header bg-light">
+                <strong>เซตที่มีเครื่องประดับชิ้นนี้</strong>
+            </div>
+            <div class="card-body">
+                @foreach ($jew_in_set as $item)
+                    <a href="{{ route('admin.setjewelrydetail', ['id' => $item->jewelry_set_id]) }}">
+
+                        <div class="d-flex justify-content-between align-items-center p-3 mb-2 border rounded">
+                            <div>
+                                <div><strong>{{ $item->jewitem_m_to_o_jewset->set_name }}</strong></div>
+                                <div class="text-muted">รหัสเซต: SET00{{ $item->jewitem_m_to_o_jewset->id }}</div>
+                            </div>
+                            <div>
+                                <strong>{{ number_format($item->jewitem_m_to_o_jewset->set_price, 2) }} บาท</strong>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
+
+
+
     <!-- Modals for success and failure messages -->
     <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog">

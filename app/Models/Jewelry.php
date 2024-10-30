@@ -25,11 +25,20 @@ class Jewelry extends Model
     ];
 
     //ตาราง jew เป็น M ต่อ 1 ของตาราง typejew
-    public function jewelry(){
-        return $this->belongsTo(Jewelry::class,'type_jewelry_id') ; 
+    public function jewelry_m_o_typejew(){
+        return $this->belongsTo(Typejewelry::class,'type_jewelry_id') ; 
     }
     //jew เป็น 1 ต่อ M ของตาราง jewimage
     public function jewelryimages(){
         return $this->hasMany(Jewelryimage::class,'jewelry_id') ; 
     }
+
+
+    //jew เป็น 1 ต่อ M ของตาราง jewitem
+    public function jewelryitems(){
+        return $this->hasMany(Jewelrysetitem::class,'jewelry_id') ; 
+    }
+
+
+
 }

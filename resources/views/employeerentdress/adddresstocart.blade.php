@@ -42,27 +42,29 @@
             color: #dc3545;
             font-weight: bold;
         }
-        .modal-header{
-            background:#EAD8C0;
+
+        .modal-header {
+            background: #EAD8C0;
         }
+
         .btn-s {
-        border-radius: 20px;
-        background-color: #007bff;
-        border: none;
-        padding: 5px 15px;
-        display: flex;
-        align-items: center;
-        transition: background-color 0.3s ease;
-    }
+            border-radius: 20px;
+            background-color: #007bff;
+            border: none;
+            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
 
-    .btn-s:hover {
-        background-color: #0056b3;
-    }
+        .btn-s:hover {
+            background-color: #0056b3;
+        }
 
-    .btn-s i {
-        margin-right: 2px;
-        font-size: 14px;
-    }
+        .btn-s i {
+            margin-right: 2px;
+            font-size: 14px;
+        }
     </style>
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
@@ -146,11 +148,6 @@
                     }
                 </script>
 
-
-
-
-
-
                 <div class="col-md-4">
                     <label for="" class="form-label" style="color: #848383 ;">วันนัดรับ - วันนัดคืน</label>
                     <input type="text" id="date-range" class="w-full p-2 border rounded"
@@ -221,18 +218,19 @@
                     });
                 </script>
 
-
-
-
                 <div class="col-md-2">
                     <label for="" class="form-label" style="color: #ffffff">ค้นหาค้นหาค้นหา</label>
                     <button type="submit" class="btn btn-s"style="background-color:#BACEE6 ;">ค้นหา</button>
                 </div>
-
         </form>
-
-
     </div>
+
+
+
+
+
+
+
     </div>
     @if ($dress_pass == null)
         <div class="container mt-5">
@@ -380,9 +378,10 @@
 
 
 
-                                                    <button type="submit" class="btn"  style="background-color:#ACE6B7;">เพิ่มลงตะกร้า</button>
+                                                    <button type="submit" class="btn"
+                                                        style="background-color:#ACE6B7;">เพิ่มลงตะกร้า</button>
                                                     <!-- <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">ปิด</button> -->
+                                                            data-dismiss="modal">ปิด</button> -->
                                                 </form>
                                             </div>
                                         </div>

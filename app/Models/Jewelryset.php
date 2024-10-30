@@ -15,4 +15,12 @@ class Jewelryset extends Model
         'set_price',
         'set_status',
     ];
+
+    //jewset เป็น 1 ต่อ M ของตาราง jewitem
+    public function jewsetone_many_jewelryitems(){
+        return $this->hasMany(Jewelrysetitem::class,'jewelry_set_id') ; 
+    }
+
+
+
 }

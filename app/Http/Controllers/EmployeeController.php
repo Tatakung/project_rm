@@ -1009,9 +1009,10 @@ class EmployeeController extends Controller
             ->where('order_status', 0)
             ->with('order_one_many_orderdetails')
             ->first();
-
         return view('Employee.cart', compact('order'));
     }
+
+
 
     //ลบรายการต่างๆ
     public function deletelist($id)

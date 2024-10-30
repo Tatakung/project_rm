@@ -1,24 +1,25 @@
 @extends('layouts.adminlayout')
 @section('content')
-<style>
-    .btn-c{
-        background-color: #EBDE88;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        
-    }
-    .btn-d{
-        background-color: #EB7E6D;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    <style>
+        .btn-c {
+            background-color: #EBDE88;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 
-    }
-</style>
+        }
+
+        .btn-d {
+            background-color: #EB7E6D;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+        }
+    </style>
     <div class="container mt-5">
 
-    <div class="row">
-        <div class="col">
-            <h2 class="py-4" style="text-align: center">ตะกร้าสินค้า</h2>
+        <div class="row">
+            <div class="col">
+                <h2 class="py-4" style="text-align: center">ตะกร้าสินค้า</h2>
+            </div>
         </div>
-    </div>
         <div class="row">
             <div class="col-md-12">
                 <hr>
@@ -42,25 +43,64 @@
                             style="width: 96px; height: 145px; border-radius: 2px; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
                             <i class="bi bi-scissors" style="font-size: 48px;"></i>
                         </div>
+                    @elseif($detail->type_order == 3)
+                        @php
+                            $reservation = App\Models\Reservation::find($detail->reservation_id);
+                            if ($reservation->jewelry_id != null) {
+                                $jewelryimagenoset = App\Models\Jewelryimage::where(
+                                    'jewelry_id',
+                                    $reservation->jewelry_id,
+                                )->value('jewelry_image');
+                            }
+                        @endphp
+                        @if ($reservation->jewelry_id != null)
+                            <img src="{{ asset('storage/' . $jewelryimagenoset) }}" class="mr-5" alt="..."
+                                style="width: 96px; height: 145px; border-radius: 8px;">
+                        @else
+                            <img src="{{ asset('images/setjewelry.jpg') }}" class="mr-5" alt="..."
+                                style="width: 96px; height: 145px; border-radius: 8px;">
+                        @endif
+                    @elseif($detail->type_order == 4)
+                        <div class="mr-5"
+                            style="width: 96px; height: 145px; border-radius: 2px; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
+                            <i class="bi bi-scissors" style="font-size: 48px;"></i>
+                        </div>
                     @endif
                     <div class="media-left">
                         @php
-                            if($detail->type_order == 2 ){
-                                $dress = App\Models\Dress::find($detail->dress_id) ; 
-                                $type_name = App\Models\Typedress::where('id',$dress->type_dress_id)->value('type_dress_name') ; 
-                            }      
+                            if ($detail->type_order == 2) {
+                                $dress = App\Models\Dress::find($detail->dress_id);
+                                $type_name = App\Models\Typedress::where('id', $dress->type_dress_id)->value(
+                                    'type_dress_name',
+                                );
+                            }
                         @endphp
                         <p style="font-size: 15px;">
 
-                            @if($detail->type_order == 1 )
-                            รายการตัดชุด  
-                            @elseif($detail->type_order == 2 )
-                                @if($detail->shirtitems_id)
-                                เช่า{{$type_name}} {{$dress->dress_code_new}}{{$dress->dress_code}} (เสื้อ)
+                            @if ($detail->type_order == 1)
+                                รายการตัดชุด
+                            @elseif($detail->type_order == 2)
+                                @if ($detail->shirtitems_id)
+                                    เช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
                                 @elseif($detail->skirtitems_id)
-                                เช่า{{$type_name}} {{$dress->dress_code_new}}{{$dress->dress_code}} (ผ้าถุง)
+                                    เช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                    (ผ้าถุง)
                                 @else
-                                เช่า{{$type_name}} {{$dress->dress_code_new}}{{$dress->dress_code}} (ทั้งชุด)
+                                    เช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                    (ทั้งชุด)
+                                @endif
+                            @elseif($detail->type_order == 3)
+                                @if ($reservation->jewelry_id)
+                                    @php
+                                        $datajewelry = App\Models\Jewelry::find($reservation->jewelry_id);
+                                    @endphp
+                                    เช่า{{ $datajewelry->jewelry_m_o_typejew->type_jewelry_name }}
+                                    {{ $datajewelry->jewelry_m_o_typejew->specific_letter }}{{ $datajewelry->jewelry_code }}
+                                @elseif($reservation->jewelry_set_id)
+                                    @php
+                                        $datasetjewelry = App\Models\Jewelryset::find($reservation->jewelry_set_id);
+                                    @endphp
+                                    เช่าเซต{{ $datasetjewelry->set_name }}
                                 @endif
                             @endif
 
@@ -70,9 +110,9 @@
                     </div>
                     <div class="media-body text-center">
                         @php
-                            $Date = App\Models\Date::where('order_detail_id',$detail->id)
-                                    ->orderBy('created_at','desc')
-                                    ->first() ; 
+                            $Date = App\Models\Date::where('order_detail_id', $detail->id)
+                                ->orderBy('created_at', 'desc')
+                                ->first();
                         @endphp
                         <p style="font-size: 15px;">วันนัดรับ:
                             {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
@@ -80,10 +120,15 @@
                         </p>
                         <p style="font-size: 15px;">
 
-                            @if($detail->type_order == 2)
-                            วันนัดคืน:{{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
-
+                            @if ($detail->type_order == 2)
+                                วันนัดคืน: {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
+                            @elseif($detail->type_order == 3)
+                                วันนัดคืน: {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
+                            @elseif($detail->type_order == 4)
+                                วันนัดคืน: {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
                             @endif
                         </p>
 

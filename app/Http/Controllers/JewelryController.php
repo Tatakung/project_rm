@@ -105,9 +105,9 @@ class JewelryController extends Controller
     {
         $datajewelry = Jewelry::find($id);
         $data_type = Typejewelry::where('id', $datajewelry->type_jewelry_id)->first();
-
         $dataimage = Jewelryimage::where('jewelry_id', $id)->first();
-        return view('adminjewelry.jewelrydetail', compact('datajewelry', 'dataimage', 'data_type'));
+        $jew_in_set = Jewelrysetitem::where('jewelry_id',$id)->get() ; 
+        return view('adminjewelry.jewelrydetail', compact('datajewelry', 'dataimage', 'data_type','jew_in_set'));
     }
     
 
@@ -165,6 +165,16 @@ class JewelryController extends Controller
             $create_set_item_jew->save() ; 
         }
         return redirect()->back()->with('success','เพิ่มเช็ตสำเร็จแล้ว') ; 
+    }
+
+    public function setjewelry(){
+        $Jewelryset = Jewelryset::all() ; 
+        return view('adminjewelry.setjewelry',compact('Jewelryset')) ; 
+    }
+    public function setjewelrydetail($id){
+        $jewelryset = Jewelryset::find($id) ; 
+        $Jewelrysetitem = Jewelrysetitem::where('jewelry_set_id',$id)->get() ;
+        return view('adminjewelry.setjewelrydetail',compact('jewelryset','Jewelrysetitem')) ; 
     }
 
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\JewelryController;
 use App\Http\Controllers\ManageorderController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Orderjewelry;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -81,15 +82,18 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     //กลุ่มเครื่องประดับ
     Route::get('/admin/addjewelry-form', [JewelryController::class, 'formaddjewelry'])->name('admin.formaddjewelry'); //แบบฟอร์มเพิ่มเครื่องประดับ
     Route::post('/admin/addjewelry-form/save', [JewelryController::class, 'savejewelry'])->name('admin.savejewelry'); //บันทึกข้อมูล 
-    Route::get('/admin/jewelrytotal', [JewelryController::class, 'jewelrytotal'])->name('admin.jewelrytotal'); //เครื่องประดับทั้งหมด
-    Route::get('/admin/typejewelry/{id}', [JewelryController::class, 'typejewelry'])->name('admin.typejewelry'); //หลังจากแยกประเภทเครื่องประดับ
-    Route::get('/admin/typejewelry/jewelrydetail/{id}', [JewelryController::class, 'jewelrydetail'])->name('admin.jewelrydetail'); //รายะลเอียดย่อย
     Route::post('/admin/typejewelry/jewelrydetail/updatejewelry/{id}', [JewelryController::class, 'updatejewelry'])->name('admin.updatejewelry'); //อัปเดตเครื่องประดับ
 
     Route::get('/admin/managesetjewelry', [JewelryController::class, 'managesetjewelry'])->name('admin.managesetjewelry'); //หน้าจัดเซตเครื่องประดับ
     Route::get('/admin/managesetjewelryfilter', [JewelryController::class, 'managesetjewelryfilter'])->name('admin.managesetjewelryfilter'); //หน้าหลังจากฟิเลเตอร์ 
 
     Route::post('/admin/managesetjewelrysubmit', [JewelryController::class, 'managesetjewelrysubmit'])->name('admin.managesetjewelrysubmit'); 
+
+
+
+
+
+
 
 
     Route::get('/admin/profile', [RegisterController::class, 'profile'])->name('admin.adminprofile'); //โปรไฟล์แอดมิน
@@ -152,6 +156,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
 
+    Route::get('/admin/jewelrytotal', [JewelryController::class, 'jewelrytotal'])->name('admin.jewelrytotal'); //เครื่องประดับทั้งหมด
+    Route::get('/admin/typejewelry/{id}', [JewelryController::class, 'typejewelry'])->name('admin.typejewelry'); //หลังจากแยกประเภทเครื่องประดับ
+    Route::get('/admin/typejewelry/jewelrydetail/{id}', [JewelryController::class, 'jewelrydetail'])->name('admin.jewelrydetail'); //รายะลเอียดย่อย
 
 
 
@@ -192,6 +199,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::post('/employee/addcutdress/addimage/{id}', [EmployeeController::class, 'savecutdressaddimage'])->name('employee.savecutdressaddimage');
 
+    Route::get('/admin/setjewelry', [JewelryController::class, 'setjewelry'])->name('admin.setjewelry');
+
+    Route::get('/admin/setjewelrydetail/{id}', [JewelryController::class, 'setjewelrydetail'])->name('admin.setjewelrydetail');
 
 
 
@@ -263,6 +273,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/addorder/addrent-dresstocardfilter', [OrderController::class, 'addrentdresstocardfilter'])->name('employee.addrentdresstocardfilter'); 
 
 
+    Route::get('/employee/addorder/addrent-jewelrytocard', [Orderjewelry::class, 'addrentjewelrytocard'])->name('employee.addrentjewelrytocard'); 
+    Route::get('/employee/addorder/addrent-jewelrytocardfilter', [Orderjewelry::class, 'addrentjewelrytocardfilter'])->name('employee.addrentjewelrytocardfilter'); 
+    Route::post('/employee/addorder/addrent-jewelrytocardfilter/addtocard', [Orderjewelry::class, 'addrentjewelrytocardaddtocard'])->name('employee.addrentjewelrytocardaddtocard'); 
+    Route::post('/employee/addorder/addrent-jewelrytocardfilter/addtocardset', [Orderjewelry::class, 'addrentjewelrytocardaddtocardset'])->name('employee.addrentjewelrytocardaddtocardset'); 
 
 
 

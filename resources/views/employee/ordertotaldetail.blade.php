@@ -36,7 +36,7 @@
                                 🎭 เช่าชุด
                             @elseif($orderdetail->type_order == 3)
                                 เช่าเครื่องประดับ
-                            @elseif($orderdetail->type_order)
+                            @elseif($orderdetail->type_order == 4 )
                                 เช่าตัด
                             @endif
                         </td>
@@ -63,17 +63,6 @@
                         <td>
                             {{ $orderdetail->status_detail }}
                         </td>
-
-                        {{-- <td>
-                            @if ($orderdetail->status_fix_measurement == 'รอการแก้ไข')
-                                <span class="badge bg-warning text-dark">รอการปรับแก้</span>
-                            @elseif($orderdetail->status_fix_measurement == 'แก้ไขแล้ว')
-                                <span class="badge bg-success text-white">ปรับแก้ชุดแล้ว</span>
-                            @else
-                                <span class="badge bg-secondary text-white">ไม่มีการแก้ไข</span>
-                            @endif
-                        </td> --}}
-
                         <td>
                             <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
                                 class="btn btn-c btn-sm">จัดการ</a>

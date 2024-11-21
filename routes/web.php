@@ -287,7 +287,6 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     //action ต่างๆภายใน detail
     Route::post('/employee/ordertotal/detail/show/addfitting/{id}', [OrderController::class, 'actionaddfitting'])->name('employee.actionaddfitting'); //
-    Route::post('/employee/ordertotal/detail/show/addcost/{id}', [OrderController::class, 'actionaddcost'])->name('employee.actionaddcost'); //
     Route::post('/employee/ordertotal/detail/show/updatefitting/{id}', [OrderController::class, 'actionupdatefitting'])->name('employee.actionupdatefitting'); //
     Route::delete('/employee/ordertotal/detail/show/deletefitting/{id}', [OrderController::class, 'actiondeletefitting'])->name('employee.actiondeletefitting'); //
     Route::post('/employee/ordertotal/detail/show/updatecost/{id}', [OrderController::class, 'actionupdatecost'])->name('employee.actionupdatecost'); //
@@ -298,7 +297,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/ordertotal/detail/show/addmeaorderdetail/{id}', [OrderController::class, 'actionaddmeaorderdetail'])->name('employee.actionaddmeaorderdetail'); //
     Route::post('/employee/ordertotal/detail/show/updatemeaorderdetail/{id}', [OrderController::class, 'actionupdatemeaorderdetail'])->name('employee.actionupdatemeaorderdetail'); //
     Route::delete('/employee/ordertotal/detail/show/deletemeaorderdetail/{id}', [OrderController::class, 'actiondeletemeaorderdetail'])->name('employee.actiondeletemeaorderdetail'); //
-    Route::post('/employee/ordertotal/detail/show/addimagerent/{id}', [OrderController::class, 'actionaddimagerent'])->name('employee.actionaddimagerent'); //
     Route::post('/employee/ordertotal/detail/show/updatestatusrentdress/{id}', [OrderController::class, 'actionupdatestatusrentdress'])->name('employee.actionupdatestatusrentdress'); //อัปเดตสถานะเช่าชุด
     Route::post('/employee/ordertotal/detail/show/updatestatusadjustdress/{id}', [OrderController::class, 'actionupdatestatusadjustdress'])->name('employee.actionupdatestatusadjustdress'); //อัปเดต
 
@@ -308,11 +306,27 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
 
-    Route::post('/employee/ordertotal/detail/show/updatestatusrentjewelry/{id}', [OrderController::class, 'actionupdatestatusrentjewelry'])->name('employee.actionupdatestatusrentjewelry'); //อัปเดตสถานะเช่าเครื่องประดับ
     Route::post('/employee/ordertotal/detail/show/updatestatusrentcut/{id}', [OrderController::class, 'actionupdatestatusrentcut'])->name('employee.actionupdatestatusrentcut'); //อัปเดตสถานะเช่าตัดชุด
     Route::post('/employee/ordertotal/detail/show/updatestatuscutdress/{id}', [OrderController::class, 'actionupdatestatuscutdress'])->name('employee.actionupdatestatuscutdress'); //อัปเดตสถานะตัดชุด
     Route::post('/employee/ordertotal/detail/show/updatedatecutdress/{id}', [OrderController::class, 'actionupdatedatecutdress'])->name('employee.actionupdatedatecutdress'); //อัปเดตวันที่ตัดชุด
     Route::post('/employee/ordertotal/detail/show/updatenotecutdress/{id}', [OrderController::class, 'actionupdatenotecutdress'])->name('employee.actionupdatenotecutdress'); //อัปเดต
+
+
+    Route::get('/jewelry-pickup-queue', [Orderjewelry::class, 'showpickupqueuejewelry'])->name('showpickupqueuejewelry'); 
+    Route::get('/jewelry-pickup-queue/filter', [Orderjewelry::class, 'showpickupqueuejewelryfilter'])->name('showpickupqueuejewelryfilter'); 
+    Route::get('/jewelry-cleaning', [Orderjewelry::class, 'showcleanjewelry'])->name('showcleanjewelry'); 
+    Route::get('/jewelry-repairing', [Orderjewelry::class, 'showrepairjewelry'])->name('showrepairjewelry'); 
+
+    Route::post('/jewelry-cleaning/update-to-cleaning/{id}', [Orderjewelry::class, 'jewelryupdatetocleaning'])->name('jewelryupdatetocleaning'); 
+    Route::post('/jewelry-cleaning/update-to-cleaned /{id}', [Orderjewelry::class, 'jewelryupdatetocleaned'])->name('jewelryupdatetocleaned'); 
+    Route::post('/jewelry-cleaning/update-to-cleanedbutrepair /{id}', [Orderjewelry::class, 'jewelryupdatetocleanedbutrepair'])->name('jewelryupdatetocleanedbutrepair'); 
+
+
+
+    Route::post('/jewelry-repairing/update-to-repairing/{id}', [Orderjewelry::class, 'jewelryupdatetorepairing'])->name('jewelryupdatetorepairing'); 
+    Route::post('/jewelry-repairing/update-to-repaired/{id}', [Orderjewelry::class, 'jewelryupdatetorepaired'])->name('jewelryupdatetorepaired'); 
+
+
 
 
 
@@ -326,6 +340,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/adddresstocart', [OrderController::class, 'adddresstocart'])->name('adddresstocart'); 
     Route::post('/employee/addtocart', [OrderController::class, 'addtocart'])->name('addtocart'); //เพิ่มชุด/เสื้อ/กระโปรง/ผผ้าถุง ลงบนตะกร้า 
 
+    Route::post('/employee/ordertotal/detail/show/updatereceivejewelry/{id}', [Orderjewelry::class, 'actionupdatereceivejewelry'])->name('employee.actionupdatereceivejewelry'); //อัปเดตสถานะเช่าเครื่องประดับ
+    Route::post('/employee/ordertotal/detail/show/updatereturnjewelry/{id}', [Orderjewelry::class, 'updatereturnjewelry'])->name('employee.updatereturnjewelry'); //อัปเดตสถานะคืนเครื่องประดับ
 
 
 

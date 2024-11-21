@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdditionalChange;
 use App\Models\Date;
 use App\Models\Jewelry;
 use App\Models\Jewelryset;
 use App\Models\Jewelrysetitem;
 use App\Models\Order;
 use App\Models\Orderdetail;
+use App\Models\Orderdetailstatus;
+use App\Models\Paymentstatus;
+use App\Models\Repair;
 use App\Models\Reservation;
+use App\Models\Reservationfilters;
 use App\Models\Typejewelry;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -237,7 +242,15 @@ class Orderjewelry extends Controller
         $reservation->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
         $reservation->save();
 
-
+        // ตารางreservationfilter
+        $reservationfilter = new Reservationfilters();
+        $reservationfilter->jewelry_id = $jewelry_id;
+        $reservationfilter->start_date = $pickupdate;
+        $reservationfilter->end_date = $returndate;
+        $reservationfilter->status = 'อยู่ในตะกร้า';
+        $reservationfilter->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+        $reservationfilter->reservation_id = $reservation->id;
+        $reservationfilter->save();
 
 
         //ตารางorder
@@ -297,14 +310,15 @@ class Orderjewelry extends Controller
         }
         return redirect()->back()->with('success', 'เพิ่มลงตะกร้าสำเร็จ');
     }
-    public function addrentjewelrytocardaddtocardset(Request $request){
+    public function addrentjewelrytocardaddtocardset(Request $request)
+    {
 
 
         $jewset_id = $request->input('jewset_id');
         $pickupdate = $request->input('pickupdate');
         $returndate = $request->input('returndate');
         $jewset_price = $request->input('jewset_price');
-        $jewset_deposit = $jewset_price * 0.3 ; 
+        $jewset_deposit = $jewset_price * 0.3;
         $jewset_damage_insurance = $request->input('jewset_price');
         $employee_id = Auth::user()->id;
 
@@ -319,6 +333,19 @@ class Orderjewelry extends Controller
         $reservation->save();
 
 
+        $list_for_jewelry_set = Jewelrysetitem::where('jewelry_set_id', $jewset_id)->get();
+        foreach ($list_for_jewelry_set as $item) {
+            // ตารางreservationfilter
+            $reservationfilter = new Reservationfilters();
+            $reservationfilter->jewelry_id = $item->jewelry_id;
+            $reservationfilter->jewelry_set_id = $jewset_id;
+            $reservationfilter->start_date = $pickupdate;
+            $reservationfilter->end_date = $returndate;
+            $reservationfilter->status = 'อยู่ในตะกร้า';
+            $reservationfilter->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+            $reservationfilter->reservation_id = $reservation->id;
+            $reservationfilter->save();
+        }
 
 
         //ตารางorder
@@ -380,14 +407,458 @@ class Orderjewelry extends Controller
     }
 
 
+    public function actionupdatereceivejewelry(Request $request, $id)
+    {
+
+        $orderdetail = Orderdetail::find($id);
+        $show_date = Date::where('order_detail_id', $orderdetail->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $status = $orderdetail->status_detail;
+        $message_return =  Carbon::parse($show_date->return_date)->locale('th')->isoFormat('D MMM') . ' ' .
+            (Carbon::parse($show_date->return_date)->year + 543);
+        $message_session = 'ลูกค้ากำลังเช่า กำหนดคืนคือ ' . $message_return;
+
+        //ตารางorderdetail
+        $orderdetail->status_detail = "กำลังเช่า";
+        $orderdetail->save();
+        //ตารางorderdetailstatus
+        $create_status = new Orderdetailstatus();
+        $create_status->order_detail_id = $id;
+        $create_status->status = "กำลังเช่า";
+        $create_status->save();
+
+        //ตารางreservation 
+        $reservation = Reservation::find($orderdetail->reservation_id);
+        $reservation->status = 'กำลังเช่า';
+        $reservation->save();
+
+
+        if ($reservation->jewelry_id) {
+            $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->first();
+            $update_re_filter = Reservationfilters::find($find_re_filter->id);
+            $update_re_filter->status = 'กำลังเช่า';
+            $update_re_filter->save();
+
+            $update_status_jewelry = Jewelry::find($reservation->jewelry_id);
+            $update_status_jewelry->jewelry_status = 'กำลังถูกเช่า';
+            $update_status_jewelry->save();
+        } elseif ($reservation->jewelry_set_id) {
+
+            $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->get();
+            foreach ($find_re_filter as $item) {
+                $update_re_filter = Reservationfilters::find($item->id);
+                $update_re_filter->status = 'กำลังเช่า';
+                $update_re_filter->save();
+            }
+
+
+            $jew_item_total = Jewelrysetitem::where('jewelry_set_id', $reservation->jewelry_set_id)->get();
+            foreach ($jew_item_total as $item) {
+                $update_status_jew = Jewelry::find($item->jewelry_id);
+                $update_status_jew->jewelry_status = 'กำลังถูกเช่า';
+                $update_status_jew->save();
+            }
+        }
+
+
+
+
+        // อัปเดตตารางdate
+        $date_id = Date::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->value('id');
+        $update_real = Date::find($date_id);
+        $update_real->actua_pickup_date = now(); //วันที่รับจริงๆ
+        $update_real->save();
+
+
+        if ($orderdetail->status_payment == 1) {
+            //ตารางpaymentstatus
+            $create_paymentstatus = new Paymentstatus();
+            $create_paymentstatus->order_detail_id = $id;
+            $create_paymentstatus->payment_status = 2;
+            $create_paymentstatus->save();
+            //ตารางorderdetail
+            $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
+            $orderdetail->save();
+        }
+        return redirect()->back()->with('success', $message_session);
+    }
+
+
+    public function updatereturnjewelry(Request $request, $id)
+    {
+
+        $orderdetail = Orderdetail::find($id);
+        $datareservation = Reservation::find($orderdetail->reservation_id);
+        $check_for_set_or_item = $request->input('check_for_set_or_item');
+
+
+        $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
+        $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
+        $late_chart = $request->input('late_chart'); //3.ค่าธรรมเนียมขยายระยะเวลาเช่า:
+        if ($total_damage_insurance > 0) {
+            $create_additional = new AdditionalChange();
+            $create_additional->order_detail_id = $id;
+            $create_additional->charge_type = 1;
+            $create_additional->amount = $total_damage_insurance;
+            $create_additional->save();
+        }
+        if ($late_return_fee > 0) {
+            $create_additional = new AdditionalChange();
+            $create_additional->order_detail_id = $id;
+            $create_additional->charge_type = 2;
+            $create_additional->amount = $late_return_fee;
+            $create_additional->save();
+        }
+        if ($late_chart) {
+            $create_additional = new AdditionalChange();
+            $create_additional->order_detail_id = $id;
+            $create_additional->charge_type = 3;
+            $create_additional->amount = $late_chart;
+            $create_additional->save();
+        }
+
+        // เช่าเป็นชิ้น
+        if ($check_for_set_or_item == 'item') {
+            $actionreturnitem = $request->input('actionreturnitem');
+
+            if ($actionreturnitem == 'cleanitem') {
+                // dd('ส่งทำความสะอาด');
+
+                //ตารางorderdetail
+                $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                $orderdetail->save();
+
+                // อัปเดตตารางdate
+                $date_id = Date::where('order_detail_id', $id)
+                    ->orderBy('created_at', 'desc')
+                    ->value('id');
+                $update_real = Date::find($date_id);
+                $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                $update_real->save();
+
+                //ตารางorderdetailstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $id;
+                $create_status->status = "คืนเครื่องประดับแล้ว";
+                $create_status->save();
+
+                //ตารางreservation
+                $reservation = Reservation::find($orderdetail->reservation_id);
+                $reservation->status = 'คืนเครื่องประดับแล้ว';
+                $reservation->status_completed = 1; //เสร็จแล้ว
+                $reservation->save();
+
+                // ตารางหลอก
+                $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->first();
+                $update_re_filter = Reservationfilters::find($find_re_filter->id);
+                $update_re_filter->status = 'รอทำความสะอาด';
+                $update_re_filter->save();
+
+                // อัปเดตสถานะเครื่องประดับ
+                $update_status_jewelry = Jewelry::find($reservation->jewelry_id);
+                $update_status_jewelry->jewelry_status = 'รอทำความสะอาด';
+                $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                $update_status_jewelry->save();
+            } elseif ($actionreturnitem == 'repairitem') {
+                // dd('ส่งซ่อม') ; 
+                $repair_detail_for_item = $request->input('repair_detail_for_item');
+                //ตารางorderdetail
+                $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                $orderdetail->save();
+
+                // อัปเดตตารางdate
+                $date_id = Date::where('order_detail_id', $id)
+                    ->orderBy('created_at', 'desc')
+                    ->value('id');
+                $update_real = Date::find($date_id);
+                $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                $update_real->save();
+
+                //ตารางorderdetailstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $id;
+                $create_status->status = "คืนเครื่องประดับแล้ว";
+                $create_status->save();
+
+                //ตารางreservation
+                $reservation = Reservation::find($orderdetail->reservation_id);
+                $reservation->status = 'คืนเครื่องประดับแล้ว';
+                $reservation->status_completed = 1; //เสร็จแล้ว
+                $reservation->save();
+
+                // ตารางหลอก
+                $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->first();
+                $update_re_filter = Reservationfilters::find($find_re_filter->id);
+                $update_re_filter->status = 'รอซ่อม';
+                $update_re_filter->save();
+
+                // อัปเดตสถานะเครื่องประดับ
+                $update_status_jewelry = Jewelry::find($reservation->jewelry_id);
+                $update_status_jewelry->jewelry_status = 'รอซ่อม';
+                $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                $update_status_jewelry->save();
+
+                // สร้างข้อมูลในตาราง repair
+                $create_repair = new Repair();
+                $create_repair->reservationfilter_id = $update_re_filter->id;
+                $create_repair->repair_description = $repair_detail_for_item;
+                $create_repair->repair_status = 'รอดำเนินการ';
+                // $create_repair->repair_type = 1;  //1.ยังไม่ทำความสะอาด 2.ทำความสะอาดแล้ว 
+                $create_repair->save();
+            }
+        }
+        // เช่าเป็นเซต
+        elseif ($check_for_set_or_item == 'set') {
+
+            //ตารางorderdetail
+            $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+            $orderdetail->save();
+
+            // อัปเดตตารางdate
+            $date_id = Date::where('order_detail_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->value('id');
+            $update_real = Date::find($date_id);
+            $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+            $update_real->save();
+
+            //ตารางorderdetailstatus
+            $create_status = new Orderdetailstatus();
+            $create_status->order_detail_id = $id;
+            $create_status->status = "คืนเครื่องประดับแล้ว";
+            $create_status->save();
+
+            //ตารางreservation
+            $reservation = Reservation::find($orderdetail->reservation_id);
+            $reservation->status = 'คืนเครื่องประดับแล้ว';
+            $reservation->status_completed = 1; //เสร็จแล้ว
+            $reservation->save();
+
+            $refil_id = $request->input('refil_id_');
+            $action_set = $request->input('action_set_');
+            $repair_details_set = $request->input('repair_details_set_');
+            $refil_jewelry_id = $request->input('refil_jewelry_id_');
+            foreach ($refil_id as $index =>  $item) {
+                if ($action_set[$index] == 'clean') {
+
+                    // ตารางหลอก
+                    $update_re_filter = Reservationfilters::find($refil_id[$index]);
+                    $update_re_filter->status = 'รอทำความสะอาด';
+                    $update_re_filter->save();
+                    // อัปเดตสถานะเครื่องประดับ
+                    $update_status_jewelry = Jewelry::find($refil_jewelry_id[$index]);
+                    $update_status_jewelry->jewelry_status = 'รอทำความสะอาด';
+                    $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                    $update_status_jewelry->save();
+                } elseif ($action_set[$index] == 'repair') {
+
+                    // ตารางหลอก
+                    $update_re_filter = Reservationfilters::find($refil_id[$index]);
+                    $update_re_filter->status = 'รอซ่อม';
+                    $update_re_filter->save();
+                    // อัปเดตสถานะเครื่องประดับ
+                    $update_status_jewelry = Jewelry::find($refil_jewelry_id[$index]);
+                    $update_status_jewelry->jewelry_status = 'รอซ่อม';
+                    $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                    $update_status_jewelry->save();
+
+                    // สร้างข้อมูลในตาราง repair
+                    $create_repair = new Repair();
+                    $create_repair->reservationfilter_id = $update_re_filter->id;
+                    $create_repair->repair_description = $repair_details_set[$index];
+                    $create_repair->repair_status = 'รอดำเนินการ';
+                    $create_repair->repair_type = 1;  //1.ยังไม่ทำความสะอาด 2.ทำความสะอาดแล้ว 
+                    $create_repair->save();
+                }
+            }
+        }
+        return redirect()->back()->with('success', 'ลูกค้าคืนเครื่องประดับแล้ว');
+    }
 
 
 
 
 
 
+    public function showpickupqueuejewelry()
+    {
+        $filer = 'today';
+        $reservations = Reservation::where('status_completed', 0)
+            ->where('status', 'ถูกจอง')
+            ->whereDate('start_date', now())
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+            ->get();
+        return view('employeerentjewelry.jewelry-pickup-queue', compact('reservations', 'filer'));
+    }
+
+    public function showpickupqueuejewelryfilter(Request $request)
+    {
+        $filter_click = $request->input('filter_click');
+        if ($filter_click == "total") {
+            $reservations = Reservation::where('status_completed', 0)
+                ->where('status', 'ถูกจอง')
+                ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+                ->get();
+            $filer = 'total';
+        } elseif ($filter_click == "today") {
+            return $this->showpickupqueuejewelry();
+        }
+        return view('employeerentjewelry.jewelry-pickup-queue', compact('reservations', 'filer'));
+    }
+    public function showcleanjewelry()
+    {
+        $clean_pending = Reservationfilters::where('status_completed', 0)
+            ->where('status', 'รอทำความสะอาด')
+            ->get();
+        $clean_doing_wash = Reservationfilters::where('status_completed', 0)
+            ->where('status', 'กำลังทำความสะอาด')
+            ->get();
+        return view('employeerentjewelry.jewelry-clean', compact('clean_pending', 'clean_doing_wash'));
+    }
+
+    public function jewelryupdatetocleaning(Request $request, $id)
+    {
+        $jewelry_id = $request->input('jewelry_id');
+
+        $reser_filter = Reservationfilters::find($id);
+        $reser_filter->status = 'กำลังทำความสะอาด';
+        $reser_filter->save();
+
+        $jewelry = Jewelry::find($jewelry_id);
+        $jewelry->jewelry_status = 'กำลังทำความสะอาด';
+        $jewelry->save();
+        return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ');
+    }
+
+
+    public function jewelryupdatetocleaned(Request $request, $id)
+    {
+        $jewelry_id = $request->input('jew_id');
+
+        $reser_filter = Reservationfilters::find($id);
+        $reser_filter->status = 'ทำความสะอาดเสร็จแล้ว';
+        $reser_filter->status_completed = 1;
+        $reser_filter->save();
+        $jewelry = Jewelry::find($jewelry_id);
+        $jewelry->jewelry_status = 'พร้อมให้เช่า';
+        $jewelry->save();
+        return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ');
+    }
+
+    public function jewelryupdatetocleanedbutrepair(Request $request, $id)
+    {
+        $jewelry_id = $request->input('jew_id');
+
+        $reser_filter = Reservationfilters::find($id);
+        $reser_filter->status = 'รอดำเนินการซ่อม';
+        $reser_filter->save();
+        $jewelry = Jewelry::find($jewelry_id);
+        $jewelry->jewelry_status = 'รอดำเนินการซ่อม';
+        $jewelry->save();
+
+        $create_repair = new Repair();
+        $create_repair->repair_description = $request->input('repair_detail');
+        $create_repair->repair_status = 'รอดำเนินการ';
+        $create_repair->repair_type = 2; //1.ยังไม่ได้ทำความสะอาด 2.ทำความสะอาดแล้ว
+        $create_repair->reservationfilter_id = $id;
+        $create_repair->save();
+        return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ');
+    }
+
+    public function showrepairjewelry()
+    {
+
+        $repair_pending = Repair::whereNotNull('reservationfilter_id')
+            ->where('repair_status', 'รอดำเนินการ')
+            ->get();
+
+        $repairs = Repair::whereNotNull('reservationfilter_id')
+            ->where('repair_status', 'กำลังซ่อม')
+            ->get();
+
+        return view('employeerentjewelry.jewelry-repair', compact('repair_pending', 'repairs'));
+    }
+
+    public function jewelryupdatetorepairing(Request $request, $id)
+    {
+
+        $repair = Repair::find($id);
+        $repair->repair_status = 'กำลังซ่อม';
+        $repair->save();
+
+        $reservationfilter_id = $request->input('reservationfilter_id');
+        $reser_fil = Reservationfilters::find($reservationfilter_id);
+        $reser_fil->status = 'กำลังซ่อม';
+        $reser_fil->save();
+
+        $jewelry_id = $request->input('jewelry_id');
+        $jew = Jewelry::find($jewelry_id);
+        $jew->jewelry_status = 'กำลังซ่อม';
+        $jew->save();
+        return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ');
+    }
+
+    public function jewelryupdatetorepaired(Request $request, $id)
+    {
+        $repair_type = $request->input('repair_type');
+        $jewelry_id = $request->input('jewelry_id');
+        $reservationfilter_id = $request->input('reser_fil');
+
+
+        if ($repair_type == "1") {
+            // dd('ยังไม่ได้ทำความสะอาด') ; 
+            $reser_fil = Reservationfilters::find($reservationfilter_id);
+            $reser_fil->status = 'รอทำความสะอาด';
+            $reser_fil->save();
+
+            $repair = Repair::find($id);
+            $repair->repair_status = 'ซ่อมเสร็จแล้ว';
+            $repair->save();
+
+            $jew = Jewelry::find($jewelry_id);
+            $jew->jewelry_status = 'รอทำความสะอาด';
+            $jew->repair_count = $jew->repair_count + 1;
+            $jew->save();
+        } elseif ($repair_type == "2") {
+            $status_next = $request->input('status_next');
+            if ($status_next == '1') {
+                $reser_fil = Reservationfilters::find($reservationfilter_id);
+                $reser_fil->status = 'ซ่อมเสร็จแล้ว';
+                $reser_fil->status_completed = 1 ; 
+                $reser_fil->save();
+
+                $repair = Repair::find($id);
+                $repair->repair_status = 'ซ่อมเสร็จแล้ว';
+                $repair->save();
+
+                $jew = Jewelry::find($jewelry_id);
+                $jew->jewelry_status = 'พร้อมให้เช่า';
+                $jew->repair_count = $jew->repair_count + 1;
+                $jew->save();
+                
+            } elseif ($status_next == '2') {
+                $reser_fil = Reservationfilters::find($reservationfilter_id);
+                $reser_fil->status = 'รอทำความสะอาด';
+                $reser_fil->save();
+
+                $repair = Repair::find($id);
+                $repair->repair_status = 'ซ่อมเสร็จแล้ว';
+                $repair->save();
+
+                $jew = Jewelry::find($jewelry_id);
+                $jew->jewelry_status = 'รอทำความสะอาด';
+                $jew->repair_count = $jew->repair_count + 1;
+                $jew->save();
+            }
+        }
 
 
 
 
+
+        return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ');
+    }
 }

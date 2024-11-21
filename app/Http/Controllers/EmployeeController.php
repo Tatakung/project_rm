@@ -10,6 +10,7 @@ use App\Models\Financial;
 use App\Models\Fitting;
 use App\Models\Imagerent;
 use App\Models\Jewelry;
+use App\Models\Jewelryset;
 use App\Models\Jewelryimage;
 use App\Models\Measurementorderdetail;
 use App\Models\Order;
@@ -21,12 +22,16 @@ use App\Models\Skirtitem;
 use App\Models\Clean;
 
 use App\Models\Typedress;
+use App\Models\Typejewelry;
+
 use App\Models\Dressmeaadjustment;
 use App\Models\Repair;
 
 use App\Models\Customer;
 use App\Models\Dressmeasurementnow;
+use App\Models\Jewelrysetitem;
 use App\Models\User;
+use App\Models\Reservationfilters;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -58,6 +63,9 @@ class EmployeeController extends Controller
         return view('employee.seletedate');
     }
 
+
+
+
     public function dressadjust()
     {
         $reservations = Reservation::where('status_completed', 0)
@@ -68,7 +76,6 @@ class EmployeeController extends Controller
         $filer = 'today';
         return view('employee.dressadjust', compact('reservations', 'filer'));
     }
-
 
 
     public function dressadjustfilter(Request $request)
@@ -617,30 +624,29 @@ class EmployeeController extends Controller
         }
         // ส่งไปซักอีกครั้ง
         elseif ($status_next == 2) {
-                // ตารางrepair
-                $repair = Repair::find($id);
-                $repair->repair_status = "ซ่อมเสร็จแล้ว";
-                $repair->save();
-                // ตารางstatus
-                $create_status = new Orderdetailstatus();
-                $create_status->repair_id = $repair->id;
-                $create_status->status = "ซ่อมเสร็จแล้ว";
-                $create_status->save();
-                // ตารางreservation
-                $reservation = Reservation::find($repair->reservation_id);
-                $reservation->status = 'รอดำเนินการส่งซัก';
-                $reservation->save();
-                // ตารางclean
-                $create_clean = new Clean();
-                $create_clean->reservation_id = $repair->reservation_id;
-                $create_clean->clean_status = "รอดำเนินการ";
-                $create_clean->save();
-                // ตารางstatus
-                $create_status = new Orderdetailstatus();
-                $create_status->clean_id = $create_clean->id;
-                $create_status->status = "รอดำเนินการ";
-                $create_status->save();
-            
+            // ตารางrepair
+            $repair = Repair::find($id);
+            $repair->repair_status = "ซ่อมเสร็จแล้ว";
+            $repair->save();
+            // ตารางstatus
+            $create_status = new Orderdetailstatus();
+            $create_status->repair_id = $repair->id;
+            $create_status->status = "ซ่อมเสร็จแล้ว";
+            $create_status->save();
+            // ตารางreservation
+            $reservation = Reservation::find($repair->reservation_id);
+            $reservation->status = 'รอดำเนินการส่งซัก';
+            $reservation->save();
+            // ตารางclean
+            $create_clean = new Clean();
+            $create_clean->reservation_id = $repair->reservation_id;
+            $create_clean->clean_status = "รอดำเนินการ";
+            $create_clean->save();
+            // ตารางstatus
+            $create_status = new Orderdetailstatus();
+            $create_status->clean_id = $create_clean->id;
+            $create_status->status = "รอดำเนินการ";
+            $create_status->save();
         }
         return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
     }
@@ -661,21 +667,16 @@ class EmployeeController extends Controller
     public function repair()
     {
         $repair = Repair::all();
-        $repair_pending = Repair::where('repair_status', "รอดำเนินการ")->get();
+        $repair_pending = Repair::where('repair_status', "รอดำเนินการ")
+            ->whereNull('reservationfilter_id')
+            ->get();
         $repairs_null = Repair::where('repair_status', "กำลังซ่อม")
+            ->whereNull('reservationfilter_id')
             ->where('clean_id', null)->get();
-
         $repairs_not_null = Repair::where('repair_status', "กำลังซ่อม")
-            ->whereNotNull('clean_id')->get();
-
-
-
-        $countwait = Repair::where('repair_status', 'รอดำเนินการ')->count();
-        $countdoing = Repair::where('repair_status', 'กำลังซ่อม')->count();
-        $countsuccess = Repair::where('repair_status', 'ซ่อมเสร็จแล้ว')->count();
-        return view('employee.repair', compact('repair', 'countwait', 'repairs_null', 'repairs_not_null',  'countdoing', 'countsuccess', 'repair_pending'));
-
-        return view('employee.repair');
+            ->whereNull('reservationfilter_id')
+            ->whereNotNull('clean_id')->get() ; 
+        return view('employee.repair', compact('repair', 'repairs_null', 'repairs_not_null', 'repair_pending'));
     }
     public function reservedress()
     {
@@ -1066,14 +1067,30 @@ class EmployeeController extends Controller
             //อัปเดตตาราง order ด้วย เพราะorderdetail มันลบไปแล้วไง
             $ORDER_ID = $delete_orderdetail->order_id;
             $update_order = Order::find($ORDER_ID);
-
             $update_order->total_quantity = $update_order->total_quantity - 1; //รายการทั้งหมดจะลดลงทีละ1 
-
             $update_order->total_price = $update_order->total_price - ($delete_orderdetail->price * $delete_orderdetail->amount);
             $update_order->total_deposit = $update_order->total_deposit - ($delete_orderdetail->deposit * $delete_orderdetail->amount);
             $update_order->save();
         } elseif ($delete_orderdetail->type_order == 3) {
-            dd('ยังไม่ทำ');
+            //ลบตาราง reservation
+            $delete_reservation = Reservation::find($delete_orderdetail->reservation_id);
+            $delete_reservation->delete();
+
+            //ลบลูกๆมันด้วย
+            Imagerent::where('order_detail_id', $id)->delete();
+            Paymentstatus::where('order_detail_id', $id)->delete();
+            Fitting::where('order_detail_id', $id)->delete();
+            Financial::where('order_detail_id', $id)->delete();
+            Date::where('order_detail_id', $id)->delete();
+            Orderdetailstatus::where('order_detail_id', $id)->delete();
+            Reservationfilters::where('reservation_id', $delete_orderdetail->reservation_id)->delete();
+            //อัปเดตตาราง order ด้วย เพราะorderdetail มันลบไปแล้วไง
+            $ORDER_ID = $delete_orderdetail->order_id;
+            $update_order = Order::find($ORDER_ID);
+            $update_order->total_quantity = $update_order->total_quantity - 1; //รายการทั้งหมดจะลดลงทีละ1 
+            $update_order->total_price = $update_order->total_price - ($delete_orderdetail->price * $delete_orderdetail->amount);
+            $update_order->total_deposit = $update_order->total_deposit - ($delete_orderdetail->deposit * $delete_orderdetail->amount);
+            $update_order->save();
         } elseif ($delete_orderdetail->type_order == 4) {
             dd('ยังไม่ทำ');
         }
@@ -1151,15 +1168,21 @@ class EmployeeController extends Controller
     private function manageitemrentjewelry($id)
     {
         $id = $id->id;
-        $type_dress = Typedress::all();
         $orderdetail = Orderdetail::find($id);
-        // $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
-        $jewelry = Jewelry::where('id', $orderdetail->jewelry_id)->select('jewelry_code_new', 'jewelry_code')->first();
-        $imagejewelry = Jewelryimage::where('jewelry_id', $orderdetail->jewelry_id)->get();
-        $fitting = Fitting::where('order_detail_id', $id)->get();
-        $imagerent = Imagerent::where('order_detail_id', $id)->get();
-
-        return view('employeerentjewelry.manageitemrentjewelry', compact('orderdetail', 'type_dress', 'fitting', 'imagerent', 'jewelry', 'imagejewelry'));
+        $reservation = Reservation::find($orderdetail->reservation_id);
+        $jewelry = Jewelry::find($reservation->jewelry_id);
+        if ($jewelry) {
+            $typejewelry = Typejewelry::where('id', $jewelry->type_jewelry_id)->first();
+            $imagejewelry = Jewelryimage::where('jewelry_id', $jewelry->id)->first();
+            $setjewelryitem = null;
+        } else {
+            $setjewelry = Jewelryset::find($reservation->jewelry_set_id);
+            $setjewelryitem = Jewelrysetitem::where('jewelry_set_id', $setjewelry->id)->get();
+            $typejewelry = null;
+            $imagejewelry = null;
+        }
+        $jewelryset = Jewelryset::find($reservation->jewelry_set_id);
+        return view('employeerentjewelry.manageitemrentjewelry', compact('orderdetail', 'reservation', 'jewelry', 'typejewelry', 'imagejewelry', 'jewelryset', 'setjewelryitem'));
     }
 
     //เช่าตัด
@@ -1253,6 +1276,7 @@ class EmployeeController extends Controller
                 $create_payment->payment_status = $payment_status;
                 $create_payment->save();
             } elseif ($orderdetail->type_order == 2) {
+
                 //ตารางorderdetailstatus 
                 $create_status = new Orderdetailstatus();
                 $create_status->order_detail_id = $orderdetail->id;
@@ -1274,6 +1298,38 @@ class EmployeeController extends Controller
                 $update_reservation->save();
             } elseif ($orderdetail->type_order == 3) {
                 //เช่าเครื่องประดับ
+                //ตารางorderdetailstatus 
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $orderdetail->id;
+                $create_status->status = 'ถูกจอง';
+                $create_status->save();
+                //ตารางorderdetail
+                $orderdetail->status_detail = "ถูกจอง";
+                $orderdetail->status_payment = $payment_status;
+                $orderdetail->save();
+                //ตารางpayment_status
+                $create_payment = new Paymentstatus();
+                $create_payment->order_detail_id = $orderdetail->id;
+                $create_payment->payment_status = $payment_status;
+                $create_payment->save();
+                //ตารางreservation 
+                $update_reservation = Reservation::find($orderdetail->reservation_id);
+                $update_reservation->status = 'ถูกจอง';
+                $update_reservation->save();
+
+                if ($update_reservation->jewelry_id) {
+                    $find_re_filter = Reservationfilters::where('reservation_id', $orderdetail->reservation_id)->first();
+                    $update_re_filter = Reservationfilters::find($find_re_filter->id);
+                    $update_re_filter->status = 'ถูกจอง';
+                    $update_re_filter->save();
+                } elseif ($update_reservation->jewelry_set_id) {
+                    $find_re_filter = Reservationfilters::where('reservation_id', $orderdetail->reservation_id)->get();
+                    foreach ($find_re_filter as $item) {
+                        $update_re_filter = Reservationfilters::find($item->id);
+                        $update_re_filter->status = 'ถูกจอง';
+                        $update_re_filter->save();
+                    }
+                }
             } elseif ($orderdetail->type_order == 4) {
                 //เช่าตัด
             }

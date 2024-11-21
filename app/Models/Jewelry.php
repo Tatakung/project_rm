@@ -21,7 +21,8 @@ class Jewelry extends Model
         'jewelry_count',
         'jewelry_status',
         'jewelry_description',
-        'jewelry_rental',        
+        'jewelry_rental', 
+        'repair_count' ,        
     ];
 
     //ตาราง jew เป็น M ต่อ 1 ของตาราง typejew
@@ -39,6 +40,12 @@ class Jewelry extends Model
         return $this->hasMany(Jewelrysetitem::class,'jewelry_id') ; 
     }
 
+    public function jewonetomanyreser(){
+        return $this->hasMany(Reservation::class,'jewelry_id') ; 
+    }
+    public function jewonetomanyreserfil(){
+        return $this->hasMany(Reservationfilters::class,'jewelry_id') ; 
+    }
 
 
 }

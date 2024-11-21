@@ -55,7 +55,7 @@
                 <div class="card">
                 <div class="card-body"style="background-color:#EBE5B2; border:0;">
                         <h5 class="card-title">รอดำเนินการ</h5>
-                        <p class="card-text display-4">{{ $countwait }} รายการ</p>
+                        <p class="card-text display-4">{{ $repair_pending->count() }} รายการ</p>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                 <div class="card">
                 <div class="card-body "style="background-color:#EAC39D ; border:0;">
                         <h5 class="card-title">กำลังซ่อม</h5>
-                        <p class="card-text display-4">{{ $countdoing }} รายการ</p>
+                        <p class="card-text display-4">{{ $repairs_not_null->count() }} รายการ</p>
                     </div>
                 </div>
             </div>
@@ -80,10 +80,10 @@
 
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a href="#one" class="nav-link active" data-toggle="tab">รอดำเนินการ ({{ $countwait }})</a>
+                    <a href="#one" class="nav-link active" data-toggle="tab">รอดำเนินการ ({{ $repair_pending->count() }})</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#two" class="nav-link" data-toggle="tab">กำลังซ่อม ({{ $countdoing }})</a>
+                    <a href="#two" class="nav-link" data-toggle="tab">กำลังซ่อม ({{ $repairs_not_null->count() }})</a>
                 </li>
             </ul>
 
@@ -92,7 +92,6 @@
                 {{-- หน้าแรก --}}
                 <div class="tab-pane active" id="one">
                     
-
                         <div class="table-responsive">
                             @if ($repair_pending->count() > 0)
                                 <table class="table table-striped">

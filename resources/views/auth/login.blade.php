@@ -1,4 +1,4 @@
-{{-- @extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
@@ -70,8 +70,8 @@
         </div>
     </div>
 </div>
-@endsection --}}
-<!DOCTYPE html>
+@endsection
+{{-- <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -109,21 +109,18 @@
     <script>
         var errorAlert = document.getElementById('error-alert');
         if (errorAlert) {
-            // กำหนดค่าเริ่มต้นเป็นความโปร่งใสสูงสุด
             var currentOpacity = 1;
             errorAlert.style.opacity = currentOpacity;
 
-            // ใช้ setInterval เพื่อลดความโปร่งใสทีละน้อย
             var fadeOutInterval = setInterval(function() {
                 currentOpacity -= 0.02;
                 errorAlert.style.opacity = currentOpacity;
 
-                // เมื่อความโปร่งใสลดถึง 0 ให้หยุด setInterval และซ่อน element
                 if (currentOpacity <= 0) {
                     clearInterval(fadeOutInterval);
                     errorAlert.style.display = 'none';
                 }
-            }, 100); // ลดความโปร่งใสทีละน้อยทุก 100 มิลลิวินาที
+            }, 100);
         }
     </script>
 @endif
@@ -138,7 +135,6 @@
                       <div class="form-floating my-4">
                 <input id="email" type="email"  class="form-control" @error('email') is-invalid @enderror  name="email"   value="{{old('email')}}" required  autocomplete="email"  autofocus>
 
-                {{-- <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus> --}}
 
                 <label for="email">อีเมล</label>
 
@@ -171,4 +167,4 @@
     </div>
     </div>
 </body>
-</html>
+</html> --}}

@@ -22,5 +22,10 @@ class Jewelryset extends Model
     }
 
 
+    public function jewsetone_many_re(){
+        return $this->hasMany(Reservation::class,'jewelry_set_id') ; 
+    }
+
+
 
 }

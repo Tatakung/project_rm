@@ -1,612 +1,683 @@
 @extends('layouts.adminlayout')
-
 @section('content')
     <style>
-        .list-group-item {
-            border-left: none;
-            border-right: none;
-            padding: 0.75rem 1.25rem;
+        .status-timeline {
+            padding: 20px 0;
         }
 
-        .list-group-item:first-child {
-            border-top: none;
+        .status-step {
+            z-index: 1;
+            position: relative;
         }
 
-        .list-group-item:last-child {
-            border-bottom: none;
+        .status-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: #6c757d;
+        }
+
+        .status-icon.active {
+            background-color: #6B5949;
+            color: #000;
+            /* เปลี่ยนสีตัวอักษรเป็นสีดำเพื่อให้เห็นชัดบนพื้นสีเหลือง */
+        }
+
+        .status-line {
+            flex-grow: 1;
+            height: 3px;
+            background-color: #EBC591;
+            position: relative;
+            top: 25px;
+            z-index: 0;
+        }
+
+        .status-line::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            /* Adjust this value to align the arrow */
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 10px solid #EBC591;
+            /* Arrow color */
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+
+        .status-step p {
+            margin-bottom: 0;
+        }
+
+        .status-step small {
+            color: #6c757d;
         }
     </style>
-    <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
-        <div class="modal-dialog custom-modal-dialog" role="document">
-            <div class="modal-content custom-modal-content"
-                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #53b007;">
-                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                    <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
+    <ol class="breadcrumb" style="background-color: transparent; ">
+        <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
+        <li class="breadcrumb-item"><a
+                href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">รายละเอียดออเดอร์ที่
+                {{ $orderdetail->order_id }}</a></li>
+        <li class="breadcrumb-item active">{{ $orderdetail->title_name }}</li>
+    </ol>
+    <div class="container mt-4">
+        <h4 class="mt-2"><strong>รายการ :
+                @if ($reservation->jewelry_id)
+                    เช่า{{ $typejewelry->type_jewelry_name }}
+                    {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
+                @elseif($reservation->jewelry_set_id)
+                    เช่าเซต{{ $setjewelry->set_name }}
+                @endif
+            </strong>
+        </h4>
+
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="card-title">สถานะการเช่า</h5>
+                            </div>
+
+
+
+
+                            @php
+                                // $now_today = now()->setTime(0, 0)->format('Y-m-d');
+                                $now_today = now()->format('Y-m-d');
+                            @endphp
+
+                            <div class="col-md-6 text-right"
+                                @if ($orderdetail->status_detail == 'ถูกจอง') style="display: block ;"
+                            @else
+                            style="display: none ;" @endif>
+                                <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus">อัปเดตสถานะการเช่า</button>
+                            </div>
+
+                            <div class="col-md-6 text-right"
+                                @if ($orderdetail->status_detail == 'กำลังเช่า') style="display: block ;"
+                            @else
+                            style="display: none ;" @endif>
+                                <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
+                                    data-target="#updatestatus_return">อัปเดตการรับเครื่องประดับคืน</button>
+                            </div>
+                        </div>
+                        <div class="status-timeline d-flex justify-content-between position-relative">
+                            @php
+                                $list_status = [];
+                                foreach ($orderdetailstatus as $index => $status) {
+                                    $list_status[] = $status->status;
+                                }
+                            @endphp
+                            <div class="status-step text-center">
+                                <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <p>ถูกจอง</p>
+                                <small>
+                                    <p>
+                                        @php
+                                            $created_at = App\Models\Orderdetailstatus::where(
+                                                'order_detail_id',
+                                                $orderdetail->id,
+                                            )
+                                                ->where('status', 'ถูกจอง')
+                                                ->first();
+                                            if ($created_at) {
+                                                $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                    // ->addHours(7)
+                                                    ->format('d/m/Y H:i');
+                                            } else {
+                                                $text_date = 'รอดำเนินการ';
+                                            }
+                                        @endphp
+                                        {{ $text_date }}
+                                    </p>
+                                </small>
+                            </div>
+
+
+                            <div class="status-line "></div>
+
+
+
+                            <div class="status-step text-center">
+                                <div class="status-icon @if (in_array('กำลังเช่า', $list_status)) active @endif">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <p>กำลังเช่า</p>
+                                <small>
+                                    <p>
+                                        @php
+                                            $created_at = App\Models\Orderdetailstatus::where(
+                                                'order_detail_id',
+                                                $orderdetail->id,
+                                            )
+                                                ->where('status', 'กำลังเช่า')
+                                                ->first();
+                                            if ($created_at) {
+                                                $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                    // ->addHours(7)
+                                                    ->format('d/m/Y H:i');
+                                            } else {
+                                                $text_date = 'รอดำเนินการ';
+                                            }
+                                        @endphp
+                                        {{ $text_date }}
+                                    </p>
+                                </small>
+                            </div>
+
+
+                            <div class="status-line "></div>
+
+
+
+                            <div class="status-step text-center">
+                                <div class="status-icon @if (in_array('คืนเครื่องประดับแล้ว', $list_status)) active @endif">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <p>คืนเครื่องประดับแล้ว</p>
+                                <small>
+                                    <p>
+                                        @php
+                                            $created_at = App\Models\Orderdetailstatus::where(
+                                                'order_detail_id',
+                                                $orderdetail->id,
+                                            )
+                                                ->where('status', 'คืนเครื่องประดับแล้ว')
+                                                ->first();
+                                            if ($created_at) {
+                                                $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                    // ->addHours(7)
+                                                    ->format('d/m/Y H:i');
+                                            } else {
+                                                $text_date = 'รอดำเนินการ';
+                                            }
+                                        @endphp
+                                        {{ $text_date }}
+                                    </p>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3 d-flex align-items-stretch">
+            {{-- ข้อมูลเครื่องประดับ --}}
+            <div class="col-md-6 mb-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>ข้อมูลเครื่องประดับ</h5>
+                                @if ($reservation->jewelry_id)
+                                    <p>ประเภทเครื่องประดับ : {{ $typejewelry->type_jewelry_name }}</p>
+                                    <p>หมายเลขเครื่องประดับ :
+                                        {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</p>
+                                    <div class="col-md-4">
+                                        <img src="{{ asset('storage/' . $imagejewelry->jewelry_image) }}"
+                                            alt="เครื่องประดับ" class="img-fluid rounded"
+                                            style="width: 154px; height: auto;">
+                                    </div>
+                                @elseif($reservation->jewelry_set_id)
+                                    <p>ประเภทเครื่องประดับ : เซตเครื่องประดับปิ่นผมสุดคุ้ม</p>
+                                    <p>หมายเลขเครื่องประดับ : SET00{{ $setjewelry->id }}</p>
+                                    <p>ประกอบด้วย :</p>
+                                    <div class="row">
+                                        @foreach ($setjewelryitem as $item)
+                                            <div class="col-md-4 mb-3">
+                                                <img src="{{ asset('storage/' . $item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
+                                                    alt="เครื่องประดับในเซต" class="img-fluid rounded mb-2"
+                                                    style="height: 150px; width: 150px; object-fit: cover;">
+                                                <small class="d-block">
+                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
+                                                </small>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ข้อมูลการเช่า --}}
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">ข้อมูลการเช่า</h5>
+
+                        <p class="mb-3">
+                            <span class="bi bi-person"></span>
+                            ชื่อผู้เช่า : คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                        </p>
+
+                        <p class="mb-3">
+                            <i class="bi bi-currency-dollar"></i>
+                            ราคาเช่า : {{ number_format($orderdetail->price, 2) }} บาท
+                        </p>
+
+                        <p class="mb-3">
+                            <i class="bi bi-currency-dollar"></i>
+                            เงินมัดจำ : {{ number_format($orderdetail->deposit, 2) }} บาท
+                        </p>
+
+                        <p class="mb-3">
+                            <i class="bi bi-shield-check"></i>
+                            ประกันค่าเสียหาย : {{ number_format($orderdetail->damage_insurance, 2) }} บาท
+                        </p>
+
+                        <p class="mb-3">
+                            <i class="bi bi-check-circle"></i>
+                            สถานะ :
+                            @if ($orderdetail->status_payment == 1)
+                                ชำระเงินมัดจำแล้ว
+                            @elseif($orderdetail->status_payment == 2)
+                                ชำระเงินเต็มจำนวนแล้ว
+                            @endif
+                        </p>
+
+                        <p class="mb-3">
+                            <span class="bi bi-person"></span>
+                            พนักงานผู้รับออเดอร์ : คุณ{{ $user->name }} {{ $user->lname }}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+
+    <div class="modal fade" id="updatestatus" tabindex="-1" role="dialog" aria-labelledby="updatestatusLabel"
+        aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form action="{{ route('employee.actionupdatereceivejewelry', ['id' => $orderdetail->id]) }}"
+                    method="POST">
+                    @csrf
+
+                    <div class="modal-header" style="background-color:#EAD8C0 ;">
+                        <h5 class="modal-title" id="updatestatusLabel">
+                            อัปเดตสถานะการเช่า</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h6 class="mb-3">รายละเอียดการจอง:</h6>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 30%; text-align: left; padding: 10px;">ชื่อลูกค้า:</th>
+                                    <td style="padding: 10px;">คุณ{{ $customer->customer_fname }}
+                                        {{ $customer->customer_lname }}</td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 30%; text-align: left; padding: 10px;">วันที่นัดรับ:</th>
+                                    <td style="padding: 10px;">
+                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}</td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 30%; text-align: left; padding: 10px;">ส่วนต่างที่ต้องจ่าย:</th>
+                                    <td style="padding: 10px;">
+                                        {{ number_format($orderdetail->price - $orderdetail->deposit) }} บาท</td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 30%; text-align: left; padding: 10px;">เงินประกัน:</th>
+                                    <td style="padding: 10px;">{{ number_format($orderdetail->damage_insurance, 2) }} บาท
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- สรุปการชำระเงิน -->
+                        <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
+                        <div class="alert alert-info"
+                            style="background-color: #e9f7f9; border-color: #bee5eb; color: #0c5460; font-size: 1.2rem; padding: 10px;">
+                            <p>ยอดคงเหลือที่ต้องชำระ: <strong
+                                    id="totalDue">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance) }}
+                                    บาท</strong></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn " data-dismiss="modal"
+                            style="background-color:#DADAE3;">ยกเลิก</button>
+                        <button type="submit" class="btn " id="confirmUpdateButton"
+                            style="background-color:#ACE6B7;">ยืนยันการอัปเดตสถานะ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content custom-modal-content"
+                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
+                <div class="modal-body"
+                    style="padding: 5px; display: flex; align-items: center; justify-content: center;">
+                    <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content custom-modal-content"
+                style="max-width: 400px; height: 50px; width: 100%; margin: auto; background-color: #EAD8C0; border: 2px solid #EAD8C0; ">
+                <div class="modal-body shadow"
+                    style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                    <p style="margin: 0; color: #000000;">{{ session('success') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="updatestatus_return" tabindex="-1" role="dialog"
+        aria-labelledby="updatestatus_returnLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+            <form action="{{ route('employee.updatereturnjewelry', ['id' => $orderdetail->id]) }}"
+                method="POST">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#EAD8C0 ;">
+                    <h5 class="modal-title" id="returnModalLabel">
+                        ยืนยันการคืนเครื่องประดับ</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        style="color: white;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- แสดงรายละเอียดการเช่าและการคืน -->
+                    <strong class="mb-3">รายละเอียดการเช่าและการคืน:</strong>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th style="width: 50%; text-align: left; padding: 10px;">ชื่อลูกค้า:</th>
+                                <td style="padding: 10px;">คุณ{{ $customer->customer_fname }}
+                                    {{ $customer->customer_lname }}</td>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%; text-align: left; padding: 10px;">วันที่นัดรับ:</th>
+                                <td style="padding: 10px;">
+                                    {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}</td>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%; text-align: left; padding: 10px;">วันที่มารับจริง:</th>
+                                <td style="padding: 10px;">
+                                    {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}</td>
+                            </tr>
+
+                            <tr>
+                                <th style="width: 50%; text-align: left; padding: 10px;">วันที่นัดคืน:</th>
+                                <td style="padding: 10px;">
+                                    {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}</td>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%; text-align: left; padding: 10px;">วันที่มาคืนจริง:</th>
+                                <td style="padding: 10px;">
+                                    {{ \Carbon\Carbon::now()->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::now()->year + 543 }}</td>
+                            </tr>
+
+                            <tr>
+                                <th style="width: 50%; text-align: left; padding: 10px;">ค่าปรับส่งคืนล่าช้า:</th>
+                                <td style="padding: 10px;"><span id="mulct"></span>
+                                </td>
+                            </tr>
+                            <input type="hidden" name="late_return_fee" id="late_return_fee">
+                            <input type="hidden" name="late_chart" id="late_chart">
+                            <script>
+                                var now_day = new Date();
+                                var return_date = new Date('{{ $Date->return_date }}');
+                                now_day.setHours(0, 0, 0, 0);
+                                return_date.setHours(0, 0, 0, 0);
+                                // console.log(return_date) ; 
+                                var t = now_day - return_date;
+                                var s = Math.ceil(t / (1000 * 60 * 60 * 24));
+                                var p = s * 200; //ถ้าคืนช้า คิดวันละ 200 บาท  
+                                document.getElementById('late_return_fee').value = p;
+                                if (s == 0) {
+                                    document.getElementById('mulct').innerHTML = '0 บาท';
+                                } else if (s > 0) {
+                                    document.getElementById('mulct').innerHTML = p + ' บาท ' + 'เนื่องจากคืนล่าช้า ' + s + ' วัน';
+                                } else {
+                                    document.getElementById('mulct').innerHTML = '0 บาท'
+                                }
+                            </script>
+                            <tr>
+                                <th style="width: 50%; text-align: left; padding: 10px;">ค่าธรรมเนียมขยายระยะเวลาเช่า:
+                                </th>
+                                <td style="padding: 10px;"><span id="rental_exte"></span></td>
+                            </tr>
+                            <script>
+                                var rr = new Date('{{ $Date->return_date }}');
+                                var pp = new Date('{{ $Date->pickup_date }}');
+                                rr.setHours(0, 0, 0, 0);
+                                pp.setHours(0, 0, 0, 0);
+                                var rr_pp = rr - pp;
+                                var late_chart_day = Math.ceil(rr_pp / (1000 * 60 * 60 * 24));
+
+                                if (late_chart_day > 3) {
+                                    console.log('ในสัญญาเกิน 3 วัน ');
+                                    var n = new Date('{{ $Date->actua_pickup_date }}'); //วันที่รับจริง
+                                    var nn = new Date(); //วันปัจจุบัน
+                                    n.setHours(0, 0, 0, 0);
+                                    nn.setHours(0, 0, 0, 0);
+
+                                    var nn_n = Math.ceil((nn - n) / (1000 * 60 * 60 * 24));
+
+                                    if (nn_n > 3) {
+                                        document.getElementById('rental_exte').innerHTML = (nn_n - 3) * 100 + ' บาท' + '   (ขยายเวลาเช่า ' + (nn_n -
+                                            3) + ' วัน)';
+                                    } else if (nn_n <= 3) {
+                                        document.getElementById('rental_exte').innerHTML = '0 บาท';
+                                    }
+
+                                } else if (late_chart_day <= 3) {
+                                    document.getElementById('rental_exte').innerHTML = '0 บาท';
+                                }
+                            </script>
+
+
+                        </tbody>
+                    </table>
+
+                    <!-- ฟิลด์สำหรับพนักงานกรอกค่าธรรมเนียมการเสียหาย -->
+                    <strong class="mb-3">กรอกข้อมูลค่าธรรมเนียม:</strong>
+                    <div class="form-group">
+                        <p>เก็บประกันจากลูกค้า : <span>{{ $orderdetail->damage_insurance }} บาท</span></p>
+                        <strong for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</strong>
+                        <input type="number" class="form-control" name="total_damage_insurance"
+                            id="total_damage_insurance" placeholder="กรอกจำนวนเงิน" min="0" step="0.01"
+                            required value="0">
+                    </div>
+
+                    <!-- สรุปการชำระเงิน -->
+                    <strong class="mt-4 mb-3">สรุปการชำระเงิน:</strong>
+                    <input type="hidden" name="check_for_set_or_item" value="{{$reservation->jewelry_id ? 'item' : 'set'}}">
+
+
+                    @if ($reservation->jewelry_id)
+                    <div class="form-group">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="bg-gray-100">รายการ</th>
+                                    <th class="bg-gray-100">การดำเนินการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                    <tr>
+                                        <td class="px-4 py-2">
+                                            {{ $typejewelry->type_jewelry_name }}
+                                            {{ $typejewelry->specific_letter }}
+                                            {{ $jewelry->jewelry_code }}
+                                        </td>
+                                        <td class="px-4 py-2">
+                                            <select name="actionreturnitem" id="actionreturnitem" class="form-control">
+                                                <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                <option value="repairitem">ต้องซ่อม</option>
+                                            </select>
+
+                                            <div id="showrepair_detail_item" class="mt-2"
+                                                style="display: none;">
+                                                <textarea name="repair_detail_for_item" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
+                                                    rows="3"></textarea>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            var actionreturnitem = document.getElementById('actionreturnitem');
+                                            var showrepair_detail_item = document.getElementById('showrepair_detail_item');
+                                            actionreturnitem.addEventListener('change', function() {
+                                                if (actionreturnitem.value == "repairitem") {
+                                                    showrepair_detail_item.style.display = 'block';
+                                                } else {
+                                                    showrepair_detail_item.style.display = 'none';
+                                                }
+                                            });
+                                        });
+                                    </script>
+                            </tbody>
+                        </table>
+                    </div>
+                    @elseif($reservation->jewelry_set_id)
+                    <div class="form-group">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="bg-gray-100">รายการ</th>
+                                    <th class="bg-gray-100">การดำเนินการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($reservationfilter as $item)
+                                    <tr>
+                                        
+                                        <input type="hidden" name="refil_id_[]" value="{{$item->id}}">
+                                        <input type="hidden" name="refil_jewelry_id_[]" value="{{$item->jewelry_id}}">
+                                        
+                                        <td class="px-4 py-2">  
+                                             {{ $item->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}
+                                             {{ $item->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $item->jewvationtorefil->jewelry_code }}
+                                        </td>
+                                        <td class="px-4 py-2">
+                                            <select name="action_set_[]"
+                                                id="actionreturn{{ $item->id}}" class="form-control">
+                                                <option value="clean" selected>ส่งทำความสะอาด</option>
+                                                <option value="repair">ต้องซ่อม</option>
+                                            </select>
+
+                                            <div id="repair_details{{ $item->id }}" class="mt-2"
+                                                style="display: none;">
+                                                <textarea name="repair_details_set_[]" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
+                                                    rows="3"></textarea>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            var actionreturn = document.getElementById('actionreturn{{ $item->id }}');
+                                            var showrepair_detail = document.getElementById('repair_details{{ $item->id }}');
+                                            actionreturn.addEventListener('change', function() {
+                                                if (actionreturn.value == "repair") {
+                                                    showrepair_detail.style.display = 'block';
+                                                } else {
+                                                    showrepair_detail.style.display = 'none';
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @endif
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn " data-dismiss="modal"
+                        style="background-color:#DADAE3;">ยกเลิก</button>
+                    <button type="submit" class="btn " id="confirmReturnButton"
+                        style="background-color:#ACE6B7;">ยืนยันการคืนเครื่องประดับ</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <script>
-        @if (session('success'))
+        @if (session('fail'))
             setTimeout(function() {
-                $('#showsuccessss').modal('show');
+                $('#showfail').modal('show');
             }, 500);
         @endif
     </script>
 
 
 
-    <div class="container mt-4">
-        <!-- กล่องแรก: ข้อมูลการเช่าชุด -->
-        <div class="card shadow mb-5">
-            <div class="card-header bg-secondary text-white">
-                <h4 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>ข้อมูลการเช่าเครื่องประดับ</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>หมายเลข Order Detail:</strong></span>
-                                <span class="badge bg-primary rounded-pill">{{ $orderdetail->id }}</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>รายการ:</strong></span>
-                                <span>{{ $orderdetail->title_name }}</span>
-                            </li>
-               
-                            {{-- <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>หมายเลขชุด:</strong></span>
-                                <span>{{ $dress->dress_code_new }}{{ $dress->dress_code }}</span>
-                            </li> --}}
-                      
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>ราคา/ชิ้น:</strong></span>
-                                <span>{{ number_format($orderdetail->price, 2) }} บาท</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>ราคามัดจำ/ชิ้น:</strong></span>
-                                <span>{{ number_format($orderdetail->deposit, 2) }} บาท</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>ค่าบริการขยายเวลาเช่าเครื่องประดับ:</strong></span>
-                                <span>{{ number_format($orderdetail->late_charge, 2) }} บาท</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>วันที่นัดรับเครื่องประดับ:</strong></span>
-                                <span>
-                                    {{ \Carbon\Carbon::parse($orderdetail->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($orderdetail->pickup_date)->year + 543 }}
-                                </span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>วันที่นัดคืนเครื่องประดับ:</strong></span>
-                                <span>
-                                    {{ \Carbon\Carbon::parse($orderdetail->return_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($orderdetail->return_date)->year + 543 }}
-                                </span>
-                            </li>
-                            {{-- <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span><strong>ประเภทชุด:</strong></span>
-                            <span>{{ $orderdetail->type_dress }}</span>
-                        </li> --}}
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>ประเภทออเดอร์:</strong></span>
-                                <span>เช่าเครื่องประดับ</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>จำนวนเครื่องประดับที่เช่า:</strong></span>
-                                <span>{{ $orderdetail->amount }}&nbsp;ชิ้น</span>
-                            </li>
 
-                            
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>ค่าประกันความเสียหาย:</strong></span>
-                                <span>{{ number_format($orderdetail->damage_insurance, 2) }} บาท</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>สถานะออเดอร์:(ล่าสุด)</strong></span>
-                                <span
-                                    class="badge bg-{{ $orderdetail->status_detail == 'เสร็จสิ้น' ? 'success' : 'warning' }}">{{ $orderdetail->status_detail }}</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>สถานะจ่ายเงิน:</strong></span>
-                                <span
-                                    class="badge bg-{{ $orderdetail->status_payment == 'ชำระแล้ว' ? 'success' : 'danger' }}">
-                                    @if ($orderdetail->status_payment == 1)
-                                        จ่ายมัดจำแล้ว({{number_format($orderdetail->deposit,2)}})
-                                    @else
-                                        จ่ายเต็มจำนวนแล้ว({{number_format($orderdetail->price,2)}})
-                                    @endif
 
-                                </span>
-                            </li>
-                            <li class="list-group-item">
-                                <strong>โน๊ต:</strong><br>
-                                <small>{{ $orderdetail->note }}</small>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- คงไว้ส่วนอื่นๆ ตามเดิม -->
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card shadow mb-5">
-                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="bi bi-check-circle-fill me-2"></i>สถานะออเดอร์</h4>
-                        <div style="display: block ; " id="button_status_pickup">
-                            <button class="btn btn-warning" data-toggle="modal" data-target="#modalupdatestatusrentjewelry">
-                                อัพเดตสถานะ(มารับเครื่องประดับ)
-                            </button>
-                        </div>
-                        <div style="display: block ;" id="button_status_return">
-                            <button class="btn btn-warning" data-toggle="modal"
-                                data-target="#modalupdatestatusrentjewelrytwo">
-                                อัพเดตสถานะ(คืนเครื่องประดับ)
-                            </button>
-                        </div>
 
 
-                    </div>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>วันที่ทำรายการ</th>
-                                <th>สถานะ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($orderdetailstatus as $orderdetailstatus)
-                                <tr>
-                                    <td>
-                                        {{ \Carbon\Carbon::parse($orderdetailstatus->created_at)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($orderdetailstatus->created_at)->year + 543 }}
-                                    </td>
-                                    <td>{{ $orderdetailstatus->status }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
 
-                </div>
-            </div>
-
-
-
-            <div class="col-md-6">
-                <div class="card shadow mb-5">
-                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="bi bi-cash-coin me-2"></i>ค่าใช้จ่าย</h4>
-                        <button class="btn btn-warning" data-toggle="modal" data-target="#modaladdcost">
-                            บันทึกค่าใช้จ่าย
-                        </button>
-                    </div>
-                    @if ($cost->count() > 0)
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ประเภทค่าใช้จ่าย</th>
-                                    <th>ราคา</th>
-                                    <th>action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($cost as $cost)
-                                    <tr>
-
-                                        <td>{{ $cost->cost_type }}</td>
-                                        <td>{{ $cost->cost_value }}</td>
-                                        <td>
-                                            <button type="button" data-toggle="modal"
-                                                data-target="#modaleditcost{{ $cost->id }}">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button type="submit" data-toggle="modal"
-                                                data-target="#modaldeletecost{{ $cost->id }}">
-                                                <i class="bi bi-trash-fill"></i>
-                                            </button>
-                                        </td>
-                                        {{-- modalลบcost --}}
-                                        <div class="modal fade" id="modaldeletecost{{ $cost->id }}" role="dialog"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">ยืนยันการลบข้อมูลค่าใช้จ่าย</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <form
-                                                        action="{{ route('employee.actiondeletecost', ['id' => $cost->id]) }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <div class="modal-body">
-                                                            <p>แน่ใจหรือว่าต้องการจะลบรายการข้อมูลค่าใช้จ่าย</p>
-                                                            <hr>
-
-                                                            <div class="row">
-                                                                <div class="col-md-4"><strong>ประเภทค่าใช้จ่าย:</strong>
-                                                                </div>
-                                                                <div class="col-md-8">{{ $cost->cost_type }}</div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-4"><strong>ราคา:</strong></div>
-                                                                <div class="col-md-8">{{ $cost->cost_value }}</div>
-
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button class="btn btn-danger" type="button"
-                                                                data-dismiss="modal">ยกเลิก</button>
-                                                            <button class="btn btn-secondary"
-                                                                type="submit">ยืนยัน</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        {{-- modalแก้ไขพวกค่าใช้จ่าย --}}
-                                        <div class="modal fade" id="modaleditcost{{ $cost->id }}" tabindex="-1"
-                                            role="dialog" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">ค่าใช้จ่าย</h5>
-                                                    </div>
-                                                    <form
-                                                        action="{{ route('employee.actionupdatecost', ['id' => $cost->id]) }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        <div class="modal-body">
-                                                            <div class="mb-3">
-                                                                <label class="form-label"
-                                                                    for="">ประเภทค่าใช้จ่าย:</label>
-                                                                <input type="text" class="form-control"
-                                                                    name="update_cost_type"
-                                                                    value="{{ $cost->cost_type }}" required>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label class="form-label"
-                                                                    for="update_cost_value">ราคา:</label>
-                                                                <input type="number" class="form-control"
-                                                                    name="update_cost_value"
-                                                                    value="{{ $cost->cost_value }}" min="1"
-                                                                    step="0.01" required>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-danger"
-                                                                    data-dismiss="modal">ยกเลิก</button>
-                                                                <button type="submit"
-                                                                    class="btn btn-secondary">ยืนยัน</button>
-                                                            </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @else
-                        <div class="card-body">
-                            <p class="lead text-center">ไม่มีข้อมูลการบันทึกค่าใช้จ่าย</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            
-
-        </div>
-
-        <!-- แถวที่สาม: เพิ่มเติมลวดลาย และ รูปภาพ -->
-        <div class="row">
-            
-
-
-
-
-
-
-
-
-
-            
-
-
-
-
-
-        </div>
-
-        <!-- แถวที่สี่: ค่าใช้จ่าย และ วันที่ -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card shadow mb-5">
-                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="bi bi-calendar-fill me-2"></i>วันที่</h4>
-                        <button class="btn btn-warning" id="button_edit_date">
-                            แก้ไขวันที่
-                        </button>
-                    </div>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>นัดรับเครื่องประดับ</th>
-                                <th>นัดคืนเครื่องประดับ</th>
-                                <th>ค่าบริการขยายเวลาเช่า</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($date as $date)
-                                <tr>
-                                    <td>
-                                        {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                    </td>
-                                    <td>
-                                        {{ \Carbon\Carbon::parse($date->return_date)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($date->return_date)->year + 543 }}
-                                    </td>
-                                    <td>0.00
-                                        บาท
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card shadow mb-5">
-                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="bi bi-image-fill me-2"></i>รูปภาพก่อนเช่าหรือที่เกี่ยวข้อง</h4>
-
-                        <button class="btn btn-warning" data-toggle="modal" data-target="#modaladdimagerent"
-                            id="button_add_image">
-                            เพิ่มรูปภาพ
-                        </button>
-                    </div>
-                    @if ($imagerent->count() > 0)
-                        {{-- @foreach ($imagerent as $imagerent)
-                        <img src="{{asset('storage/' .$imagerent->image)}}" alt="" width="140px ; ">
-                        @endforeach --}}
-                        <div class="row">
-                            @foreach ($imagerent as $imagerent)
-                                <div class="col-md-4">
-
-                                    <img src="{{ asset('storage/' . $imagerent->image) }}" alt="" width="140px;"
-                                        height="140px">
-                                </div>
-                            @endforeach
-
-                        </div>
-                    @else
-                        <div class="card-body">
-                            <p class="lead text-center">ไม่มีข้อมูลรูปภาพ</p>
-                        </div>
-                    @endif
-
-                </div>
-            </div>
-        </div>
-
-
-
-
-
-
-        <div class="row">
-            
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-
-    </div>
-    {{-- modalเพิ่มวันนัดลองชุด --}}
-    <div class="modal fade" id="modaladdfitting" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    เพิ่มข้อมูลการนัด
-                </div>
-                <form action="{{ route('employee.actionaddfitting', ['id' => $orderdetail->id]) }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="row mb-3">
-                            <div class="col-md-4"><strong>วันที่นัด:</strong></div>
-                            <div class="col-md-8">
-                                <input type="date" class="form-control" name="add_fitting_date">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4"><strong>รายละเอียด:</strong></div>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" name="add_fitting_note">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
-                        <button class="btn btn-secondary" type="submit">ยืนยัน</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    {{-- modalเพิ่มบันทึกค่าใช้จ่าย --}}
-    <div class="modal fade" id="modaladdcost" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    เพิ่มค่าใช้จ่าย
-                </div>
-                <form action="{{ route('employee.actionaddcost', ['id' => $orderdetail->id]) }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="row mb-3">
-                            <div class="col-md-4"><strong>ประเภทค่าใช้จ่าย:</strong></div>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" name="add_cost_type">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4"><strong>ราคา:</strong></div>
-                            <div class="col-md-8">
-                                <input type="number" class="form-control" name="add_cost_value" min="1">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
-                        <button class="btn btn-secondary" type="submit">ยืนยัน</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- modalเพิ่มรูปภาพ --}}
-    <div class="modal fade" id="modaladdimagerent" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    เพิ่มรูปภาพ
-                </div>
-                <form action="{{ route('employee.actionaddimagerent', ['id' => $orderdetail->id]) }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="row mb-3">
-                            <div class="col-md-4"><strong>แนบรูปภาพ:</strong></div>
-                            <div class="col-md-8">
-                                <input type="file" class="form-control" name="add_image" required>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
-                        <button class="btn btn-secondary" type="submit">ยืนยัน</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-    {{-- modalอัปเดตสถานะของเช่าเครื่องประดับ --}}
-    <div class="modal fade" id="modalupdatestatusrentjewelry" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form action="{{ route('employee.actionupdatestatusrentjewelry', ['id' => $orderdetail->id]) }}"
-                    method="POST">
-                    @csrf
-                    <div class="modal-header">
-                        อัปเดตสถานะ
-                    </div>
-                    <div class="modal-body">
-                        ต้องการจะอัพเดตสถานะมารับเครื่องประดับของลูกค้า?
-                        
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
-                        <button class="btn btn-secondary" type="submit">ยืนยัน</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- modalอัปเดตสถานะของเช่าชุด --}}
-    <div class="modal fade" id="modalupdatestatusrentjewelrytwo" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form action="{{ route('employee.actionupdatestatusrentjewelry', ['id' => $orderdetail->id]) }}"
-                    method="POST">
-                    @csrf
-                    <div class="modal-header">
-                        <h5 class="modal-title">อัปเดตสถานะ</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="damage_insurance">ประกันที่ลูกค้าจ่าย</label>
-                            <p>{{ number_format($orderdetail->damage_insurance, 2) }} บาท </p>
-                        </div>
-                        <div class="form-group">
-                            <label for="damage_insurance">หักเงินประกันจริง</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" name="total_damage_insurance"
-                                    id="total_damage_insurance" value="0" step="0.01" required>
-                                <div class="input-group-append">
-                                    <span class="input-group-text">บาท</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="why">เหตุผล</label>
-                            <input type="text" class="form-control" name="cause_for_insurance"
-                                id="cause_for_insurance" placeholder="เหตุผลในการหัก" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
-                        <button class="btn btn-primary" type="submit">ยืนยัน</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-
-
-   
-
-
-
-
-
-
-
+    <script>
+        @if (session('success'))
+            setTimeout(function() {
+                $('#showsuccess').modal('show');
+            }, 500);
+        @endif
+    </script>
 
 
 @endsection

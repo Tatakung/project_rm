@@ -106,4 +106,12 @@ class Orderdetail extends Model
       {
           return $this->hasMany(Financial::class, 'order_detail_id');
       }
+
+
+      public function detail_many_one_re()
+    {
+        return $this->belongsTo(Reservation::class, 'reservation_id');
+    }
+
+
 }

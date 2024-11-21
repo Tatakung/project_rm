@@ -31,6 +31,11 @@ use App\Models\Dressmeaadjustment;
 use App\Models\Dressmea;
 use App\Models\AdditionalChange;
 use App\Models\AdjustmentRound;
+use App\Models\Jewelryimage;
+use App\Models\Typejewelry;
+use App\Models\Jewelrysetitem;
+use App\Models\Reservationfilters;
+use App\Models\Jewelryset;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -152,7 +157,7 @@ class OrderController extends Controller
                 $create_dec->save();
             }
         }
-        return redirect()->route('employee.ordertotaldetailshow', ['id' => $id])->with('success','บันทึกการแก้ไขชุดสำเร็จ') ; 
+        return redirect()->route('employee.ordertotaldetailshow', ['id' => $id])->with('success', 'บันทึกการแก้ไขชุดสำเร็จ');
     }
 
 
@@ -219,11 +224,11 @@ class OrderController extends Controller
         $his_dress_adjust = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
 
 
-        $dateeee = Date::where('order_detail_id',$id)
-                ->orderBy('created_at','desc')
-                ->first() ; 
+        $dateeee = Date::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
 
-        return view('employeerentdress.managedetailrentdress', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust','dateeee'));
+        return view('employeerentdress.managedetailrentdress', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee'));
     }
 
 
@@ -231,16 +236,30 @@ class OrderController extends Controller
     private function managedetailrentjewelry($id)
     {
         $orderdetail = Orderdetail::find($id);
-        $customer = User::find($orderdetail->employee_id);
-        $cost = Cost::where('order_detail_id', $id)->get();
-        $date = Date::where('order_detail_id', $id)->get();
-        $imagerent = Imagerent::where('order_detail_id', $id)->get();
+        $order = Order::find($orderdetail->order_id) ; 
+        $customer = Customer::find($order->customer_id) ; 
+        $user = User::find($order->user_id) ; 
+        $reservation = Reservation::find($orderdetail->reservation_id) ;
+        $reservationfilter = Reservationfilters::where('reservation_id',$reservation->id)->get() ; 
+        $Date = Date::where('order_detail_id',$orderdetail->id)
+                        ->orderBy('created_at','desc')
+                        ->first() ;  
+        if($reservation->jewelry_id){
+            $jewelry = Jewelry::find($reservation->jewelry_id) ; 
+            $typejewelry = Typejewelry::where('id',$jewelry->type_jewelry_id)->first() ; 
+            $imagejewelry = Jewelryimage::where('jewelry_id',$jewelry->id)->first() ; 
+            $setjewelry = null ; 
+            $setjewelryitem = null ; 
+        }
+        else{
+            $setjewelry = Jewelryset::find($reservation->jewelry_set_id) ; 
+            $setjewelryitem = Jewelrysetitem::where('jewelry_set_id',$setjewelry->id)->get() ; 
+            $jewelry = null ; 
+            $typejewelry = null ; 
+            $imagejewelry = null ; 
+        }
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
-        $valuestatus = $orderdetail->status_detail;
-        $valuestatus = Orderdetailstatus::where('order_detail_id', $id)
-            ->latest('created_at')
-            ->value('status');
-        return view('employeerentjewelry.managedetailrentjewelry', compact('orderdetail', 'customer', 'cost', 'date', 'imagerent', 'orderdetailstatus', 'valuestatus'));
+        return view('employeerentjewelry.managedetailrentjewelry',compact('orderdetail','reservation','jewelry','typejewelry','orderdetailstatus','setjewelry','imagejewelry','order','customer','user','setjewelryitem','Date','reservationfilter'));
     }
 
     //จัดการเช่าตัด
@@ -1144,29 +1163,7 @@ class OrderController extends Controller
         $add_fitting->save();
         return redirect()->back()->with('success', 'เพิ่มข้อมูลการนัดสำเร็จ !');
     }
-    //เพิ่มข้อมูลการเพิ่มค่าใช้จ่าย
-    public function actionaddcost(Request $request, $id)
-    {
-        $add_cost = new Cost();
-        $add_cost->order_detail_id = $id;
-        $add_cost->cost_type = $request->input('add_cost_type');
-        $add_cost->cost_value = $request->input('add_cost_value');
-        $add_cost->save();
-        $id_for_cost = $add_cost->id;
 
-        $orderdetail = Orderdetail::find($id);
-        $Type_Order = $orderdetail->type_order;
-        //ตารางfinancial
-        $add_financial = new Financial();
-        $add_financial->order_detail_id = $id;
-        $add_financial->cost_id = $id_for_cost;
-        $add_financial->item_name = $request->input('add_cost_type');
-        $add_financial->type_order = $Type_Order;
-        $add_financial->financial_income = 0;
-        $add_financial->financial_expenses = $request->input('add_cost_value');
-        $add_financial->save();
-        return redirect()->back()->with('success', "เพิ่มค่าใช้จ่ายสำเร็จ!");
-    }
 
     public function actionupdatefitting(Request $request, $id)
     {
@@ -1256,14 +1253,7 @@ class OrderController extends Controller
         $delete_mea_orderdetail->delete();
         return redirect()->back()->with('success', 'ลบข้อมูลการวัดสำเร็จ !');
     }
-    public function actionaddimagerent(Request $request, $id)
-    {
-        $add_image_rent = new Imagerent();
-        $add_image_rent->order_detail_id = $id;
-        $add_image_rent->image = $request->file('add_image')->store('rent_images', 'public');
-        $add_image_rent->save();
-        return redirect()->back()->with('success', "เพิ่มรูปภาพสำเร็จ !");
-    }
+
     public function actionupdatedecoration(Request $request, $id)
     {
         $update_decoration = Decoration::find($id);
@@ -1283,14 +1273,14 @@ class OrderController extends Controller
     public function actionupdatestatusrentdress(Request $request, $id)
     {
         $orderdetail = Orderdetail::find($id);
-        $show_date = Date::where('order_detail_id',$orderdetail->id)
-                    ->orderBy('created_at','desc')
-                    ->first() ; 
+        $show_date = Date::where('order_detail_id', $orderdetail->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
         $status = $orderdetail->status_detail;
         if ($status == 'ถูกจอง') {
             $message_return =  Carbon::parse($show_date->return_date)->locale('th')->isoFormat('D MMM') . ' ' .
-             (Carbon::parse($show_date->return_date)->year + 543)  ; 
-            $message_session = 'ลูกค้ากำลังเช่า กำหนดคืนคือ ' .$message_return ;
+                (Carbon::parse($show_date->return_date)->year + 543);
+            $message_session = 'ลูกค้ากำลังเช่า กำหนดคืนคือ ' . $message_return;
 
             //ตารางorderdetail
             $orderdetail->status_detail = "กำลังเช่า";
@@ -1413,7 +1403,7 @@ class OrderController extends Controller
             }
 
             if ($request->input('return_status') == "ส่งซัก") {
-                $next_message_index = 'ส่งซักต่อไป' ;
+                $next_message_index = 'ส่งซักต่อไป';
                 $text_for_reservation = "รอดำเนินการส่งซัก";
                 // ตารางclean
                 $create_clean = new Clean();
@@ -1425,9 +1415,8 @@ class OrderController extends Controller
                 $create_status->status = "รอดำเนินการ";
                 $create_status->clean_id = $create_clean->id;
                 $create_status->save();
-            }
-            elseif ($request->input('return_status') == "ต้องซ่อมแซม") {
-                $next_message_index = 'ส่งซ่อม' ;
+            } elseif ($request->input('return_status') == "ต้องซ่อมแซม") {
+                $next_message_index = 'ส่งซ่อม';
                 $text_for_reservation = "รอดำเนินการซ่อม";
                 //ตารางreqpair 
                 $create_repair = new Repair();
@@ -1440,85 +1429,22 @@ class OrderController extends Controller
                 $create_status = new Orderdetailstatus();
                 $create_status->status = "รอดำเนินการ";
                 $create_status->repair_id = $create_repair->id;
-                $create_status->save() ; 
+                $create_status->save();
             }
             //ตารางreservation 
             $reservation = Reservation::find($orderdetail->reservation_id);
             $reservation->status = $text_for_reservation;
             $reservation->save();
-            $message_session = 'ลูกค้าคืนชุดแล้ว และชุดจะถูก'.$request->input('return_status') .'ต่อไป' ; 
+            $message_session = 'ลูกค้าคืนชุดแล้ว และชุดจะถูก' . $request->input('return_status') . 'ต่อไป';
         }
 
-        return redirect()->back()->with('success',$message_session);
+        return redirect()->back()->with('success', $message_session);
     }
 
-    //อัปเดตสถานะเช่าเครื่องประดับ
-    public function actionupdatestatusrentjewelry(Request $request, $id)
-    {
-        $orderdetail = Orderdetail::find($id);
-        $status = $orderdetail->status_detail;
-        if ($status == 'จองเครื่องประดับ') {
-            //ตารางorderdetail
-            $orderdetail->status_detail = "กำลังเช่า";
-            $orderdetail->save();
-            //ตารางorderdetailstatus
-            $create_status = new Orderdetailstatus();
-            $create_status->order_detail_id = $id;
-            $create_status->status = "กำลังเช่า";
-            $create_status->save();
+    
 
-            //ตารางjewelry
-            $update_status_jewelry = Jewelry::find($orderdetail->jewelry_id);
-            $update_status_jewelry->jewelry_status = 'กำลังถูกเช่า';
-            $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
-            $update_status_jewelry->save();
 
-            if ($orderdetail->status_payment == 1) {
-                //ตารางpaymentstatus
-                $create_paymentstatus = new Paymentstatus();
-                $create_paymentstatus->order_detail_id = $id;
-                $create_paymentstatus->payment_status = 2;
-                $create_paymentstatus->save();
-                //ตารางorderdetail
-                $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
-                $orderdetail->save();
-                //ตารางfinancial  ถ้ามันเป็น 1 แปลว่ามันจ่ายแค่มัดจำ   ถ้าคืนเครื่องประดับแล้วอะ มันจะต้องเอาเงินเข้าไปในบัญชีส่วนต่าง
-                $create_price = new Financial();
-                $create_price->order_detail_id = $id;
-                $create_price->item_name = 'จ่ายส่วนที่เหลือ';
-                $create_price->type_order = $orderdetail->type_order;
-                $create_price->financial_income = ($orderdetail->price) - ($orderdetail->deposit);
-                $create_price->financial_expenses = 0;
-                $create_price->save();
-            }
-        } elseif ($status == "กำลังเช่า") {
-            //ตารางfinancial
-            if ($request->input('total_damage_insurance') > 0) {
-                $create_total_damage_insurance = new Financial();
-                $create_total_damage_insurance->order_detail_id = $id;
-                $create_total_damage_insurance->item_name = "หักค่าปรับจากประกัน";
-                $create_total_damage_insurance->type_order = $orderdetail->type_order;
-                $create_total_damage_insurance->financial_income = $request->input('total_damage_insurance');
-                $create_total_damage_insurance->financial_expenses = 0;
-                $create_total_damage_insurance->save();
-            }
-            //ตารางorderdetail
-            $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
-            $orderdetail->total_damage_insurance = $request->input('total_damage_insurance'); //ปรับจริง
-            $orderdetail->cause_for_insurance = $request->input('cause_for_insurance'); //เหตุผลในการปรับ ; 
-            $orderdetail->save();
-            //ตารางorderdetailstatus
-            $create_status = new Orderdetailstatus();
-            $create_status->order_detail_id = $id;
-            $create_status->status = "คืนเครื่องประดับแล้ว";
-            $create_status->save();
-            //ตารางjewelry
-            $update_status_jewelry = Jewelry::find($orderdetail->jewelry_id);
-            $update_status_jewelry->jewelry_status = 'ส่งทำความสะอาด';
-            $update_status_jewelry->save();
-        }
-        return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ !');
-    }
+
 
     //อัปเดตสถานะเช่าตัดชุด
     public function actionupdatestatusrentcut(Request $request, $id)
@@ -1610,7 +1536,7 @@ class OrderController extends Controller
             $create_status->order_detail_id = $id;
             $create_status->status = "เริ่มดำเนินการตัด";
             $create_status->save();
-            $message_session = 'เริ่มดำเนินการตัด' ; 
+            $message_session = 'เริ่มดำเนินการตัด';
         } elseif ($status == 'เริ่มดำเนินการตัด') {
             //ตารางorderdetail
             $orderdetail->status_detail = "ตัดชุดเสร็จสิ้น";
@@ -1620,7 +1546,7 @@ class OrderController extends Controller
             $create_status->order_detail_id = $id;
             $create_status->status = "ตัดชุดเสร็จสิ้น";
             $create_status->save();
-            $message_session = 'ตัดชุดเสร็จสิ้น (รอส่งมอบ)' ; 
+            $message_session = 'ตัดชุดเสร็จสิ้น (รอส่งมอบ)';
         } elseif ($status == 'ตัดชุดเสร็จสิ้น') {
             //ตารางorderdetail
             $orderdetail->status_detail = "ส่งมอบชุดแล้ว";
@@ -1641,7 +1567,7 @@ class OrderController extends Controller
                 $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
                 $orderdetail->save();
             }
-            $message_session = 'ส่งมอบชุดสำเร็จ' ;
+            $message_session = 'ส่งมอบชุดสำเร็จ';
         } elseif ($status == 'แก้ไขชุด') {
 
             //ตารางorderdetail
@@ -1669,9 +1595,8 @@ class OrderController extends Controller
                     $update_adjust_edit->save();
                 }
             }
-            $message_session = 'แก้ไขชุดเสร็จสิ้น (รอส่งมอบ)' ;
-        }
-        elseif ($status == 'แก้ไขชุดเสร็จสิ้น') {
+            $message_session = 'แก้ไขชุดเสร็จสิ้น (รอส่งมอบ)';
+        } elseif ($status == 'แก้ไขชุดเสร็จสิ้น') {
             //ตารางorderdetail
             $orderdetail->status_detail = "ส่งมอบชุดแล้ว";
             $orderdetail->save();
@@ -1700,7 +1625,7 @@ class OrderController extends Controller
             $update_date = Date::find($date_id);
             $update_date->actua_pickup_date = now();
             $update_date->save();
-            $message_session = 'ส่งมอบชุดสำเร็จ' ;
+            $message_session = 'ส่งมอบชุดสำเร็จ';
         }
         return redirect()->back()->with('success', $message_session);
     }
@@ -1876,7 +1801,7 @@ class OrderController extends Controller
         }
 
 
-        return redirect()->back()->with('success','อัพเดตสถานะของแก้ไขการวัดสำเร็จ');
+        return redirect()->back()->with('success', 'อัพเดตสถานะของแก้ไขการวัดสำเร็จ');
     }
 
 
@@ -2313,7 +2238,7 @@ class OrderController extends Controller
                 $create_order_detail = new Orderdetail();
                 $create_order_detail->dress_id = $dress_id;
                 $create_order_detail->order_id = $update_order->id;
-                
+
                 $create_order_detail->reservation_id = $reservation->id;
 
 

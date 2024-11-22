@@ -678,11 +678,6 @@ class Orderjewelry extends Controller
         return redirect()->back()->with('success', 'ลูกค้าคืนเครื่องประดับแล้ว');
     }
 
-
-
-
-
-
     public function showpickupqueuejewelry()
     {
         $filer = 'today';
@@ -693,6 +688,35 @@ class Orderjewelry extends Controller
             ->get();
         return view('employeerentjewelry.jewelry-pickup-queue', compact('reservations', 'filer'));
     }
+    public function showreturnqueuejewelry()
+    {
+        $filer = 'today';
+        $listdressreturns = Reservation::where('status_completed', 0)
+            ->where('status', 'กำลังเช่า')
+            ->whereDate('start_date', now())
+            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+            ->get();
+        return view('employeerentjewelry.jewelry-return-queue', compact('listdressreturns', 'filer'));
+    }
+
+    public function showreturnqueuejewelryfilter(Request $request)
+    {
+        $filter_click = $request->input('filter_click');
+        if ($filter_click == 'total') {
+            $listdressreturns = Reservation::where('status_completed', 0)
+                ->where('status', 'กำลังเช่า')
+                ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+                ->get();
+            $filer = 'total';
+        } elseif ($filter_click == 'today') {
+            return $this->showreturnqueuejewelry();
+        }
+        return view('employeerentjewelry.jewelry-return-queue', compact('listdressreturns', 'filer'));
+    }
+
+
+
+
 
     public function showpickupqueuejewelryfilter(Request $request)
     {
@@ -827,7 +851,7 @@ class Orderjewelry extends Controller
             if ($status_next == '1') {
                 $reser_fil = Reservationfilters::find($reservationfilter_id);
                 $reser_fil->status = 'ซ่อมเสร็จแล้ว';
-                $reser_fil->status_completed = 1 ; 
+                $reser_fil->status_completed = 1;
                 $reser_fil->save();
 
                 $repair = Repair::find($id);
@@ -838,7 +862,6 @@ class Orderjewelry extends Controller
                 $jew->jewelry_status = 'พร้อมให้เช่า';
                 $jew->repair_count = $jew->repair_count + 1;
                 $jew->save();
-                
             } elseif ($status_next == '2') {
                 $reser_fil = Reservationfilters::find($reservationfilter_id);
                 $reser_fil->status = 'รอทำความสะอาด';
@@ -854,11 +877,76 @@ class Orderjewelry extends Controller
                 $jew->save();
             }
         }
-
-
-
-
-
         return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ');
+    }
+
+    public function showrentedhistory(Request $request, $id)
+    {
+        $jewelry = Jewelry::find($id);
+        $typejewelry = Typejewelry::find($jewelry->type_jewelry_id);
+
+        $value_month = 0;
+        $value_year = 0;
+
+
+        $history = Reservation::where('jewelry_id', $id)
+            ->where('status_completed', 1)
+            ->where('status', 'คืนเครื่องประดับแล้ว')
+            // ->whereMonth('updated_at', now()->month)
+            // ->whereYear('updated_at', now()->year)
+            ->get();
+
+        return view('employeerentjewelry.jewelry-rented-history', compact('history', 'jewelry', 'typejewelry', 'value_month', 'value_year'));
+    }
+
+    public function showrentedhistoryfilter(Request $request, $id)
+    {
+        $jewelry = Jewelry::find($id);
+        $typejewelry = Typejewelry::find($jewelry->type_jewelry_id);
+        $value_month = $request->input('month');
+        $value_year = $request->input('year');
+
+
+        $history = Reservation::where('jewelry_id', $id)
+            ->where('status_completed', 1)
+            ->where('status', 'คืนเครื่องประดับแล้ว');
+
+        if ($value_month != 0) {
+            $history->whereMonth('updated_at', $value_month);
+        }
+
+        if ($value_year != 0) {
+            $history->whereYear('updated_at', $value_year);
+        }
+
+        $history = $history->get();
+
+        return view('employeerentjewelry.jewelry-rented-history', compact('history', 'jewelry', 'typejewelry', 'value_month', 'value_year'));
+    }
+    public function showrepairjewelryhistory($id)
+    {
+        $jewelry = Jewelry::find($id);
+        $typejewelry = Typejewelry::find($jewelry->type_jewelry_id);
+
+        $re_fil_jew_id = Reservationfilters::where('jewelry_id', $id)->get();
+        $list_one = [];
+        $list_two = [];
+        foreach ($re_fil_jew_id as $item) {
+            $list_one[] = $item->id;
+        }
+
+        foreach ($list_one as $item) {
+            $findreservationfil = Repair::where('reservationfilter_id', $item)
+                ->whereIn('repair_status', ['ซ่อมเสร็จแล้ว', 'กำลังซ่อม'])->get();
+
+
+            if ($findreservationfil->isNotEmpty()) {
+                foreach ($findreservationfil as $item) {
+                    $list_two[] = $item->id;
+                }
+            }
+        }
+        $history = Repair::whereIn('id', $list_two)->get();
+        return view('employeerentjewelry.jewelry-repaired-history', compact('jewelry', 'typejewelry', 'history'));
     }
 }

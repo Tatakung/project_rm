@@ -426,6 +426,13 @@
                 <span class="ml-2">คิวเช่าเครื่องประดับ</span>
             </a>
 
+            <a href="{{ route('showreturnqueuejewelry') }}"
+                class="list-group-item @if (Route::currentRouteName() == 'showreturnqueuejewelry') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
+                <span class="bi bi-plus-circle"></span>
+                <span class="ml-2">รายการเครื่องประดับที่รอคืน</span>
+            </a>
+
 
 
             <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"

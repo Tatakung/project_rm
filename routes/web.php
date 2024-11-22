@@ -122,6 +122,12 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
+    Route::get('/jewelry-rented-history/{id}', [Orderjewelry::class, 'showrentedhistory'])->name('showrentedhistory'); 
+    Route::get('/jewelry-rented-historyfilter/{id}', [Orderjewelry::class, 'showrentedhistoryfilter'])->name('showrentedhistoryfilter'); 
+
+
+    Route::get('/jewelry-repair-history/{id}', [Orderjewelry::class, 'showrepairjewelryhistory'])->name('showrepairjewelryhistory'); 
+
 
 
 
@@ -313,9 +319,19 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::get('/jewelry-pickup-queue', [Orderjewelry::class, 'showpickupqueuejewelry'])->name('showpickupqueuejewelry'); 
+
+    Route::get('/jewelry-return-queue', [Orderjewelry::class, 'showreturnqueuejewelry'])->name('showreturnqueuejewelry'); 
+
+    Route::get('/jewelry-return-queue/filter', [Orderjewelry::class, 'showreturnqueuejewelryfilter'])->name('showreturnqueuejewelryfilter'); 
+
     Route::get('/jewelry-pickup-queue/filter', [Orderjewelry::class, 'showpickupqueuejewelryfilter'])->name('showpickupqueuejewelryfilter'); 
     Route::get('/jewelry-cleaning', [Orderjewelry::class, 'showcleanjewelry'])->name('showcleanjewelry'); 
     Route::get('/jewelry-repairing', [Orderjewelry::class, 'showrepairjewelry'])->name('showrepairjewelry'); 
+
+
+
+
+
 
     Route::post('/jewelry-cleaning/update-to-cleaning/{id}', [Orderjewelry::class, 'jewelryupdatetocleaning'])->name('jewelryupdatetocleaning'); 
     Route::post('/jewelry-cleaning/update-to-cleaned /{id}', [Orderjewelry::class, 'jewelryupdatetocleaned'])->name('jewelryupdatetocleaned'); 

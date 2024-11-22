@@ -168,7 +168,12 @@
                                                 ->first();
                                         @endphp
                                         @if ($sort_queue->id == $reservation->id)
+                                            
+                                            @if($reservation->resermanytoonejew->jewelry_status == 'กำลังถูกเช่า')
+                                            กำลังถูกเช่าโดยลูกค้าท่านอื่น
+                                            @else
                                             {{ $reservation->resermanytoonejew->jewelry_status }}
+                                            @endif
                                         @else
                                             รอคิว
                                         @endif
@@ -176,9 +181,7 @@
                                         @php
                                             $list_set = [];
                                             // แค่jewelry_set_idในตาราง reservation
-                                            $jewwelry_set_id_in_reservation = App\Models\Reservation::where(
-                                                'status_completed',
-                                                0,
+                                            $jewwelry_set_id_in_reservation = App\Models\Reservation::where('status_completed',0,
                                             )
                                                 ->where('status', 'ถูกจอง')
                                                 ->where('jewelry_set_id', $reservation->jewelry_set_id)

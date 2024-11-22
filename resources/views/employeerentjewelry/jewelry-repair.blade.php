@@ -136,18 +136,32 @@
                                         </td>
 
                                         <td>
-                                            {{-- @php
-                                                        $nearest = App\Models\Reservation::whereNot(
-                                                            'id',
-                                                            $repair->reservation_id,
-                                                        )
-                                                            ->where('dress_id', $reservation->dress_id)
-                                                            ->where('status', 'ถูกจอง')
-                                                            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
-                                                            ->first();
-                                                        //วันที่นัดรับชุดที่ใกล้ที่สุดที่จะมีคนมารับชุดนี้ต่อ
-                                                    @endphp --}}
 
+
+                                            <span id="day{{ $repair->id }}"></span>
+                                            @php
+                                                $next_q = App\Models\Reservationfilters::where(
+                                                    'jewelry_id',
+                                                    $repair->repair_many_to_one_reservationfilter->jewelry_id,
+                                                )
+                                                    ->whereNot('id', $repair->repair_many_to_one_reservationfilter->id)
+                                                    ->where('status_completed', 0)
+                                                    ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                    ->where('status', 'ถูกจอง')
+                                                    ->first();
+                                            @endphp
+                                            @if ($next_q)
+                                                <script>
+                                                    var now = new Date();
+                                                    var start_date = new Date('{{ $next_q->start_date }}');
+                                                    var day = start_date - now;
+                                                    var total = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                                    var show = document.getElementById('day{{ $repair->id }}');
+                                                    show.innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' + total + ' วัน';
+                                                </script>
+                                            @else
+                                                ไม่มีคิวจองต่อ
+                                            @endif
                                         </td>
                                         <td>
                                             <button class="btn btn-secondary" type="button" data-toggle="modal"
@@ -279,14 +293,33 @@
 
                                             <td style="color: #0c3daf">{{ $repair->repair_status }}</td>
                                             <td>
-                                                {{-- @php
-                                                                $nearest = App\Models\Reservation::whereNot('id',$repair->reservation_id,)
-                                                                    ->where('dress_id', $reservation->dress_id)
-                                                                    ->where('status', 'ถูกจอง')
-                                                                    ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc",)
-                                                                    ->first();
-                                                                //วันที่นัดรับชุดที่ใกล้ที่สุดที่จะมีคนมารับชุดนี้ต่อ
-                                                            @endphp --}}
+                                                <span id="days{{ $repair->id }}"></span>
+                                                @php
+                                                    $next_qq = App\Models\Reservationfilters::where(
+                                                        'jewelry_id',
+                                                        $repair->repair_many_to_one_reservationfilter->jewelry_id,
+                                                    )
+                                                        ->whereNot(
+                                                            'id',
+                                                            $repair->repair_many_to_one_reservationfilter->id,
+                                                        )
+                                                        ->where('status_completed', 0)
+                                                        ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                        ->where('status', 'ถูกจอง')
+                                                        ->first();
+                                                @endphp
+                                                @if ($next_qq)
+                                                    <script>
+                                                        var noww = new Date();
+                                                        var start_datee = new Date('{{ $next_qq->start_date }}');
+                                                        var dayy = start_datee - noww;
+                                                        var totall = Math.ceil(dayy / (1000 * 60 * 60 * 24));
+                                                        var showw = document.getElementById('days{{ $repair->id }}');
+                                                        showw.innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' + totall + ' วัน';
+                                                    </script>
+                                                @else
+                                                    ไม่มีคิวจองต่อ
+                                                @endif
                                             </td>
                                             <td>
                                                 <button type="button" class="btn btn-secondary" data-toggle="modal"
@@ -309,9 +342,11 @@
                                                                 <input type="hidden" name="repair_type"
                                                                     value="{{ $repair->repair_type }}">
 
-                                                                <input type="hidden" name="jewelry_id" value="{{ $repair->repair_many_to_one_reservationfilter->jewvationtorefil->id }}">
+                                                                <input type="hidden" name="jewelry_id"
+                                                                    value="{{ $repair->repair_many_to_one_reservationfilter->jewvationtorefil->id }}">
 
-                                                                <input type="hidden" name="reser_fil" value="{{$repair->reservationfilter_id}}">
+                                                                <input type="hidden" name="reser_fil"
+                                                                    value="{{ $repair->reservationfilter_id }}">
 
 
                                                                 @if ($repair->repair_type == 1)

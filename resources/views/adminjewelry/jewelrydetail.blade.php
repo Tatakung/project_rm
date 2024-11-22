@@ -169,14 +169,11 @@
                     </div>
 
 
-
-
-
                     <div class="ml-2">
-                        <a href="" class="btn btn-outline-primary mr-2">
+                        <a href="{{route('showrentedhistory',['id' => $datajewelry->id])}}" class="btn btn-outline-primary mr-2">
                             <i class="bi bi-clock-history"></i> ประวัติการเช่า
                         </a>
-                        <a href="" class="btn btn-outline-secondary">
+                        <a href="{{route('showrepairjewelryhistory',['id' => $datajewelry->id])}}" class="btn btn-outline-secondary">
                             <i class="bi bi-tools"></i> ประวัติการซ่อม
                         </a>
                     </div>

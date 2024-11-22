@@ -259,7 +259,8 @@ class OrderController extends Controller
             $imagejewelry = null ; 
         }
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
-        return view('employeerentjewelry.managedetailrentjewelry',compact('orderdetail','reservation','jewelry','typejewelry','orderdetailstatus','setjewelry','imagejewelry','order','customer','user','setjewelryitem','Date','reservationfilter'));
+        $additional = AdditionalChange::where('order_detail_id', $id)->get();
+        return view('employeerentjewelry.managedetailrentjewelry',compact('orderdetail','reservation','jewelry','typejewelry','orderdetailstatus','setjewelry','imagejewelry','order','customer','user','setjewelryitem','Date','reservationfilter','additional'));
     }
 
     //จัดการเช่าตัด

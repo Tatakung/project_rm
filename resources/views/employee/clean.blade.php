@@ -442,10 +442,7 @@
 
                                             <td>
                                                 @php
-                                                    $nearest = App\Models\Reservation::whereNot(
-                                                        'id',
-                                                        $clean->reservation_id,
-                                                    )
+                                                    $nearest = App\Models\Reservation::whereNot('id',$clean->reservation_id,)
                                                         ->where('dress_id', $reservation->dress_id)
                                                         ->where('status', 'ถูกจอง')
                                                         ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")

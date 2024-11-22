@@ -141,8 +141,32 @@
                                                 <td style="color: #a22222 ; ">{{ $clean->status }}</td>
 
                                                 <td>
+                                                    <span id="day{{ $clean->id }}"></span>
+                                                    @php
+                                                        $next_q = App\Models\Reservationfilters::where(
+                                                            'jewelry_id',
+                                                            $clean->jewelry_id,
+                                                        )
+                                                            ->whereNot('id', $clean->id)
+                                                            ->where('status_completed', 0)
+                                                            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                            ->where('status', 'ถูกจอง')
+                                                            ->first();
+                                                    @endphp
+                                                    @if ($next_q)
+                                                        <script>
+                                                            var now = new Date();
+                                                            var start_date = new Date('{{ $next_q->start_date }}');
+                                                            var day = start_date - now;
+                                                            var total = Math.ceil(day / (1000 * 60 * 60 * 24));
+                                                            var show = document.getElementById('day{{ $clean->id }}');
+                                                            show.innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' + total + ' วัน';
+                                                        </script>
+                                                    @else
+                                                        ไม่มีคิวจองต่อ
+                                                    @endif
 
-                                                    {{ $clean->jewelry_id }}
+
                                                 </td>
 
                                                 <td>
@@ -265,8 +289,30 @@
 
                                             <td style="color: #a22222 ; ">{{ $clean->status }}</td>
                                             <td>
-
-                                                {{ $clean->jewelry_id }}
+                                                <span id="days{{ $clean->id }}"></span>
+                                                    @php
+                                                        $next_qq = App\Models\Reservationfilters::where(
+                                                            'jewelry_id',
+                                                            $clean->jewelry_id,
+                                                        )
+                                                            ->whereNot('id', $clean->id)
+                                                            ->where('status_completed', 0)
+                                                            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                            ->where('status', 'ถูกจอง')
+                                                            ->first();
+                                                    @endphp
+                                                    @if ($next_qq)
+                                                        <script>
+                                                            var noww = new Date();
+                                                            var start_datee = new Date('{{ $next_qq->start_date }}');
+                                                            var days = start_datee - noww;
+                                                            var totall = Math.ceil(days / (1000 * 60 * 60 * 24));
+                                                            var showw = document.getElementById('days{{ $clean->id }}');
+                                                            showw.innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' + totall + ' วัน';
+                                                        </script>
+                                                    @else
+                                                        ไม่มีคิวจองต่อ
+                                                    @endif                                               
                                             </td>
 
                                             <td>
@@ -295,7 +341,8 @@
                                                             <div class="modal-body">
                                                                 <input type="hidden" name="jew_id"
                                                                     value="{{ $clean->jewelry_id }}">
-                                                                ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังทำความสะอาด"เป็นเสร็จแล้ว  และพร้อมให้เช่าต่อ
+                                                                ยืนยันว่าจะเปลี่ยนสถานะจาก "กำลังทำความสะอาด"เป็นเสร็จแล้ว
+                                                                และพร้อมให้เช่าต่อ
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button class="btn"
@@ -315,7 +362,8 @@
                                                 role="dialog" aria-hidden="true" data-backdrop="static">
                                                 <div class="modal-dialog modal-lg" role="document">
                                                     <div class="modal-content">
-                                                        <form action="{{ route('jewelryupdatetocleanedbutrepair',['id' => $clean->id]) }}"
+                                                        <form
+                                                            action="{{ route('jewelryupdatetocleanedbutrepair', ['id' => $clean->id]) }}"
                                                             method="POST">
                                                             @csrf
                                                             <div class="modal-header" style="background-color:#EAD8C0 ;">
@@ -326,7 +374,8 @@
                                                             <div class="modal-body">
 
 
-                                                                <input type="hidden" name="jew_id" value="{{ $clean->jewelry_id }}">
+                                                                <input type="hidden" name="jew_id"
+                                                                    value="{{ $clean->jewelry_id }}">
 
                                                                 <p>รายละเอียดของการซ่อม</p>
 
@@ -345,7 +394,7 @@
                                                 </div>
                                             </div>
 
-                                            
+
                                         </tr>
                                     @endforeach
                                 </tbody>

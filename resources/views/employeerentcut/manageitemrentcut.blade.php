@@ -1,6 +1,76 @@
 @extends('layouts.adminlayout')
-
 @section('content')
+    <ol class="breadcrumb" style="background-color: transparent; ">
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.cart') }}" style="color: black ; ">ตะกร้าสินค้า</a>
+        </li>
+        <li class="breadcrumb-item active">
+            จัดการข้อมูลเช่าตัด
+        </li>
+    </ol>
+
+    <style>
+        p {
+            font-size: 16px;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        #button_add_mea {
+            background-color: #3498db;
+            /* ปุ่มสีฟ้า */
+            color: #fff;
+            /* ตัวอักษรสีขาว */
+            border: none;
+            /* ลบขอบปุ่ม */
+            border-radius: 4px;
+            /* มุมปุ่มโค้ง */
+            padding: 6px 10px;
+            /* ระยะห่างด้านในของปุ่ม */
+            font-size: 12px;
+            /* ขนาดตัวอักษรของปุ่ม */
+            cursor: pointer;
+            /* เปลี่ยนเคอร์เซอร์เมื่อชี้ที่ปุ่ม */
+            margin-left: 10px;
+            /* ระยะห่างจากข้อความ */
+            transition: background-color 0.3s ease;
+            /* เอฟเฟกต์เปลี่ยนสี */
+        }
+
+        #button_add_mea:hover {
+            background-color: #2980b9;
+            /* เปลี่ยนสีเมื่อชี้ */
+        }
+
+        #button_add_image {
+            background-color: #3498db;
+            /* ปุ่มสีฟ้า */
+            color: #fff;
+            /* ตัวอักษรสีขาว */
+            border: none;
+            /* ลบขอบปุ่ม */
+            border-radius: 4px;
+            /* มุมปุ่มโค้ง */
+            padding: 6px 10px;
+            /* ระยะห่างด้านในของปุ่ม */
+            font-size: 12px;
+            /* ขนาดตัวอักษรของปุ่ม */
+            cursor: pointer;
+            /* เปลี่ยนเคอร์เซอร์เมื่อชี้ที่ปุ่ม */
+            margin-left: 10px;
+            /* ระยะห่างจากข้อความ */
+            transition: background-color 0.3s ease;
+            /* เอฟเฟกต์เปลี่ยนสี */
+        }
+
+        #button_add_image:hover {
+            background-color: #2980b9;
+            /* เปลี่ยนสีเมื่อชี้ */
+        }
+    </style>
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
             <div class="modal-content custom-modal-content"
@@ -37,450 +107,367 @@
         @endif
     </script>
 
-    <form action="{{ route('employee.savemanageitemcutrent', ['id' => $orderdetail->id]) }}" method="POST"
-        enctype="multipart/form-data">
-        @csrf
-        <div class="container mt-4">
-            <!-- กล่องแรกฟอร์มเพิ่มออเดอร์ -->
-            <div class="shadow p-4 mb-5 bg-red rounded">
-                <h4 class="mb-4" style="text-align: center">ข้อมูลเช่าตัดชุด</h4>
-                <div class="row mb-3">
 
-                    <div class="col-sm-4">
-                        <label for="dressType" class="form-label">ประเภทชุด</label>
-                        <select class="form-control" id="type_dress" name="type_dress" required
-                            >
-                            <option value="" selected disabled>เลือกรายการ</option>
-                            @foreach ($type_dress as $dressType)
-                                <option value="{{ $dressType->type_dress_name }}"
-                                    {{ $orderdetail->type_dress == $dressType->type_dress_name ? 'selected' : '' }}>
-                                    {{ $dressType->type_dress_name }}</option>
-                            @endforeach
-                            <option value="other_type">อื่นๆ</option>
-                        </select>
+    <form action="{{ route('employee.savemanageitemcutrent', ['id' => $orderdetail->id]) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="container mt-5">
+            <div class="card shadow">
+                <div class="card-header"><i class="bi bi-info-circle"></i> ข้อมูลเช่าตัด
+                </div>
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="media">
+                                <div class="card-body">
+
+                                    <p><strong>รายการ :</strong> เช่าตัด{{ $orderdetail->type_dress }}</p>
+
+
+                                    <p class="d-flex align-items-center">
+                                        <strong>ราคาเช่าตัด (บาท) :</strong>
+                                        <input type="number" name="update_price" id="update_price"
+                                            value="{{ $orderdetail->price }}" min="1" required
+                                            class="form-control mx-2" style="width: 200px;">
+                                    </p>
+
+                                    <p class="d-flex align-items-center">
+                                        <strong>เงินมัดจำ (บาท) :</strong>
+                                        <input type="number" name="update_deposit" id="update_deposit"
+                                            value="{{ $orderdetail->deposit }}" min="1" required
+                                            class="form-control mx-2" style="width: 200px;">
+                                    </p>
+
+                                    <script>
+                                        var price = document.getElementById('update_price');
+                                        var deposit = document.getElementById('update_deposit');
+
+                                        deposit.addEventListener('input', function() {
+                                            var convert_deposit = parseFloat(deposit.value);
+                                            var convert_price = parseFloat(price.value);
+                                            if (convert_deposit > convert_price) {
+                                                deposit.value = convert_price;
+                                            }
+                                        });
+                                        price.addEventListener('input', function() {
+                                            deposit.value = '';
+
+                                        });
+                                    </script>
+
+
+
+
+
+                                    <p class="d-flex align-items-center">
+                                        <strong>จำนวนชุดที่เช่าตัด :</strong>
+                                        <input type="number" name="update_amount" value="{{ $orderdetail->amount }}"
+                                            min="1" required max="100" class="form-control mx-2"
+                                            style="width: 200px;">
+                                    </p>
+
+
+
+                                    @php
+                                        $today = \carbon\Carbon::today()->toDateString();
+                                    @endphp
+
+                                    <p class="d-flex align-items-center">
+                                        <strong>วันที่นัดรับ :</strong>
+                                        <input type="date" name="update_pickup_date" value="{{ $Date->pickup_date }}"
+                                            min="{{ $today }}" class="form-control mx-2" style="width: 200px;">
+                                    </p>
+
+
+                                    <p class="d-flex align-items-center">
+                                        <strong>วันที่นัดคืน :</strong>
+                                        <input type="date" name="update_return_date" value="{{ $Date->return_date }}"
+                                            min="{{ $today }}" class="form-control mx-2" style="width: 200px;">
+                                    </p>
+
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4" style="display: none;" id="showinput">
-                        <label for="" class="form-label">ประเภทชุดอื่นๆ</label>
-                        <input type="text" class="form-control" id="other_input" name="other_input"
-                            placeholder="กรอกประเภทชุดอื่นๆ">
+                </div>
+            </div>
+            <div class="card shadow mt-3">
+                <div class="card-header">
+                    {{-- <p>ข้อมูลการวัดตัวสำหรับตัดชุด (นิ้ว)</p> --}}
+                    <div class="col-md-12">
+                        <p>ข้อมูลการวัดตัว (หน่วยเป็นนิ้ว)
+                            <button type="button" id="button_add_mea">+ เพิ่มการวัดเพิ่มเติม</button>
+                        </p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="aria_show_mea">
+                        {{-- พืน้ที่แสดงผล  --}}
+
+                        @foreach ($measurementadjusts as $measurementorderdetail)
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="hidden" name="mea_id_[]" value="{{ $measurementorderdetail->id }}">
+                                    <input type="text" name="update_mea_name_[]" class="form-control"
+                                        style="font-size: 15px; margin-top: 8px; width: 90%; height: 70%;"
+                                        value="{{ $measurementorderdetail->name }}" placeholder="ชื่อการวัด" required>
+                                </div>
+
+                                <div class="col-md-3" style="display: flex; align-items: center;">
+                                    <input type="hidden" value="{{ $measurementorderdetail->id }}"
+                                        name="mea_order_detail_id_[]">
+
+                                    <input type="number" class="form-control" name="update_mea_number_[]"
+                                        style="width: 50%; height: 60%; font-size: 15px; margin-right: 20px; margin-bottom: 1px;"
+                                        value="{{ $measurementorderdetail->new_size }}" placeholder="ค่าการวัด"
+                                        step="0.01" required>
+                                </div>
+
+                                <div class="col-md-2" style="padding-left: 1px; margin-top: 12px;">
+
+                                    <a
+                                        href="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}">
+                                        <button class="btn"><i class="bi bi-x-circle"></i></button>
+                                    </a>
+
+                                </div>
+                            </div>
+                        @endforeach
+
+                        <script>
+                            var aria_show_mea = document.getElementById('aria_show_mea');
+                            var button_add_mea = document.getElementById('button_add_mea');
+                            var count_add = 0;
+
+                            button_add_mea.addEventListener('click', function() {
+                                count_add++;
+
+                                var div = document.createElement('div');
+                                div.className = 'row';
+                                div.id = 'row_aria_mea' + count_add;
+
+                                var input =
+                                    '<div class="col-md-4">' +
+                                    '<input type="text" class="form-control" name="add_mea_name_[]" style="font-size: 15px; margin-top: 8px; width: 90%; height: 70%;" placeholder="ชื่อการวัด" required>' +
+                                    '</div>' +
+                                    '<div class="col-md-4" style="display: flex; align-items: center;">' +
+                                    '<input type="number" class="form-control" name="add_mea_number_[]" style="width: 50%; height: 60%; font-size: 15px; margin-right: 20px; margin-bottom: 1px;" placeholder="ค่าการวัด" step="0.01" required>' +
+                                    '</div>' +
+                                    '<div class="col-md-4" style="padding-left: 1px; margin-top: 12px;">' +
+                                    '<button type="button" class="btn btn-danger" onclick="deletemea(' + count_add +
+                                    ')"><i class="bi bi-x-circle"></i></button>' +
+                                    '</div>';
+
+                                div.innerHTML = input;
+                                aria_show_mea.appendChild(div);
+                            });
+
+                            function deletemea(count_add) {
+                                var delete_mea = document.getElementById('row_aria_mea' + count_add);
+                                delete_mea.remove();
+                            }
+                        </script>
+
+
+
+
+                    </div>
+                </div>
+
+
+
+                <div class="card-body">
+                    <div class="col-md-8">
+                        <p style="font-weight: bold;">รายละเอียดอื่นๆ</p>
+                        <textarea name="update_note" id="" cols="1" rows="4" class="form-control">{{ $orderdetail->note }}</textarea>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="card shadow mt-3">
+                <div class="card-header">
+                    {{-- <p>ข้อมูลการวัดตัวสำหรับตัดชุด (นิ้ว)</p> --}}
+                    <div class="col-md-12">
+                        <p><strong>อัปโหลดแบบตัวอย่างสำหรับตัดชุด (หากมี)</strong>
+                            <button type="button" id="button_add_image">+ เพิ่มรูปภาพ</button>
+                        </p>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <div class="row" id="aria_show_mage">
+                        @foreach ($image_rent as $item)
+                            <div class="col-md-6">
+                                <div class="card h-100 shadow-sm">
+                                    <img src="{{ asset('storage/' . $item->image) }}" alt="Image description"
+                                        style="width: 100%; height: 300px;">
+                                    <div class="card-body">
+                                        <p class="card-text">{{ $item->description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+
+
+                        <script>
+                            var button_add_image = document.getElementById('button_add_image');
+                            var aria_show_mage = document.getElementById('aria_show_mage')
+                            var count_image = 0;
+
+                            button_add_image.addEventListener('click', function() {
+                                count_image++;
+
+                                var div = document.createElement('div');
+                                div.className = 'col-md-6';
+                                div.id = 'div_image' + count_image;
+
+                                input =
+
+                                    '<div class="row mb-4">' +
+                                    '<div class="col-md-12">' +
+                                    '<div class="card">' +
+                                    '<div class="card-body">' +
+                                    '<input required type="file" name="file_image_[' + count_image +
+                                    ']" class="form-control mb-3" accept="image/*" required>' +
+                                    '<textarea required class="form-control" name="note_image_[' + count_image +
+                                    ']" placeholder="ใส่รายละเอียดเกี่ยวกับรูปภาพ..."></textarea>' +
+
+                                    '<button class="btn  btn-block mt-3" onclick="remove_image(' + count_image +
+                                    ')"><i class="bi bi-x-circle"></i> ลบ</button>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>';
+                                div.innerHTML = input;
+                                aria_show_mage.appendChild(div);
+                            });
+
+                            function remove_image(count_image) {
+                                var remove_count_image = document.getElementById('div_image' + count_image);
+                                remove_count_image.remove();
+                            }
+                        </script>
                     </div>
 
                     
+
+
+
+                </div>
+            </div>
+
+
+
+
+            <div class="card shadow mt-3">
+                <div class="card-header">
+                    {{-- <p>ข้อมูลการวัดตัวสำหรับตัดชุด (นิ้ว)</p> --}}
+                    <div class="col-md-12">
+                        <p><strong>วันนัดลองชุด (หากมี)</strong>
+                            <button type="button" id="button_add_fitting">+ เพิ่มวันนัดลองชุด</button>
+                        </p>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <div id="aria_show_fitting">
+                        @foreach ($fittings as $item)
+                            <div class="row mb-2" id="div_fitting">
+                                <div class="col-md-4">
+                                    <input type="hidden" name="fitting_id_[]" value="{{$item->id}}">
+                                    <input type="date" name="update_fitting_[]" class="form-control"
+                                        value="{{ $item->fitting_date }}" min="{{ $today }}" required>
+                                </div>
+                                <div class="col-md-2" style="padding-left: 1px; margin-top: 1px;">
+                                    <a href="{{route('deleteitemfittingrentcut',['id' => $item->id])}}"><button
+                                            class="btn"><i class="bi bi-x-circle"></i></button>
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+
+                       
+                    </div>
 
                     <script>
-                        var select_type = document.getElementById('type_dress');
-                        var show_input_other = document.getElementById('showinput');
-                        var input_type = document.getElementById('other_input');
-                        select_type.addEventListener('change', function() {
-                            if (select_type.value === 'other_type') {
-                                show_input_other.style.display = 'block';
-                            } else {
-                                show_input_other.style.display = 'none';
-                                input_type.value = '';
+                        var button_add_fitting = document.getElementById('button_add_fitting') ; 
+                        var aria_show_fitting = document.getElementById('aria_show_fitting') ; 
+                        var count_fitting = 0 ; 
+                        button_add_fitting.addEventListener('click',function(){
+                            count_fitting++ ; 
 
-                            }
-                        });
+                            var divfitting = document.createElement('div') ; 
+                            divfitting.id = 'div_fitting'+count_fitting ; 
+                            divfitting.className = 'row mb-2' ; 
+
+                            input_fitting = 
+
+                            '<div class="col-md-4">' + 
+                                '<input type="date" name="add_fitting_['+count_fitting+']" class="form-control">' + 
+                            '</div>' + 
+                            '<div class="col-md-2" style="padding-left: 1px; margin-top: 1px;">' + 
+                               '<button class="btn" onclick="deletefitting('+count_fitting+')"><i class="bi bi-x-circle"></i></button>' + 
+                            '</div>' ; 
+
+                            divfitting.innerHTML = input_fitting ; 
+                            aria_show_fitting.appendChild(divfitting) ; 
+                        }) ; 
+                        function deletefitting(count_fitting){
+                            var deletefitin = document.getElementById('div_fitting'+count_fitting) ; 
+                            deletefitin.remove() ; 
+                        }
                     </script>
 
-               
-                    <div class="col-md-4">
-                        <label for="amount" class="form-label">จำนวนชุด</label>
-                        <input type="number" class="form-control" id="update_amount" name="update_amount"
-                            value="{{ $orderdetail->amount }}" min="1" required >
-                    </div>
-                </div>
-                <div class="row mb-3">
-                
-                    <div class="col-md-4">
-                        <label for="price" class="form-label">ราคาเต็ม/ชุด</label>
-                        <input type="number" class="form-control" id="update_price" name="update_price"
-                            placeholder="จำนวนเงิน" min="1" step="0.01" value="{{ $orderdetail->price }}"
-                            required >
-                    </div>
-
-                    <div class="col-md-4">
-                        <label for="deposit" class="form-label">ราคามัดจำ/ชุด</label>
-                        <input type="number" class="form-control" id="update_deposit" name="update_deposit"
-                            placeholder="จำนวนเงิน" min="1" step="0.01" value="{{ $orderdetail->deposit }}"
-                            required >
-                    </div>
-                    <div class="col-md-4">
-                        <label for="update_color" class="form-label">สีของชุด</label>
-                        <select class="form-control" id="update_color" name="update_color" required
-                            >
-                            <option value="" disabled selected>--สี--</option>
-                            <option value="ขาว" {{ $orderdetail->color == 'ขาว' ? 'selected' : '' }}>ขาว</option>
-                            <option value="ครีม" {{ $orderdetail->color == 'ครีม' ? 'selected' : '' }}>ครีม</option>
-                            <option value="ชมพู" {{ $orderdetail->color == 'ชมพู' ? 'selected' : '' }}>ชมพู</option>
-                            <option value="ดำ" {{ $orderdetail->color == 'ดำ' ? 'selected' : '' }}>ดำ</option>
-                            <option value="ทอง" {{ $orderdetail->color == 'ทอง' ? 'selected' : '' }}>ทอง</option>
-                            <option value="น้ำตาล" {{ $orderdetail->color == 'น้ำตาล' ? 'selected' : '' }}>น้ำตาล</option>
-                            <option value="น้ำเงิน" {{ $orderdetail->color == 'น้ำเงิน' ? 'selected' : '' }}>น้ำเงิน
-                            </option>
-                            <option value="บานเย็น" {{ $orderdetail->color == 'บานเย็น' ? 'selected' : '' }}>บานเย็น
-                            </option>
-                            <option value="พิ้งค์โกลด์" {{ $orderdetail->color == 'พิ้งค์โกลด์' ? 'selected' : '' }}>
-                                พิ้งค์โกลด์</option>
-                            <option value="ฟ้า" {{ $orderdetail->color == 'ฟ้า' ? 'selected' : '' }}>ฟ้า</option>
-                            <option value="ม่วง" {{ $orderdetail->color == 'ม่วง' ? 'selected' : '' }}>ม่วง</option>
-                            <option value="ส้ม" {{ $orderdetail->color == 'ส้ม' ? 'selected' : '' }}>ส้ม</option>
-                            <option value="เขียว" {{ $orderdetail->color == 'เขียว' ? 'selected' : '' }}>เขียว</option>
-                            <option value="เทา" {{ $orderdetail->color == 'เทา' ? 'selected' : '' }}>เทา</option>
-                            <option value="เหลือง" {{ $orderdetail->color == 'เหลือง' ? 'selected' : '' }}>เหลือง</option>
-                            <option value="แดง" {{ $orderdetail->color == 'แดง' ? 'selected' : '' }}>แดง</option>
-                            <option value="ไม่ระบุ" {{ $orderdetail->color == 'ไม่ระบุ' ? 'selected' : '' }}>ไม่ระบุ
-                            </option>
-                        </select>                    </div>
-                    
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="update_pickup_date" class="form-label">วันที่นัดรับชุด</label>
-                        <input type="date" class="form-control" id="update_pickup_date" name="update_pickup_date"
-                            value="{{ $orderdetail->pickup_date }}" >
-                    </div>
-
-                    <div class="col-md-4">
-                        <label for="update_return_date" class="form-label">วันที่นัดคืนชุด</label>
-                        <input type="date" class="form-control" id="update_return_date" name="update_return_date" value="{{$orderdetail->return_date}}">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label for="amount" class="form-label">ค่าบริการขยายเวลาเช่าชุด :</label>
-                        <input type="number" class="form-control" id="update_late_charge" name="update_late_charge" value="{{$orderdetail->late_charge}}" required>
-                        **หมายเหตุ วันที่นัดรับชุด - วันที่นัดคืนชุด ทางร้านอนุญาตให้เช่าชุดสูงสุด 3 วัน
-                        {{-- หากเกินกำหนดจะคิดค่าบริการขยายเวลาเช่าชุดวันละ 20% ของราคาค่าเช่าชุด --}}
-                    </div>
-
-
-                </div>
 
 
 
-                
 
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="update_damage_insurance" class="form-label">ประกันค่าเสียหาย</label>
-                        <input type="number" class="form-control" id="update_damage_insurance" name="update_damage_insurance"
-                            placeholder="จำนวนเงิน" min="1" value="{{$orderdetail->damage_insurance}}">
-                    </div>
-                    
 
-                    <div class="col-md-4">
-                        <label class="form-label">การจ่ายเงิน</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="update_status_payment"
-                                id="status_payment1" value="1"
-                                {{ $orderdetail->status_payment == '1' ? 'checked' : '' }}>
-                            <label class="form-check-label" for="status_payment1">
-                                จ่ายมัดจำ
-                            </label>
+
+
+
+
+
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success">ยืนยัน</button>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="update_status_payment"
-                                id="status_payment2" value="2"
-                                {{ $orderdetail->status_payment == '2' ? 'checked' : '' }}>
-                            <label class="form-check-label" for="status_payment2">
-                                จ่ายเต็มจำนวน
-                            </label>
-                        </div>
-                        {{-- **หมายเหตุ -ลูกค้าจะต้องจ่ายมัดจำหรือจ่ายเต็มจำนวนเท่านั้นพนักงานจึงจะสามารถบันทึกรายการให้ได้ --}}
-                    </div>
-                    <div class="col-md-4">
-                        <label for="update_note" class="form-label">รายละเอียดอื่นๆ</label>
-                        <textarea class="form-control" id="update_note" name="update_note" rows="4"
-                            placeholder="ใส่รายละเอียดเพิ่มเติมที่เกี่ยวข้อง">{{ $orderdetail->note }}</textarea>
                     </div>
 
-                </div>
 
-                
+
+                </div>
             </div>
 
 
 
-            {{-- กล่องที่สอง --}}
-            <div class="shadow p-4 mb-5 bg-white rounded">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-0">ข้อมูลของชุด/ข้อมูลการวัด</h4>
-                    <button type="button" class="btn btn-primary" id="addMeasurementitem">+ เพิ่มการวัด</button>
-                </div>
-
-                <div id="aria_show_measurement">
-                    
-                    @if ($measurementorderdetails->count() > 0)
-                        @foreach ($measurementorderdetails as $measurementorderdetails)
-                            <div class="row mb-3">
-
-                                <div class="col-sm-3">
-                                    <input type="hidden" class="form-control" name="mea_orderdetail_id_[]"
-                                        placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $measurementorderdetails->id }}">
-
-                                    <input type="text" class="form-control" name="mea_orderdetail_name_[]"
-                                        placeholder="เพิ่มชื่อการวัดเช่น รอบอก" value="{{ $measurementorderdetails->measurement_name}}">
-                                </div>
-
-                                <div class="col-sm-3">
-                                    <input type="number" class="form-control" name="mea_orderdetail_number_[]"
-                                        placeholder="ใส่ตัวเลข" step="0.01" value="{{ $measurementorderdetails->measurement_number }}" >
-                                </div>
-
-                                <div class="col-sm-3">
-                                    <select class="form-control" name="mea_orderdetail_unit_[]">
-                                        <option value="นิ้ว"
-                                            {{ $measurementorderdetails->measurement_unit == 'นิ้ว' ? 'selected' : '' }}>
-                                            นิ้ว
-                                        </option>
-                                        <option value="เซนติเมตร"
-                                            {{ $measurementorderdetails->measurement_unit == 'เซนติเมตร' ? 'selected' : '' }}>เซนติเมตร
-                                        </option>
-                                        <option value="มิลลิเมตร"
-                                            {{ $measurementorderdetails->measurement_unit == 'มิลลิเมตร' ? 'selected' : '' }}>มิลลิเมตร
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-2">
-                                    <form action="{{route('employee.deletemeasurementitem',['id'=>$measurementorderdetails->id])}}"
-                                        method="POST">
-                                        @csrf
-                                        <button class="form-control btn btn-danger" type="submit">ลบ</button>
-                                    </form>
-                                </div>
-                            </div>
-                        @endforeach
-                    @endif
-
-                </div>
-            </div>
-
-            <script>
-                var aria_mea = document.getElementById('aria_show_measurement'); //พื้นที่แสดง
-                var add_button = document.getElementById('addMeasurementitem');
-                var count_mea = 0;
-                add_button.addEventListener('click', function() {
-                    count_mea++;
-
-                    var divbig = document.createElement('div');
-                    divbig.className = 'row mb-3';
-                    divbig.id = 'mothermea' + count_mea;
-
-                    input =
-
-                        '<div class="col-sm-3">' +
-                        '<input type="text" class="form-control" id="add_mea_name' + count_mea + ' " name="add_mea_name_[' +
-                        count_mea + ']" placeholder="เพิ่มชื่อการวัดเช่น รอบอก" required >' +
-                        '</div>' +
-
-                        '<div class="col-sm-3">' +
-                        '<input type="number" class="form-control" id="add_mea_number' + count_mea +
-                        '  " name="add_mea_number_[' + count_mea + ']" placeholder="ใส่ตัวเลข" required>' +
-                        '</div>' +
-
-                        '<div class="col-sm-3">' +
-                        '<select class="form-control" id="add_mea_unit' + count_mea + ' " name="add_mea_unit_[' +
-                        count_mea + ']" required>' +
-                        '<option value="นิ้ว">นิ้ว</option>' +
-                        '<option value="เซนติเมตร">เซนติเมตร</option>' +
-                        '<option value="มิลลิเมตร">มิลลิเมตร</option>' +
-                        '</select>' +
-                        '</div>' +
-
-                        '<div class="col-sm-2">' +
-                        '<button class="form-control btn btn-danger" type="button" onclick="removemea(' + count_mea +
-                        ')">ลบ</button>' +
-                        '</div>';
-
-                    divbig.innerHTML = input;
-                    aria_mea.appendChild(divbig);
-                });
-
-                function removemea(count_mea) {
-                    var delete_div = document.getElementById('mothermea' + count_mea)
-                    delete_div.remove();
-                }
-            </script>
 
 
 
 
-            {{-- กล่องที่สาม --}}
-            <div class="shadow p-4 mb-5 bg-white rounded">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-0">ข้อมูลการนัดลูกค้าลองชุด</h4>
-                    <button type="button" class="btn btn-primary" id="addfittingitem">+ เพิ่มวันนัดลองชุด</button>
-                </div>
-
-
-                <div id="ariafitting">
-                    @if ($fitting->count() > 0)
-                        @foreach ($fitting as $showfitting)
-                            <div class="row mb-3">
-                                <div class="col-sm-3">
-                                    <label class="form-label">วันที่นัดลองชุด</label>
-                                </div>
-                                <div class="col-sm-3">
-
-                                    <input type="hidden" class="form-control" name="fitting_id_[]"
-                                        value="{{ $showfitting->id }}">
-
-
-                                    <input type="date" class="form-control" name="fitting_date_[]"
-                                        value="{{ $showfitting->fitting_date }}">
-                                </div>
-                                <div class="col-sm-3">
-                                    <input type="text" class="form-control" name="fitting_note_[]"
-                                        placeholder="รายละเอียด" value="{{ $showfitting->fitting_note }}">
-                                </div>
-                                <div class="col-sm-2">
-                                    <form action="{{ route('employee.deletefittingitem', ['id' => $showfitting->id]) }}"
-                                        method="POST">
-                                        @csrf
-                                        <button class="form-control btn btn-danger" type="submit">ลบ</button>
-                                    </form>
-                                </div>
-                            </div>
-                        @endforeach
-                    @endif
-
-
-                </div>
-
-                <script>
-                    var aria_fitting = document.getElementById('ariafitting');
-                    var button_add_fitting = document.getElementById('addfittingitem');
-                    var count_fitting_index = 0;
-                    button_add_fitting.addEventListener('click', function() {
-                        count_fitting_index++;
-
-                        var divmotherfiting = document.createElement('div');
-                        divmotherfiting.className = 'row mb-3';
-                        divmotherfiting.id = 'motherfitting' + count_fitting_index;
-                        input =
-
-                            '<div class="col-sm-3">' +
-                            '<label class="form-label">วันที่นัดลองชุด</label>' +
-                            '</div>' +
-                            '<div class="col-sm-3">' +
-                            '<input type="date" class="form-control" id="add_fitting_date' + count_fitting_index +
-                            ' " name="add_fitting_date_[' + count_fitting_index + ']">' +
-                            '</div>' +
-                            '<div class="col-sm-3">' +
-                            '<input type="text" class="form-control" id="add_fitting_note' + count_fitting_index +
-                            ' " name="add_fitting_note_[' + count_fitting_index + ']" placeholder="รายละเอียด">' +
-                            '</div>' +
-                            '<div class="col-sm-2">' +
-                            '<button class="form-control btn btn-danger" type="button" onclick="removefittinf(' +
-                            count_fitting_index + ')">ลบ</button>' +
-                            '</div>';
-
-                        divmotherfiting.innerHTML = input;
-                        aria_fitting.appendChild(divmotherfiting);
-                    });
-
-                    function removefittinf(count_fitting_index) {
-                        var delete_div_fitting = document.getElementById('motherfitting' + count_fitting_index);
-                        delete_div_fitting.remove();
-                    }
-                </script>
-
-            </div>
-
-
-            <!-- กล่องที่รูป: ฟอร์มรูปภาพ -->
-            <div class="shadow p-4 mb-5 bg-white rounded">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-4">รูปภาพประกอบ / รูปภาพตัวแบบ / อื่นๆที่เกี่ยวข้อง</h4>
-                    <button type="button" class="btn btn-primary" id="addimageitem">+ เพิ่มรูปภาพ</button>
-                </div>
-
-                <div id="aria_show_input_of_image">
-
-                    {{-- @foreach ($imagerent as $showimage)
-                        <div class="row mb-3">
-                            <label for="image" class="col-sm-2 col-form-label">อัปโหลดรูปภาพ</label>
-                            <div class="col-sm-7">
-                                <input type="file" class="form-control" name="image"
-                                    value="{{ $showimage->image }}">
-                            </div>
-                            <div class="col-sm-2">
-                                <button class="form-control btn btn-danger" type="button">ลบ</button>
-                            </div>
-                        </div>
-                    @endforeach --}}
-
-                    {{-- ตัวแบบ --}}
-                    {{-- <div class="row mb-3">
-                <label for="add_image" class="col-sm-2 col-form-label">อัปโหลดรูปภาพ</label>
-                <div class="col-sm-7">
-                    <input type="file" class="form-control" id="add_image" name="add_image">
-                </div>
-
-                <div class="col-sm-2">
-                    <button class="form-control btn btn-danger" type="button" onclick="removeimage()">ลบ</button>
-                </div>
-
-            </div> --}}
-                </div>
-
-                <script>
-                    var aria_image = document.getElementById('aria_show_input_of_image');
-                    var button_add_image = document.getElementById('addimageitem');
-                    var count_image = 0;
-
-                    button_add_image.addEventListener('click', function() {
-                        count_image++;
-
-                        var divmotherimage = document.createElement('div');
-                        divmotherimage.className = 'row mb-3';
-                        divmotherimage.id = 'divmotherimage' + count_image;
-
-                        var label = document.createElement('label');
-                        label.htmlFor = 'add_image' + count_image;
-                        label.className = 'col-sm-2 col-form-label';
-                        label.innerHTML = 'อัปโหลดรูปภาพ';
-
-
-                        var divone = document.createElement('div');
-                        divone.className = 'col-sm-7';
-
-                        var input = document.createElement('input');
-                        input.type = 'file';
-                        input.className = 'form-control';
-                        input.id = 'add_image' + count_image;
-                        input.name = 'add_image_[' + count_image + ']';
-                        input.required = true;
-
-                        divone.appendChild(input);
-
-
-                        var divtwo = document.createElement('div');
-                        divtwo.className = 'col-sm-2';
-
-                        var button = document.createElement('button');
-                        button.className = 'form-control btn btn-danger';
-                        button.type = 'button';
-                        button.innerHTML = 'ลบ'
-                        divtwo.appendChild(button);
-
-                        divmotherimage.appendChild(label);
-                        divmotherimage.appendChild(divone);
-                        divmotherimage.appendChild(divtwo);
-                        aria_image.appendChild(divmotherimage);
-
-                        button.addEventListener('click', function() {
-                            divmotherimage.remove();
-                        });
-                    });
-                </script>
 
 
 
-            </div>
-            <!-- ปุ่มยืนยัน -->
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary btn-block">ยืนยัน</button>
-            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         </div>
     </form>
 @endsection

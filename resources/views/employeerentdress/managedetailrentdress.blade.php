@@ -584,9 +584,9 @@
 
 
 
-                        <p><i class="bi bi-currency-dollar"></i> ราคาเช่า : {{ number_format($orderdetail->price, 2) }} บาท
+                        <p><i></i> ราคาเช่า : {{ number_format($orderdetail->price, 2) }} บาท
                         </p>
-                        <p><i class="bi bi-currency-dollar"></i> เงินมัดจำ : {{ number_format($orderdetail->deposit, 2) }}
+                        <p><i></i> เงินมัดจำ : {{ number_format($orderdetail->deposit, 2) }}
                             บาท</p>
                         <p><i class="bi bi-shield-check"></i> ประกันค่าเสียหาย :
                             {{ number_format($orderdetail->damage_insurance, 2) }} บาท</p>

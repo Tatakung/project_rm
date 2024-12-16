@@ -243,7 +243,6 @@
 
 
 
-
                                 </td>
 
                                 <td style="padding: 16px;">
@@ -252,7 +251,7 @@
                                         ดูรายละเอียด
                                     </a>
 
-                                    <a href="" class="btn btn-m" style="background-color:#BACEE6 ;">
+                                    <a href="{{route('postponeroutejewelry',['id' => $reservation->id])}}" class="btn btn-m" style="background-color:#BACEE6 ;">
                                         เลื่อนวัน
                                     </a>
 

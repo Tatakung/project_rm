@@ -138,8 +138,6 @@ class EmployeeController extends Controller
             ->where('status_detail', 'รอดำเนินการตัด')
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
             ->get();
-
-
         $cutdresss_page_two = Orderdetail::where('type_order', 1)
             ->where('status_detail', 'เริ่มดำเนินการตัด')
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
@@ -159,11 +157,33 @@ class EmployeeController extends Controller
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
             ->get();
 
-
-
-
         return view('employee.cutdressadjust', compact('cutdresss_page_one', 'cutdresss_page_two', 'cutdresss_page_three', 'cutdresss_page_four', 'cutdresss_page_five'));
     }
+
+
+    public function queuerentcuttotal()
+    {
+        $cutdresss_page_one = Orderdetail::where('type_order', 4)
+            ->where('status_detail', 'รอดำเนินการตัด')
+            ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+            ->get();
+        $cutdresss_page_two = Orderdetail::where('type_order', 4)
+            ->where('status_detail', 'เริ่มดำเนินการตัด')
+            ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+            ->get();
+        $cutdresss_page_three = Orderdetail::where('type_order', 4)
+            ->where('status_detail', 'ตัดชุดเสร็จสิ้น')
+            ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
+            ->get();
+
+        return view('employeerentcut.queue-rentcut-total', compact('cutdresss_page_one', 'cutdresss_page_two', 'cutdresss_page_three'));
+    }
+
+
+
+
+
+
 
 
 
@@ -675,7 +695,7 @@ class EmployeeController extends Controller
             ->where('clean_id', null)->get();
         $repairs_not_null = Repair::where('repair_status', "กำลังซ่อม")
             ->whereNull('reservationfilter_id')
-            ->whereNotNull('clean_id')->get() ; 
+            ->whereNotNull('clean_id')->get();
         return view('employee.repair', compact('repair', 'repairs_null', 'repairs_not_null', 'repair_pending'));
     }
     public function reservedress()
@@ -1092,10 +1112,28 @@ class EmployeeController extends Controller
             $update_order->total_deposit = $update_order->total_deposit - ($delete_orderdetail->deposit * $delete_orderdetail->amount);
             $update_order->save();
         } elseif ($delete_orderdetail->type_order == 4) {
-            dd('ยังไม่ทำ');
+
+
+            //ลบตารางdress_mea_adjust
+            Dressmeaadjustment::where('order_detail_id', $id)->delete();
+            //ลบลูกๆมันด้วย
+            Imagerent::where('order_detail_id', $id)->delete();
+            Paymentstatus::where('order_detail_id', $id)->delete();
+            Date::where('order_detail_id', $id)->delete();
+            Measurementorderdetail::where('order_detail_id', $id)->delete();
+            Orderdetailstatus::where('order_detail_id', $id)->delete();
+            Fitting::where('order_detail_id', $id)->delete();
+
+            //อัปเดตตาราง order ด้วย เพราะorderdetail มันลบไปแล้วไง
+            $ORDER_ID = $delete_orderdetail->order_id;
+            $update_order = Order::find($ORDER_ID);
+
+            $update_order->total_quantity = $update_order->total_quantity - 1; //รายการทั้งหมดจะลดลงทีละ1 
+
+            $update_order->total_price = $update_order->total_price - ($delete_orderdetail->price * $delete_orderdetail->amount);
+            $update_order->total_deposit = $update_order->total_deposit - ($delete_orderdetail->deposit * $delete_orderdetail->amount);
+            $update_order->save();
         }
-
-
 
 
 
@@ -1188,13 +1226,18 @@ class EmployeeController extends Controller
     //เช่าตัด
     private function manageitemrentcut($id)
     {
+
         $id = $id->id;
         $type_dress = Typedress::all();
         $orderdetail = Orderdetail::find($id);
-        $measurementorderdetails = Measurementorderdetail::where('order_detail_id', $id)->get();
-        $fitting = Fitting::where('order_detail_id', $id)->get();
-        $imagerent = Imagerent::where('order_detail_id', $id)->get();
-        return view('employeerentcut.manageitemrentcut', compact('orderdetail', 'type_dress', 'measurementorderdetails', 'fitting', 'imagerent'));
+        $measurementorderdetail  = Measurementorderdetail::where('order_detail_id', $id)->get();
+        $fittings = Fitting::where('order_detail_id', $id)->get();
+        $measurementadjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
+        $Date = Date::where('order_detail_id', $orderdetail->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $image_rent = Imagerent::where('order_detail_id', $orderdetail->id)->get();
+        return view('employeerentcut.manageitemrentcut', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fittings', 'measurementadjusts', 'Date', 'image_rent'));
     }
     //ลบdeletemeasurementitem ใน item
     public function deletemeasurementitem($id)
@@ -1332,6 +1375,21 @@ class EmployeeController extends Controller
                 }
             } elseif ($orderdetail->type_order == 4) {
                 //เช่าตัด
+                //ตารางorderdetailstatus 
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $orderdetail->id;
+                $create_status->status = 'รอดำเนินการตัด';
+                $create_status->save();
+                //ตารางorderdetail
+                $orderdetail->status_detail = "รอดำเนินการตัด";
+                $orderdetail->status_payment = $payment_status;
+                $orderdetail->save();
+
+                //ตารางpayment_status
+                $create_payment = new Paymentstatus();
+                $create_payment->order_detail_id = $orderdetail->id;
+                $create_payment->payment_status = $payment_status;
+                $create_payment->save();
             }
         }
 

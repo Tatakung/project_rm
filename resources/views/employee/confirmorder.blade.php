@@ -104,11 +104,14 @@
                                     <img src="{{ asset('storage/' . $imagejewelry->jewelry_image) }}" class="mr-5"
                                         alt="..." style="width: 146px; height: 195px; border-radius: 8px;">
                                 @elseif($reserv->jewelry_set_id)
-                                <img src="{{ asset('images/setjewelry.jpg') }}" class="mr-5"
-                                alt="..." style="width: 146px; height: 195px; border-radius: 8px;">
-
+                                    <img src="{{ asset('images/setjewelry.jpg') }}" class="mr-5" alt="..."
+                                        style="width: 146px; height: 195px; border-radius: 8px;">
                                 @endif
                             @elseif($detail->type_order == 4)
+                                <div class="mr-5"
+                                    style="width: 146px; height: 195px; border-radius: 8px; border-radius: 2px; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
+                                    <i class="bi bi-scissors" style="font-size: 48px;"></i>
+                                </div>
                             @endif
 
 
@@ -143,7 +146,7 @@
                                             เช่าเซต{{ $setjewelry->set_name }}
                                         @endif
                                     @elseif($detail->type_order == 4)
-                                        เช่าตัดดดดดดดดดดดดดดดดดดดดด
+                                        เช่าตัด
                                     @endif
 
                                 </strong>
@@ -176,11 +179,13 @@
                                 @endphp
 
                                 @if ($detail->type_order == 1)
-                                    <p style="font-size: 15px;  margin-bottom: 5px;">วันที่นัดคืน:
-                                        {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
+                                    
+                                    <p style="font-size: 15px;  margin-bottom: 5px;">วันที่นัดรับ:
+                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
                                     </p>
                                 @elseif($detail->type_order == 2)
+                                    
                                     <p style="font-size: 15px;  margin-bottom: 5px;">วันที่นัดรับ:
                                         {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
@@ -198,7 +203,7 @@
                                         {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
                                     </p>
-                                @elseif($detail->type_orde == 4)
+                                @elseif($detail->type_order == 4)
                                     <p style="font-size: 15px;  margin-bottom: 5px;">วันที่นัดรับ:
                                         {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}

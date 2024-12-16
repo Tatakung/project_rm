@@ -26,6 +26,7 @@ class Dress extends Model
         'damage_insurance',
         'repair_count',
         'dress_adjustment',
+        'source_type' , 
     ];
 
     // dress เป็น M - 1 ของ type

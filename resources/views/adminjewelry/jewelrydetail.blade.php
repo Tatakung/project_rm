@@ -169,11 +169,16 @@
                     </div>
 
 
-                    <div class="ml-2">
-                        <a href="{{route('showrentedhistory',['id' => $datajewelry->id])}}" class="btn btn-outline-primary mr-2">
+                    <div class="ml-2"
+                        @if ($is_admin == 1) style="display: block;  "
+                    @elseif($is_admin == 0)
+                        style="display: none ; " @endif>
+                        <a href="{{ route('showrentedhistory', ['id' => $datajewelry->id]) }}"
+                            class="btn btn-outline-primary mr-2">
                             <i class="bi bi-clock-history"></i> ประวัติการเช่า
                         </a>
-                        <a href="{{route('showrepairjewelryhistory',['id' => $datajewelry->id])}}" class="btn btn-outline-secondary">
+                        <a href="{{ route('showrepairjewelryhistory', ['id' => $datajewelry->id]) }}"
+                            class="btn btn-outline-secondary">
                             <i class="bi bi-tools"></i> ประวัติการซ่อม
                         </a>
                     </div>
@@ -209,31 +214,31 @@
 
 
 
-    
-    @if($jew_in_set->count() > 0 )
-    <div class="container mt-2">
-        <div class="card mb-3">
-            <div class="card-header bg-light">
-                <strong>เซตที่มีเครื่องประดับชิ้นนี้</strong>
-            </div>
-            <div class="card-body">
-                @foreach ($jew_in_set as $item)
-                    <a href="{{ route('admin.setjewelrydetail', ['id' => $item->jewelry_set_id]) }}">
 
-                        <div class="d-flex justify-content-between align-items-center p-3 mb-2 border rounded">
-                            <div>
-                                <div><strong>{{ $item->jewitem_m_to_o_jewset->set_name }}</strong></div>
-                                <div class="text-muted">รหัสเซต: SET00{{ $item->jewitem_m_to_o_jewset->id }}</div>
+    @if ($jew_in_set->count() > 0)
+        <div class="container mt-2">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <strong>เซตที่มีเครื่องประดับชิ้นนี้</strong>
+                </div>
+                <div class="card-body">
+                    @foreach ($jew_in_set as $item)
+                        <a href="{{ route('admin.setjewelrydetail', ['id' => $item->jewelry_set_id]) }}">
+
+                            <div class="d-flex justify-content-between align-items-center p-3 mb-2 border rounded">
+                                <div>
+                                    <div><strong>{{ $item->jewitem_m_to_o_jewset->set_name }}</strong></div>
+                                    <div class="text-muted">รหัสเซต: SET00{{ $item->jewitem_m_to_o_jewset->id }}</div>
+                                </div>
+                                <div>
+                                    <strong>{{ number_format($item->jewitem_m_to_o_jewset->set_price, 2) }} บาท</strong>
+                                </div>
                             </div>
-                            <div>
-                                <strong>{{ number_format($item->jewitem_m_to_o_jewset->set_price, 2) }} บาท</strong>
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
+                        </a>
+                    @endforeach
+                </div>
             </div>
         </div>
-    </div>
     @endif
 
 

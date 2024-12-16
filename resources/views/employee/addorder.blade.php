@@ -91,7 +91,7 @@
                                 </div>
                                 <button class="btn custom-btn mt-3">
                                     {{-- <a href="{{route('adddresstocart')}}" class="custom-link">เพิ่มออเดอร์</a> --}}
-                                    <a href="" class="custom-link">เพิ่มออเดอร์</a>
+                                    <a href="{{route('employee.addrentcut')}}" class="custom-link">เพิ่มออเดอร์</a>
                                 </button>
                             </div>
                         </div>

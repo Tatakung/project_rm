@@ -106,6 +106,7 @@ class DressController extends Controller
             $dress->dress_status = "พร้อมให้เช่า";
             $dress->dress_description = $request->input('dress_description');
             $dress->dress_rental = 0;
+            $dress->source_type = 1 ; //1 ชุดเปล่าๆ 2ชุดที่ได้มาจากการเช่าตัด
             $dress->separable = $request->input('rental_option'); //1แยกไม่ได้ 2 แยกได้
             $dress->save();
 
@@ -150,7 +151,8 @@ class DressController extends Controller
                         $addmea->save();
                     }
                 }
-            } elseif ($request->input('rental_option') == 2) {
+            }
+            elseif ($request->input('rental_option') == 2) {
                 //แยกได้
 
                 //ตารางshirtitem

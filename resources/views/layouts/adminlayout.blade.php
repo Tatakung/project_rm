@@ -460,6 +460,15 @@
                             </span>
                         @endif
                     </a>
+
+                    <a href="{{route('queuerentcuttotal')}}"
+                    class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                    จัดการคิวงานเช่าตัด
+                </a>
+
+
+
+                    
                     <a href="{{ route('employee.dressadjust') }}"
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                         จัดการคิวงานเช่าชุด

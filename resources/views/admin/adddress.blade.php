@@ -274,8 +274,6 @@
                             </div>
 
                             <div class="row mt-1" id="show_dress_total">
-
-
                                 <div class="col-md-12" id="aria_dress_total1">
                                     <div class="row mb-3">
                                         <div class="col-md-2">

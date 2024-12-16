@@ -6,7 +6,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DressController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\JewelryController;
+use App\Http\Controllers\ManagejewelryController;
 use App\Http\Controllers\ManageorderController;
+use App\Http\Controllers\ManageRentcutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Orderjewelry;
 use Illuminate\Support\Facades\Auth;
@@ -130,6 +132,11 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
+    Route::get('/jewelry-set-rented-history/{id}', [Orderjewelry::class, 'showjewsetrentedhistory'])->name('showjewsetrentedhistory'); 
+
+    Route::get('/jewelry-set-rented-history/filter/{id}', [Orderjewelry::class, 'showjewsetrentedhistoryfilter'])->name('showjewsetrentedhistoryfilter'); 
+
+
 
 });
 
@@ -160,6 +167,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/listdressreturn', [EmployeeController::class, 'listdressreturn'])->name('employee.listdressreturn');
     Route::get('/employee/listdressreturn/filter', [EmployeeController::class, 'listdressreturnfilter'])->name('employee.listdressreturnfilter');
 
+    Route::get('/employee/queuerentcut-total', [EmployeeController::class, 'queuerentcuttotal'])->name('queuerentcuttotal');
 
 
     Route::get('/admin/jewelrytotal', [JewelryController::class, 'jewelrytotal'])->name('admin.jewelrytotal'); //เครื่องประดับทั้งหมด
@@ -300,7 +308,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/employee/ordertotal/detail/show/deletecost/{id}', [OrderController::class, 'actiondeletecost'])->name('employee.actiondeletecost'); //
     Route::post('/employee/ordertotal/detail/show/adddecoration/{id}', [OrderController::class, 'actionadddecoration'])->name('employee.actionadddecoration'); //
     Route::post('/employee/ordertotal/detail/show/updatemeadress/{id}', [OrderController::class, 'actionupdatemeadress'])->name('employee.actionupdatemeadress'); //
-    Route::post('/employee/ordertotal/detail/show/addmeaorderdetail/{id}', [OrderController::class, 'actionaddmeaorderdetail'])->name('employee.actionaddmeaorderdetail'); //
+    // Route::post('/employee/ordertotal/detail/show/addmeaorderdetail/{id}', [OrderController::class, 'actionaddmeaorderdetail'])->name('employee.actionaddmeaorderdetail'); //
     Route::post('/employee/ordertotal/detail/show/updatemeaorderdetail/{id}', [OrderController::class, 'actionupdatemeaorderdetail'])->name('employee.actionupdatemeaorderdetail'); //
     Route::delete('/employee/ordertotal/detail/show/deletemeaorderdetail/{id}', [OrderController::class, 'actiondeletemeaorderdetail'])->name('employee.actiondeletemeaorderdetail'); //
     Route::post('/employee/ordertotal/detail/show/updatestatusrentdress/{id}', [OrderController::class, 'actionupdatestatusrentdress'])->name('employee.actionupdatestatusrentdress'); //อัปเดตสถานะเช่าชุด
@@ -343,6 +351,14 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/jewelry-repairing/update-to-repaired/{id}', [Orderjewelry::class, 'jewelryupdatetorepaired'])->name('jewelryupdatetorepaired'); 
 
 
+    Route::get('/jewelry-postpone/postpone-route/{id}', [ManagejewelryController::class, 'postponeroutejewelry'])->name('postponeroutejewelry'); 
+
+    Route::get('/jewelry-postpone/postpone-route/checked-noset/{id}', [ManagejewelryController::class, 'postponeroutejewelrycheckednoset'])->name('postponeroutejewelrycheckednoset');
+    Route::post('/jewelry-postpone/postpone-route/checked/pass/{id}', [ManagejewelryController::class, 'postponecheckedpassjewelry'])->name('postponecheckedpassjewelry'); 
+
+
+    Route::get('/jewelry-postpone/postpone-route/checked-yesset/{id}', [ManagejewelryController::class, 'postponeroutejewelrycheckedyesset'])->name('postponeroutejewelrycheckedyesset'); 
+
 
 
 
@@ -359,6 +375,30 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/ordertotal/detail/show/updatereceivejewelry/{id}', [Orderjewelry::class, 'actionupdatereceivejewelry'])->name('employee.actionupdatereceivejewelry'); //อัปเดตสถานะเช่าเครื่องประดับ
     Route::post('/employee/ordertotal/detail/show/updatereturnjewelry/{id}', [Orderjewelry::class, 'updatereturnjewelry'])->name('employee.updatereturnjewelry'); //อัปเดตสถานะคืนเครื่องประดับ
 
+
+
+
+
+    Route::get('/addorder-dress-rental/create', [ManageRentcutController::class, 'addrentcut'])->name('employee.addrentcut'); //เพิ่มเช่าตัด
+
+    Route::post('/addorder-dress-rental/create/saved', [ManageRentcutController::class, 'saveaddrentcut'])->name('employee.saveaddrentcut'); //เพิ่มเช่าตัด
+
+    Route::get('/addorder-dress-rental/deleteitemfitting/{id}', [ManageRentcutController::class, 'deleteitemfittingrentcut'])->name('deleteitemfittingrentcut'); //เพิ่มเช่าตัด
+
+
+
+    Route::get('/employee/ordertotal/detail/show/making-dress/{id}/{order_detail_id}', [ManageRentcutController::class, 'rentcutmakingdress'])->name('rentcutmakingdress'); 
+
+
+    Route::post('/employee/ordertotal/detail/show/making-dress/saved/{id}', [ManageRentcutController::class, 'rentcutmakingdresssave'])->name('rentcutmakingdresssave'); 
+
+
+    Route::post('/employee/ordertotal/detail/show/updatestatusrentcutpickup/{id}', [ManageRentcutController::class, 'actionupdatestatusrentcutpickup'])->name('actionupdatestatusrentcutpickup'); //อัปเดตสถานะเช่าชุด
+
+    Route::get('/employee/ordertotal/detail/show/doing-cut-rent/{id}', [ManageRentcutController::class, 'detaildoingrentcut'])->name('detaildoingrentcut'); 
+
+    Route::get('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/{id}', [ManageRentcutController::class, 'storeTailoredDress'])->name('storeTailoredDress'); 
+    Route::post('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/saved/{id}', [ManageRentcutController::class, 'storeTailoredDresssaved'])->name('storeTailoredDresssaved'); 
 
 
 });

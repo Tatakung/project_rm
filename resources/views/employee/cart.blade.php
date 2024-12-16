@@ -102,6 +102,8 @@
                                     @endphp
                                     เช่าเซต{{ $datasetjewelry->set_name }}
                                 @endif
+                                @elseif($detail->type_order == 4)
+                                เช่าตัด
                             @endif
 
                         </p>
@@ -138,7 +140,7 @@
                         {{-- <p style="font-size: 15px;" >separable :{{App\Models\Dress::where('id',$detail->dress_id)->value('separable')}}</p> --}}
 
                     </div>
-                    <div class="media-right">
+                    {{-- <div class="media-right">
                         <p style="font-size: 15px;">
                         <form action="{{ route('employee.manageitem', ['id' => $detail->id]) }}" method="GET"
                             style="display:inline;">
@@ -155,7 +157,24 @@
                                 onclick="return confirm('แน่ใจใช่ไหมว่าคุณต้องการนำออก?')">ยกเลิกรายการ</button>
                         </form>
                         </p>
+                    </div> --}}
+                    
+                    <div class="media-right d-flex justify-content-between align-items-center">
+                        <p style="font-size: 15px; margin-right: 10px;">
+                            <form action="{{ route('employee.manageitem', ['id' => $detail->id]) }}" method="GET" style="display:inline;">
+                                @csrf
+                                <input type="hidden" name="type_order" value="{{ $detail->type_order }}">
+                                <button type="submit" class="btn btn-c btn-sm">จัดการ</button>
+                            </form>
+                        </p>
+                        <p style="font-size: 15px;">
+                            <form action="{{ route('employee.deletelist', ['id' => $detail->id]) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-d btn-sm" onclick="return confirm('แน่ใจใช่ไหมว่าคุณต้องการนำออก?')">ยกเลิกรายการ</button>
+                            </form>
+                        </p>
                     </div>
+                    
                 </div>
                 <div class="row">
                     <div class="col-md-12">

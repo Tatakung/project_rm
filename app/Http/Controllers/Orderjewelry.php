@@ -62,76 +62,43 @@ class Orderjewelry extends Controller
         $fil_end_7 = $end_date_fil->copy()->addDays(7);
 
 
-        $jew_set = Jewelryset::all(); //1,2,3,4,7,8
+        $jew_set = Jewelryset::all(); //9,10,11
+
 
         $list_pass_set_id = [];
 
-        // เช็คเฉพาะที่เช่าแค่เป็นเซต
-        foreach ($jew_set as $set_id) {
-            $reservation_set = Reservation::where('jewelry_set_id', $set_id->id)
-                ->where('status_completed', 0)
-                ->get();
-            $validate_pass = true;
-            foreach ($reservation_set as $item) {
-                $start_re = Carbon::parse($item->start_date);
-                $end_re = Carbon::parse($item->end_date);
-                if ($start_re->between($fil_start_7, $fil_start_1) || $end_re->between($fil_start_7, $fil_start_1)) {
-                    $validate_pass = false;
-                    break;
+        foreach ($jew_set as $value) {
+            $jew_id_in_set = Jewelrysetitem::where('jewelry_set_id', $value->id)->get();
+            foreach ($jew_id_in_set as $jew) {
+                $check_jew_in_fil = Reservationfilters::where('jewelry_id', $jew->jewelry_id)
+                    ->where('status_completed', 0)
+                    ->get();  // 3 แถว 
+                $validate_pass = true;
+                foreach ($check_jew_in_fil as $item) {
+                    $start_re = Carbon::parse($item->start_date);
+                    $end_re = Carbon::parse($item->end_date);
+                    if ($start_re->between($fil_start_7, $fil_start_1) || $end_re->between($fil_start_7, $fil_start_1)) {
+                        $validate_pass = false;
+                        break;
+                    }
+
+                    if ($start_re->between($fil_be_start, $fil_be_end) || $end_re->between($fil_be_start, $fil_be_end)) {
+                        $validate_pass = false;
+                        break;
+                    }
+
+                    if ($start_re->between($fil_end_1, $fil_end_7) || $end_re->between($fil_end_1, $fil_end_7)) {
+                        $validate_pass = false;
+                        break;
+                    }
                 }
-
-                if ($start_re->between($fil_be_start, $fil_be_end) || $end_re->between($fil_be_start, $fil_be_end)) {
-                    $validate_pass = false;
-                    break;
-                }
-
-                if ($start_re->between($fil_end_1, $fil_end_7) || $end_re->between($fil_end_1, $fil_end_7)) {
-                    $validate_pass = false;
-                    break;
-                }
-            }
-            if ($validate_pass) {
-                $list_pass_set_id[] = $set_id->id;
-            }
-        }
-
-        // dd($list_pass_set_id) ; 
-
-
-        // เช็คดูว่าในในตารางreservation ที่มันเช่าแค่ set อะ แล้วต้องไปดูรายละเอียดลึกๆอีกทีละ jewelry_id ว่า มีการเช่าเป็ฯชิ้น เพื่อไม่ให้มันซ้ำ
-        //พอเราเจอใช่ไหม แปล่วา เราจะต้องลบ set_id นั้นออกไปจาก $list_pass_set_id ที่มันผ่านเงื่อนไขแรก 
-
-        $all_jew_set = Jewelryset::all(); //1,2,3,4,7,8
-        $test_item = [];
-        foreach ($all_jew_set as $items) {
-            $set_in_item = Jewelrysetitem::where('jewelry_set_id', $items->id)->get();
-            foreach ($set_in_item as $item) {
-                $check_double_in_reservation = Reservation::where('status_completed', 0)
-                    ->where('jewelry_id', $item->jewelry_id)
-                    ->get();
-                $validate_pass_two = 'ไม่ซ้ำ';
-                foreach ($check_double_in_reservation as $it) {
-                    $check_start_re = Carbon::parse($it->start_date);
-                    $check_end_re = Carbon::parse($it->end_date);
-                    if ($check_start_re->between($fil_start_7, $fil_start_1) || $check_end_re->between($fil_start_7, $fil_start_1)) {
-                        $validate_pass_two = 'ซ้ำ';
-                    }
-
-                    if ($check_start_re->between($fil_be_start, $fil_be_end) || $check_end_re->between($fil_be_start, $fil_be_end)) {
-                        $validate_pass_two = 'ซ้ำ';
-                    }
-
-                    if ($check_start_re->between($fil_end_1, $fil_end_7) || $check_end_re->between($fil_end_1, $fil_end_7)) {
-                        $validate_pass_two = 'ซ้ำ';
-                    }
-
-                    if ($validate_pass_two == "ซ้ำ") {
-                        $list_pass_set_id = array_diff($list_pass_set_id, [$item->jewelry_set_id]);
-                    }
+                if ($validate_pass) {
+                    $list_pass_set_id[] = $jew->jewelry_set_id ; 
                 }
             }
         }
 
+        $list_pass_set_id = array_unique($list_pass_set_id) ; 
         $jewelry_pass = Jewelryset::whereIn('id', $list_pass_set_id)->get();
         return view('employeerentjewelry.addjewelrytocard', compact('typejew', 'jewelry_type', 'start_date', 'end_date', 'jewelry_pass'));
     }
@@ -139,7 +106,6 @@ class Orderjewelry extends Controller
     private function filternotsetjew(Request $request)
     {
         $typejew = Typejewelry::all();
-
 
         $jewelry_type = $request->input('jewelry_type');
         $start_date = $request->input('start_date');
@@ -151,7 +117,6 @@ class Orderjewelry extends Controller
         $jewel = Jewelry::where('type_jewelry_id', $jewelry_type)->get();
         $list_pass_id = [];
 
-
         $fil_start_7 = $start_date_fil->copy()->subDays(7);
         $fil_start_1 = $start_date_fil->copy()->subDays(1);
         $fil_be_start = $start_date_fil->copy();
@@ -160,7 +125,7 @@ class Orderjewelry extends Controller
         $fil_end_7 = $end_date_fil->copy()->addDays(7);
 
         foreach ($jewel as $jew) {
-            $reservation = Reservation::where('jewelry_id', $jew->id)
+            $reservation = Reservationfilters::where('jewelry_id', $jew->id)
                 ->where('status_completed', 0)
                 ->get();
             $validate_pass = true;
@@ -186,39 +151,7 @@ class Orderjewelry extends Controller
                 $list_pass_id[] = $jew->id;
             }
         }
-
-
-        // เช็คแค่setสิ
-        $reservation_set_id = Reservation::where('status_completed', 0)
-            ->whereNotNull('jewelry_set_id')
-            ->get();
-        $validate_pass_set = 'ยังไม่ซ้ำ';
-        foreach ($reservation_set_id as $re_set_id) {
-            $re_set_start = Carbon::parse($re_set_id->start_date);
-            $re_set_end = Carbon::parse($re_set_id->end_date);
-            if ($re_set_start->between($fil_start_7, $fil_start_1) || $re_set_end->between($fil_start_7, $fil_start_1)) {
-                $validate_pass_set = "ซ้ำ";
-            }
-            if ($re_set_start->between($fil_be_start, $fil_be_end) || $re_set_end->between($fil_be_start, $fil_be_end)) {
-                $validate_pass_set = "ซ้ำ";
-            }
-            if ($re_set_start->between($fil_end_1, $fil_end_7) || $re_set_end->between($fil_end_1, $fil_end_7)) {
-                $validate_pass_set = "ซ้ำ";
-            }
-            // ถ้ามันเป็นจริง แสดงว่ามันซ้ำ  ต้องลบ id ทิ้ง โดยการใช้ array_diff
-            if ($validate_pass_set == "ซ้ำ") {
-                $delete_id = Jewelrysetitem::where('jewelry_set_id', $re_set_id->jewelry_set_id)->get();
-                foreach ($delete_id as $item) {
-                    $list_pass_id = array_diff($list_pass_id, [$item->jewelry_id]);
-                }
-            }
-        }
-
-
-
-
         $jewelry_pass = Jewelry::whereIn('id', $list_pass_id)->get();
-
         return view('employeerentjewelry.addjewelrytocard', compact('typejew', 'jewelry_type', 'start_date', 'end_date', 'jewelry_pass'));
     }
     // เพิ่มเครื่องประดับลงในตะกร้าชิ้น
@@ -923,6 +856,44 @@ class Orderjewelry extends Controller
 
         return view('employeerentjewelry.jewelry-rented-history', compact('history', 'jewelry', 'typejewelry', 'value_month', 'value_year'));
     }
+
+    public function showjewsetrentedhistory(Request $request, $id)
+    {
+
+        $jewelryset = Jewelryset::find($id);
+
+        $value_month = 0;
+        $value_year = 0;
+        $history = Reservation::where('jewelry_set_id', $id)
+            ->where('status_completed', 1)
+            ->where('status', 'คืนเครื่องประดับแล้ว')
+            ->get();
+        return view('employeerentjewelry.jewelry-set-rented-history', compact('history', 'jewelryset', 'value_month', 'value_year'));
+    }
+
+    public function showjewsetrentedhistoryfilter(Request $request, $id)
+    {
+        $jewelryset = Jewelryset::find($id);
+        $value_month = $request->input('month');
+        $value_year = $request->input('year');
+        $history = Reservation::where('jewelry_set_id', $id)
+            ->where('status_completed', 1)
+            ->where('status', 'คืนเครื่องประดับแล้ว');
+        if ($value_month != 0) {
+            $history->whereMonth('updated_at', $value_month);
+        }
+        if ($value_year != 0) {
+            $history->whereYear('updated_at', $value_year);
+        }
+        $history = $history->get();
+
+        return view('employeerentjewelry.jewelry-set-rented-history', compact('history', 'jewelryset', 'value_month', 'value_year'));
+    }
+
+
+
+
+
     public function showrepairjewelryhistory($id)
     {
         $jewelry = Jewelry::find($id);

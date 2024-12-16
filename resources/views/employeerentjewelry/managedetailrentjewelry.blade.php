@@ -481,12 +481,12 @@
                         </p>
 
                         <p class="mb-3">
-                            <i class="bi bi-currency-dollar"></i>
+                            <i></i>
                             ราคาเช่า : {{ number_format($orderdetail->price, 2) }} บาท
                         </p>
 
                         <p class="mb-3">
-                            <i class="bi bi-currency-dollar"></i>
+                            <i></i>
                             เงินมัดจำ : {{ number_format($orderdetail->deposit, 2) }} บาท
                         </p>
 
@@ -623,7 +623,7 @@
                                 <tr>
                                     <th style="width: 30%; text-align: left; padding: 10px;">ส่วนต่างที่ต้องจ่าย:</th>
                                     <td style="padding: 10px;">
-                                        {{ number_format($orderdetail->price - $orderdetail->deposit) }} บาท</td>
+                                        {{ number_format($orderdetail->price - $orderdetail->deposit , 2 ) }} บาท</td>
                                 </tr>
                                 <tr>
                                     <th style="width: 30%; text-align: left; padding: 10px;">เงินประกัน:</th>
@@ -639,7 +639,7 @@
                         <div class="alert alert-info"
                             style="background-color: #e9f7f9; border-color: #bee5eb; color: #0c5460; font-size: 1.2rem; padding: 10px;">
                             <p>ยอดคงเหลือที่ต้องชำระ: <strong
-                                    id="totalDue">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance) }}
+                                    id="totalDue">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance,2) }}
                                     บาท</strong></p>
                         </div>
                     </div>

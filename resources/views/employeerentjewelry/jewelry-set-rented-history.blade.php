@@ -86,12 +86,12 @@
     }
     </style>
     <div class="container mt-5">
-        <h3>ประวัติการเช่าเครื่องประดับ </h3>
+        <h3>ประวัติการเช่าเซต{{$jewelryset->set_name}} </h3>
 
 
         <div class="card mb-5">
             <div class="card-body">
-                <form action="{{ route('showrentedhistoryfilter', ['id' => $jewelry->id]) }}" method="GET"
+                <form action="{{ route('showjewsetrentedhistoryfilter', ['id' => $jewelryset->id]) }}" method="GET"
                     class="form-inline">
                     @csrf
                     <div class="form-group mb-2">
@@ -130,12 +130,12 @@
         @if ($history->count() > 0)
             <div class="card">
                 <div class="card-body">
-                    <h5>ข้อมูลสรุปของ{{ $typejewelry->type_jewelry_name }} {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
+                    <h5>ข้อมูลสรุปของเซต
                     </h5>
                     <p>จำนวนครั้งที่ถูกเช่า:   <strong>{{ $history->count() }} ครั้ง</strong></p>
                     {{-- <p>รายได้รวม:   <strong>{{ number_format($history->re_one_many_details->sum('price'), 2) }} บาท</strong></p> --}}
                     {{-- <p>อัตราการเช่าต่อเดือน:   <strong>ข้อมูลเพิ่มเติม (หากมี)</strong></p> --}}
-                </div>
+                </div>              
             </div>
             <div class="table-responsive mt-4">
                 <table class="table table-striped text-start">
@@ -210,7 +210,7 @@
                 </table>
             </div>
         @else
-            <p class="centered">ไม่มีรายการประวัติการเช่าเครื่องประดับชิ้นนี้</p>
+            <p class="centered">ไม่มีรายการประวัติการเช่าเซตนี้</p>
         @endif
     </div>
 @endsection

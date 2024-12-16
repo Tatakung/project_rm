@@ -267,23 +267,39 @@ class OrderController extends Controller
     private function managedetailrentcut($id)
     {
         $orderdetail = Orderdetail::find($id);
+        $customer_id = Order::where('id', $orderdetail->order_id)->value('customer_id');
+        $customer = Customer::find($customer_id);
         $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
         $employee = User::find($orderdetail->employee_id);
-        $fitting = Fitting::where('order_detail_id', $id)->get();
+        $fitting = Fitting::where('order_detail_id', $id)
+                    ->orderByRaw(" STR_TO_DATE(fitting_date,'%Y-%m-%d') asc ")
+        ->get();
         $cost = Cost::where('order_detail_id', $id)->get();
-        $date = Date::where('order_detail_id', $id)->get();
+        $Date = Date::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
         $decoration = Decoration::where('order_detail_id', $id)->get();
         $imagerent = Imagerent::where('order_detail_id', $id)->get();
         $mea_dress = Dressmeasurement::where('dress_id', $orderdetail->dress_id)->get();
         $mea_orderdetail = Measurementorderdetail::where('order_detail_id', $id)->get();
+        $mea_orderdetailforedit = Measurementorderdetail::where('order_detail_id', $id)->get();
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
-        $orderdetailstatusedit = Orderdetailstatus::where('order_detail_id', $id)->get();
 
         $valuestatus = $orderdetail->status_detail;
         $valuestatus = Orderdetailstatus::where('order_detail_id', $id)
             ->latest('created_at')
             ->value('status');
-        return view('employeerentcut.managedetailrentcut', compact('orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'orderdetailstatusedit'));
+        $dress_edit_cut = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
+        $dress_adjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
+        $round = AdjustmentRound::where('order_detail_id', $id)->get();
+        $route_modal = AdjustmentRound::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $is_admin = Auth::user()->is_admin;  //ตรวจสอบว่าเป็นแอดมินไหม
+        $who_login = Auth::user()->id; //คนที่กำลังlogin
+        $person_order = Order::where('id', $orderdetail->order_id)->value('user_id');  //คนที่รับ order
+        return view('employeerentcut.managedetailrentcut', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal'));
+
     }
     //จัดการตัดชุด
     private function managedetailcutdress($id)
@@ -320,7 +336,6 @@ class OrderController extends Controller
         $is_admin = Auth::user()->is_admin;  //ตรวจสอบว่าเป็นแอดมินไหม
         $who_login = Auth::user()->id; //คนที่กำลังlogin
         $person_order = Order::where('id', $orderdetail->order_id)->value('user_id');  //คนที่รับ order
-
 
         return view('employeecutdress.managedetailcutdress', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal'));
     }
@@ -1228,16 +1243,16 @@ class OrderController extends Controller
 
 
 
-    public function actionaddmeaorderdetail(Request $request,  $id)
-    {
-        $add_mea_orderdetail = new Measurementorderdetail();
-        $add_mea_orderdetail->order_detail_id = $id;
-        $add_mea_orderdetail->measurement_name = $request->input('add_measurement_name');
-        $add_mea_orderdetail->measurement_number = $request->input('add_measurement_number');
-        $add_mea_orderdetail->measurement_unit = $request->input('add_measurement_unit');
-        $add_mea_orderdetail->save();
-        return redirect()->back()->with('success', 'เพิ่มข้อมูลการวัดสำเร็จ !');
-    }
+    // public function actionaddmeaorderdetail(Request $request,  $id)
+    // {
+    //     $add_mea_orderdetail = new Measurementorderdetail();
+    //     $add_mea_orderdetail->order_detail_id = $id;
+    //     $add_mea_orderdetail->measurement_name = $request->input('add_measurement_name');
+    //     $add_mea_orderdetail->measurement_number = $request->input('add_measurement_number');
+    //     $add_mea_orderdetail->measurement_unit = $request->input('add_measurement_unit');
+    //     $add_mea_orderdetail->save();
+    //     return redirect()->back()->with('success', 'เพิ่มข้อมูลการวัดสำเร็จ !');
+    // }
     public function actionupdatemeaorderdetail(Request $request, $id)
     {
         $update_mea_orderdetail = Measurementorderdetail::find($id);

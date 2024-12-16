@@ -59,15 +59,7 @@
             color: #6c757d;
         }
     </style>
-    <ol class="breadcrumb"style="background-color: transparent;">
-        <li class="breadcrumb-item"><a href="" style="color: black ; ">หน้าแรก</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}"
-                style="color: black ; ">รายการออเดอร์ทั้งหมด</a></li>
-        <li class="breadcrumb-item"><a
-                href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">รายละเอียดออเดอร์ที่
-                {{ $orderdetail->order_id }}</a></li>
-        <li class="breadcrumb-item active">{{ $orderdetail->title_name }}</li>
-    </ol>
+
 
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
@@ -142,25 +134,16 @@
 
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'เริ่มดำเนินการตัด') style="display: none;" @endif>
-                                <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัปเดตสถานะตัดชุด</button>
+                                <a href="{{route('storeTailoredDress',['id' => $orderdetail->id])}}" class="btn" style="background: #C28041; color: #ffffff;"> 
+                                    บันทึกการตัดชุด
+                                </a>
                             </div>
 
 
-                            <div class="col-md-6 text-right"
-                                @if ($orderdetail->status_detail != 'ตัดชุดเสร็จสิ้น') style="display: none;" @endif>
-                                <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus_pickupdress">อัปเดตสถานะรับชุด</button>
-                            </div>
-
-                            <div class="col-md-6 text-right"
-                            @if ($orderdetail->status_detail != 'กำลังเช่า') style="display: none;" @endif>
-                            <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
-                                data-target="">อัปเดตสถานะรับชุดคืน</button>
-                        </div>
+                            
 
 
-                
+
 
 
 
@@ -586,10 +569,23 @@
                                     </p>
                                 </small>
                             </div>
-                            
 
 
-                        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                             {{-- พักไว้ก่อน ยังไม่แน่ใจว่าจะทำไหม ส่วนนี้อะ  --}}
 
                             @if (in_array('แก้ไขชุด', $list_status))
@@ -1220,67 +1216,23 @@
 
 
 
-    <div class="modal fade" id="updatestatus_pickupdress" tabindex="-1" role="dialog" aria-labelledby="updatestatusLabel"
-        aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form action="{{ route('actionupdatestatusrentcutpickup', ['id' => $orderdetail->id]) }}"
-                    method="POST">
-                    @csrf
 
-                    <div class="modal-header" style="background-color:#EAD8C0 ;">
-                        <h5 class="modal-title" id="updatestatusLabel">
-                            อัปเดตสถานะการเช่า</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                            style="color: white;">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <h6 class="mb-3">รายละเอียดสำหรับการเช่าตัด:</h6>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <th style="width: 30%; text-align: left; padding: 10px;">ชื่อลูกค้า:</th>
-                                    <td style="padding: 10px;">คุณ{{ $customer->customer_fname }}
-                                        {{ $customer->customer_lname }}</td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 30%; text-align: left; padding: 10px;">วันที่นัดรับ:</th>
-                                    <td style="padding: 10px;">
-                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}</td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 30%; text-align: left; padding: 10px;">ส่วนต่างที่ต้องจ่าย:</th>
-                                    <td style="padding: 10px;">
-                                        {{ number_format($orderdetail->price - $orderdetail->deposit) }} บาท</td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 30%; text-align: left; padding: 10px;">เงินประกัน:</th>
-                                    <td style="padding: 10px;">{{ number_format($orderdetail->damage_insurance, 2) }} บาท
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
 
-                        <!-- สรุปการชำระเงิน -->
-                        <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
-                        <div class="alert alert-info"
-                            style="background-color: #e9f7f9; border-color: #bee5eb; color: #0c5460; font-size: 1.2rem; padding: 10px;">
-                            <p>ยอดคงเหลือที่ต้องชำระ: <strong
-                                    id="totalDue">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance) }}
-                                    บาท</strong></p>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn " data-dismiss="modal"
-                            style="background-color:#DADAE3;">ยกเลิก</button>
-                        <button type="submit" class="btn " id="confirmUpdateButton"
-                            style="background-color:#ACE6B7;">ยืนยันการรับชุด</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @endsection

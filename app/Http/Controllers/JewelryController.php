@@ -7,7 +7,9 @@ use App\Models\Jewelryimage;
 use App\Models\Jewelryset;
 use App\Models\Jewelrysetitem;
 use App\Models\Typejewelry;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class JewelryController extends Controller
 {
@@ -107,7 +109,8 @@ class JewelryController extends Controller
         $data_type = Typejewelry::where('id', $datajewelry->type_jewelry_id)->first();
         $dataimage = Jewelryimage::where('jewelry_id', $id)->first();
         $jew_in_set = Jewelrysetitem::where('jewelry_id',$id)->get() ; 
-        return view('adminjewelry.jewelrydetail', compact('datajewelry', 'dataimage', 'data_type','jew_in_set'));
+        $is_admin = Auth::user()->is_admin ; 
+        return view('adminjewelry.jewelrydetail', compact('datajewelry', 'dataimage', 'data_type','jew_in_set','is_admin'));
     }
     
 
@@ -174,7 +177,8 @@ class JewelryController extends Controller
     public function setjewelrydetail($id){
         $jewelryset = Jewelryset::find($id) ; 
         $Jewelrysetitem = Jewelrysetitem::where('jewelry_set_id',$id)->get() ;
-        return view('adminjewelry.setjewelrydetail',compact('jewelryset','Jewelrysetitem')) ; 
+        $is_admin = Auth::user()->is_admin ; 
+        return view('adminjewelry.setjewelrydetail',compact('jewelryset','Jewelrysetitem','is_admin')) ; 
     }
 
 

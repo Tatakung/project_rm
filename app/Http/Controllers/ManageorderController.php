@@ -39,7 +39,7 @@ class ManageorderController extends Controller
     }
 
 
-    
+
 
 
     //หน้าเพิ่มออเดอร์เช่าชุด หลังจากที่เลือกประเภทชุดแล้ว
@@ -50,13 +50,12 @@ class ManageorderController extends Controller
         $selectendDate = $request->input('endDate');
         $selecttotalDay = $request->input('totalDay');
 
-        
+
         $type_dress_id = $id;
         $type_dress_name = Typedress::where('id', $id)->select('type_dress_name', 'specific_letter')->first();
         $search_separable = null;
         $dress = Dress::where('type_dress_id', $id)->with(['dressimages', 'dressmeasurements', 'dressmeasurementnows', 'shirtitems', 'skirtitems'])->get();
         return view('Employee.typerentdressshow', compact('dress', 'type_dress_name', 'type_dress_id', 'search_separable', 'selectstartDate', 'selectendDate', 'selecttotalDay'));
-
     }
 
 
@@ -229,7 +228,7 @@ class ManageorderController extends Controller
                 } else {
                     $create_order->late_charge = 0;
                 }
-                $create_order->status_fix_measurement = "ไม่มีการแก้ไข"; 
+                $create_order->status_fix_measurement = "ไม่มีการแก้ไข";
                 $create_order->save();
 
                 //ตารางการวัด
@@ -290,7 +289,7 @@ class ManageorderController extends Controller
                         $create_order->late_charge = 0;
                     }
 
-                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข"; 
+                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข";
                     $create_order->save();
                     // อัปเดตตารางshirt
                     $update_shirt = Shirtitem::find($shirtitem_id);
@@ -357,7 +356,7 @@ class ManageorderController extends Controller
                     } else {
                         $create_order->late_charge = 0;
                     }
-                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข"; 
+                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข";
                     $create_order->save();
 
                     // อัปเดตตารางskirt
@@ -423,7 +422,7 @@ class ManageorderController extends Controller
                     } else {
                         $create_order->late_charge = 0;
                     }
-                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข"; 
+                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข";
                     $create_order->save();
                     //อัปเดตตาราง dress
                     $update_dress = Dress::find($dress_id);
@@ -444,15 +443,15 @@ class ManageorderController extends Controller
                     $mea_now_dress_no_yes_name = $request->input('mea_now_dress_name_');
                     $mea_now_dress_no_yes_number = $request->input('mea_now_dress_number_');
                     $mea_now_dress_no_yes_unit = $request->input('mea_now_dress_unit_');
-                    $mea_shirt_now = $request->input('mea_shirt_now_') ; 
-                    $mea_skirt_now = $request->input('mea_skirt_now_') ; 
+                    $mea_shirt_now = $request->input('mea_shirt_now_');
+                    $mea_skirt_now = $request->input('mea_skirt_now_');
                     $mea_now_dress_no_yes_number_start = $request->input('mea_now_dress_number_start_');
                     foreach ($mea_now_dress_no_yes_name as $index => $mea_now_name) {
                         $add_mea = new Measurementorderdetail();
                         $add_mea->order_detail_id = $create_order->id;
                         $add_mea->dress_id = $dress_id;
-                        $add_mea->item_shirt_id = $mea_shirt_now[$index] ; 
-                        $add_mea->item_skirt_id = $mea_skirt_now[$index] ; 
+                        $add_mea->item_shirt_id = $mea_shirt_now[$index];
+                        $add_mea->item_skirt_id = $mea_skirt_now[$index];
                         $add_mea->measurement_name = $mea_now_name;
                         $add_mea->measurement_number_start = $mea_now_dress_no_yes_number_start[$index];
                         $add_mea->measurement_number_old = $mea_now_dress_no_yes_number[$index];
@@ -465,7 +464,7 @@ class ManageorderController extends Controller
             }
         }
         //ถ้ามันไม่มีตะกร้า 
-        else{
+        else {
             if ($separable == 1) {
                 //แยกไม่ได้
                 //ตารางorder
@@ -497,7 +496,7 @@ class ManageorderController extends Controller
                 } else {
                     $create_order->late_charge = 0;
                 }
-                $create_order->status_fix_measurement = "ไม่มีการแก้ไข"; 
+                $create_order->status_fix_measurement = "ไม่มีการแก้ไข";
                 $create_order->save();
 
                 //ตารางการวัด
@@ -521,8 +520,7 @@ class ManageorderController extends Controller
                 $update_dress = Dress::find($dress_id);
                 $update_dress->dress_status = "อยู่ในตะกร้า";
                 $update_dress->save();
-            }
-            elseif ($separable == 2) {
+            } elseif ($separable == 2) {
                 //แยกได้                
                 //เสื้อ
                 if ($shirtitem_id) {
@@ -556,7 +554,7 @@ class ManageorderController extends Controller
                     } else {
                         $create_order->late_charge = 0;
                     }
-                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข"; 
+                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข";
                     $create_order->save();
                     // อัปเดตตารางshirt
                     $update_shirt = Shirtitem::find($shirtitem_id);
@@ -624,7 +622,7 @@ class ManageorderController extends Controller
                     } else {
                         $create_order->late_charge = 0;
                     }
-                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข"; 
+                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข";
                     $create_order->save();
                     // อัปเดตตารางskirt
                     $update_skirt = Skirtitem::find($skirtitem_id);
@@ -691,7 +689,7 @@ class ManageorderController extends Controller
                     } else {
                         $create_order->late_charge = 0;
                     }
-                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข"; 
+                    $create_order->status_fix_measurement = "ไม่มีการแก้ไข";
                     $create_order->save();
                     //อัปเดตตาราง dress
                     $update_dress = Dress::find($dress_id);
@@ -712,8 +710,8 @@ class ManageorderController extends Controller
                     $mea_now_dress_no_yes_name = $request->input('mea_now_dress_name_');
                     $mea_now_dress_no_yes_number = $request->input('mea_now_dress_number_');
                     $mea_now_dress_no_yes_unit = $request->input('mea_now_dress_unit_');
-                    $mea_shirt_now = $request->input('mea_shirt_now_') ; 
-                    $mea_skirt_now = $request->input('mea_skirt_now_') ; 
+                    $mea_shirt_now = $request->input('mea_shirt_now_');
+                    $mea_skirt_now = $request->input('mea_skirt_now_');
                     $mea_now_dress_no_yes_number_start = $request->input('mea_now_dress_number_start_');
                     foreach ($mea_now_dress_no_yes_name as $index => $mea_now_name) {
                         $add_mea = new Measurementorderdetail();
@@ -1084,12 +1082,12 @@ class ManageorderController extends Controller
             $update_order_detail->save();
 
             // ตารางdate
-            $update_date_id = Date::where('order_detail_id',$id)
-                            ->orderBy('created_at','desc')
-                            ->value('id') ; 
-            $update_date = Date::find($update_date_id) ; 
+            $update_date_id = Date::where('order_detail_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->value('id');
+            $update_date = Date::find($update_date_id);
             $update_date->pickup_date = $request->input('update_pickup_date');
-            $update_date->save() ; 
+            $update_date->save();
 
 
 
@@ -1125,19 +1123,18 @@ class ManageorderController extends Controller
                 }
             }
 
-            if($request->hasFile('file_image_')){
-                $file_image = $request->file('file_image_') ; 
-                $note_image = $request->input('note_image_') ; 
-    
-                foreach($file_image as $index => $image){
-                    $create_image = new Imagerent() ; 
-                    $create_image->order_detail_id = $id ; 
-                    $create_image->image = $image->store('rent_images','public') ;
-                    $create_image->description = $note_image[$index] ; 
-                    $create_image->save() ; 
-                }   
-            }
+            if ($request->hasFile('file_image_')) {
+                $file_image = $request->file('file_image_');
+                $note_image = $request->input('note_image_');
 
+                foreach ($file_image as $index => $image) {
+                    $create_image = new Imagerent();
+                    $create_image->order_detail_id = $id;
+                    $create_image->image = $image->store('rent_images', 'public');
+                    $create_image->description = $note_image[$index];
+                    $create_image->save();
+                }
+            }
 
 
             DB::commit();
@@ -1147,31 +1144,32 @@ class ManageorderController extends Controller
         }
     }
 
+
+
     //บันทึกของเช่าชุดsavemanageitemrentdress
     public function savemanageitemrentdress(Request $request, $id)
     {
         //ตาราง orderdetail
         $orderdetail = Orderdetail::find($id);
-    
-    
+
+
         $dress_mea_adjust = $request->input('dress_mea_adjust_');
         $dress_mea_adjust_number = $request->input('dress_mea_adjust_number_');
-        
-        foreach($dress_mea_adjust as $index => $mea_adjust_id){
-            $update_mea_adjust = Dressmeaadjustment::find($mea_adjust_id) ; 
-            $update_mea_adjust->new_size = $dress_mea_adjust_number[$index] ; 
-            $update_mea_adjust->status = 'รอ' ; 
 
-            $mea_current = Dressmea::where('id',$update_mea_adjust->dressmea_id)->value('current_mea') ; 
-            if($update_mea_adjust->new_size !=  $mea_current){
-                $update_mea_adjust->status = "แก้ไข"; 
+        foreach ($dress_mea_adjust as $index => $mea_adjust_id) {
+            $update_mea_adjust = Dressmeaadjustment::find($mea_adjust_id);
+            $update_mea_adjust->new_size = $dress_mea_adjust_number[$index];
+            $update_mea_adjust->status = 'รอ';
+
+            $mea_current = Dressmea::where('id', $update_mea_adjust->dressmea_id)->value('current_mea');
+            if ($update_mea_adjust->new_size !=  $mea_current) {
+                $update_mea_adjust->status = "แก้ไข";
+            } else {
+                $update_mea_adjust->status = "ไม่มีการแก้ไข";
             }
-            else{
-                $update_mea_adjust->status = "ไม่มีการแก้ไข"; 
-            }
-            $update_mea_adjust->save() ; 
+            $update_mea_adjust->save();
         }
-        
+
         $orderdetail->note = $request->input('note');
         $orderdetail->save();
         return redirect()->back()->with('success', "บันทึกข้อมูล");
@@ -1187,7 +1185,7 @@ class ManageorderController extends Controller
         //ตาราง orderdetail
         $orderdetail = Orderdetail::find($id);
         $orderdetail->note = $request->input('note');
-        $orderdetail->save(); 
+        $orderdetail->save();
         return redirect()->back()->with('success', 'สำเร็จ !');
     }
 
@@ -1196,199 +1194,108 @@ class ManageorderController extends Controller
     public function savemanageitemcutrent(Request $request, $id)
     {
 
-        DB::beginTransaction();
-        try {
+        $orderdetail = Orderdetail::find($id);  //ค้นหา order_detail_id ในตาราง orderdetail 
+        //ตาราง order
+        $update_order = Order::find($orderdetail->order_id);
 
-            $orderdetail = Orderdetail::find($id);  //ค้นหา order_detail_id ในตาราง orderdetail 
-
-            //เลือกอื่นๆ ต้องกรอก   ประเภทชุดที่เลือกตัด
-            if ($request->input('type_dress') == 'other_type') {
-                $checkdouble = Typedress::where('type_dress_name', $request->input('other_type'))->first();
-                if ($checkdouble) {
-                    $TYPE_DRESS_NAME = $request->input('other_type');
-                } else {
-                    //สร้างอักษรมา 1 ตัว 
-                    do {
-                        $random = chr(65 + rand(0, 25));
-                        $check = Typedress::where('specific_letter', $random)->first();
-                    } while ($check);
-                    $character = $random; //ได้ตัวอักษรมาแล้ว 
-                    $create_id_of_typedress = new Typedress();
-                    $create_id_of_typedress->type_dress_name = $request->input('other_input');
-                    $create_id_of_typedress->specific_letter = $character;
-                    $create_id_of_typedress->save();
-                    $TYPE_DRESS_NAME = $request->input('other_input');
-
-                    //ลบประเภทชุดเดิมที่เคยสร้าง
-                    $ID_FOR_TYPE_NAME = Typedress::where('type_dress_name', $orderdetail->type_dress)->value('id');  //ได้ id มาแล้ว
-                    $find_for_delete = Dress::where('type_dress_id', $ID_FOR_TYPE_NAME)->first(); //ค้นหาว่าid ของประเภทชุดมันมีไหม F
-                    if (!$find_for_delete) {
-                        $delete_type_name_now = Typedress::find($ID_FOR_TYPE_NAME);
-                        $delete_type_name_now->delete(); //ลบประเภทชุดที่เคยเลือกแล้ว
-                    }
-                }
-            }
-            // เลือกในดรอปดาว  ประเภทชุดที่เลือกตัด
-            else {
-                $TYPE_DRESS_NAME = $request->input('type_dress');
-                //เช็คว่าเลือกอันเดิมไหม ถ้าไม่เลือกอันเดิม จะลบ ประเภทชุดทิ้ง
-                if ($request->input('type_dress') != $orderdetail->type_dress) {
-                    $ID_FOR_TYPE_NAME = Typedress::where('type_dress_name', $orderdetail->type_dress)->value('id');  //ได้ id มาแล้ว
-                    $find_for_delete = Dress::where('type_dress_id', $ID_FOR_TYPE_NAME)->first(); //ค้นหาว่าid ของประเภทชุดมันมีไหม 
-                    if (!$find_for_delete) {
-                        $delete_type_name_now = Typedress::find($ID_FOR_TYPE_NAME);
-                        $delete_type_name_now->delete(); //ลบประเภทชุดที่เคยเลือกแล้ว
-                    }
-                }
-            }
-
-            //ตาราง order
-            $update_order = Order::find($orderdetail->order_id);
-            //total_price 
-            $price_local = $orderdetail->price * $orderdetail->amount; //ราคาเดิม
-            $price_new = $request->input('update_price') * $request->input('update_amount'); //ราคาใหม่
-            if ($price_new > $price_local) {
-                $update_order->total_price = ($price_new - $price_local)  + $update_order->total_price;
-                $update_order->save();
-            } elseif ($price_new < $price_local) {
-                $update_order->total_price = $update_order->total_price - ($price_local - $price_new);
-                $update_order->save();
-            }
-
-            //total_deposit
-            $deposit_local = $orderdetail->deposit * $orderdetail->amount; //ราคาเดิม
-            $deposit_new = $request->input('update_deposit') * $request->input('update_amount'); //ราคาใหม่
-            if ($deposit_new > $deposit_local) {
-                $update_order->total_deposit = ($deposit_new - $deposit_local)  + $update_order->total_deposit;
-                $update_order->save();
-            } elseif ($deposit_new < $deposit_local) {
-                $update_order->total_deposit = $update_order->total_deposit - ($deposit_local - $deposit_new);
-                $update_order->save();
-            }
-
-            //ตาราง orderdetail
-            $update_order_detail = Orderdetail::find($id);
-            $update_order_detail->title_name = 'เช่าตัด' . $TYPE_DRESS_NAME;
-            $update_order_detail->type_dress = $TYPE_DRESS_NAME;
-            $update_order_detail->pickup_date = $request->input('update_pickup_date');
-            $update_order_detail->return_date = $request->input('update_return_date');
-            $update_order_detail->return_date = $request->input('update_return_date');
-            $update_order_detail->amount = $request->input('update_amount');
-
-            $update_order_detail->late_charge = $request->input('update_late_charge');
-            $update_order_detail->damage_insurance = $request->input('update_damage_insurance');
-
-            if ($request->input('update_deposit') > $request->input('update_price')) {
-                DB::rollback();
-                return redirect()->back()->with('fail', "ราคาตัดต้องมากกว่าราคามัดจำ");
-            } elseif ($request->input('update_deposit') <= $request->input('update_price')) {
-                $update_order_detail->price = $request->input('update_price');
-                $update_order_detail->deposit = $request->input('update_deposit');
-            }
-            $update_order_detail->note = $request->input('update_note');
-            $update_order_detail->color = $request->input('update_color');
-            $update_order_detail->status_payment = $request->input('update_status_payment');
-            $update_order_detail->save();
-
-            //อัปเดตตาราง date
-            $find_id_in_date = Date::where('order_detail_id', $id)->first();
-            $find_id_in_date->pickup_date = $request->input('update_pickup_date');
-            $find_id_in_date->save();
-
-
-            //อัปเดตตารางstatus_payment
-            $find_id_in_payment = Paymentstatus::where('order_detail_id', $id)->first();
-            $find_id_in_payment->payment_status = $request->input('update_status_payment');
-            $find_id_in_payment->save();
-
-            //อัปเดตตาราง financial
-            // $find_id_in_financial = Financial::where('order_detail_id', $id)->first();
-            // if ($request->input('update_status_payment') == 1) {
-            //     $text_update_financial = "จ่ายมัดจำ";
-            //     $income = $request->input('update_deposit') * $request->input('update_amount');
-            // } else {
-            //     $text_update_financial = "จ่ายเต็ม";
-            //     $income = $request->input('update_price') * $request->input('update_amount');
-            // }
-            // $find_id_in_financial->item_name = $text_update_financial . '(เช่าตัดชุด)';
-            // $find_id_in_financial->type_order = $orderdetail->type_order;
-            // $find_id_in_financial->financial_income = $income;
-            // $find_id_in_financial->save();
-
-            //อัปเดตข้อมูลการวัดmeasurement
-            if ($request->input('mea_orderdetail_id_')) {
-                $id_for_mea = $request->input('mea_orderdetail_id_'); //ตัวหมุน
-                $update_name_mea = $request->input('mea_orderdetail_name_');
-                $update_number_mea = $request->input('mea_orderdetail_number_');
-                $update_unit_mea = $request->input('mea_orderdetail_unit_');
-                foreach ($id_for_mea as $index => $id_for_mea_table) {
-                    $update_data = Measurementorderdetail::find($id_for_mea_table);
-                    $update_data->measurement_name = $update_name_mea[$index];
-                    $update_data->measurement_number = $update_number_mea[$index];
-                    $update_data->measurement_unit = $update_unit_mea[$index];
-                    $update_data->save();
-                }
-            }
-            //อัปเดตตาราการนัดลองชุด
-
-            if ($request->input('fitting_id_')) {
-                $id_for_fitting = $request->input('fitting_id_'); //ตัวหมุน
-                $update_fitting_date = $request->input('fitting_date_');
-                $update_fitting_note = $request->input('fitting_note_');
-                foreach ($id_for_fitting as $index => $id_for_fitting) {
-                    if ($update_fitting_date[$index] != null) {
-                        $update_data = Fitting::find($id_for_fitting);
-                        $update_data->fitting_date = $update_fitting_date[$index];
-                        $update_data->fitting_note = $update_fitting_note[$index];
-                        $update_data->save();
-                    }
-                }
-            }
-
-            //บันทึกข้อมูลการวัด
-            if ($request->input('add_mea_name_')) {
-                $add_mea_name = $request->input('add_mea_name_'); //ตัวหมุน
-                $add_mea_number = $request->input('add_mea_number_');
-                $add_mea_unit = $request->input('add_mea_unit_');
-                foreach ($add_mea_name as $index => $add) {
-                    $add_measurement = new Measurementorderdetail();
-                    $add_measurement->order_detail_id = $id;
-                    $add_measurement->measurement_name = $add;
-                    $add_measurement->measurement_number = $add_mea_number[$index];
-                    $add_measurement->measurement_unit = $add_mea_unit[$index];
-                    $add_measurement->save();
-                }
-            }
-
-            //เพิ่มข้อมูลการนัดลองชุด
-            if ($request->input('add_fitting_date_')) {
-                $add_fitting_date = $request->input('add_fitting_date_'); //ตัวหมุน
-                $add_fitting_note = $request->input('add_fitting_note_');
-                foreach ($add_fitting_date as $index => $add) {
-                    $add_fitting = new Fitting();
-                    $add_fitting->order_detail_id = $id;
-                    $add_fitting->fitting_date = $add;
-                    $add_fitting->fitting_note = $add_fitting_note[$index];
-                    $add_fitting->save();
-                }
-            }
-
-            //เพิ่มรูปภาพ 
-            if ($request->hasFile('add_image_')) {
-                $add_image = $request->file('add_image_');
-                $img = $request->file('add_image_');
-                foreach ($add_image as $index => $img) {
-                    $add = new Imagerent();
-                    $add->order_detail_id = $id;
-                    $add->image = $img->store('rent_images', 'public');
-                    $add->save();
-                }
-            }
-
-            DB::commit();
-            return redirect()->back()->with('success', $TYPE_DRESS_NAME);
-        } catch (\Exception $e) {
-            DB::rollback();
+        //total_price 
+        $price_local = $orderdetail->price * $orderdetail->amount; //ราคาเดิม
+        $price_new = $request->input('update_price') * $request->input('update_amount'); //ราคาใหม่
+        if ($price_new > $price_local) {
+            $update_order->total_price = ($price_new - $price_local)  + $update_order->total_price;
+            $update_order->save();
+        } elseif ($price_new < $price_local) {
+            $update_order->total_price = $update_order->total_price - ($price_local - $price_new);
+            $update_order->save();
         }
+
+        //total_deposit
+        $deposit_local = $orderdetail->deposit * $orderdetail->amount; //ราคาเดิม
+        $deposit_new = $request->input('update_deposit') * $request->input('update_amount'); //ราคาใหม่
+        if ($deposit_new > $deposit_local) {
+            $update_order->total_deposit = ($deposit_new - $deposit_local)  + $update_order->total_deposit;
+            $update_order->save();
+        } elseif ($deposit_new < $deposit_local) {
+            $update_order->total_deposit = $update_order->total_deposit - ($deposit_local - $deposit_new);
+            $update_order->save();
+        }
+
+        //ตาราง orderdetail
+        $update_order_detail = Orderdetail::find($id);
+        $update_order_detail->amount = $request->input('update_amount');
+
+        $update_order_detail->price = $request->input('update_price');
+        $update_order_detail->deposit = $request->input('update_deposit');
+        $update_order_detail->damage_insurance = $request->input('update_price');
+
+        $update_order_detail->note = $request->input('update_note');
+        $update_order_detail->cloth = $request->input('update_cloth');
+        $update_order_detail->save();
+
+        // ตารางdate
+        $update_date_id = Date::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->value('id');
+        $update_date = Date::find($update_date_id);
+        $update_date->pickup_date = $request->input('update_pickup_date');
+        $update_date->return_date = $request->input('update_return_date');
+        $update_date->save();
+
+        //อัปเดตข้อมูลการวัดmeasurement
+
+        if ($request->input('mea_id_')) {
+            $id_for_mea = $request->input('mea_id_'); //ตัวหมุน
+            $update_name_mea = $request->input('update_mea_name_');
+            $update_number_mea = $request->input('update_mea_number_');
+            foreach ($id_for_mea as $index => $id_for_mea_table) {
+                $update_data = Dressmeaadjustment::find($id_for_mea_table);
+                $update_data->name = $update_name_mea[$index];
+                $update_data->new_size = $update_number_mea[$index];
+                $update_data->save();
+            }
+        }
+
+        //บันทึกข้อมูลการวัด
+        if ($request->input('add_mea_name_')) {
+            $add_mea_name = $request->input('add_mea_name_'); //ตัวหมุน
+            $add_mea_number = $request->input('add_mea_number_');
+            foreach ($add_mea_name as $index => $add) {
+                $add_measurement = new Dressmeaadjustment();
+                $add_measurement->order_detail_id = $id;
+                $add_measurement->name = $add;
+                $add_measurement->new_size = $add_mea_number[$index];
+                $add_measurement->save();
+            }
+        }
+
+
+        // อัปเดตข้อมูลการนัดลองชุด
+        if ($request->input('fitting_id_')) {
+            $fitting_id = $request->input('fitting_id_');
+            $update_fitting = $request->input('update_fitting_');
+            foreach ($fitting_id as $index => $id) {
+                $update = Fitting::find($id);
+                $update->fitting_date = $update_fitting[$index] ;
+                $update->save() ; 
+            }
+        }
+
+        // บันทึกข้อมูลการนัดลองชุด
+        if ($request->input('add_fitting_')) {
+            $add_fitting = $request->input('add_fitting_');
+            foreach ($add_fitting as $index => $date) {
+                $add_fitting = new Fitting();
+                $add_fitting->order_detail_id = $id ; 
+                $add_fitting->fitting_date = $date;
+                $add_fitting->fitting_status = 'ยังไม่มาลองชุด' ; 
+                $add_fitting->save();
+            }
+        }
+        return redirect()->back()->with('success', 'จัดการสำเร็จ');
+
+
+      
+
+        return redirect()->back()->with('success', 'จัดการสำเร็จ');
     }
 }

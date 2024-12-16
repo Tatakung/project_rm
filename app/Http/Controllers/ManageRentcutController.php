@@ -361,9 +361,6 @@ class ManageRentcutController extends Controller
             $add_image->dress_image = $request->file('dress_image')->store('dress_images', 'public');
             $add_image->save();
         }
-
-
-        
         if ($request->input('rental_type') == 1) {
             //ตารางเริ่มต้นdressmeasurement
             if ($request->input('name_total_') != null) {

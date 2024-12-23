@@ -81,7 +81,7 @@
                                             <label for="dressImage" class="form-label">เพิ่มรูปภาพชุด</label>
                                             <div class="input-group">
                                                 <input type="file" name="dress_image" id="dressImage"
-                                                    class="form-control" accept="image/*">
+                                                    class="form-control" accept="image/*" required>
                                                 <button class="btn btn-outline-secondary" type="button">
                                                     <i class="fas fa-upload"></i>
                                                 </button>
@@ -103,7 +103,7 @@
                                         </h5>
                                     </div> --}}
                                         <div class="card-body">
-                                            <textarea name="dress_details" class="form-control" rows="3" placeholder="เพิ่มรายละเอียดเกี่ยวกับชุด..."></textarea>
+                                            <textarea name="dress_details" class="form-control" rows="3" placeholder="เพิ่มรายละเอียดเกี่ยวกับชุด..." required></textarea>
                                         </div>
                                     </div>
                                 </div>

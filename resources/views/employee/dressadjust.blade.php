@@ -120,6 +120,11 @@
                                     $dress = App\Models\Dress::where('id', $reservation->dress_id)->first();
                                     $type_dress = App\Models\Typedress::where('id', $dress->type_dress_id)->first();
                                 }
+                                if ($orderdetail->type_order == 4) {
+                                    $dress = App\Models\Dress::where('id', $reservation->dress_id)->first();
+                                    $type_dress = App\Models\Typedress::where('id', $dress->type_dress_id)->first();
+                                }
+
                             @endphp
 
                             <tr style="border-bottom: 1px solid #e6e6e6;">
@@ -186,9 +191,13 @@
                                         @endif
                                     </span>
                                     <span class="d-block mt-2" style="font-size: 14px;">
-                                        @if ($validate)
-                                            <span style="color: #CC2828; font-size: 14px;">- รอการปรับแก้ขนาด</span>
-                                        @else
+                                        @if ($orderdetail->type_order == 2)
+                                            @if ($validate)
+                                                <span style="color: #CC2828; font-size: 14px;">- รอการปรับแก้ขนาด</span>
+                                            @else
+                                                <span style="color: #28a745; font-size: 14px;">- ไม่ต้องปรับแก้ขนาด</span>
+                                            @endif
+                                        @elseif($orderdetail->type_order == 4)
                                             <span style="color: #28a745; font-size: 14px;">- ไม่ต้องปรับแก้ขนาด</span>
                                         @endif
                                     </span>
@@ -197,8 +206,6 @@
                                 <td style="padding: 16px;">
                                     คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
                                 </td>
-
-
                                 <td style="width: 200px;">
                                     @php
                                         $status_now = App\Models\Reservation::where('status_completed', 0)
@@ -341,7 +348,6 @@
                                         class="btn btn-s" style="background-color:#DADAE3;">
                                         ดูรายละเอียด
                                     </a>
-
                                     <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $orderdetail->id]) }}"
                                         class="btn btn-m" style="background-color:#BACEE6 ;">
                                         เลื่อนวัน

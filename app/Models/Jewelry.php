@@ -46,6 +46,8 @@ class Jewelry extends Model
     public function jewonetomanyreserfil(){
         return $this->hasMany(Reservationfilters::class,'jewelry_id') ; 
     }
-
+    public function jewonetomanychargejewelrys(){
+        return $this->hasMany(ChargeJewelry::class,'additional_charge_id') ; 
+    }
 
 }

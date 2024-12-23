@@ -13,6 +13,7 @@ use App\Models\Orderdetailstatus;
 use App\Models\Paymentstatus;
 use App\Models\Repair;
 use App\Models\Reservation;
+use App\Models\ChargeJewelry;
 use App\Models\Reservationfilters;
 use App\Models\Typejewelry;
 use Carbon\Carbon;
@@ -93,12 +94,12 @@ class Orderjewelry extends Controller
                     }
                 }
                 if ($validate_pass) {
-                    $list_pass_set_id[] = $jew->jewelry_set_id ; 
+                    $list_pass_set_id[] = $jew->jewelry_set_id;
                 }
             }
         }
 
-        $list_pass_set_id = array_unique($list_pass_set_id) ; 
+        $list_pass_set_id = array_unique($list_pass_set_id);
         $jewelry_pass = Jewelryset::whereIn('id', $list_pass_set_id)->get();
         return view('employeerentjewelry.addjewelrytocard', compact('typejew', 'jewelry_type', 'start_date', 'end_date', 'jewelry_pass'));
     }
@@ -437,20 +438,41 @@ class Orderjewelry extends Controller
             $create_additional->charge_type = 1;
             $create_additional->amount = $total_damage_insurance;
             $create_additional->save();
+
+            if ($check_for_set_or_item == 'item') {
+                $add_char_jew = new ChargeJewelry();
+                $add_char_jew->additional_charge_id = $create_additional->id;
+                $add_char_jew->jewelrys_id = $datareservation->jewelry_id ; 
+                $add_char_jew->save();
+            }
+            elseif ($check_for_set_or_item == 'set') {
+                $refil_id = $request->input('refil_id_');
+                $action_set = $request->input('action_set_');
+                $refil_jewelry_id = $request->input('refil_jewelry_id_');
+                foreach ($refil_id as $index => $re) {
+
+                    if ($action_set[$index] == 'repair') {
+                        $add_char_jew = new ChargeJewelry();
+                        $add_char_jew->additional_charge_id = $create_additional->id;
+                        $add_char_jew->jewelry_id = $refil_jewelry_id[$index];
+                        $add_char_jew->save();
+                    }
+                }
+            }
         }
         if ($late_return_fee > 0) {
-            $create_additional = new AdditionalChange();
-            $create_additional->order_detail_id = $id;
-            $create_additional->charge_type = 2;
-            $create_additional->amount = $late_return_fee;
-            $create_additional->save();
+            $create_additionals = new AdditionalChange();
+            $create_additionals->order_detail_id = $id;
+            $create_additionals->charge_type = 2;
+            $create_additionals->amount = $late_return_fee;
+            $create_additionals->save();
         }
         if ($late_chart) {
-            $create_additional = new AdditionalChange();
-            $create_additional->order_detail_id = $id;
-            $create_additional->charge_type = 3;
-            $create_additional->amount = $late_chart;
-            $create_additional->save();
+            $create_additionalw = new AdditionalChange();
+            $create_additionalw->order_detail_id = $id;
+            $create_additionalw->charge_type = 3;
+            $create_additionalw->amount = $late_chart;
+            $create_additionalw->save();
         }
 
         // เช่าเป็นชิ้น
@@ -576,7 +598,6 @@ class Orderjewelry extends Controller
             $refil_jewelry_id = $request->input('refil_jewelry_id_');
             foreach ($refil_id as $index =>  $item) {
                 if ($action_set[$index] == 'clean') {
-
                     // ตารางหลอก
                     $update_re_filter = Reservationfilters::find($refil_id[$index]);
                     $update_re_filter->status = 'รอทำความสะอาด';

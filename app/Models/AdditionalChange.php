@@ -15,5 +15,8 @@ class AdditionalChange extends Model
         'charge_type',
         'amount',
     ];
-
+    public function chargejewelrys()
+    {
+        return $this->hasMany(ChargeJewelry::class, 'additional_charge_id');
+    }
 }

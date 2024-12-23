@@ -441,8 +441,7 @@
 
                     <div class="row mt-3">
                         <div class="col-md-12">
-                            <p><strong>นัดลองชุดลูกค้า (หากมี)</strong><button style="margin-left: 10px;" type="button"
-                                    id="button_add_fiiting">+ เพิ่มวันนัดลองชุด</button></p>
+                            <p><strong>นัดลองชุดลูกค้า (หากมี)</strong></p>
                         </div>
                     </div>
 
@@ -453,9 +452,8 @@
                                 <div class="col-md-12">
                                     <div class="card">
                                         <div class="card-body">
-                                            <input type="date" id="fitting1" name="fitting_[1]"
+                                            <input type="date" id="fitting_set" name="fitting"
                                                 class="form-control mb-3" min="{{ $today }}">
-                                            {{-- <button class="btn  btn-block mt-3"><i class="bi bi-x-circle"></i> ลบ</button> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -463,45 +461,16 @@
                         </div>
 
                     </div>
+
                     <script>
-                        var aria_show_fiiting = document.getElementById('aria_show_fiiting');
-                        var button_add_fiiting = document.getElementById('button_add_fiiting');
-                        var count_fitting = 1;
-                        button_add_fiiting.addEventListener('click', function() {
-                            count_fitting++;
-                            console.log('เลขที่กดคือ' + count_fitting);
-                            var div = document.createElement('div');
-                            div.id = 'div_fitting' + count_fitting;
-                            div.className = 'col-md-6';
-
-                            input =
-                                '<div class="row mb-4">' +
-                                '<div class="col-md-12">' +
-                                '<div class="card">' +
-                                '<div class="card-body">' +
-                                '<input type="date" id="fitting' + count_fitting + '" name="fitting_[' + count_fitting +
-                                ']" class="form-control mb-3" min="{{ $today }}" required >' +
-                                '<button type="button" class="btn  btn-block mt-3" onclick="deletefitting(' + count_fitting +
-                                ')"><i class="bi bi-x-circle"></i> ลบ</button>' +
-                                '</div>' +
-                                '</div>' +
-                                '</div>' +
-                                '</div>';
-                            div.innerHTML = input;
-                            aria_show_fiiting.appendChild(div);
-                        });
-
-                        function deletefitting(count_fitting) {
-                            var deletefit = document.getElementById('div_fitting' + count_fitting);
-                            deletefit.remove();
-                        }
+                        var pickup_date_set_fitting = document.getElementById('pickup_date') ; 
+                        var fitting_set = document.getElementById('fitting_set') ; 
+                        pickup_date_set_fitting.addEventListener('input',function(){
+                            fitting_set.value = '' ; 
+                            fitting_set.max = pickup_date_set_fitting.value ; 
+                        }) ; 
                     </script>
-
-
-
-
-
-
+                    
 
 
                     <div class="row mt-4">

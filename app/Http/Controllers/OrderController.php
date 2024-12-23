@@ -236,70 +236,81 @@ class OrderController extends Controller
     private function managedetailrentjewelry($id)
     {
         $orderdetail = Orderdetail::find($id);
-        $order = Order::find($orderdetail->order_id) ; 
-        $customer = Customer::find($order->customer_id) ; 
-        $user = User::find($order->user_id) ; 
-        $reservation = Reservation::find($orderdetail->reservation_id) ;
-        $reservationfilter = Reservationfilters::where('reservation_id',$reservation->id)->get() ; 
-        $Date = Date::where('order_detail_id',$orderdetail->id)
-                        ->orderBy('created_at','desc')
-                        ->first() ;  
-        if($reservation->jewelry_id){
-            $jewelry = Jewelry::find($reservation->jewelry_id) ; 
-            $typejewelry = Typejewelry::where('id',$jewelry->type_jewelry_id)->first() ; 
-            $imagejewelry = Jewelryimage::where('jewelry_id',$jewelry->id)->first() ; 
-            $setjewelry = null ; 
-            $setjewelryitem = null ; 
-        }
-        else{
-            $setjewelry = Jewelryset::find($reservation->jewelry_set_id) ; 
-            $setjewelryitem = Jewelrysetitem::where('jewelry_set_id',$setjewelry->id)->get() ; 
-            $jewelry = null ; 
-            $typejewelry = null ; 
-            $imagejewelry = null ; 
+        $order = Order::find($orderdetail->order_id);
+        $customer = Customer::find($order->customer_id);
+        $user = User::find($order->user_id);
+        $reservation = Reservation::find($orderdetail->reservation_id);
+        $reservationfilter = Reservationfilters::where('reservation_id', $reservation->id)->get();
+        $Date = Date::where('order_detail_id', $orderdetail->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        if ($reservation->jewelry_id) {
+            $jewelry = Jewelry::find($reservation->jewelry_id);
+            $typejewelry = Typejewelry::where('id', $jewelry->type_jewelry_id)->first();
+            $imagejewelry = Jewelryimage::where('jewelry_id', $jewelry->id)->first();
+            $setjewelry = null;
+            $setjewelryitem = null;
+        } else {
+            $setjewelry = Jewelryset::find($reservation->jewelry_set_id);
+            $setjewelryitem = Jewelrysetitem::where('jewelry_set_id', $setjewelry->id)->get();
+            $jewelry = null;
+            $typejewelry = null;
+            $imagejewelry = null;
         }
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
         $additional = AdditionalChange::where('order_detail_id', $id)->get();
-        return view('employeerentjewelry.managedetailrentjewelry',compact('orderdetail','reservation','jewelry','typejewelry','orderdetailstatus','setjewelry','imagejewelry','order','customer','user','setjewelryitem','Date','reservationfilter','additional'));
+        return view('employeerentjewelry.managedetailrentjewelry', compact('orderdetail', 'reservation', 'jewelry', 'typejewelry', 'orderdetailstatus', 'setjewelry', 'imagejewelry', 'order', 'customer', 'user', 'setjewelryitem', 'Date', 'reservationfilter', 'additional'));
     }
 
     //จัดการเช่าตัด
     private function managedetailrentcut($id)
     {
         $orderdetail = Orderdetail::find($id);
+        $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
         $customer_id = Order::where('id', $orderdetail->order_id)->value('customer_id');
         $customer = Customer::find($customer_id);
-        $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
         $employee = User::find($orderdetail->employee_id);
-        $fitting = Fitting::where('order_detail_id', $id)
-                    ->orderByRaw(" STR_TO_DATE(fitting_date,'%Y-%m-%d') asc ")
-        ->get();
+        $fitting = Fitting::where('order_detail_id', $id)->get();
         $cost = Cost::where('order_detail_id', $id)->get();
-        $Date = Date::where('order_detail_id', $id)
-            ->orderBy('created_at', 'desc')
-            ->first();
+        $date = Date::where('order_detail_id', $id)->get();
         $decoration = Decoration::where('order_detail_id', $id)->get();
+        $sum_dec = Decoration::where('order_detail_id', $orderdetail->id)->sum(
+            'decoration_price',
+        );
         $imagerent = Imagerent::where('order_detail_id', $id)->get();
         $mea_dress = Dressmeasurement::where('dress_id', $orderdetail->dress_id)->get();
         $mea_orderdetail = Measurementorderdetail::where('order_detail_id', $id)->get();
-        $mea_orderdetailforedit = Measurementorderdetail::where('order_detail_id', $id)->get();
-        $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
+        $mea_orderdetail_for_adjust = Measurementorderdetail::where('order_detail_id', $id)->get();
+        $dressimage = Dressimage::where('dress_id', $orderdetail->dress_id)->first();
+        $dress_mea_adjust = Dressmeaadjustment::where('order_detail_id', $id)->get();
+        $dress_mea_adjust_button = Dressmeaadjustment::where('order_detail_id', $id)->get();
 
+        $dress_mea_adjust_modal = Dressmeaadjustment::where('order_detail_id', $id)->get();
+        $dress_mea_adjust_modal_show = Dressmeaadjustment::where('order_detail_id', $id)->get();
+
+
+        $additional = AdditionalChange::where('order_detail_id', $id)->get();
+
+
+        $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
         $valuestatus = $orderdetail->status_detail;
         $valuestatus = Orderdetailstatus::where('order_detail_id', $id)
             ->latest('created_at')
             ->value('status');
-        $dress_edit_cut = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
-        $dress_adjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
-        $round = AdjustmentRound::where('order_detail_id', $id)->get();
-        $route_modal = AdjustmentRound::where('order_detail_id', $id)
+
+        $status_if_dress = Reservation::where('dress_id', $orderdetail->dress_id)
+            ->where('status_completed', 0)
+            ->orderByRaw(" STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+            ->first();
+
+
+        $his_dress_adjust = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
+
+
+        $dateeee = Date::where('order_detail_id', $id)
             ->orderBy('created_at', 'desc')
             ->first();
-        $is_admin = Auth::user()->is_admin;  //ตรวจสอบว่าเป็นแอดมินไหม
-        $who_login = Auth::user()->id; //คนที่กำลังlogin
-        $person_order = Order::where('id', $orderdetail->order_id)->value('user_id');  //คนที่รับ order
-        return view('employeerentcut.managedetailrentcut', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal'));
-
+        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee'));
     }
     //จัดการตัดชุด
     private function managedetailcutdress($id)
@@ -1174,8 +1185,7 @@ class OrderController extends Controller
         $add_fitting = new Fitting();
         $add_fitting->order_detail_id = $id;
         $add_fitting->fitting_date = $request->input('add_fitting_date');
-        $add_fitting->fitting_note = $request->input('add_fitting_note');
-        $add_fitting->fitting_status = "ยังไม่มาลอง";
+        $add_fitting->fitting_status = "ยังไม่มาลองชุด";
         $add_fitting->save();
         return redirect()->back()->with('success', 'เพิ่มข้อมูลการนัดสำเร็จ !');
     }
@@ -1331,8 +1341,7 @@ class OrderController extends Controller
                 $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
                 $orderdetail->save();
             }
-        }
-        elseif ($status == "กำลังเช่า") {
+        } elseif ($status == "กำลังเช่า") {
 
             $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
             $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
@@ -1457,7 +1466,7 @@ class OrderController extends Controller
         return redirect()->back()->with('success', $message_session);
     }
 
-    
+
 
 
 

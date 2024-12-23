@@ -364,6 +364,15 @@
             </strong>
         </h4>
 
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-danger">พิมพ์ใบเสร็จรับชุด</button>
+                <button class="btn btn-danger">พิมพ์ใบเสร็จคืนชุด</button>
+            </div>
+        </div>
+
+
+
         <div class="row mt-3">
             <div class="col-md-12">
                 <div class="card shadow">

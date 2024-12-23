@@ -58,18 +58,18 @@
         <!-- Header -->
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <h1 class="display-4">จัดการทำความสะอาดเครื่องประดับ</h1>
+                <h2>จัดการทำความสะอาดเครื่องประดับ</h2>
                 <p class="lead">ดูและอัพเดตสถานะการของเครื่องประดับ</p>
             </div>
         </div>
 
         <!-- Status Summary Cards -->
-        <div class="row mb-4">
+        <div class="row mb-1">
             <div class="col-md-6 mb-3">
                 <div class="card">
                     <div class="card-body"style="background-color:#EBE5B2; border:0;">
                         <h5 class="card-title">รอดำเนินการ</h5>
-                        <p class="card-text display-4">{{ $clean_pending->count() }} รายการ</p>
+                        <p style="font-size: 20px;">{{ $clean_pending->count() }} รายการ</p>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                 <div class="card">
                     <div class="card-body "style="background-color:#EAC39D ; border:0;">
                         <h5 class="card-title">กำลังทำความสะอาด</h5>
-                        <p class="card-text display-4">{{ $clean_doing_wash->count() }} รายการ</p>
+                        <p style="font-size: 20px;">{{ $clean_doing_wash->count() }} รายการ</p>
                     </div>
                 </div>
             </div>

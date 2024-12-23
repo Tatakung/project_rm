@@ -400,5 +400,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/{id}', [ManageRentcutController::class, 'storeTailoredDress'])->name('storeTailoredDress'); 
     Route::post('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/saved/{id}', [ManageRentcutController::class, 'storeTailoredDresssaved'])->name('storeTailoredDresssaved'); 
 
+    Route::get('/textbutton', [ManageRentcutController::class, 'textbutton'])->name('textbutton'); 
 
 });

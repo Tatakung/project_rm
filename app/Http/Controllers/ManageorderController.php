@@ -1268,6 +1268,18 @@ class ManageorderController extends Controller
             }
         }
 
+        if($request->hasFile('file_image_')){
+            $note_image = $request->input('note_image_') ; 
+            $file_image = $request->file('file_image_') ; 
+            foreach($file_image as $index => $file){
+                $image_save = new Imagerent();
+                $image_save->order_detail_id = $id ; 
+                $image_save->image = $file->store('rent_images','public') ; 
+                $image_save->description = $note_image[$index] ?? null;
+                $image_save->save();
+            }    
+            
+        }
 
         // อัปเดตข้อมูลการนัดลองชุด
         if ($request->input('fitting_id_')) {
@@ -1285,17 +1297,12 @@ class ManageorderController extends Controller
             $add_fitting = $request->input('add_fitting_');
             foreach ($add_fitting as $index => $date) {
                 $add_fitting = new Fitting();
-                $add_fitting->order_detail_id = $id ; 
+                $add_fitting->order_detail_id = $orderdetail->id ; 
                 $add_fitting->fitting_date = $date;
                 $add_fitting->fitting_status = 'ยังไม่มาลองชุด' ; 
                 $add_fitting->save();
             }
         }
-        return redirect()->back()->with('success', 'จัดการสำเร็จ');
-
-
-      
-
         return redirect()->back()->with('success', 'จัดการสำเร็จ');
     }
 }

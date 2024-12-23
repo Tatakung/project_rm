@@ -65,6 +65,7 @@
     <div class="container mt-5">
     <div class="row">
         @foreach ($data as $index => $item)
+        
         <div class="col-md-3 mb-4">
             <div class="card text-left custom-card">
                 <a href="{{ route('admin.dressdetail', ['id' => $item->id, 'separable' => $item->separable]) }}" style="text-decoration: none;">
@@ -78,6 +79,7 @@
                         <h6 style="color: black;">ชุดแยก: เสื้อและผ้าถุง</h6>
                         @endif
                         <h6 style="color: black;">ราคาเช่า: {{ number_format($item->dress_price, 2) }} บาท</h6>
+                        
                     </div>
                 </a>
             </div>

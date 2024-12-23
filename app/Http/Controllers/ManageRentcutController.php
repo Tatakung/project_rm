@@ -19,6 +19,7 @@ use App\Models\Order;
 use App\Models\Orderdetail;
 use App\Models\Orderdetailstatus;
 use App\Models\Paymentstatus;
+use App\Models\Reservation;
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
 use App\Models\Typedress;
@@ -130,8 +131,7 @@ class ManageRentcutController extends Controller
                 }
             }
         }
-
-        // บันทึกช้อม๔ุลงในตาราง rentimage
+        // บันทึกช้อมูลลงในตาราง rentimage
         if ($request->hasFile('file_image_')) {
             $imf_loop = $request->file('file_image_');
             $note_image = $request->input('note_image_');
@@ -146,16 +146,15 @@ class ManageRentcutController extends Controller
 
 
         // บันทึกข้อมูลในตารางfitting
-        $fitting = $request->input('fitting_');
-        if ($fitting) {
-            foreach ($fitting as $index => $fitdate) {
-                $add_fitting = new Fitting();
-                $add_fitting->order_detail_id = $orderdetail->id;
-                $add_fitting->fitting_date = $fitdate;
-                $add_fitting->fitting_status = 'ยังไม่มาลองชุด';
-                $add_fitting->save();
-            }
+        if ($request->input('fitting')) {
+            $add_fitting = new Fitting();
+            $add_fitting->order_detail_id = $orderdetail->id;
+            $add_fitting->fitting_date = $request->input('fitting');
+            $add_fitting->fitting_status = 'ยังไม่มาลองชุด';
+            $add_fitting->save();
         }
+
+
         return redirect()->back()->with('success', 'เพิ่มลงตะกร้าแล้ว !');
     }
 
@@ -223,7 +222,7 @@ class ManageRentcutController extends Controller
                 }
             }
         }
-        return redirect()->route('employee.ordertotaldetailshow', ['id' => $id])->with('success', 'บันทึกการนัดลองชุดสำเร็จ');
+        return redirect()->route('detaildoingrentcut', ['id' => $id])->with('success', 'บันทึกการนัดลองชุดสำเร็จ');
     }
 
 
@@ -345,7 +344,7 @@ class ManageRentcutController extends Controller
         $dress->dress_code = $next_code; //หมายเลขชุด
         $dress->dress_code_new = $typedress->specific_letter;
         $dress->dress_price = $orderdetail->price;
-        $dress->deposit = ($orderdetail->price) * 0.3;
+        $dress->dress_deposit = ($orderdetail->price) * 0.3;
         $dress->damage_insurance = $orderdetail->price;
         $dress->dress_count = 1;
         $dress->dress_status = "พร้อมให้เช่า";
@@ -431,5 +430,42 @@ class ManageRentcutController extends Controller
                 $add_item_skiry->save();
             }
         }
+
+
+
+        $Date = Date::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+
+        //ตารางreservation 
+        $reservation = new Reservation();
+        $reservation->dress_id = $dress->id;
+        $reservation->start_date = $Date->pickup_date;
+        $reservation->end_date = $Date->return_date;
+        $reservation->status = 'ถูกจอง';
+        $reservation->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+        $reservation->save();
+
+
+        $update_orderdetail = Orderdetail::find($id);
+        $update_orderdetail->status_detail = "ตัดชุดเสร็จสิ้น";
+        $update_orderdetail->reservation_id = $reservation->id;
+        $update_orderdetail->dress_id = $dress->id;
+        $update_orderdetail->save();
+        $create_status = new Orderdetailstatus();
+        $create_status->order_detail_id = $id;
+        $create_status->status = "ตัดชุดเสร็จสิ้น";
+        $create_status->save();
+
+        $update_orderdetail = Orderdetail::find($id);
+        $update_orderdetail->status_detail = "ถูกจอง";
+        $update_orderdetail->save();
+        $create_status = new Orderdetailstatus();
+        $create_status->order_detail_id = $id;
+        $create_status->status = "ถูกจอง";
+
+        $create_status->save();
+        return redirect()->route('detaildoingrentcut', ['id' => $orderdetail->id])->with('success', 'สำเร็จลุล่วงมะม่วงทอด');
     }
 }

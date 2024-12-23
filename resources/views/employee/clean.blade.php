@@ -58,18 +58,18 @@
         <!-- Header -->
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <h1 class="display-4">จัดการการส่งซัก</h1>
+                <h2>จัดการการส่งซัก</h2>
                 <p class="lead">ดูและอัพเดตสถานะการซักของชุด</p>
             </div>
         </div>
 
         <!-- Status Summary Cards -->
-        <div class="row mb-4">
+        <div class="row mb-1">
             <div class="col-md-6 mb-3">
                 <div class="card">
                     <div class="card-body"style="background-color:#EBE5B2; border:0;">
                         <h5 class="card-title">รอดำเนินการ</h5>
-                        <p class="card-text display-4">{{ $countwait }} รายการ</p>
+                        <p style="font-size: 20px;">{{ $countwait }} รายการ</p>
                     </div>
                 </div>
             </div>
@@ -77,11 +77,10 @@
                 <div class="card">
                     <div class="card-body "style="background-color:#EAC39D ; border:0;">
                         <h5 class="card-title">กำลังส่งซัก</h5>
-                        <p class="card-text display-4">{{ $countdoing }} รายการ</p>
+                        <p style="font-size: 20px;">{{ $countdoing }} รายการ</p>
                     </div>
                 </div>
             </div>
-
         </div>
         <div class="alert alert-info text-center" role="alert">
             การซักชุดทุกชุดควรเสร็จภายใน 7 วันหลังจากลูกค้านำชุดมาคืน เพื่อให้สามารถตรวจสอบและซ่อมแซมชุดได้ทันท่วงที

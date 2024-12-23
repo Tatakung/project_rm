@@ -134,18 +134,11 @@
 
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'เริ่มดำเนินการตัด') style="display: none;" @endif>
-                                <a href="{{route('storeTailoredDress',['id' => $orderdetail->id])}}" class="btn" style="background: #C28041; color: #ffffff;"> 
+                                <a href="{{ route('storeTailoredDress', ['id' => $orderdetail->id]) }}" class="btn"
+                                    style="background: #C28041; color: #ffffff;">
                                     บันทึกการตัดชุด
                                 </a>
                             </div>
-
-
-                            
-
-
-
-
-
 
                             {{-- <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'ตัดชุดเสร็จสิ้น') style="display: none;" @endif>
@@ -570,9 +563,22 @@
                                 </small>
                             </div>
 
+                            @if (in_array('ตัดชุดเสร็จสิ้น', $list_status))
+                                <div class="status-line "></div>
+                                <div class="status-step text-center">
+                                    <div class="status-icon @if (in_array('ตัดชุดเสร็จสิ้น', $list_status)) active @endif">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <p>
+                                        <a href="{{route('employee.ordertotaldetailshow',['id' => $orderdetail->id])}}">ดูรายการจอง</a>
+                                    </p>
+                                    <small>
+                                        <p>
 
-
-
+                                        </p>
+                                    </small>
+                                </div>
+                            @endif
 
 
 
@@ -969,8 +975,12 @@
                 <div class="card shadow">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
-                                <h5 class="card-title">วันนัดลองชุด</h5>
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title">วันนัดลองชุด</h5>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#modaladdfitting">เพิ่มวันนัดลองชุด</button>
+                                </div>
                             </div>
                         </div>
 
@@ -1217,9 +1227,35 @@
 
 
 
+    @php
+        $today = Carbon\Carbon::now()->toDateString();
+    @endphp
 
-
-
+    <div class="modal fade" id="modaladdfitting" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    เพิ่มข้อมูลการนัด
+                </div>
+                <form action="{{ route('employee.actionaddfitting', ['id' => $orderdetail->id]) }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4"><strong>วันที่นัด:</strong></div>
+                            <div class="col-md-8">
+                                <input type="date" class="form-control" name="add_fitting_date"
+                                    max="{{ $Date->pickup_date }}" min="{{ $today }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
+                        <button class="btn btn-secondary" type="submit">ยืนยัน</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 

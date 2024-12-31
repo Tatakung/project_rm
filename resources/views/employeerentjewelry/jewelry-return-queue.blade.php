@@ -66,11 +66,11 @@
             <table class="table shadow-sm" style="width: 100%; ">
                 <thead>
                     <tr style="background-color: #f2f2f2;">
-                        <th>เครื่องประดับ</th>
+                        <th>รายการ</th>
                         <th>ชื่อลูกค้า</th>
-                        <th>วันที่คืนชุด</th>
+                        <th>วันที่นัดคืน</th>
                         <th>ค่าปรับ(หากล่าช้า)</th>
-                        <th>สถานะชุด</th>
+                        <th>สถานะ</th>
                         <th>ดูรายละเอียด</th>
                     </tr>
                 </thead>
@@ -95,10 +95,10 @@
                                 <td>
 
                                     @if ($reservation->jewelry_id)
-                                        {{ $reservation->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                        เช่า{{ $reservation->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
                                         {{ $reservation->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $reservation->resermanytoonejew->jewelry_code }}
                                     @elseif($reservation->jewelry_set_id)
-                                        เซต{{ $reservation->resermanytoonejewset->set_name }}
+                                        เช่าเซต{{ $reservation->resermanytoonejewset->set_name }}
                                     @endif
 
 
@@ -127,7 +127,7 @@
 
                                     document.getElementById('showday{{ $reservation->id }}').innerHTML
                                     if (totalday == 0) {
-                                        document.getElementById('showday{{ $reservation->id }}').innerHTML = "คืนชุดวันนี้";
+                                        document.getElementById('showday{{ $reservation->id }}').innerHTML = "คืนวันนี้";
                                         document.getElementById('late{{ $reservation->id }}').innerHTML = '-';
                                     } else if (totalday < 0) {
                                         document.getElementById('showday{{ $reservation->id }}').innerHTML = "เลยกำหนด " + Math.abs(totalday) + ' วัน';

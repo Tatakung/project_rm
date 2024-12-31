@@ -18,4 +18,7 @@ class Clean extends Model
         'clean_status',
         'reservation_id' , 
     ];
+    public function clean_one_to_one_reser(){
+        return $this->belongsTo(Reservation::class,'reservation_id') ; 
+    }
 }

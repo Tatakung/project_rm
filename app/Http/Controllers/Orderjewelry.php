@@ -561,7 +561,7 @@ class Orderjewelry extends Controller
                 $create_repair->reservationfilter_id = $update_re_filter->id;
                 $create_repair->repair_description = $repair_detail_for_item;
                 $create_repair->repair_status = 'รอดำเนินการ';
-                // $create_repair->repair_type = 1;  //1.ยังไม่ทำความสะอาด 2.ทำความสะอาดแล้ว 
+                $create_repair->repair_type = 1;  //1.ยังไม่ทำความสะอาด 2.ทำความสะอาดแล้ว 
                 $create_repair->save();
             }
         }
@@ -647,8 +647,8 @@ class Orderjewelry extends Controller
         $filer = 'today';
         $listdressreturns = Reservation::where('status_completed', 0)
             ->where('status', 'กำลังเช่า')
-            ->whereDate('start_date', now())
-            ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+            ->whereDate('end_date', now())
+            ->orderByRaw("STR_TO_DATE(end_date , '%Y-%m-%d') asc")
             ->get();
         return view('employeerentjewelry.jewelry-return-queue', compact('listdressreturns', 'filer'));
     }
@@ -659,7 +659,7 @@ class Orderjewelry extends Controller
         if ($filter_click == 'total') {
             $listdressreturns = Reservation::where('status_completed', 0)
                 ->where('status', 'กำลังเช่า')
-                ->orderByRaw("STR_TO_DATE(start_date , '%Y-%m-%d') asc")
+                ->orderByRaw("STR_TO_DATE(end_date , '%Y-%m-%d') asc")
                 ->get();
             $filer = 'total';
         } elseif ($filter_click == 'today') {

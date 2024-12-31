@@ -285,6 +285,9 @@
         </h4>
 
 
+        
+
+
         <div class="row mt-3">
             <div class="col-md-12">
                 <div class="card shadow">
@@ -379,6 +382,13 @@
                                         @endphp
                                         {{ $text_date }}
                                     </p>
+
+
+                                    <a href="{{route('receiptpickup', ['id' => $orderdetail->id])}}" target="_blank"
+                                        class="btn btn-sm btn-secondary"@if ($receipt_bill_pickup) style="display: block ; "
+                                    @else
+                                    style="display: none ; " @endif>ใบเสร็จรับเครื่องประดับ</a>
+                    
                                 </small>
                             </div>
 
@@ -411,6 +421,16 @@
                                         @endphp
                                         {{ $text_date }}
                                     </p>
+
+
+
+                                    <a href="{{route('receiptreturn' , ['id' => $orderdetail->id])}}" target="_blank" class="btn btn-sm btn-secondary"@if ($receipt_bill_return) style="display: block ; "
+                                        @else
+                                        style="display: none ; " @endif>ใบเสร็จคืนเครื่องประดับ</a>
+                        
+                        
+
+                                    
                                 </small>
                             </div>
                         </div>
@@ -501,7 +521,7 @@
                             @if ($orderdetail->status_payment == 1)
                                 ชำระเงินมัดจำแล้ว
                             @elseif($orderdetail->status_payment == 2)
-                                ชำระเงินเต็มจำนวนแล้ว
+                                ชำระเงินครบแล้ว
                             @endif
                         </p>
 
@@ -513,79 +533,172 @@
                 </div>
             </div>
         </div>
+
+
+        
+
+
+
+
+
         <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
             <div class="col-md-12"
-                @if ($orderdetail->status_detail == 'คืนเครื่องประดับแล้ว') style="display: block ; "
-             @else
-              style="display: none ; " @endif>
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="bi bi-file-earmark-text"></i> สรุปข้อมูลการเช่าชุด
+                @if ($orderdetail->status_detail == 'คืนเครื่องประดับแล้ว') style="display: block;" 
+                @else 
+                    style="display: none;" @endif>
+                <div class="card shadow-sm">
+                    <!-- หัวข้อการ์ด -->
+                    <div class="card-header bg-light border-bottom d-flex align-items-center">
+                        <div class="border-4 border-primary rounded me-2" style="width: 4px; height: 20px;"></div>
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-file-earmark-text"></i> สรุปข้อมูลการเช่าเครื่องประดับ
                         </h5>
+                    </div>
 
+                    <!-- เนื้อหาการ์ด -->
+                    <div class="card-body p-4">
                         <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>วันที่รับชุดจริง:</strong>
-                                    {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}
-                                </p>
-                                <p><strong>วันที่คืนชุดจริง:</strong>
-                                    {{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}
-                                </p>
-                                <p><strong>จำนวนวันที่เช่าทั้งหมด:</strong><span id="total_day_real"> </span></p>
-                                <script>
-                                    var total_day_real = document.getElementById('total_day_real');
-                                    var day_actua_pickup_date = new Date('{{ $Date->actua_pickup_date }}');
-                                    day_actua_pickup_date.setHours(0, 0, 0, 0);
+                            <!-- ข้อมูลระยะเวลา -->
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-center text-secondary mb-3">
+                                    <i class="bi bi-calendar3 me-2"></i>
+                                    <span class="fw-medium">ข้อมูลระยะเวลา</span>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary">วันที่รับเครื่องประดับจริง</span>
+                                        <span
+                                            class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary">วันที่คืนเครื่องประดับจริง</span>
+                                        <span
+                                            class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="text-secondary">จำนวนวันที่เช่าทั้งหมด</span>
+                                        <span class="fw-medium" id="total_day_reall">10 วัน</span>
+                                        <script>
+                                            var total_day_real = document.getElementById('total_day_reall');
+                                            var day_actua_pickup_date = new Date('{{ $Date->actua_pickup_date }}');
+                                            day_actua_pickup_date.setHours(0, 0, 0, 0);
 
-                                    var day_actua_return_date = new Date('{{ $Date->actua_return_date }}');
-                                    day_actua_return_date.setHours(0, 0, 0, 0);
+                                            var day_actua_return_date = new Date('{{ $Date->actua_return_date }}');
+                                            day_actua_return_date.setHours(0, 0, 0, 0);
 
-                                    var total_actua_pickup_date_return_date = Math.ceil((day_actua_return_date - day_actua_pickup_date) / (1000 * 60 *
-                                        60 * 24));
-                                    total_day_real.innerHTML = ' ' + total_actua_pickup_date_return_date + ' วัน';
-                                </script>
+                                            var total_actua_pickup_date_return_date = Math.ceil((day_actua_return_date - day_actua_pickup_date) / (1000 * 60 *
+                                                60 * 24));
+                                            total_day_real.innerHTML = ' ' + total_actua_pickup_date_return_date + ' วัน';
+                                        </script>
 
-
-
-
-
-
-
-
-
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <p><strong>รายได้ค่าเช่าชุด:</strong> {{ number_format($orderdetail->price, 2) }} บาท
-                                </p>
-                                <p><strong>เงินมัดจำ:</strong> {{ number_format($orderdetail->deposit, 2) }} บาท</p>
 
-                                @if ($additional->count() > 0)
-                                    @foreach ($additional as $item)
-                                        @if ($item->charge_type == 1)
-                                            <p><strong>รายได้จากการหักเงินประกัน:</strong>
-                                                {{ number_format($item->amount, 2) }} บาท</p>
-                                        @elseif($item->charge_type == 2)
-                                            <p><strong>รายได้จากการคืนชุดล่าช้า:</strong>
-                                                {{ number_format($item->amount, 2) }}
-                                                บาท</p>
-                                        @elseif($item->charge_type == 3)
-                                            <p><strong>รายได้จากค่าธรรมเนียมขยายระยะเวลาเช่า:</strong>
-                                                {{ number_format($item->amount, 2) }} บาท</p>
+                            <!-- ข้อมูลการเงิน -->
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center text-secondary mb-3">
+                                    <i class="bi bi-coin me-2"></i>
+                                    <span class="fw-medium">ข้อมูลการเงิน</span>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary">รายได้ค่าเช่า</span>
+                                        <span class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
+                                            บาท</span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary">รายได้จากการหักเงินประกัน
+                                            
+                                        </span>
+
+                                        @if ($additional->count() > 0)
+                                            @foreach ($additional as $item)
+                                                @if ($item->charge_type == 1)
+                                                    <span class="fw-medium">{{ number_format($item->amount, 2) }}
+                                                        บาท</span>
+                                                @else
+                                                    <span class="fw-medium">0.00 บาท</span>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <span class="fw-medium">0.00 บาท</span>
                                         @endif
-                                    @endforeach
-                                @else
-                                    <p><strong>รายได้จากการหักเงินประกัน:</strong> 0.00 บาท</p>
-                                @endif
+
+
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary">รายได้จากการคืนล่าช้า</span>
+                                        @if ($additional->count() > 0)
+                                            @foreach ($additional as $item)
+                                                @if ($item->charge_type == 2)
+                                                    <span class="fw-medium">{{ number_format($item->amount, 2) }}
+                                                        บาท</span>
+                                                @else
+                                                    <span class="fw-medium">0.00 บาท</span>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <span class="fw-medium">0.00 บาท</span>
+                                        @endif
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary">รายได้จากค่าธรรมเนียมขยายระยะเวลาเช่า </span>
+                                        @if ($additional->count() > 0)
+                                            @foreach ($additional as $item)
+                                                @if ($item->charge_type == 3)
+                                                    <span class="fw-medium">{{ number_format($item->amount, 2) }}
+                                                        บาท</span>
+                                                @else
+                                                    <span class="fw-medium">0.00 บาท</span>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <span class="fw-medium">0.00 บาท</span>
+                                        @endif
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="text-secondary fw-medium"><strong>รายได้รวมทั้งหมด</strong></span>
+                                        @if ($additional->count() <= 0)
+                                            <span
+                                                class="fw-medium fs-5 text-primary">{{ number_format($orderdetail->price) }}
+                                                บาท</span>
+                                        @elseif($additional->count() > 0)
+                                            <span
+                                                class="fw-medium fs-5 text-primary">{{ number_format($orderdetail->price + $sum_additional, 2) }}
+                                                บาท</span>
+                                        @endif
+
+
+
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </div>
 
 

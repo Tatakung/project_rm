@@ -6,6 +6,7 @@ use App\Models\AdjustmentRound;
 use App\Models\Customer;
 use App\Models\Date;
 use App\Models\Decoration;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Dress;
 use App\Models\Dressimage;
 use App\Models\Dressmea;
@@ -22,6 +23,7 @@ use App\Models\Paymentstatus;
 use App\Models\Reservation;
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
+use App\Models\AdditionalChange;
 use App\Models\Typedress;
 use App\Models\User;
 use Carbon\Carbon;
@@ -466,6 +468,48 @@ class ManageRentcutController extends Controller
         $create_status->status = "ถูกจอง";
 
         $create_status->save();
-        return redirect()->route('detaildoingrentcut', ['id' => $orderdetail->id])->with('success', 'สำเร็จลุล่วงมะม่วงทอด');
+        return redirect()->route('detaildoingrentcut', ['id' => $orderdetail->id])->with('success', 'บันทึกสำเร็จ');
+    }
+    public function receiptdeposittotal($id)
+    {
+        $order = Order::find($id);
+        $orderdetail = Orderdetail::where('order_id', $id)->get();
+        $customer = Customer::find($order->customer_id);
+        $total_deposit = $orderdetail->sum('deposit');
+
+        $date_now = now();
+        $pdfs = PDF::loadview('receipt.receipt_deposit_total', compact('order', 'orderdetail', 'customer', 'date_now', 'total_deposit'));
+        return $pdfs->stream();
+    }
+
+    public function receiptpickup($id)
+    {
+        $orderdetail = Orderdetail::find($id);
+        $order = Order::find($orderdetail->order_id);
+        $customer = Customer::find($order->customer_id);
+        $date_now = now();
+        $date = Date::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $pdfs = PDF::loadview('receipt.receipt_pickup_dress_or_jew', compact('order', 'orderdetail', 'customer', 'date_now', 'date'));
+        return $pdfs->stream();
+    }
+    public function receiptreturn($id)
+    {
+        $orderdetail = Orderdetail::find($id);
+        $order = Order::find($orderdetail->order_id);
+        $customer = Customer::find($order->customer_id);
+        $date_now = now();
+        $date = Date::where('order_detail_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $addittionnal = AdditionalChange::where('order_detail_id', $id)->get();
+
+        $check_has_damage_insurance = AdditionalChange::where('order_detail_id', $id)
+            ->where('charge_type', 1)
+            ->exists();
+        $pdfs = PDF::loadview('receipt.receipt_return_dress_or_jew', compact('order', 'orderdetail', 'customer', 'date_now', 'date', 'addittionnal', 'check_has_damage_insurance'));
+        return $pdfs->stream();
     }
 }

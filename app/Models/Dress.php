@@ -39,6 +39,13 @@ class Dress extends Model
         return $this->hasMany(Dressimage::class,'dress_id') ; 
     }
 
+    public function dress_one_to_many_orderdetail(){
+        return $this->hasMany(Orderdetail::class,'dress_id') ; 
+    }
+
+
+
+
     // dress เป็น 1 - M ของ dressmeasurement
     public function dressmeasurements(){
         return $this->hasMany(Dressmeasurement::class,'dress_id') ; 
@@ -60,6 +67,8 @@ class Dress extends Model
         return $this->hasMany(Skirtitem::class,'dress_id')  ; 
     }
 
-
+    public function dress_one_to_many_reservation(){
+        return $this->hasMany(Reservation::class,'dress_id')  ; 
+    }
 
 }

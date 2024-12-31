@@ -44,10 +44,51 @@ class EmployeeController extends Controller
     public function homepage()
     {
 
-        $return_date_today = Reservation::whereDate('end_date', Carbon::today())->count(); // ชุดที่ต้องส่งคืนวันนี้
-        $totalclean = Clean::whereNot('clean_status', 'ซักเสร็จแล้ว')->count(); //ชุดที่ต้องส่งซัก
-        $totalrepair = Repair::whereNot('repair_status', 'ซ่อมเสร็จแล้ว')->count(); //ชุดที่ต้องซ่อม
-        return view('employee.employeehome', compact('totalclean', 'totalrepair', 'return_date_today'));
+        // เครื่องประดับที่ต้องรับคืนวันนี้
+        $return_jewelry_today_after_jew = Reservation::where('status_completed', 0)
+            ->whereNotNull('jewelry_id')
+            ->where('status', 'กำลังเช่า')
+            ->whereDate('end_date', now())
+            ->get();
+        $list_return_jew = [];
+        foreach ($return_jewelry_today_after_jew as $item) {
+            $list_return_jew[] = $item->id;
+        }
+        $return_jewelry_today_after_set_jew = Reservation::where('status_completed', 0)
+            ->whereNotNull('jewelry_set_id')
+            ->where('status', 'กำลังเช่า')
+            ->whereDate('end_date', now())
+            ->get();
+        foreach ($return_jewelry_today_after_set_jew as $item) {
+            $list_return_jew[] = $item->id;
+        }
+        $return_jewelry_today = Reservation::whereIn('id', $list_return_jew)->get();
+
+
+        // ชุดที่ต้องรับคืนวันนี้
+        $return_dress_today = Reservation::where('status_completed', 0)
+            ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
+            ->where('status', 'กำลังเช่า')
+            ->whereDate('end_date', now())
+            ->get();
+
+        // ชุดที่รอการตัด
+        $work_waiting_to_cut = Orderdetail::whereIn('type_order', [1, 4])
+            ->where('status_detail', 'รอดำเนินการตัด')
+            ->get();
+        $clean_pending = Clean::where('clean_status', "รอดำเนินการ")->get();
+
+
+        $repair = Repair::where('repair_status','รอดำเนินการ')
+                        ->whereNotNull('reservation_id')
+        ->get() ; 
+
+
+
+
+        $employee = Auth::user();
+        $time = now();
+        return view('employee.employeehome', compact('employee', 'time', 'return_jewelry_today', 'return_dress_today', 'work_waiting_to_cut','clean_pending','repair'));
     }
 
 
@@ -73,6 +114,9 @@ class EmployeeController extends Controller
             ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
             ->whereDate('start_date', now())
             ->get();
+
+
+
         $filer = 'today';
         return view('employee.dressadjust', compact('reservations', 'filer'));
     }

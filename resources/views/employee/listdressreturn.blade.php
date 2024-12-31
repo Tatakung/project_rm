@@ -78,8 +78,9 @@
     </thead>
     <tbody>
         @foreach ($listdressreturns as $index => $reservation)
-        @if ($reservation->re_one_many_details->first() && $reservation->re_one_many_details->first()->type_order == 2)
-
+        {{-- @if ($reservation->re_one_many_details->first() && $reservation->re_one_many_details->first()->type_order == 2) --}}
+        @if (
+            $reservation->re_one_many_details->first() && in_array($reservation->re_one_many_details->first()->type_order, [2, 4]))
         <tr style="border-bottom: 1px solid #e6e6e6;">
 
             @php

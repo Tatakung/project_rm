@@ -270,6 +270,7 @@
                                 <tbody>
                                     @foreach ($repairs as $repair)
                                         <tr>
+                                            
 
                                             <td>
 

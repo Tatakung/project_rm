@@ -35,4 +35,20 @@ class Order extends Model
     {
         return $this->hasMany(Orderdetail::class, 'order_id');
     }
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
 }

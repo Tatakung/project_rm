@@ -109,7 +109,7 @@
                                 </div>
 
                                 {{-- Rental Type --}}
-                                <div class="col-12 mt-3">
+                                <div class="col-12 mt-3" style="display: none ; ">
                                     <div class="card border-light">
                                         <div class="card-header bg-light">
                                             <h5 class="text-primary mb-0">

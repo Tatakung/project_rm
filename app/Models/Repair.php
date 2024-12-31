@@ -27,4 +27,12 @@ class Repair extends Model
     {
         return $this->belongsTo(Reservationfilters::class,'reservationfilter_id');
     }
+
+    public function repair_many_to_one_reser(){
+        return $this->belongsTo(Reservation::class , 'reservation_id') ; 
+    }
+
+
+
+
 }

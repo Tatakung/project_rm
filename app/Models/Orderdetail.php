@@ -112,6 +112,11 @@ class Orderdetail extends Model
     {
         return $this->belongsTo(Reservation::class, 'reservation_id');
     }
+    public function orderdetailmanytoonedress()
+    {
+        return $this->belongsTo(Dress::class, 'dress_id');
+    }
+
 
 
 }

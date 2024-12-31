@@ -16,7 +16,10 @@
 
     <div class="container mt-5">
         <h3 style="text-align:start ; ">รายละเอียดของ OR{{ $order_id }}</h3>
-        <button class="btn btn-danger" >ออกใบเสร็จรวม</button>
+        <div class="mt-1 mb-1">
+            <a href="{{route('receiptdeposittotal',['id' => $order_id])}}" class="btn btn-sm btn-primary" target="_blank">ใบเสร็จมัดจำ</a>
+
+        </div>
         <table class="table table-striped ">
             <thead>
                 <tr>

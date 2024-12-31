@@ -208,6 +208,8 @@ class OrderController extends Controller
 
         $additional = AdditionalChange::where('order_detail_id', $id)->get();
 
+        $sum_additional = AdditionalChange::where('order_detail_id',$id)->sum('amount') ; 
+
 
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
         $valuestatus = $orderdetail->status_detail;
@@ -227,8 +229,15 @@ class OrderController extends Controller
         $dateeee = Date::where('order_detail_id', $id)
             ->orderBy('created_at', 'desc')
             ->first();
+        $receipt_bill_pickup = Orderdetailstatus::where('order_detail_id', $id)
+            ->where('status', 'กำลังเช่า')
+            ->exists();
 
-        return view('employeerentdress.managedetailrentdress', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee'));
+
+        $receipt_bill_return = Orderdetailstatus::where('order_detail_id', $id)
+            ->where('status', 'คืนชุดแล้ว')
+            ->exists();
+        return view('employeerentdress.managedetailrentdress', compact('receipt_bill_pickup', 'receipt_bill_return' ,   'additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee' , 'sum_additional'));
     }
 
 
@@ -259,7 +268,19 @@ class OrderController extends Controller
         }
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
         $additional = AdditionalChange::where('order_detail_id', $id)->get();
-        return view('employeerentjewelry.managedetailrentjewelry', compact('orderdetail', 'reservation', 'jewelry', 'typejewelry', 'orderdetailstatus', 'setjewelry', 'imagejewelry', 'order', 'customer', 'user', 'setjewelryitem', 'Date', 'reservationfilter', 'additional'));
+        $receipt_bill_pickup = Orderdetailstatus::where('order_detail_id', $id)
+        ->where('status', 'กำลังเช่า')
+        ->exists();
+
+
+    $receipt_bill_return = Orderdetailstatus::where('order_detail_id', $id)
+        ->where('status', 'คืนเครื่องประดับแล้ว')
+        ->exists();
+        $additional = AdditionalChange::where('order_detail_id', $id)->get();
+
+        $sum_additional = AdditionalChange::where('order_detail_id',$id)->sum('amount') ; 
+
+        return view('employeerentjewelry.managedetailrentjewelry', compact('additional','sum_additional','orderdetail', 'reservation', 'jewelry','receipt_bill_pickup', 'typejewelry','receipt_bill_return', 'orderdetailstatus', 'setjewelry', 'imagejewelry', 'order', 'customer', 'user', 'setjewelryitem', 'Date', 'reservationfilter', 'additional'));
     }
 
     //จัดการเช่าตัด
@@ -310,7 +331,17 @@ class OrderController extends Controller
         $dateeee = Date::where('order_detail_id', $id)
             ->orderBy('created_at', 'desc')
             ->first();
-        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee'));
+            $receipt_bill_pickup = Orderdetailstatus::where('order_detail_id', $id)
+            ->where('status', 'กำลังเช่า')
+            ->exists();
+    
+    
+        $receipt_bill_return = Orderdetailstatus::where('order_detail_id', $id)
+            ->where('status', 'คืนชุดแล้ว')
+            ->exists();
+    
+
+        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup' , 'receipt_bill_return' ,  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee'));
     }
     //จัดการตัดชุด
     private function managedetailcutdress($id)

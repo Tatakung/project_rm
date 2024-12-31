@@ -399,6 +399,21 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/{id}', [ManageRentcutController::class, 'storeTailoredDress'])->name('storeTailoredDress'); 
     Route::post('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/saved/{id}', [ManageRentcutController::class, 'storeTailoredDresssaved'])->name('storeTailoredDresssaved'); 
+    Route::get('/receipt-deposit-total/{id}', [ManageRentcutController::class, 'receiptdeposittotal'])->name('receiptdeposittotal'); 
+
+    Route::get('/receipt-pickup/{id}', [ManageRentcutController::class, 'receiptpickup'])->name('receiptpickup'); 
+    Route::get('/receipt-return/{id}', [ManageRentcutController::class, 'receiptreturn'])->name('receiptreturn'); 
+
+
+
+    
+
+
+
+
+
+
+
 
     Route::get('/textbutton', [ManageRentcutController::class, 'textbutton'])->name('textbutton'); 
 

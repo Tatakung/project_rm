@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Customer;
 use App\Models\Date;
 use App\Models\Jewelry;
@@ -329,7 +328,7 @@ class ManagejewelryController extends Controller
                 }
             }
         }
-    
+
 
         if ($condition == true) {
             session()->flash('condition', 'passsuccesst');
@@ -339,4 +338,5 @@ class ManagejewelryController extends Controller
 
         return view('employeerentjewelry.jewelry-postpone-yes', compact('reservation_jewelry_total', 'orderdetail', 'reser', 'jewelryset', 'jewelrysetitem', 'cus', 'value_start_date', 'value_end_date', 'condition'));
     }
+    
 }

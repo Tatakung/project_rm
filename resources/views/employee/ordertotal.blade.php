@@ -1,128 +1,149 @@
 @extends('layouts.adminlayout')
 @section('content')
+    <style>
+        .form-control {
+            border-radius: 25px;
+            border: 1px solid #ced4da;
+            padding: 12px 20px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
 
+        .form-control:focus {
+            border-color: #80bdff;
+            box-shadow: none;
+        }
 
-<style>
+        .btn-s {
+            border-radius: 20px;
+            background-color: #007bff;
+            border: none;
+            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
 
- .form-control {
-        border-radius: 25px;
-        border: 1px solid #ced4da;
-        padding: 12px 20px;
-        font-size: 14px;
-        transition: border-color 0.3s ease;
-    }
+        .btn-s:hover {
+            background-color: #0056b3;
+        }
 
-    .form-control:focus {
-        border-color: #80bdff;
-        box-shadow: none;
-    }
-
-    .btn-s {
-        border-radius: 20px;
-        background-color: #007bff;
-        border: none;
-        padding: 5px 15px;
-        display: flex;
-        align-items: center;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-s:hover {
-        background-color: #0056b3;
-    }
-
-    .btn-s i {
-        margin-right: 2px;
-        font-size: 14px;
-    }
-</style>
-<div class="container  mt-5">
+        .btn-s i {
+            margin-right: 2px;
+            font-size: 14px;
+        }
+    </style>
+    <div class="container  mt-5">
         <div class="col">
             <h1 class="font-bold">รายการออเดอร์ทั้งหมด</h1>
         </div>
 
 
 
-    <div class="card mb-4">
+        <div class="card mb-4">
 
-        <div class="card-header ">
-            <form action="{{ route('employee.searchordertotal') }}" class="d-flex justify-content-end">
-                <div class="row">
-                    <div class="col-8">
-                        <input type="text" name="name_search" class="form-control" placeholder="ค้นหาชื่อ" value="{{$name_search}}" >
+            <div class="card-header ">
+                <form action="{{ route('employee.searchordertotal') }}" class="d-flex justify-content-end">
+                    <div class="row">
+                        <div class="col-8">
+                            <input type="text" name="name_search" class="form-control" placeholder="ค้นหาชื่อ"
+                                value="{{ $name_search }}">
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-s" style="background-color:#BACEE6 ;">
+                                <i class="bi bi-search"></i> ค้นหา
+                            </button>
+                        </div>
                     </div>
-                    <div class="col">
-                        <button class="btn btn-s" style="background-color:#BACEE6 ;">
-                            <i class="bi bi-search"></i> ค้นหา
-                        </button>
-                    </div>
-                </div>
-            </form>
+                </form>
 
-        </div>
+            </div>
 
 
 
-        <div class="card-body">
-            <table id="ordersTable" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>หมายเลขออเดอร์</th>
-                        <th>วันที่ทำรายการ</th>
-                        <th>ชื่อ-สกุลลูกค้า</th>
-                        <th>ยอดรวม</th>
-                        <th>รายการ</th>
-                        <th>รายละเอียด</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($customers as $customer)
-                    @foreach ($customer->orders as $order)
-                    @if ($order->order_status == 1)
-                    <tr>
-                        <td>OR{{ $order->id }}</td>
-                        <td>
-                            {{ \Carbon\Carbon::parse($order->created_at)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($order->created_at)->year + 543 }}
-                        </td>
-                        
-                        <td>คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</td>
-                        <td>
-                            @php
-                                $orderdetail_price = App\Models\Orderdetail::where('order_id',$order->id)->sum('price') ; 
-                            @endphp
+            <div class="card-body">
+                <table id="ordersTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 200px;">วันที่ทำรายการ</th>
+                            <th>หมายเลขออเดอร์</th>
 
-                            {{ number_format($orderdetail_price)}}
-                        </td>
-                        <td>{{ $order->total_quantity }} รายการ</td>
-                        <td>
-                            <a href="{{ route('employee.ordertotaldetail', ['id' => $order->id]) }}" class="btn btn-sm" style="background-color:#DADAE3;">
-                                ดูรายละเอียด
-                            </a>
-                        </td>
-                    </tr>
-                    @endif
-                    @endforeach
-                    @endforeach
-                </tbody>
-            </table>
+                            <th>ชื่อ-สกุลลูกค้า</th>
+                            <th>ยอดรวม</th>
+                            <th>รายการ</th>
+                            <th>รายละเอียด</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($customers as $customer)
+                            @foreach ($customer->orders as $order)
+                                @if ($order->order_status == 1)
+                                    <tr>
+                                        
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($order->created_at)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($order->created_at)->year + 543 }}
+                                            <span style="font-size: 12px; color: red ; " id="show_day{{$order->id}}">(2
+                                                วันที่แล้ว)</span>
+
+                                            <script>
+                                                var created_at_order = new Date('{{ $order->created_at }}');
+                                                var now = new Date();
+                                                var total_days = Math.ceil(   (now - created_at_order) / (1000 * 60 * 60 * 24) -1     );
+                                                if(total_days == 0){
+                                                    document.getElementById('show_day{{$order->id}}').innerHTML = '(วันนี้)'; 
+
+                                                }
+                                                else{
+                                                    document.getElementById('show_day{{$order->id}}').innerHTML = '( ' + total_days + ' วันที่แล้ว )' ; 
+
+                                                }
+                                            </script>
+
+
+                                        </td>
+                                        <td>OR{{ $order->id }}</td>
+                                        <td>คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</td>
+                                        <td>
+                                            @php
+                                                $orderdetail_price = App\Models\Orderdetail::where(
+                                                    'order_id',
+                                                    $order->id,
+                                                )->sum('price');
+                                            @endphp
+
+                                            {{ number_format($orderdetail_price) }}
+                                        </td>
+                                        <td>{{ $order->total_quantity }} รายการ</td>
+                                        <td>
+                                            <a href="{{ route('employee.ordertotaldetail', ['id' => $order->id]) }}"
+                                                class="btn btn-sm" style="background-color:#DADAE3;">
+                                                ดูรายละเอียด
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 @endsection
 
 @section('scripts')
-<script>
-    $(document).ready(function() {
-        $('#ordersTable').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Thai.json"
-            },
-            "order": [
-                [1, "desc"]
-            ],
-            "pageLength": 25
+    <script>
+        $(document).ready(function() {
+            $('#ordersTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Thai.json"
+                },
+                "order": [
+                    [1, "desc"]
+                ],
+                "pageLength": 25
+            });
         });
-    });
-</script>
+    </script>
 @endsection

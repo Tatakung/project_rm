@@ -385,23 +385,38 @@
                 <img src="{{ asset('images/logo5.png') }}" alt="logo" width="150" height="150">
             </h1>
 
+
+            <a href="{{ route('employee.homepage') }}"
+            class="list-group-item @if (Route::currentRouteName() == 'employee.homepage') active @endif list-group-item-action border-0 align-items-center"
+            id="d1">
+             <span class="bi bi-house"></span>
+             <span class="ml-2">หน้าแรก</span>
+         </a>
+         
+
+
+
+
             <a href="{{ route('employee.ordertotal') }}"
                 class="list-group-item @if (Route::currentRouteName() == 'employee.ordertotal') active @endif list-group-item-action border-0 align-items-center"
                 id="d1">
-                <span class="bi bi-list-ul"></span>
+                <span class="bi bi-clipboard-data"></span>
+
                 <span class="ml-2">รายการออเดอร์ทั้งหมด</span>
             </a>
 
 
             <a href="{{ route('admin.dresstotal') }}"
-                class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
-                <span class="bi bi-list-ul"></span>
+                class="list-group-item @if (Route::currentRouteName() == 'admin.dresstotal') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
+                <span class="bi bi-clipboard-data"></span>
                 <span class="ml-2">รายการชุด</span>
             </a>
 
 
             <a href="{{ route('admin.jewelrytotal') }}"
-                class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
+                class="list-group-item @if (Route::currentRouteName() == 'admin.jewelrytotal') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
                 <span class="bi bi-list-ul"></span>
                 <span class="ml-2">รายการเครื่องประดับ</span>
             </a>
@@ -465,14 +480,14 @@
                             $c_d_p = App\Models\Reservation::where('status_completed', 0)
                                 ->where('status', 'ถูกจอง')
                                 ->get();
-                                $index_count_start_dress_pickup = 0 ; 
-                                foreach ($c_d_p as $key => $value) {
-                                    $orderdetail = App\Models\Orderdetail::where('reservation_id',$value->id)->first() ; 
-                                    if($orderdetail->type_order == 2 || $orderdetail->type_order == 4  ){
-                                        $index_count_start_dress_pickup += 1 ;
-                                    }
+                            $index_count_start_dress_pickup = 0;
+                            foreach ($c_d_p as $key => $value) {
+                                $orderdetail = App\Models\Orderdetail::where('reservation_id', $value->id)->first();
+                                if ($orderdetail->type_order == 2 || $orderdetail->type_order == 4) {
+                                    $index_count_start_dress_pickup += 1;
                                 }
-                                
+                            }
+
                         @endphp
                         @if ($index_count_start_dress_pickup > 0)
                             <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
@@ -487,11 +502,11 @@
                             $c_d_r = App\Models\Reservation::where('status_completed', 0)
                                 ->where('status', 'กำลังเช่า')
                                 ->get();
-                            $count_dress_return = 0 ; 
+                            $count_dress_return = 0;
                             foreach ($c_d_r as $key => $value) {
-                                $orderdetail = App\Models\Orderdetail::where('reservation_id',$value->id)->first() ; 
-                                if($orderdetail->type_order == 2 || $orderdetail->type_order == 4 ){
-                                    $count_dress_return += 1 ; 
+                                $orderdetail = App\Models\Orderdetail::where('reservation_id', $value->id)->first();
+                                if ($orderdetail->type_order == 2 || $orderdetail->type_order == 4) {
+                                    $count_dress_return += 1;
                                 }
                             }
                         @endphp
@@ -520,7 +535,10 @@
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                         รายการซ่อมชุด
                         @php
-                            $repaircountdress = App\Models\Repair::whereIn('repair_status', ['รอดำเนินการ', 'กำลังซ่อม'])
+                            $repaircountdress = App\Models\Repair::whereIn('repair_status', [
+                                'รอดำเนินการ',
+                                'กำลังซ่อม',
+                            ])
                                 ->whereNull('reservationfilter_id')
                                 ->count();
                         @endphp
@@ -555,11 +573,11 @@
                             $c_j_p = App\Models\Reservation::where('status_completed', 0)
                                 ->where('status', 'ถูกจอง')
                                 ->get();
-                            $count_jew_pickup = 0 ; 
+                            $count_jew_pickup = 0;
                             foreach ($c_j_p as $key => $value) {
-                                $orderdetail = App\Models\Orderdetail::where('reservation_id',$value->id)->first() ; 
-                                if($orderdetail->type_order == 3 ){
-                                    $count_jew_pickup += 1 ;
+                                $orderdetail = App\Models\Orderdetail::where('reservation_id', $value->id)->first();
+                                if ($orderdetail->type_order == 3) {
+                                    $count_jew_pickup += 1;
                                 }
                             }
                         @endphp
@@ -576,11 +594,11 @@
                             $c_j_r = App\Models\Reservation::where('status_completed', 0)
                                 ->where('status', 'กำลังเช่า')
                                 ->get();
-                            $count_jew_return = 0 ; 
+                            $count_jew_return = 0;
                             foreach ($c_j_r as $key => $value) {
-                                $orderdetail = App\Models\Orderdetail::where('reservation_id',$value->id)->first() ; 
-                                if($orderdetail->type_order == 3 ){
-                                    $count_jew_return += 1 ;
+                                $orderdetail = App\Models\Orderdetail::where('reservation_id', $value->id)->first();
+                                if ($orderdetail->type_order == 3) {
+                                    $count_jew_return += 1;
                                 }
                             }
                         @endphp
@@ -641,10 +659,26 @@
                         href="{{ route('employee.cart') }}" style="color: #000000">
                         <span class="bi bi-cart text-dark h4"></span>
                         <span class=" mb-2 small text-dark">
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill custom-badge">
-                                {{ App\Models\Order::where('user_id', Auth::user()->id)->where('order_status', 0)->value('total_quantity') ?? 0 }}
-                            </span>
+
+
+                            @php
+                                $count_cart = App\Models\Order::where('user_id', Auth::user()->id)
+                                    ->where('order_status', 0)
+                                    ->value('total_quantity');
+                            @endphp
+                            @if ($count_cart != 0)
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill custom-badge">
+                                    {{ $count_cart }}
+                                </span>
+                            @endif
+
+
+
+
+
+
+
                     </a>
                 </div>
                 <div class="d-flex align-items-center ml-3">

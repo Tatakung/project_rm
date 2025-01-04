@@ -22,6 +22,7 @@ use App\Models\Orderdetailstatus;
 use App\Models\Paymentstatus;
 use App\Models\Reservation;
 use App\Models\Shirtitem;
+use App\Models\Receipt;
 use App\Models\Skirtitem;
 use App\Models\AdditionalChange;
 use App\Models\Typedress;
@@ -470,17 +471,37 @@ class ManageRentcutController extends Controller
         $create_status->save();
         return redirect()->route('detaildoingrentcut', ['id' => $orderdetail->id])->with('success', 'บันทึกสำเร็จ');
     }
+    // public function receiptdeposittotal($id)
+    // {
+    //     $order = Order::find($id);
+    //     $orderdetail = Orderdetail::where('order_id', $id)->get();
+    //     $customer = Customer::find($order->customer_id);
+    //     $total_deposit = $orderdetail->sum('deposit');
+
+    //     $date_now = now();
+    //     $pdfs = PDF::loadview('receipt.receipt_deposit_total', compact('order', 'orderdetail', 'customer', 'date_now', 'total_deposit'));
+    //     return $pdfs->stream();
+    // }
+
     public function receiptdeposittotal($id)
     {
+        $receipt = Receipt::where('order_id', $id)
+            ->where('receipt_type', 1)
+            ->first();            
         $order = Order::find($id);
-        $orderdetail = Orderdetail::where('order_id', $id)->get();
+        $orderdetail = Orderdetail::where('order_id', $order->id)->get();
         $customer = Customer::find($order->customer_id);
-        $total_deposit = $orderdetail->sum('deposit');
-
-        $date_now = now();
-        $pdfs = PDF::loadview('receipt.receipt_deposit_total', compact('order', 'orderdetail', 'customer', 'date_now', 'total_deposit'));
-        return $pdfs->stream();
+        $pdf = PDF::loadView('receipt.receipt_deposit_total', compact('receipt', 'order', 'orderdetail', 'customer'));
+        $pdf->setPaper('A4');
+        return $pdf->stream('receipt.pdf');
     }
+
+
+
+
+
+
+
 
     public function receiptpickup($id)
     {

@@ -25,7 +25,6 @@ return new class extends Migration
             $table->integer('dress_rental')->nullable();
             $table->timestamps();
             $table->softDeletes(); 
-
             $table->foreign('type_dress_id')->references('id')->on('typedresses')->onDelete('cascade');
 
         });

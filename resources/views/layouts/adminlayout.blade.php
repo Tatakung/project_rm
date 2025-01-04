@@ -387,12 +387,12 @@
 
 
             <a href="{{ route('employee.homepage') }}"
-            class="list-group-item @if (Route::currentRouteName() == 'employee.homepage') active @endif list-group-item-action border-0 align-items-center"
-            id="d1">
-             <span class="bi bi-house"></span>
-             <span class="ml-2">หน้าแรก</span>
-         </a>
-         
+                class="list-group-item @if (Route::currentRouteName() == 'employee.homepage') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
+                <span class="bi bi-house"></span>
+                <span class="ml-2">หน้าแรก</span>
+            </a>
+
 
 
 
@@ -475,7 +475,7 @@
                 <div class="list-group">
                     <a href="{{ route('employee.dressadjust') }}"
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
-                        คิวเช่า
+                        รายการรอรับชุด
                         @php
                             $c_d_p = App\Models\Reservation::where('status_completed', 0)
                                 ->where('status', 'ถูกจอง')
@@ -497,7 +497,7 @@
                     </a>
                     <a href="{{ route('employee.listdressreturn') }}"
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
-                        คิวชุดที่รอส่งคืน
+                        รายการรอคืนชุด
                         @php
                             $c_d_r = App\Models\Reservation::where('status_completed', 0)
                                 ->where('status', 'กำลังเช่า')
@@ -611,16 +611,27 @@
                     <a href="{{ route('showcleanjewelry') }}"
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                         รายการทำความสะอาด
-                        <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
-                            ยังไม่ได้ใส่
-                        </span>
+                        @php
+                            $clean_jewelry = App\Models\Reservationfilters::where('status_completed', 0)
+                                ->whereIn('status', ['รอทำความสะอาด', 'กำลังทำความสะอาด'])
+                                ->count();
+
+                        @endphp
+                        @if($clean_jewelry > 0 )
+                        <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">{{$clean_jewelry}}</span>
+                        @endif
                     </a>
                     <a href="{{ route('showrepairjewelry') }}"
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                         รายการซ่อม
-                        <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
-                            ยังไม่ได้ใส่
-                        </span>
+                        @php
+                            $repair_jewelry = App\Models\Repair::whereNotNull('reservationfilter_id')
+                                ->whereIn('repair_status', ['รอดำเนินการ', 'กำลังซ่อม'])
+                                ->count();
+                        @endphp
+                        @if($repair_jewelry > 0 )
+                        <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">{{$repair_jewelry}}</span>
+                        @endif
                     </a>
                 </div>
             </div>

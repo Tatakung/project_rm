@@ -36,7 +36,10 @@ class Order extends Model
         return $this->hasMany(Orderdetail::class, 'order_id');
     }
 
-
+    public function order_one_many_receipt()
+    {
+        return $this->hasMany(Receipt::class, 'order_id');
+    }
 
     
 

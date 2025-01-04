@@ -20,6 +20,7 @@ use App\Models\Paymentstatus;
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
 use App\Models\Clean;
+use App\Models\Receipt;
 
 use App\Models\Typedress;
 use App\Models\Typejewelry;
@@ -79,16 +80,16 @@ class EmployeeController extends Controller
         $clean_pending = Clean::where('clean_status', "รอดำเนินการ")->get();
 
 
-        $repair = Repair::where('repair_status','รอดำเนินการ')
-                        ->whereNotNull('reservation_id')
-        ->get() ; 
+        $repair = Repair::where('repair_status', 'รอดำเนินการ')
+            ->whereNotNull('reservation_id')
+            ->get();
 
 
 
 
         $employee = Auth::user();
         $time = now();
-        return view('employee.employeehome', compact('employee', 'time', 'return_jewelry_today', 'return_dress_today', 'work_waiting_to_cut','clean_pending','repair'));
+        return view('employee.employeehome', compact('employee', 'time', 'return_jewelry_today', 'return_dress_today', 'work_waiting_to_cut', 'clean_pending', 'repair'));
     }
 
 
@@ -1442,6 +1443,28 @@ class EmployeeController extends Controller
         $update_order_status->customer_id = $customer_id;
         $update_order_status->order_status = 1;
         $update_order_status->save();
+
+
+
+
+
+        $total_price_receipt = 0;
+        $orderdetail_for_receipt = Orderdetail::where('order_id',$order_id)->get() ; 
+        foreach ($orderdetail_for_receipt as $item) {
+            $detail = Orderdetail::find($item->id);
+            if ($detail->status_payment == 1) {
+                $total_price_receipt += $detail->deposit;
+            } elseif ($detail->status_payment == 2) {
+                $total_price_receipt = $total_price_receipt + $detail->price + $detail->damage_insurance;
+            }
+        }
+
+        // สร้างใบเสร็จรับเงิน
+        $create_receipt = new Receipt();
+        $create_receipt->order_id = $order_id;
+        $create_receipt->total_price = $total_price_receipt;
+        $create_receipt->receipt_type = 1; //1ชำระครั้งแรก 2ชำระวันรับชุด 3คืนเงินประกัน
+        $create_receipt->save();
 
         return redirect()->route('employee.ordertotaldetail', ['id' => $order_id]);
     }

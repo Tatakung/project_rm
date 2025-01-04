@@ -50,7 +50,7 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-body text-center">
-                                    <p>ลูกค้าชำระเงินเต็มจำนวน(มัดจำ+ราคาเช่า+ประกันค่าเสียหาย)</p>
+                                    <p>ลูกค้าชำระเงินเต็มจำนวน (ราคา+ประกันค่าเสียหาย)</p>
                                     <input type="radio" name="payment_status" value="2">
                                 </div>
                             </div>
@@ -58,8 +58,6 @@
                     </div>
 
                 </div>
-
-
 
 
 
@@ -215,6 +213,24 @@
                                 @endif
 
 
+                                <div class="ml-28 space-y-3">
+                                    <div class="flex items-center">
+                                        <input type="radio" name="payment_[{{$detail->id}}]" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" checked>
+                                        <label class="ml-2 text-sm font-medium text-gray-700">
+                                            ชำระเงินมัดจำ ({{number_format($detail->deposit , 2 )}} บาท)
+                                        </label>
+                                    </div>
+                        
+                                    <div class="flex items-center">
+                                        <input type="radio" name="payment_[{{$detail->id}}]" value="2" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                                        <label class="ml-2 text-sm font-medium text-gray-700">
+                                            ชำระเต็มจำนวน ({{ number_format($detail->price + $detail->damage_insurance , 2 ) }} บาท)
+                                        </label>
+                                        
+                                    </div>
+                                </div>
+
+
                             </div>
                             <div class="media-body">
                                 <p>&nbsp;</p>
@@ -232,6 +248,7 @@
                             $list_damage_insurance[] = $detail->damage_insurance * $detail->amount;
                             $late_charge_late_charge[] = $detail->late_charge;
                         @endphp
+                        
                     @endforeach
 
 
@@ -240,28 +257,36 @@
                     </p>
                     <div class="media">
                         <div class="media-left">
-                            <p style="font-size: 15px;  margin-bottom: 5px; ">ราคา</p>
-                            <p style="font-size: 15px;  margin-bottom: 5px;">เงินมัดจำ</p>
-                            <p style="font-size: 15px;  margin-bottom: 5px;">ประกันค่าเสียหาย</p>
+                            {{-- <p style="font-size: 15px;  margin-bottom: 5px; ">ราคา</p> --}}
+                            {{-- <p style="font-size: 15px;  margin-bottom: 5px;">เงินมัดจำ</p> --}}
+                            {{-- <p style="font-size: 15px;  margin-bottom: 5px;">รวมประกันค่าเสียหาย</p> --}}
                             {{-- <p style="font-size: 15px;  margin-bottom: 5px;">ค่าบริการขยายเวลาเช่าชุด</p> --}}
-                            {{-- <p style="font-size: 15px;  margin-bottom: 5px; color: crimson">จำนวนเงินที่ต้องชำระทั้งหมด</p> --}}
+                            <p style="font-size: 15px;  margin-bottom: 5px; color: crimson">จำนวนเงินที่ต้องชำระสุทธิ</p>
                         </div>
                         <div class="media-body">
                             <p>&nbsp;</p>
                         </div>
                         <div class="media-right">
-                            <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
+                            {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
                                 {{ number_format(array_sum($list_price), 2) }}
-                            </p>
-                            <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
+                            </p> --}}
+                            {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
                                 {{ number_format(array_sum($list_deposit), 2) }}
-                            </p>
+                            </p> --}}
+
                             <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
-                                {{ number_format(array_sum($list_damage_insurance), 2) }}</p>
+                                {{-- {{ number_format(array_sum($list_damage_insurance), 2) }}</p> --}}
                             {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
                                 {{ number_format(array_sum($late_charge_late_charge), 2) }}</p> --}}
+                                 {{ number_format($orderdetail->sum('damage_insurance' , 2 )) }}
                         </div>
                     </div>
+
+                   -
+
+
+
+
                     <hr>
                     <div class="row" style="margin-top: 15px;">
                         <div class="col-md-12">
@@ -270,7 +295,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </form>

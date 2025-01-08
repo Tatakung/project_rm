@@ -38,31 +38,48 @@
                     <br>
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body text-center">
-                                    <p>ลูกค้าชำระเงินมัดจำ
-                                        <br><br><br>
-                                    </p>
+                            <div class="card h-100">
+                                <div class="card-body text-center d-flex flex-column justify-content-center">
+                                    <p>ลูกค้าชำระเงินมัดจำ ({{ number_format($total_deposit, 2) }} บาท )</p>
                                     <input type="radio" name="payment_status" value="1" checked>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body text-center">
-                                    <p>ลูกค้าชำระเงินเต็มจำนวน (ราคา+ประกันค่าเสียหาย)</p>
+                            <div class="card h-100">
+                                <div class="card-body text-center d-flex flex-column justify-content-center">
+                                    @if ($order->type_order == 1)
+                                        <p>ลูกค้าชำระเงินเต็มจำนวน (ราคาตัด)
+                                            ({{ number_format($total_price_and_damage_insurance, 2) }} บาท)</p>
+                                    @elseif($order->type_order == 2)
+                                        <p>ลูกค้าชำระเงินเต็มจำนวน (ราคาเช่า+เงินประกัน)
+                                            ({{ number_format($total_price_and_damage_insurance, 2) }} บาท)</p>
+                                    @elseif($order->type_order == 3)
+                                        <p>ลูกค้าชำระเงินเต็มจำนวน (ราคาเช่าตัด+เงินประกัน)
+                                            ({{ number_format($total_price_and_damage_insurance, 2) }} บาท)</p>
+                                    @endif
+
                                     <input type="radio" name="payment_status" value="2">
                                 </div>
                             </div>
                         </div>
                     </div>
 
+
                 </div>
 
 
 
                 <div class="col-md-7">
-                    <h5 style="margin-top: 10px;">สรุปรายการ</h5>
+                    <h5 style="margin-top: 10px;">
+                        @if ($order->type_order == 1)
+                            สรุปรายการตัดชุด
+                        @elseif($order->type_order == 2)
+                            สรุปรายการเช่า
+                        @elseif($order->type_order == 3)
+                            สรุปรายการเช่าตัดชุด
+                        @endif
+                    </h5>
                     <hr>
                     @foreach ($orderdetail as $detail)
                         @php
@@ -141,7 +158,7 @@
                                             เช่า{{ $typejewelry->type_jewelry_name }}
                                             {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
                                         @elseif($detail->detail_many_one_re->jewelry_set_id)
-                                            เช่าเซต{{ $setjewelry->set_name }}
+                                            เช่าเซตเครื่องประดับ{{ $setjewelry->set_name }}
                                         @endif
                                     @elseif($detail->type_order == 4)
                                         เช่าตัด
@@ -177,13 +194,11 @@
                                 @endphp
 
                                 @if ($detail->type_order == 1)
-                                    
                                     <p style="font-size: 15px;  margin-bottom: 5px;">วันที่นัดรับ:
                                         {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
                                     </p>
                                 @elseif($detail->type_order == 2)
-                                    
                                     <p style="font-size: 15px;  margin-bottom: 5px;">วันที่นัดรับ:
                                         {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
@@ -213,7 +228,7 @@
                                 @endif
 
 
-                                <div class="ml-28 space-y-3">
+                                {{-- <div class="ml-28 space-y-3">
                                     <div class="flex items-center">
                                         <input type="radio" name="payment_[{{$detail->id}}]" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" checked>
                                         <label class="ml-2 text-sm font-medium text-gray-700">
@@ -228,7 +243,7 @@
                                         </label>
                                         
                                     </div>
-                                </div>
+                                </div> --}}
 
 
                             </div>
@@ -248,8 +263,10 @@
                             $list_damage_insurance[] = $detail->damage_insurance * $detail->amount;
                             $late_charge_late_charge[] = $detail->late_charge;
                         @endphp
-                        
                     @endforeach
+                    {{ $orderdetail->onEachSide(2)->links() }}
+
+
 
 
                     <p style="margin-top: 10px; ">
@@ -276,13 +293,13 @@
 
                             <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
                                 {{-- {{ number_format(array_sum($list_damage_insurance), 2) }}</p> --}}
-                            {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
+                                {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
                                 {{ number_format(array_sum($late_charge_late_charge), 2) }}</p> --}}
-                                 {{ number_format($orderdetail->sum('damage_insurance' , 2 )) }}
+                                {{ number_format($orderdetail->sum('damage_insurance', 2)) }}
                         </div>
                     </div>
 
-                   -
+                    -
 
 
 

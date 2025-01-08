@@ -789,8 +789,8 @@ class EmployeeController extends Controller
                 $order->total_quantity = 1;
                 $order->total_price = $request->input('price') * $request->input('amount');
                 $order->total_deposit = $request->input('deposit') * $request->input('amount');
-
                 $order->order_status = 0;
+                $order->type_order = 1; //1ตัด 2.เช่า 3.เช่าตัด
                 $order->save();
                 $ID_ORDER = $order->id;
             }
@@ -1075,6 +1075,7 @@ class EmployeeController extends Controller
             ->where('order_status', 0)
             ->with('order_one_many_orderdetails')
             ->first();
+
         return view('Employee.cart', compact('order'));
     }
 
@@ -1307,8 +1308,14 @@ class EmployeeController extends Controller
     public function confirmorder($id)
     {
         $order_id = $id;
-        $orderdetail = Orderdetail::where('order_id', $id)->get();
-        return view('employee.confirmorder', compact('orderdetail', 'order_id'));
+        $order = Order::find($id) ; 
+        $orderdetail = Orderdetail::where('order_id', $id)->paginate(2);
+        $date_now = now()->toDateString() ; 
+        $total_deposit = Orderdetail::where('order_id',$id)->sum('deposit') ; 
+        $total_price = Orderdetail::where('order_id',$id)->sum('price') ; 
+        $total_damage_insurance = Orderdetail::where('order_id',$id)->sum('damage_insurance') ; 
+        $total_price_and_damage_insurance = $total_price + $total_damage_insurance ; 
+        return view('employee.confirmorder', compact('orderdetail', 'order_id','order','date_now','total_deposit','total_price_and_damage_insurance'));
     }
 
 

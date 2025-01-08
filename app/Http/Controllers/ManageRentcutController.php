@@ -16,6 +16,7 @@ use App\Models\Dressmeasurementcutedit;
 use App\Models\Fitting;
 use App\Models\Imagerent;
 use App\Models\Measurementorderdetail;
+use App\Models\SeparateRentability;
 use App\Models\Order;
 use App\Models\Orderdetail;
 use App\Models\Orderdetailstatus;
@@ -56,8 +57,8 @@ class ManageRentcutController extends Controller
             $order->total_quantity = 1;
             $order->total_price = $request->input('price') * $request->input('amount');
             $order->total_deposit = $request->input('deposit') * $request->input('amount');
-
             $order->order_status = 0;
+            $order->type_order = 3; //1.ตัด 2.เช่า 3.เช่าตัด
             $order->save();
             $ID_ORDER = $order->id;
         }
@@ -120,20 +121,75 @@ class ManageRentcutController extends Controller
         $date->return_date = $request->input('return_date');
         $date->save();
 
-        // บันทึกข้อมูลในตาราง Dressmeaadjustment
-        if ($request->input('name_')) {
-            $mea_name = $request->input('name_');
-            $mea_number = $request->input('number_');
-            if ($mea_name) {
-                foreach ($mea_name as $index => $mea) {
-                    $data = new Dressmeaadjustment();
-                    $data->order_detail_id = $orderdetail->id;
-                    $data->name = $mea;
-                    $data->new_size = $mea_number[$index];
-                    $data->save();
+
+
+        $separate_type = new SeparateRentability();
+        $separate_type->order_detail_id = $orderdetail->id;
+        $separate_type->separate_rentable = $request->input('rental_option');
+        $separate_type->save();
+
+        $rental_option = $request->input('rental_option');
+        if ($rental_option == 1) {
+            // การทำงานกรณีเช่าแยกไม่ได้
+            // บันทึกข้อมูลในตาราง Dressmeaadjustment
+            if ($request->input('name_')) {
+                $mea_name = $request->input('name_');
+                $mea_number = $request->input('number_');
+                if ($mea_name) {
+                    foreach ($mea_name as $index => $mea) {
+                        $data = new Dressmeaadjustment();
+                        $data->order_detail_id = $orderdetail->id;
+                        $data->name = $mea;
+                        $data->new_size = $mea_number[$index];
+                        $data->save();
+                    }
+                }
+            }
+        } elseif ($rental_option == 2) {
+            // การทำงานกรณีเช่าแยกได้
+            if ($request->input('name_shirt_')) {
+                $name_shirt = $request->input('name_shirt_');
+                $number_shirt = $request->input('number_shirt_');
+                if ($name_shirt) {
+                    foreach ($name_shirt as $index => $mea_name) {
+                        $data = new Dressmeaadjustment();
+                        $data->order_detail_id = $orderdetail->id;
+                        $data->name = $mea_name;
+                        $data->new_size = $number_shirt[$index];
+                        $data->status = '1'; //1เสื้อ
+                        $data->save();
+                    }
+                }
+            }
+
+            if ($request->input('name_skirt_')) {
+                $name_skirt = $request->input('name_skirt_');
+                $number_skirt = $request->input('number_skirt_');
+                if ($name_skirt) {
+                    foreach ($name_skirt as $index => $mea_name) {
+                        $data = new Dressmeaadjustment();
+                        $data->order_detail_id = $orderdetail->id;
+                        $data->name = $mea_name;
+                        $data->new_size = $number_skirt[$index];
+                        $data->status = '2'; // 2ผ้าถุง
+                        $data->save();
+                    }
                 }
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
         // บันทึกช้อมูลลงในตาราง rentimage
         if ($request->hasFile('file_image_')) {
             $imf_loop = $request->file('file_image_');
@@ -330,7 +386,11 @@ class ManageRentcutController extends Controller
         $dress = Dress::where('type_dress_id', $typedress->id)->max('dress_code');
         $next_code = $dress + 1;
         $measurements = Dressmeaadjustment::where('order_detail_id', $id)->get();
-        return view('employeerentcut.add_tailored_dress', compact('orderdetail', 'measurements', 'typedress', 'next_code'));
+        $separate_type = SeparateRentability::where('order_detail_id', $id)->value('separate_rentable');
+
+        $admin = Auth::user()->is_admin;
+
+        return view('employeerentcut.add_tailored_dress', compact('orderdetail', 'measurements', 'typedress', 'next_code', 'separate_type', 'admin'));
     }
 
 
@@ -339,22 +399,31 @@ class ManageRentcutController extends Controller
     {
         $orderdetail = Orderdetail::find($id);
         $typedress = Typedress::where('type_dress_name', $orderdetail->type_dress)->first();
+
+
+        $separate_rentable = SeparateRentability::where('order_detail_id', $orderdetail->id)->value('separate_rentable');
+
+
         $dress = Dress::where('type_dress_id', $typedress->id)->max('dress_code');
         $next_code = $dress + 1;
+
+        $show_price_input = $request->input('show_price_input');
+        $show_price_shirt_input = $request->input('show_price_shirt_input');
+        $show_price_skirt_input = $request->input('show_price_skirt_input');
 
         $dress = new Dress();
         $dress->type_dress_id = $typedress->id;
         $dress->dress_code = $next_code; //หมายเลขชุด
         $dress->dress_code_new = $typedress->specific_letter;
-        $dress->dress_price = $orderdetail->price;
-        $dress->dress_deposit = ($orderdetail->price) * 0.3;
-        $dress->damage_insurance = $orderdetail->price;
+        $dress->dress_price = $show_price_input;
+        $dress->dress_deposit = $show_price_input * 0.3;
+        $dress->damage_insurance = $show_price_input;
         $dress->dress_count = 1;
         $dress->dress_status = "พร้อมให้เช่า";
         $dress->dress_description = $request->input('dress_details');
         $dress->dress_rental = 0;
         $dress->source_type = 2; //1 ชุดเปล่าๆ 2ชุดที่ได้มาจากการเช่าตัด
-        $dress->separable = $request->input('rental_type'); //1แยกไม่ได้ 2 แยกได้
+        $dress->separable = $separate_rentable;  //1แยกไม่ได้ 2 แยกได้
         $dress->save();
 
         if ($request->hasFile('dress_image')) {
@@ -363,7 +432,9 @@ class ManageRentcutController extends Controller
             $add_image->dress_image = $request->file('dress_image')->store('dress_images', 'public');
             $add_image->save();
         }
-        if ($request->input('rental_type') == 1) {
+
+
+        if ($separate_rentable == 1) {
             //ตารางเริ่มต้นdressmeasurement
             if ($request->input('name_total_') != null) {
                 $name_total = $request->input('name_total_');
@@ -381,65 +452,113 @@ class ManageRentcutController extends Controller
                     $addmea->save();
                 }
             }
-        } elseif ($request->input('rental_type') == 2) {
+        } elseif ($separate_rentable == 2) {
             //ตารางshirtitem
             $add_shirtitem = new Shirtitem();
             $add_shirtitem->dress_id = $dress->id;
-            $add_shirtitem->shirtitem_price = $request->input('shirt_price');
-            $add_shirtitem->shirtitem_deposit = $request->input('shirt_deposit');
-            $add_shirtitem->shirt_damage_insurance = $request->input('shirt_damage_insurance');
+            $add_shirtitem->shirtitem_price = $show_price_shirt_input;
+            $add_shirtitem->shirtitem_deposit = $show_price_shirt_input * 0.3;
+            $add_shirtitem->shirt_damage_insurance = $show_price_shirt_input;
             $add_shirtitem->shirtitem_status = "พร้อมให้เช่า";
             $add_shirtitem->shirtitem_rental = 0;
             $add_shirtitem->save();
             //ตารางskirtitem
             $add_skirtitem = new Skirtitem();
             $add_skirtitem->dress_id = $dress->id;
-            $add_skirtitem->skirtitem_price = $request->input('skirt_price');
-            $add_skirtitem->skirtitem_deposit = $request->input('skirt_deposit');
-            $add_skirtitem->skirt_damage_insurance = $request->input('skirt_damage_insurance');
+            $add_skirtitem->skirtitem_price = $show_price_skirt_input;
+            $add_skirtitem->skirtitem_deposit = $show_price_skirt_input * 0.3;
+            $add_skirtitem->skirt_damage_insurance = $show_price_skirt_input;
             $add_skirtitem->skirtitem_status = "พร้อมให้เช่า";
             $add_skirtitem->skirtitem_rental = 0;
             $add_skirtitem->save();
+
             //เสื้อตารางdressmeasurement
-            $name_shirt = $request->input('name_shirt_');
-            $number_shirt = $request->input('number_shirt_');
-            $number_shirt_min = $request->input('number_shirt_min_');
-            $number_shirt_max = $request->input('number_shirt_max_');
-            foreach ($name_shirt as $index => $name_sh) {
-                $add_item_shiry = new Dressmea();
-                $add_item_shiry->dress_id = $dress->id;
-                $add_item_shiry->shirtitems_id  = $add_shirtitem->id;
-                $add_item_shiry->mea_dress_name = $name_sh;
-                $add_item_shiry->initial_mea = $number_shirt[$index];
-                $add_item_shiry->initial_min = $number_shirt_min[$index];
-                $add_item_shiry->initial_max = $number_shirt_max[$index];
-                $add_item_shiry->current_mea = $number_shirt[$index];
-                $add_item_shiry->save();
+            // $name_shirt = $request->input('name_shirt_');
+            // $number_shirt = $request->input('number_shirt_');
+            // $number_shirt_min = $request->input('number_shirt_min_');
+            // $number_shirt_max = $request->input('number_shirt_max_');
+            // foreach ($name_shirt as $index => $name_sh) {
+            //     $add_item_shiry = new Dressmea();
+            //     $add_item_shiry->dress_id = $dress->id;
+            //     $add_item_shiry->shirtitems_id  = $add_shirtitem->id;
+            //     $add_item_shiry->mea_dress_name = $name_sh;
+            //     $add_item_shiry->initial_mea = $number_shirt[$index];
+            //     $add_item_shiry->initial_min = $number_shirt_min[$index];
+            //     $add_item_shiry->initial_max = $number_shirt_max[$index];
+            //     $add_item_shiry->current_mea = $number_shirt[$index];
+            //     $add_item_shiry->save();
+            // }
+
+
+            // ขนาดเสื้อเสื้อตารางdressmeasurement
+            if ($request->input('name_total_') != null) {
+                $name_total = $request->input('name_total_');
+                $number_total = $request->input('number_total_');
+                $number_total_min = $request->input('number_total_min_');
+                $number_total_max = $request->input('number_total_max_');
+                $status = $request->input('status_');
+                foreach ($name_total as $index => $name) {
+                    if ($status[$index] == '1') {
+                        $addmea = new Dressmea();
+                        $addmea->dress_id  = $dress->id;
+                        $addmea->shirtitems_id  = $add_shirtitem->id;
+                        $addmea->mea_dress_name = $name;
+                        $addmea->initial_mea = $number_total[$index];
+                        $addmea->initial_min = $number_total_min[$index];
+                        $addmea->initial_max = $number_total_max[$index];
+                        $addmea->current_mea = $number_total[$index];
+                        $addmea->save();
+                    }
+                }
             }
+
             //กระโปรงตารางdressmeasurement
-            $name_skirt = $request->input('name_skirt_');
-            $number_skirt = $request->input('number_skirt_');
-            $number_skirt_min = $request->input('number_skirt_min_');
-            $number_skirt_max = $request->input('number_skirt_max_');
-            foreach ($name_skirt as $index => $name_sk) {
-                $add_item_skiry = new Dressmea();
-                $add_item_skiry->dress_id = $dress->id;
-                $add_item_skiry->skirtitems_id  = $add_skirtitem->id;
-                $add_item_skiry->mea_dress_name = $name_sk;
-                $add_item_skiry->initial_mea = $number_skirt[$index];
-                $add_item_skiry->initial_min = $number_skirt_min[$index];
-                $add_item_skiry->initial_max = $number_skirt_max[$index];
-                $add_item_skiry->current_mea = $number_skirt[$index];
-                $add_item_skiry->save();
+            if ($request->input('name_total_') != null) {
+                $name_total = $request->input('name_total_');
+                $number_total = $request->input('number_total_');
+                $number_total_min = $request->input('number_total_min_');
+                $number_total_max = $request->input('number_total_max_');
+                $status = $request->input('status_');
+                foreach ($name_total as $index => $name) {
+                    if ($status[$index] == '2') {
+                        $addmea = new Dressmea();
+                        $addmea->dress_id  = $dress->id;
+                        $addmea->skirtitems_id  = $add_skirtitem->id;
+                        $addmea->mea_dress_name = $name;
+                        $addmea->initial_mea = $number_total[$index];
+                        $addmea->initial_min = $number_total_min[$index];
+                        $addmea->initial_max = $number_total_max[$index];
+                        $addmea->current_mea = $number_total[$index];
+                        $addmea->save();
+                    }
+                }
             }
+            // $name_skirt = $request->input('name_skirt_');
+            // $number_skirt = $request->input('number_skirt_');
+            // $number_skirt_min = $request->input('number_skirt_min_');
+            // $number_skirt_max = $request->input('number_skirt_max_');
+            // foreach ($name_skirt as $index => $name_sk) {
+            //     $add_item_skiry = new Dressmea();
+            //     $add_item_skiry->dress_id = $dress->id;
+            //     $add_item_skiry->skirtitems_id  = $add_skirtitem->id;
+            //     $add_item_skiry->mea_dress_name = $name_sk;
+            //     $add_item_skiry->initial_mea = $number_skirt[$index];
+            //     $add_item_skiry->initial_min = $number_skirt_min[$index];
+            //     $add_item_skiry->initial_max = $number_skirt_max[$index];
+            //     $add_item_skiry->current_mea = $number_skirt[$index];
+            //     $add_item_skiry->save();
+            // }
+
         }
+
+
+
 
 
 
         $Date = Date::where('order_detail_id', $id)
             ->orderBy('created_at', 'desc')
             ->first();
-
 
         //ตารางreservation 
         $reservation = new Reservation();
@@ -487,50 +606,69 @@ class ManageRentcutController extends Controller
     {
         $receipt = Receipt::where('order_id', $id)
             ->where('receipt_type', 1)
-            ->first();            
+            ->first();
         $order = Order::find($id);
         $orderdetail = Orderdetail::where('order_id', $order->id)->get();
         $customer = Customer::find($order->customer_id);
+
         $pdf = PDF::loadView('receipt.receipt_deposit_total', compact('receipt', 'order', 'orderdetail', 'customer'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
     }
 
-
-
-
-
-
-
-
     public function receiptpickup($id)
     {
         $orderdetail = Orderdetail::find($id);
-        $order = Order::find($orderdetail->order_id);
-        $customer = Customer::find($order->customer_id);
-        $date_now = now();
-        $date = Date::where('order_detail_id', $id)
+        $date = Date::where('order_detail_id', $orderdetail->id)
             ->orderBy('created_at', 'desc')
             ->first();
-        $pdfs = PDF::loadview('receipt.receipt_pickup_dress_or_jew', compact('order', 'orderdetail', 'customer', 'date_now', 'date'));
+        $receipt = Receipt::where('order_detail_id', $id)
+            ->where('receipt_type', 2)
+            ->first();
+        $order = Order::find($orderdetail->order_id);
+        $customer = Customer::find($order->customer_id);
+
+
+        $decoration = Decoration::where('order_detail_id', $orderdetail->id)->get();
+
+
+        $pdf = PDF::loadView('receipt.receipt_pickup_dress_or_jew', compact('receipt', 'order', 'orderdetail', 'customer', 'date', 'decoration'));
+        $pdf->setPaper('A4');
+        return $pdf->stream('receipt.pdf');
         return $pdfs->stream();
     }
+
+
+
     public function receiptreturn($id)
     {
         $orderdetail = Orderdetail::find($id);
-        $order = Order::find($orderdetail->order_id);
-        $customer = Customer::find($order->customer_id);
-        $date_now = now();
-        $date = Date::where('order_detail_id', $id)
+        $date = Date::where('order_detail_id', $orderdetail->id)
             ->orderBy('created_at', 'desc')
             ->first();
+        $receipt = Receipt::where('order_detail_id', $id)
+            ->where('receipt_type', 3)
+            ->first();
+        $order = Order::find($orderdetail->order_id);
+        $customer = Customer::find($order->customer_id);
 
-        $addittionnal = AdditionalChange::where('order_detail_id', $id)->get();
+        $decoration = Decoration::where('order_detail_id', $orderdetail->id)->get();
 
-        $check_has_damage_insurance = AdditionalChange::where('order_detail_id', $id)
+
+
+        $price_damage_insurance = AdditionalChange::where('order_detail_id', $orderdetail->id)
             ->where('charge_type', 1)
-            ->exists();
-        $pdfs = PDF::loadview('receipt.receipt_return_dress_or_jew', compact('order', 'orderdetail', 'customer', 'date_now', 'date', 'addittionnal', 'check_has_damage_insurance'));
+            ->first();
+
+        $price_return_late = AdditionalChange::where('order_detail_id', $orderdetail->id)
+            ->where('charge_type', 2)
+            ->first();
+        $price_extend_time = AdditionalChange::where('order_detail_id', $orderdetail->id)
+            ->where('charge_type', 3)
+            ->first();
+        $pdf = PDF::loadView('receipt.receipt_return_dress_or_jew', compact('receipt', 'order', 'orderdetail', 'customer', 'date', 'decoration', 'price_damage_insurance', 'price_return_late', 'price_extend_time'));
+        $pdf->setPaper('A4');
+        return $pdf->stream('receipt.pdf');
         return $pdfs->stream();
     }
 }

@@ -18,6 +18,7 @@ class Order extends Model
         'total_price',
         'total_deposit',
         'order_status',
+        'type_order',
     ];
     // ตาราง order เป็น M - 1 ของตาราง customer
     public function customer()

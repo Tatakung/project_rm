@@ -93,6 +93,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
+    Route::get('/admin/dress-wait-price', [DressController::class, 'dresswaitprice'])->name('dresswaitprice');  
 
 
 

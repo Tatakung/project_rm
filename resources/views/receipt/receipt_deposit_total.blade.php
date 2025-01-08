@@ -318,12 +318,13 @@
             @endphp
             @if ($item->type_order == 1)
                 @if ($check_payment_note)
-                    <span class="sub-item" style="margin-left: 20px;">- ตัด{{ $item->type_dress }} นัดรับวันที่
+                    <span class="sub-item" style="margin-left: 20px;">- ตัด{{ $item->type_dress }} นัดรับ
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
-                        (คงค้างชำระ :{{ number_format($item->price - $item->deposit, 2) }}บาท)</span><br>
+                        (คงค้างชำระ: ค่าส่วนที่เหลือจากมัดจำ: {{ number_format($item->price - $item->deposit , 2 ) }} บาท )
+                    </span><br>
                 @else
-                    <span class="sub-item" style="margin-left: 20px;">- ตัด{{ $item->type_dress }} นัดรับวันที่
+                    <span class="sub-item" style="margin-left: 20px;">- ตัด{{ $item->type_dress }} นัดรับ
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
                         (คงค้างชำระ :0.00 บาท)</span><br>
@@ -333,24 +334,23 @@
                     <span class="sub-item" style="margin-left: 20px;">-
                         เช่า{{ $item->orderdetailmanytoonedress->typedress->type_dress_name }}
                         {{ $item->orderdetailmanytoonedress->typedress->specific_letter }}{{ $item->orderdetailmanytoonedress->dress_code }}
-                        นัดรับวันที่
+                        นัดรับ
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
 
-                        นัดคืนวันที่
+                        นัดคืน
                         {{ \Carbon\Carbon::parse($date_note->return_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->return_date)->year + 543 }}
-                        (คงค้างชำระ
-                        :{{ number_format($item->price - $item->deposit + $item->damage_insurance, 2) }}บาท)</span><br>
+                        (คงค้างชำระ: ค่าประกันชุด: {{  number_format($item->damage_insurance , 2 ) }} บาท,ค่าส่วนที่เหลือ: {{ number_format($item->price - $item->deposit , 2 ) }} บาท )
                 @else
                     <span class="sub-item" style="margin-left: 20px;">-
                         เช่า{{ $item->orderdetailmanytoonedress->typedress->type_dress_name }}
                         {{ $item->orderdetailmanytoonedress->typedress->specific_letter }}{{ $item->orderdetailmanytoonedress->dress_code }}
-                        นัดรับวันที่
+                        นัดรับ
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
 
-                        นัดคืนวันที่
+                        นัดคืน
                         {{ \Carbon\Carbon::parse($date_note->return_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->return_date)->year + 543 }}
                         (คงค้างชำระ :0.00 บาท)</span><br>
@@ -361,28 +361,26 @@
                         <span class="sub-item" style="margin-left: 20px;">-
                             เช่า{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
                             {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
-                            นัดรับวันที่
+                            นัดรับ
                             {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
 
-                            นัดคืนวันที่
+                            นัดคืน
                             {{ \Carbon\Carbon::parse($date_note->return_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($date_note->return_date)->year + 543 }}
-                            (คงค้างชำระ
-                            :{{ number_format($item->price - $item->deposit + $item->damage_insurance, 2) }}บาท)
+                            (คงค้างชำระ: ค่าประกัน: {{  number_format($item->damage_insurance , 2 ) }} บาท,ค่าส่วนที่เหลือ: {{ number_format($item->price - $item->deposit , 2 ) }} บาท )
                         </span><br>
                     @elseif($item->detail_many_one_re->jewelry_set_id)
                         <span class="sub-item" style="margin-left: 20px;">-
                             เช่าเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
-                            นัดรับวันที่
+                            นัดรับ
                             {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
 
-                            นัดคืนวันที่
+                            นัดคืน
                             {{ \Carbon\Carbon::parse($date_note->return_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($date_note->return_date)->year + 543 }}
-                            (คงค้างชำระ
-                            :{{ number_format($item->price - $item->deposit + $item->damage_insurance, 2) }}บาท)
+                            (คงค้างชำระ: ค่าประกัน: {{  number_format($item->damage_insurance , 2 ) }} บาท,ค่าส่วนที่เหลือ: {{ number_format($item->price - $item->deposit , 2 ) }} บาท )
                         </span><br>
                     @endif
                 @else
@@ -390,11 +388,10 @@
                         <span class="sub-item" style="margin-left: 20px;">-
                             เช่า{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
                             {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
-                            นัดรับวันที่
+                            นัดรับ
                             {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
-
-                            นัดคืนวันที่
+                            นัดคืน
                             {{ \Carbon\Carbon::parse($date_note->return_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($date_note->return_date)->year + 543 }}
                             (คงค้างชำระ
@@ -403,10 +400,10 @@
                     @elseif($item->detail_many_one_re->jewelry_set_id)
                         <span class="sub-item" style="margin-left: 20px;">-
                             เช่าเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
-                            นัดรับวันที่
+                            นัดรับ
                             {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
-                            นัดคืนวันที่
+                            นัดคืน
                             {{ \Carbon\Carbon::parse($date_note->return_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($date_note->return_date)->year + 543 }}
                             (คงค้างชำระ
@@ -418,24 +415,23 @@
                 @if ($check_payment_note)
                     <span class="sub-item" style="margin-left: 20px;">-
                         เช่าตัด{{ $item->type_dress }}
-                        นัดรับวันที่
+                        นัดรับ
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
 
-                        นัดคืนวันที่
+                        นัดคืน
                         {{ \Carbon\Carbon::parse($date_note->return_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->return_date)->year + 543 }}
-                        (คงค้างชำระ
-                        :{{ number_format($item->price - $item->deposit + $item->damage_insurance, 2) }}บาท)
+                        (คงค้างชำระ: ค่าประกันชุด: {{  number_format($item->damage_insurance , 2 ) }} บาท,ค่าส่วนที่เหลือ: {{ number_format($item->price - $item->deposit , 2 ) }} บาท )
                     </span><br>
                 @else
                     <span class="sub-item" style="margin-left: 20px;">-
                         เช่าตัด{{ $item->type_dress }}
-                        นัดรับวันที่
+                        นัดรับ
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->pickup_date)->year + 543 }}
 
-                        นัดคืนวันที่
+                        นัดคืน
                         {{ \Carbon\Carbon::parse($date_note->return_date)->locale('th')->isoFormat('D MMM') }}
                         {{ \Carbon\Carbon::parse($date_note->return_date)->year + 543 }}
                         (คงค้างชำระ
@@ -453,8 +449,7 @@
 
 
 
-        {{-- <span class="sub-item" style="margin-left: 20px;">- ตัดชุดไทย นัดรับวันที่ 25/12/2567 (คงค้างชำระ :
-            1200.00บาท)</span><br> --}}
+        {{-- <span class="sub-item" style="margin-left: 20px;">- เช่าชุดไทย E03 นัดรับวันที่ 25/12/2567 (คงค้างชำระได้แก่ ค่าประกันชุด: 1,100.00 บาท,ค่าส่วนที่เหลือจากมัดจำ: 660.00 บาท )</span><br> --}}
 
     </div>
 

@@ -16,6 +16,7 @@ use App\Models\Reservation;
 use App\Models\ChargeJewelry;
 use App\Models\Reservationfilters;
 use App\Models\Typejewelry;
+use App\Models\Receipt;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -222,6 +223,8 @@ class Orderjewelry extends Controller
             $create_order->user_id = $employee_id;
             $create_order->total_quantity = 1;
             $create_order->order_status = 0;
+            $create_order->order_status = 0;
+            $create_order->type_order = 2; //1.คือตัด 2.เช่า 3.เช่าตัด
             $create_order->save();
 
             //ตารางorderdetail
@@ -417,8 +420,29 @@ class Orderjewelry extends Controller
             $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
             $orderdetail->save();
         }
+
+        // สร้างใบเสร็จ
+        $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
+            ->where('payment_status', 1)
+            ->exists();
+        if ($check_payment_code_two_receipt) {
+            $total_price_receipt = ($orderdetail->price - $orderdetail->deposit) + $orderdetail->damage_insurance;
+        } else {
+            $total_price_receipt = 0;
+        }
+        $ceate_receipt = new Receipt();
+        $ceate_receipt->order_id = $orderdetail->order_id;
+        $ceate_receipt->order_detail_id = $orderdetail->id;
+        $ceate_receipt->receipt_type = 2;
+        $ceate_receipt->total_price = $total_price_receipt;
+        $ceate_receipt->save();
         return redirect()->back()->with('success', $message_session);
     }
+
+
+
+
+
 
 
     public function updatereturnjewelry(Request $request, $id)
@@ -442,10 +466,9 @@ class Orderjewelry extends Controller
             if ($check_for_set_or_item == 'item') {
                 $add_char_jew = new ChargeJewelry();
                 $add_char_jew->additional_charge_id = $create_additional->id;
-                $add_char_jew->jewelrys_id = $datareservation->jewelry_id ; 
+                $add_char_jew->jewelrys_id = $datareservation->jewelry_id;
                 $add_char_jew->save();
-            }
-            elseif ($check_for_set_or_item == 'set') {
+            } elseif ($check_for_set_or_item == 'set') {
                 $refil_id = $request->input('refil_id_');
                 $action_set = $request->input('action_set_');
                 $refil_jewelry_id = $request->input('refil_jewelry_id_');
@@ -629,6 +652,35 @@ class Orderjewelry extends Controller
                 }
             }
         }
+
+
+
+
+
+        // สร้างใบเสร็จ
+        $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
+            ->where('payment_status', 1)
+            ->exists();
+
+
+        $additional_receipt = AdditionalChange::where('order_detail_id', $orderdetail->id)->get();
+        if ($additional_receipt->isNotEmpty()) {
+            $total_additional_receipt = $additional_receipt->sum('amount');
+        } else {
+            $total_additional_receipt = 0;
+        }
+        $ceate_receipt = new Receipt();
+        $ceate_receipt->order_id = $orderdetail->order_id;
+        $ceate_receipt->order_detail_id = $orderdetail->id;
+        $ceate_receipt->receipt_type = 3;
+        $ceate_receipt->total_price = $orderdetail->damage_insurance - $total_additional_receipt;
+        $ceate_receipt->save();
+
+
+
+
+
+
         return redirect()->back()->with('success', 'ลูกค้าคืนเครื่องประดับแล้ว');
     }
 

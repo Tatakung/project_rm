@@ -35,6 +35,7 @@ class DressController extends Controller
 
 
 
+
     public function savedress(Request $request)
     {
         // dd($request->file('imagerent_')) ; 
@@ -1191,4 +1192,14 @@ class DressController extends Controller
         $activetab = '3';
         return view('admin.his-dress-rent-history-yes', compact('history_renrdress', 'dress', 'typedress', 'history_rentshirt', 'history_rentskirt', 'value_month_dress', 'value_year_dress', 'value_month_shirt', 'value_year_shirt', 'value_month_skirt', 'value_year_skirt', 'activetab'));
     }
+
+
+    public function dresswaitprice(){
+        $dress_wait = Dress::whereNull('dress_price')->get() ; 
+
+        return view('admin.dress-wait-price',compact('dress_wait')) ; 
+    }
+    
+
+
 }

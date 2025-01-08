@@ -65,9 +65,9 @@
                 <table id="ordersTable" class="table table-striped">
                     <thead>
                         <tr>
+                            <th>ประเภทออเดอร์</th>
                             <th style="width: 200px;">วันที่ทำรายการ</th>
                             <th>หมายเลขออเดอร์</th>
-
                             <th>ชื่อ-สกุลลูกค้า</th>
                             <th>ยอดรวม</th>
                             <th>รายการ</th>
@@ -79,7 +79,15 @@
                             @foreach ($customer->orders as $order)
                                 @if ($order->order_status == 1)
                                     <tr>
-                                        
+                                        <td>
+                                            @if($order->type_order == 1 )
+                                            ตัดชุด
+                                            @elseif($order->type_order == 2 )
+                                            เช่า
+                                            @elseif($order->type_order == 3 )
+                                            เช่าตัด
+                                            @endif
+                                        </td>
                                         <td>
                                             {{ \Carbon\Carbon::parse($order->created_at)->locale('th')->isoFormat('D MMM') }}
                                             {{ \Carbon\Carbon::parse($order->created_at)->year + 543 }}
@@ -116,11 +124,12 @@
                                         </td>
                                         <td>{{ $order->total_quantity }} รายการ</td>
                                         <td>
-                                            <a href="{{ route('employee.ordertotaldetail', ['id' => $order->id]) }}"
+                                            <a href="{{ route('employee.ordertotaldetail', ['id' => $order->id ]) }}"
                                                 class="btn btn-sm" style="background-color:#DADAE3;">
                                                 ดูรายละเอียด
                                             </a>
                                         </td>
+                                        
                                     </tr>
                                 @endif
                             @endforeach

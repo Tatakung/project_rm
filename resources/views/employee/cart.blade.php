@@ -17,7 +17,15 @@
 
         <div class="row">
             <div class="col">
-                <h2 class="py-4" style="text-align: center">ตะกร้าสินค้า</h2>
+                <h2 class="py-4" style="text-align: center">
+                    @if($order->type_order == 1 )
+                    ตะกร้าสินค้าสำหรับรายการตัดชุด
+                    @elseif($order->type_order == 2 )
+                    ตะกร้าสินค้าสำหรับรายการเช่า
+                    @elseif($order->type_order == 3 )
+                    ตะกร้าสินค้าสำหรับรายการเช่าตัดชุด
+                    @endif
+                </h2>
             </div>
         </div>
         <div class="row">
@@ -159,7 +167,7 @@
                         </p>
                     </div> --}}
                     
-                    <div class="media-right d-flex justify-content-between align-items-center">
+                    {{-- <div class="media-right d-flex justify-content-between align-items-center">
                         <p style="font-size: 15px; margin-right: 10px;">
                             <form action="{{ route('employee.manageitem', ['id' => $detail->id]) }}" method="GET" style="display:inline;">
                                 @csrf
@@ -170,10 +178,26 @@
                         <p style="font-size: 15px;">
                             <form action="{{ route('employee.deletelist', ['id' => $detail->id]) }}" method="POST" style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn btn-d btn-sm" onclick="return confirm('แน่ใจใช่ไหมว่าคุณต้องการนำออก?')">ยกเลิกรายการ</button>
+                                <button type="submit" class="btn btn-d btn-sm" onclick="return confirm('แน่ใจใช่ไหมว่าคุณต้องการนำออก?')">ยกเลิก</button>
+                            </form>
+                        </p>
+                    </div> --}}
+                    <div class="media-right d-flex justify-content-between align-items-center">
+                        <p style="font-size: 15px; margin-right: 20px;"> <!-- เพิ่ม margin-right -->
+                            <form action="{{ route('employee.manageitem', ['id' => $detail->id]) }}" method="GET" style="display:inline;">
+                                @csrf
+                                <input type="hidden" name="type_order" value="{{ $detail->type_order }}">
+                                <button type="submit" class="btn btn-c btn-sm">จัดการ</button>
+                            </form>
+                        </p>
+                        <p style="font-size: 15px; margin-left: 20px;"> <!-- เพิ่ม margin-left -->
+                            <form action="{{ route('employee.deletelist', ['id' => $detail->id]) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-d btn-sm" onclick="return confirm('แน่ใจใช่ไหมว่าคุณต้องการนำออก?')">ยกเลิก</button>
                             </form>
                         </p>
                     </div>
+                    
                     
                 </div>
                 <div class="row">

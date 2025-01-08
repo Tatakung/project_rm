@@ -13,6 +13,7 @@ use App\Models\Fitting;
 use App\Models\Imagerent;
 use App\Models\Jewelry;
 use App\Models\Measurementorderdetail;
+use App\Models\Receipt;
 use App\Models\Order;
 use App\Models\Orderdetail;
 use App\Models\Orderdetailstatus;
@@ -75,13 +76,59 @@ class OrderController extends Controller
 
 
     //ออเดอร์ดีเทล
-    public function ordertotaldetail($id)
+    public function ordertotaldetail(Request $request , $id)
     {
+        
 
-        $order_id = $id;
-        $orderdetail = Orderdetail::where('order_id', $id)->get();
-        return view('employee.ordertotaldetail', compact('orderdetail', 'order_id'));
+        $order = Order::find($id) ; 
+
+
+        if($order->type_order == 1 ){
+            return $this->ordertotaldetailone($id) ; 
+        }
+        elseif($order->type_order == 2 ){
+            return $this->ordertotaldetailtwo($id) ; 
+        }
+        elseif($order->type_order == 3 ){
+            return $this->ordertotaldetailthree($id) ; 
+        }
     }
+
+    private function ordertotaldetailone($id){
+        $order = Order::find($id) ; 
+        $customer = Customer::find($order->customer_id) ; 
+        $employee = User::find($order->user_id) ; 
+        $order_id = $id; 
+        $orderdetail = Orderdetail::where('order_id',$id)->get() ; 
+        return view('employee.ordertotaldetailone',compact('order','order_id','orderdetail','customer','employee')) ; 
+    }
+    private function ordertotaldetailtwo($id){
+        $order = Order::find($id) ; 
+        $customer = Customer::find($order->customer_id) ; 
+        $employee = User::find($order->user_id) ; 
+        $order_id = $id; 
+        $orderdetail = Orderdetail::where('order_id',$id)->get() ; 
+        return view('employee.ordertotaldetailtwo',compact('order','order_id','orderdetail','customer','employee')) ; 
+    }
+    private function ordertotaldetailthree($id){
+        $order = Order::find($id) ; 
+        $customer = Customer::find($order->customer_id) ; 
+        $employee = User::find($order->user_id) ; 
+        $order_id = $id; 
+        $orderdetail = Orderdetail::where('order_id',$id)->get() ; 
+        return view('employee.ordertotaldetailthree',compact('order','order_id','orderdetail','customer','employee')) ; 
+    }
+
+
+
+
+
+    
+
+
+
+
+
 
     public function cutadjust($id)
     {
@@ -208,7 +255,7 @@ class OrderController extends Controller
 
         $additional = AdditionalChange::where('order_detail_id', $id)->get();
 
-        $sum_additional = AdditionalChange::where('order_detail_id',$id)->sum('amount') ; 
+        $sum_additional = AdditionalChange::where('order_detail_id', $id)->sum('amount');
 
 
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
@@ -237,7 +284,7 @@ class OrderController extends Controller
         $receipt_bill_return = Orderdetailstatus::where('order_detail_id', $id)
             ->where('status', 'คืนชุดแล้ว')
             ->exists();
-        return view('employeerentdress.managedetailrentdress', compact('receipt_bill_pickup', 'receipt_bill_return' ,   'additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee' , 'sum_additional'));
+        return view('employeerentdress.managedetailrentdress', compact('receipt_bill_pickup', 'receipt_bill_return',   'additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'sum_additional'));
     }
 
 
@@ -269,18 +316,18 @@ class OrderController extends Controller
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
         $additional = AdditionalChange::where('order_detail_id', $id)->get();
         $receipt_bill_pickup = Orderdetailstatus::where('order_detail_id', $id)
-        ->where('status', 'กำลังเช่า')
-        ->exists();
+            ->where('status', 'กำลังเช่า')
+            ->exists();
 
 
-    $receipt_bill_return = Orderdetailstatus::where('order_detail_id', $id)
-        ->where('status', 'คืนเครื่องประดับแล้ว')
-        ->exists();
+        $receipt_bill_return = Orderdetailstatus::where('order_detail_id', $id)
+            ->where('status', 'คืนเครื่องประดับแล้ว')
+            ->exists();
         $additional = AdditionalChange::where('order_detail_id', $id)->get();
 
-        $sum_additional = AdditionalChange::where('order_detail_id',$id)->sum('amount') ; 
+        $sum_additional = AdditionalChange::where('order_detail_id', $id)->sum('amount');
 
-        return view('employeerentjewelry.managedetailrentjewelry', compact('additional','sum_additional','orderdetail', 'reservation', 'jewelry','receipt_bill_pickup', 'typejewelry','receipt_bill_return', 'orderdetailstatus', 'setjewelry', 'imagejewelry', 'order', 'customer', 'user', 'setjewelryitem', 'Date', 'reservationfilter', 'additional'));
+        return view('employeerentjewelry.managedetailrentjewelry', compact('additional', 'sum_additional', 'orderdetail', 'reservation', 'jewelry', 'receipt_bill_pickup', 'typejewelry', 'receipt_bill_return', 'orderdetailstatus', 'setjewelry', 'imagejewelry', 'order', 'customer', 'user', 'setjewelryitem', 'Date', 'reservationfilter', 'additional'));
     }
 
     //จัดการเช่าตัด
@@ -331,17 +378,17 @@ class OrderController extends Controller
         $dateeee = Date::where('order_detail_id', $id)
             ->orderBy('created_at', 'desc')
             ->first();
-            $receipt_bill_pickup = Orderdetailstatus::where('order_detail_id', $id)
+        $receipt_bill_pickup = Orderdetailstatus::where('order_detail_id', $id)
             ->where('status', 'กำลังเช่า')
             ->exists();
-    
-    
+
+
         $receipt_bill_return = Orderdetailstatus::where('order_detail_id', $id)
             ->where('status', 'คืนชุดแล้ว')
             ->exists();
-    
 
-        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup' , 'receipt_bill_return' ,  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee'));
+
+        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup', 'receipt_bill_return',  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee'));
     }
     //จัดการตัดชุด
     private function managedetailcutdress($id)
@@ -1372,7 +1419,43 @@ class OrderController extends Controller
                 $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
                 $orderdetail->save();
             }
-        } elseif ($status == "กำลังเช่า") {
+
+
+
+            // สร้างใบเสร็จ
+            $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
+                ->where('payment_status', 1)
+                ->exists();
+
+            // decoration(ส่วนที่เพิ่มเติมเข้ามา)
+            $decoration_receipt = Decoration::where('order_detail_id',$orderdetail->id)->get() ; 
+            // ถ้ามันมีข้อมูล
+            if($decoration_receipt->isNotEmpty()){
+                $price_total_decoration = $decoration_receipt->sum('decoration_price') ; 
+            }
+            // ถ้ามันไม่มีข้อมูล
+            else{
+                $price_total_decoration = 0 ; 
+            }
+
+            if ($check_payment_code_two_receipt) {
+                $total_price_receipt = ($orderdetail->price - $orderdetail->deposit) + $orderdetail->damage_insurance + $price_total_decoration;
+            } else {
+                $total_price_receipt = 0 + $price_total_decoration;
+            }
+
+
+
+            $ceate_receipt = new Receipt();
+            $ceate_receipt->order_id = $orderdetail->order_id;
+            $ceate_receipt->order_detail_id = $orderdetail->id;
+            $ceate_receipt->receipt_type = 2;
+            $ceate_receipt->total_price = $total_price_receipt;
+            $ceate_receipt->save();
+
+            
+        }
+        elseif ($status == "กำลังเช่า") {
 
             $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
             $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
@@ -1492,8 +1575,27 @@ class OrderController extends Controller
             $reservation->status = $text_for_reservation;
             $reservation->save();
             $message_session = 'ลูกค้าคืนชุดแล้ว และชุดจะถูก' . $request->input('return_status') . 'ต่อไป';
-        }
 
+            // สร้างใบเสร็จ
+            $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
+                ->where('payment_status', 1)
+                ->exists();
+
+
+            $additional_receipt = AdditionalChange::where('order_detail_id',$orderdetail->id)->get() ; 
+            if($additional_receipt->isNotEmpty()){
+                $total_additional_receipt = $additional_receipt->sum('amount') ; 
+            }
+            else{
+                $total_additional_receipt = 0 ; 
+            }
+            $ceate_receipt = new Receipt();
+            $ceate_receipt->order_id = $orderdetail->order_id;
+            $ceate_receipt->order_detail_id = $orderdetail->id;
+            $ceate_receipt->receipt_type = 3 ; 
+            $ceate_receipt->total_price = $orderdetail->damage_insurance - $total_additional_receipt ; 
+            $ceate_receipt->save();
+        }
         return redirect()->back()->with('success', $message_session);
     }
 
@@ -2333,6 +2435,7 @@ class OrderController extends Controller
                 $create_order->user_id = $employee_id;
                 $create_order->total_quantity = 1;
                 $create_order->order_status = 0;
+                $create_order->type_order = 2; //1.คือตัด 2.เช่า 3.เช่าตัด
                 $create_order->save();
 
                 //ตารางorderdetail
@@ -2372,7 +2475,8 @@ class OrderController extends Controller
                     $create_dress_mea_adjust->save();
                 }
             }
-        } elseif ($textcharacter === "เสื้อ") {
+        }
+        elseif ($textcharacter === "เสื้อ") {
             $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
             $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
             $data_shirt = Shirtitem::where('dress_id', $dress_id)->first();
@@ -2443,6 +2547,7 @@ class OrderController extends Controller
                 $create_order->user_id = $employee_id;
                 $create_order->total_quantity = 1;
                 $create_order->order_status = 0;
+                $create_order->type_order = 2; //1.คือตัด 2.เช่า 3.เช่าตัด
                 $create_order->save();
 
                 //ตารางorderdetail
@@ -2481,7 +2586,8 @@ class OrderController extends Controller
                     $create_dress_mea_adjust->save();
                 }
             }
-        } elseif ($textcharacter === "กระโปรง/ผ้าถุง") {
+        }
+        elseif ($textcharacter === "กระโปรง/ผ้าถุง") {
             $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
             $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
             $data_skirt = Skirtitem::where('dress_id', $dress_id)->first();
@@ -2550,6 +2656,7 @@ class OrderController extends Controller
                 $create_order->user_id = $employee_id;
                 $create_order->total_quantity = 1;
                 $create_order->order_status = 0;
+                $create_order->type_order = 2; //1.คือตัด 2.เช่า 3.เช่าตัด
                 $create_order->save();
 
                 //ตารางorderdetail

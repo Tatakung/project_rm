@@ -203,6 +203,10 @@
                         <a href="{{ route('admin.dresstotal') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             รายการชุด</a>
+                        <a href="{{route('dresswaitprice')}}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                            ชุดที่รอกำหนดราคา</a>
+
                         <a href="{{ route('admin.jewelrytotal') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             รายการเครื่องประดับ</a>
@@ -214,8 +218,8 @@
                         <a href="{{ route('employeetotal') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             จัดการพนักงาน</a>
-                        <a href="{{ route('register') }}" class="list-group-item list-group-item-action border-0 pl-5"
-                            id="d">-
+                        <a href="{{ route('register') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             เพิ่มพนักงาน</a>
                     </div>
                 </div>
@@ -617,8 +621,9 @@
                                 ->count();
 
                         @endphp
-                        @if($clean_jewelry > 0 )
-                        <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">{{$clean_jewelry}}</span>
+                        @if ($clean_jewelry > 0)
+                            <span class="badge custom-badge ml-1"
+                                style="font-size: 0.8rem;">{{ $clean_jewelry }}</span>
                         @endif
                     </a>
                     <a href="{{ route('showrepairjewelry') }}"
@@ -629,8 +634,9 @@
                                 ->whereIn('repair_status', ['รอดำเนินการ', 'กำลังซ่อม'])
                                 ->count();
                         @endphp
-                        @if($repair_jewelry > 0 )
-                        <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">{{$repair_jewelry}}</span>
+                        @if ($repair_jewelry > 0)
+                            <span class="badge custom-badge ml-1"
+                                style="font-size: 0.8rem;">{{ $repair_jewelry }}</span>
                         @endif
                     </a>
                 </div>

@@ -107,7 +107,7 @@ class DressController extends Controller
             $dress->dress_status = "พร้อมให้เช่า";
             $dress->dress_description = $request->input('dress_description');
             $dress->dress_rental = 0;
-            $dress->source_type = 1 ; //1 ชุดเปล่าๆ 2ชุดที่ได้มาจากการเช่าตัด
+            $dress->source_type = 1; //1 ชุดเปล่าๆ 2ชุดที่ได้มาจากการเช่าตัด
             $dress->separable = $request->input('rental_option'); //1แยกไม่ได้ 2 แยกได้
             $dress->save();
 
@@ -152,8 +152,7 @@ class DressController extends Controller
                         $addmea->save();
                     }
                 }
-            }
-            elseif ($request->input('rental_option') == 2) {
+            } elseif ($request->input('rental_option') == 2) {
                 //แยกได้
 
                 //ตารางshirtitem
@@ -1178,15 +1177,15 @@ class DressController extends Controller
         $history_rentskirt = Orderdetail::where('skirtitems_id', $skirt_id)
             ->whereNull('shirtitems_id')
             ->where('dress_id', $id)
-            ->where('status_detail', 'คืนชุดแล้ว') ; 
+            ->where('status_detail', 'คืนชุดแล้ว');
 
-        if($value_month_skirt != 0 ) {
-            $history_rentskirt->whereMonth('updated_at', $value_month_skirt) ; 
+        if ($value_month_skirt != 0) {
+            $history_rentskirt->whereMonth('updated_at', $value_month_skirt);
         }
-        if($value_year_skirt != 0 ){
-            $history_rentskirt->whereYear('updated_at', $value_year_skirt) ; 
+        if ($value_year_skirt != 0) {
+            $history_rentskirt->whereYear('updated_at', $value_year_skirt);
         }
-        $history_rentskirt = $history_rentskirt->get() ; 
+        $history_rentskirt = $history_rentskirt->get();
 
 
         $activetab = '3';
@@ -1194,12 +1193,56 @@ class DressController extends Controller
     }
 
 
-    public function dresswaitprice(){
-        $dress_wait = Dress::whereNull('dress_price')->get() ; 
-
-        return view('admin.dress-wait-price',compact('dress_wait')) ; 
+    public function dresswaitprice()
+    {
+        $dress_wait = Dress::whereNull('dress_price')->paginate(5);
+        return view('admin.dress-wait-price', compact('dress_wait'));
     }
-    
+    public function dresswaitpricesaved(Request $request, $id)
+    {
+        $price_dress = $request->input('price_dress');
+        $deposit_dress = $request->input('deposit_dress');
+        $insurance_dress = $request->input('insurance_dress');
 
 
+
+        $price_shirt = $request->input('price_shirt');
+        $deposit_shirt = $request->input('deposit_shirt');
+        $insurance_shirt = $request->input('insurance_shirt');
+
+        $skirt_price = $request->input('skirt_price');
+        $skirt_deposit = $request->input('skirt_deposit');
+        $skirt_insurance = $request->input('skirt_insurance');
+
+        $dress = Dress::find($id);
+
+        if ($dress->separable == 1) {
+            $dress->dress_price = $price_dress;
+            $dress->dress_deposit = $deposit_dress;
+            $dress->damage_insurance = $insurance_dress;
+            $dress->save();
+        }
+        elseif ($dress->separable == 2) {
+            $dress->dress_price = $price_dress;
+            $dress->dress_deposit = $deposit_dress;
+            $dress->damage_insurance = $insurance_dress;
+            $dress->save();
+
+            $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
+            $shirt = Shirtitem::find($shirt_id);
+            $shirt->shirtitem_price = $price_shirt;
+            $shirt->shirtitem_deposit = $deposit_shirt;
+            $shirt->shirt_damage_insurance = $insurance_shirt;
+            $shirt->save();
+
+
+            $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
+            $skirt = Skirtitem::find($skirt_id);
+            $skirt->skirtitem_price = $skirt_price;
+            $skirt->skirtitem_deposit = $skirt_deposit;
+            $skirt->skirt_damage_insurance = $skirt_insurance;
+            $skirt->save();
+        }
+        return redirect()->back()->with('success','สำเร็จ') ; 
+    }
 }

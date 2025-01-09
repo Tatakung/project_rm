@@ -1308,14 +1308,33 @@ class EmployeeController extends Controller
     public function confirmorder($id)
     {
         $order_id = $id;
-        $order = Order::find($id) ; 
         $orderdetail = Orderdetail::where('order_id', $id)->paginate(2);
-        $date_now = now()->toDateString() ; 
-        $total_deposit = Orderdetail::where('order_id',$id)->sum('deposit') ; 
-        $total_price = Orderdetail::where('order_id',$id)->sum('price') ; 
-        $total_damage_insurance = Orderdetail::where('order_id',$id)->sum('damage_insurance') ; 
-        $total_price_and_damage_insurance = $total_price + $total_damage_insurance ; 
-        return view('employee.confirmorder', compact('orderdetail', 'order_id','order','date_now','total_deposit','total_price_and_damage_insurance'));
+        $order = Order::find($id);
+        // dd($date_now) ; 
+        $total_deposit = Orderdetail::where('order_id', $id)->sum('deposit');
+        $total_price = Orderdetail::where('order_id', $id)->sum('price');
+        $total_damage_insurance = Orderdetail::where('order_id', $id)->sum('damage_insurance');
+        $total_price_and_damage_insurance = $total_price + $total_damage_insurance;
+
+
+        $orderdetail_date = Orderdetail::where('order_id', $id)->get();
+
+        $date_now = now()->toDateString();
+        $count_inex = 0;
+        foreach ($orderdetail_date as $item) {
+            $pickup_detail = Date::where('order_detail_id', $item->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+            if ($pickup_detail->pickup_date == $date_now) {
+                $count_inex += 1;
+            }
+        }
+        $check_pickip_today = 0;
+        if ($orderdetail_date->count() == $count_inex) {
+            $check_pickip_today = 1; //หมายความว่า ทั้งหมดทุกรายการ  วันนัดรับ เป็นวันที่ปัจจุนบะนคือวันนี้
+        }
+        //0คือ ไม่ได้รับชุดวันนี้ 1 คือ รับชุดวันนี้
+        return view('employee.confirmorder', compact('orderdetail', 'order_id', 'order', 'date_now', 'total_deposit', 'total_price_and_damage_insurance', 'check_pickip_today'));
     }
 
 
@@ -1328,6 +1347,7 @@ class EmployeeController extends Controller
         $customer_phone = $request->input('customer_phone');
         $payment_status = $request->input('payment_status');
         $order_id = $id;
+        $date_now = now()->toDateString();
 
         $checkcustomer = Customer::where('customer_fname', $customer_fname)
             ->where('customer_lname', $customer_lname)
@@ -1372,60 +1392,170 @@ class EmployeeController extends Controller
                 $create_payment->save();
             } elseif ($orderdetail->type_order == 2) {
 
-                //ตารางorderdetailstatus 
-                $create_status = new Orderdetailstatus();
-                $create_status->order_detail_id = $orderdetail->id;
-                $create_status->status = 'ถูกจอง';
-                $create_status->save();
-                //ตารางorderdetail
-                $orderdetail->status_detail = "ถูกจอง";
-                $orderdetail->status_payment = $payment_status;
-                $orderdetail->save();
-                //ตารางpayment_status
-                $create_payment = new Paymentstatus();
-                $create_payment->order_detail_id = $orderdetail->id;
-                $create_payment->payment_status = $payment_status;
-                $create_payment->save();
+                $date = Date::where('order_detail_id', $orderdetail->id)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                if ($date->pickup_date == $date_now) {
+                    //ตารางorderdetailstatus 
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $orderdetail->id;
+                    $create_status->status = 'ถูกจอง';
+                    $create_status->save();
+                    //ตารางorderdetailstatus 
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $orderdetail->id;
+                    $create_status->status = 'กำลังเช่า';
+                    $create_status->save();
 
-                //ตารางreservation 
-                $update_reservation = Reservation::find($orderdetail->reservation_id);
-                $update_reservation->status = 'ถูกจอง';
-                $update_reservation->save();
+
+                    // อัปเดตตารางdate
+                    $date_id = Date::where('order_detail_id', $orderdetail->id)
+                        ->orderBy('created_at', 'desc')
+                        ->value('id');
+                    $update_real = Date::find($date_id);
+                    $update_real->actua_pickup_date = now(); //วันที่รับจริงๆ
+                    $update_real->save();
+
+
+
+
+                    //ตารางorderdetail
+                    $orderdetail->status_detail = "กำลังเช่า";
+                    $orderdetail->status_payment = $payment_status;
+                    $orderdetail->save();
+
+                    //ตารางpayment_status
+                    $create_payment = new Paymentstatus();
+                    $create_payment->order_detail_id = $orderdetail->id;
+                    $create_payment->payment_status = $payment_status;
+                    $create_payment->save();
+
+                    //ตารางreservation 
+                    $update_reservation = Reservation::find($orderdetail->reservation_id);
+                    $update_reservation->status = 'กำลังเช่า';
+                    $update_reservation->save();
+                } else {
+                    //ตารางorderdetailstatus 
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $orderdetail->id;
+                    $create_status->status = 'ถูกจอง';
+                    $create_status->save();
+                    //ตารางorderdetail
+                    $orderdetail->status_detail = "ถูกจอง";
+                    $orderdetail->status_payment = $payment_status;
+                    $orderdetail->save();
+                    //ตารางpayment_status
+                    $create_payment = new Paymentstatus();
+                    $create_payment->order_detail_id = $orderdetail->id;
+                    $create_payment->payment_status = $payment_status;
+                    $create_payment->save();
+                    //ตารางreservation 
+                    $update_reservation = Reservation::find($orderdetail->reservation_id);
+                    $update_reservation->status = 'ถูกจอง';
+                    $update_reservation->save();
+                }
             } elseif ($orderdetail->type_order == 3) {
                 //เช่าเครื่องประดับ
-                //ตารางorderdetailstatus 
-                $create_status = new Orderdetailstatus();
-                $create_status->order_detail_id = $orderdetail->id;
-                $create_status->status = 'ถูกจอง';
-                $create_status->save();
-                //ตารางorderdetail
-                $orderdetail->status_detail = "ถูกจอง";
-                $orderdetail->status_payment = $payment_status;
-                $orderdetail->save();
-                //ตารางpayment_status
-                $create_payment = new Paymentstatus();
-                $create_payment->order_detail_id = $orderdetail->id;
-                $create_payment->payment_status = $payment_status;
-                $create_payment->save();
-                //ตารางreservation 
-                $update_reservation = Reservation::find($orderdetail->reservation_id);
-                $update_reservation->status = 'ถูกจอง';
-                $update_reservation->save();
+                $date = Date::where('order_detail_id', $orderdetail->id)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                if ($date->pickup_date == $date_now) {
+                    //ตารางorderdetailstatus 
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $orderdetail->id;
+                    $create_status->status = 'ถูกจอง';
+                    $create_status->save();
+                    //ตารางorderdetailstatus 
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $orderdetail->id;
+                    $create_status->status = 'กำลังเช่า';
+                    $create_status->save();
 
-                if ($update_reservation->jewelry_id) {
-                    $find_re_filter = Reservationfilters::where('reservation_id', $orderdetail->reservation_id)->first();
-                    $update_re_filter = Reservationfilters::find($find_re_filter->id);
-                    $update_re_filter->status = 'ถูกจอง';
-                    $update_re_filter->save();
-                } elseif ($update_reservation->jewelry_set_id) {
-                    $find_re_filter = Reservationfilters::where('reservation_id', $orderdetail->reservation_id)->get();
-                    foreach ($find_re_filter as $item) {
-                        $update_re_filter = Reservationfilters::find($item->id);
-                        $update_re_filter->status = 'ถูกจอง';
+                    // อัปเดตตารางdate
+                    $date_id = Date::where('order_detail_id', $orderdetail->id)
+                        ->orderBy('created_at', 'desc')
+                        ->value('id');
+                    $update_real = Date::find($date_id);
+                    $update_real->actua_pickup_date = now(); //วันที่รับจริงๆ
+                    $update_real->save();
+
+
+                    //ตารางorderdetail
+                    $orderdetail->status_detail = "กำลังเช่า";
+                    $orderdetail->status_payment = $payment_status;
+                    $orderdetail->save();
+                    //ตารางpayment_status
+                    $create_payment = new Paymentstatus();
+                    $create_payment->order_detail_id = $orderdetail->id;
+                    $create_payment->payment_status = $payment_status;
+                    $create_payment->save();
+                    //ตารางreservation 
+                    $update_reservation = Reservation::find($orderdetail->reservation_id);
+                    $update_reservation->status = 'กำลังเช่า';
+                    $update_reservation->save();
+
+                    if ($update_reservation->jewelry_id) {
+                        $find_re_filter = Reservationfilters::where('reservation_id', $orderdetail->reservation_id)->first();
+                        $update_re_filter = Reservationfilters::find($find_re_filter->id);
+                        $update_re_filter->status = 'กำลังเช่า';
                         $update_re_filter->save();
+
+                        $update_status_jewelry = Jewelry::find($update_reservation->jewelry_id);
+                        $update_status_jewelry->jewelry_status = 'กำลังถูกเช่า';
+                        $update_status_jewelry->save();
+                    } elseif ($update_reservation->jewelry_set_id) {
+                        $find_re_filter = Reservationfilters::where('reservation_id', $orderdetail->reservation_id)->get();
+                        foreach ($find_re_filter as $item) {
+                            $update_re_filter = Reservationfilters::find($item->id);
+                            $update_re_filter->status = 'กำลังเช่า';
+                            $update_re_filter->save();
+                        }
+
+
+                        $jew_item_total = Jewelrysetitem::where('jewelry_set_id', $update_reservation->jewelry_set_id)->get();
+                        foreach ($jew_item_total as $item) {
+                            $update_status_jew = Jewelry::find($item->jewelry_id);
+                            $update_status_jew->jewelry_status = 'กำลังถูกเช่า';
+                            $update_status_jew->save();
+                        }
                     }
                 }
-            } elseif ($orderdetail->type_order == 4) {
+                else {
+                    //ตารางorderdetailstatus 
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $orderdetail->id;
+                    $create_status->status = 'ถูกจอง';
+                    $create_status->save();
+                    //ตารางorderdetail
+                    $orderdetail->status_detail = "ถูกจอง";
+                    $orderdetail->status_payment = $payment_status;
+                    $orderdetail->save();
+                    //ตารางpayment_status
+                    $create_payment = new Paymentstatus();
+                    $create_payment->order_detail_id = $orderdetail->id;
+                    $create_payment->payment_status = $payment_status;
+                    $create_payment->save();
+                    //ตารางreservation 
+                    $update_reservation = Reservation::find($orderdetail->reservation_id);
+                    $update_reservation->status = 'ถูกจอง';
+                    $update_reservation->save();
+
+                    if ($update_reservation->jewelry_id) {
+                        $find_re_filter = Reservationfilters::where('reservation_id', $orderdetail->reservation_id)->first();
+                        $update_re_filter = Reservationfilters::find($find_re_filter->id);
+                        $update_re_filter->status = 'ถูกจอง';
+                        $update_re_filter->save();
+                    } elseif ($update_reservation->jewelry_set_id) {
+                        $find_re_filter = Reservationfilters::where('reservation_id', $orderdetail->reservation_id)->get();
+                        foreach ($find_re_filter as $item) {
+                            $update_re_filter = Reservationfilters::find($item->id);
+                            $update_re_filter->status = 'ถูกจอง';
+                            $update_re_filter->save();
+                        }
+                    }
+                }
+            }
+            elseif ($orderdetail->type_order == 4) {
                 //เช่าตัด
                 //ตารางorderdetailstatus 
                 $create_status = new Orderdetailstatus();
@@ -1456,7 +1586,7 @@ class EmployeeController extends Controller
 
 
         $total_price_receipt = 0;
-        $orderdetail_for_receipt = Orderdetail::where('order_id',$order_id)->get() ; 
+        $orderdetail_for_receipt = Orderdetail::where('order_id', $order_id)->get();
         foreach ($orderdetail_for_receipt as $item) {
             $detail = Orderdetail::find($item->id);
             if ($detail->status_payment == 1) {

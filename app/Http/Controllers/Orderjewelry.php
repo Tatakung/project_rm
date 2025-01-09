@@ -380,7 +380,8 @@ class Orderjewelry extends Controller
             $update_status_jewelry = Jewelry::find($reservation->jewelry_id);
             $update_status_jewelry->jewelry_status = 'กำลังถูกเช่า';
             $update_status_jewelry->save();
-        } elseif ($reservation->jewelry_set_id) {
+        }
+        elseif ($reservation->jewelry_set_id) {
 
             $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->get();
             foreach ($find_re_filter as $item) {
@@ -388,8 +389,7 @@ class Orderjewelry extends Controller
                 $update_re_filter->status = 'กำลังเช่า';
                 $update_re_filter->save();
             }
-
-
+            
             $jew_item_total = Jewelrysetitem::where('jewelry_set_id', $reservation->jewelry_set_id)->get();
             foreach ($jew_item_total as $item) {
                 $update_status_jew = Jewelry::find($item->jewelry_id);

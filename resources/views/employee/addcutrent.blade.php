@@ -43,7 +43,7 @@
 
 
 
-    <form action="{{route('employee.savecutrent')}}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('employee.savecutrent') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="container mt-4">
             <!-- กล่องแรกฟอร์มเพิ่มออเดอร์ -->
@@ -93,37 +93,37 @@
 
                     <div class="col-md-4">
                         <label for="price" class="form-label">ราคาเต็ม/ชุด</label>
-                        <input type="number" class="form-control" id="price" name="price"
-                            placeholder="จำนวนเงิน" min="1" step="0.01" required>
+                        <input type="number" class="form-control" id="price" name="price" placeholder="จำนวนเงิน"
+                            min="1" step="0.01" required>
                     </div>
 
                     <div class="col-md-4">
                         <label for="deposit" class="form-label">ราคามัดจำ/ชุด</label>
-                        <input type="number" class="form-control" id="deposit" name="deposit"
-                            placeholder="จำนวนเงิน" min="1" step="0.01"required>
+                        <input type="number" class="form-control" id="deposit" name="deposit" placeholder="จำนวนเงิน"
+                            min="1" step="0.01"required>
                     </div>
                     <div class="col-md-4">
                         <label for="color" class="form-label">สีของชุด</label>
-                            <select class="form-control" id="color" name="color" required>
-                                <option value="" disabled selected>--สี--</option>
-                                <option value="ขาว">ขาว</option>
-                                <option value="ครีม">ครีม</option>
-                                <option value="ชมพู">ชมพู</option>
-                                <option value="ดำ">ดำ</option>
-                                <option value="ทอง">ทอง</option>
-                                <option value="น้ำตาล">น้ำตาล</option>
-                                <option value="น้ำเงิน">น้ำเงิน</option>
-                                <option value="บานเย็น">บานเย็น</option>
-                                <option value="พิ้งค์โกลด์">พิ้งค์โกลด์</option>
-                                <option value="ฟ้า">ฟ้า</option>
-                                <option value="ม่วง">ม่วง</option>
-                                <option value="ส้ม">ส้ม</option>
-                                <option value="เขียว">เขียว</option>
-                                <option value="เทา">เทา</option>
-                                <option value="เหลือง">เหลือง</option>
-                                <option value="แดง">แดง</option>
-                                <option value="ไม่ระบุ">ไม่ระบุ</option>
-                            </select>
+                        <select class="form-control" id="color" name="color" required>
+                            <option value="" disabled selected>--สี--</option>
+                            <option value="ขาว">ขาว</option>
+                            <option value="ครีม">ครีม</option>
+                            <option value="ชมพู">ชมพู</option>
+                            <option value="ดำ">ดำ</option>
+                            <option value="ทอง">ทอง</option>
+                            <option value="น้ำตาล">น้ำตาล</option>
+                            <option value="น้ำเงิน">น้ำเงิน</option>
+                            <option value="บานเย็น">บานเย็น</option>
+                            <option value="พิ้งค์โกลด์">พิ้งค์โกลด์</option>
+                            <option value="ฟ้า">ฟ้า</option>
+                            <option value="ม่วง">ม่วง</option>
+                            <option value="ส้ม">ส้ม</option>
+                            <option value="เขียว">เขียว</option>
+                            <option value="เทา">เทา</option>
+                            <option value="เหลือง">เหลือง</option>
+                            <option value="แดง">แดง</option>
+                            <option value="ไม่ระบุ">ไม่ระบุ</option>
+                        </select>
                     </div>
 
                 </div>
@@ -153,23 +153,23 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="damage_insurance" class="form-label">ประกันค่าเสียหาย</label>
-                        <input type="number" class="form-control" id="damage_insurance"
-                            name="damage_insurance" placeholder="จำนวนเงิน" min="1">
+                        <input type="number" class="form-control" id="damage_insurance" name="damage_insurance"
+                            placeholder="จำนวนเงิน" min="1">
                     </div>
 
 
                     <div class="col-md-4">
                         <label class="form-label">การจ่ายเงิน</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="status_payment"
-                                id="status_payment1" value="1">
+                            <input class="form-check-input" type="radio" name="status_payment" id="status_payment1"
+                                value="1">
                             <label class="form-check-label" for="status_payment1">
                                 จ่ายมัดจำ
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="status_payment"
-                                id="status_payment2" value="2">
+                            <input class="form-check-input" type="radio" name="status_payment" id="status_payment2"
+                                value="2">
                             <label class="form-check-label" for="status_payment2">
                                 จ่ายเต็มจำนวน
                             </label>

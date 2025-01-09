@@ -109,12 +109,23 @@
                 <p><strong>วันที่ทำรายการ:</strong>
                     {{ \Carbon\Carbon::parse($order->created_at)->locale('th')->isoFormat('D MMM') }}
                     {{ \Carbon\Carbon::parse($order->created_at)->year +543 }}
+                    <span id="show_history_day" style="font-size: 14px; color: rgb(158, 143, 143) ; "></span>
                 </p>
                 <a href="{{ route('receiptdeposittotal', ['id' => $order_id]) }}" class="btn btn-primary btn-sm mt-2"
                     target="_blank">ใบเสร็จรับเงิน</a>
             </div>
         </div>
-
+        <script>
+            var create_date_now = new Date();
+            var create_order_date = new Date('{{ $order->created_at }}');
+            var history_day = Math.ceil((create_date_now - create_order_date) / (1000 * 60 * 60 * 24) - 1);
+            if(history_day == 0){
+                document.getElementById('show_history_day').innerHTML = '(วันนี้)';
+            }
+            else{
+                document.getElementById('show_history_day').innerHTML = '(เมื่อ ' + history_day + ' วันที่แล้ว)';
+            }
+        </script>
         <table class="table table-striped shadow-sm">
             <thead>
                 <tr>

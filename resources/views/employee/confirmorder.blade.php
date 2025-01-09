@@ -37,14 +37,23 @@
                     <h5 style="margin-top: 15px;">ข้อมูลการจ่ายชำระเงิน</h5>
                     <br>
                     <div class="row">
-                        <div class="col-md-6">
+
+
+
+
+                        <div class="col-md-6"
+                            @if ($check_pickip_today == '1') style="display: none ; "
+                        @elseif($check_pickip_today == '2')
+                                style="display: block ; " @endif>
                             <div class="card h-100">
                                 <div class="card-body text-center d-flex flex-column justify-content-center">
                                     <p>ลูกค้าชำระเงินมัดจำ ({{ number_format($total_deposit, 2) }} บาท )</p>
-                                    <input type="radio" name="payment_status" value="1" checked>
+                                    <input type="radio" name="payment_status" id="payment_status_one" value="1"
+                                        {{ $check_pickip_today == '0' ? 'checked' : '' }}>
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="card h-100">
                                 <div class="card-body text-center d-flex flex-column justify-content-center">
@@ -59,10 +68,14 @@
                                             ({{ number_format($total_price_and_damage_insurance, 2) }} บาท)</p>
                                     @endif
 
-                                    <input type="radio" name="payment_status" value="2">
+                                    <input type="radio" name="payment_status" id="payment_status_two" value="2"
+                                        {{ $check_pickip_today == '1' ? 'checked' : '' }}>
                                 </div>
                             </div>
                         </div>
+
+
+
                     </div>
 
 
@@ -73,11 +86,11 @@
                 <div class="col-md-7">
                     <h5 style="margin-top: 10px;">
                         @if ($order->type_order == 1)
-                            สรุปรายการตัดชุด
+                            สรุปรายการตัดชุด{{ $order->total_quantity }}
                         @elseif($order->type_order == 2)
-                            สรุปรายการเช่า
+                            สรุปรายการเช่า ({{ $order->total_quantity }})
                         @elseif($order->type_order == 3)
-                            สรุปรายการเช่าตัดชุด
+                            สรุปรายการเช่าตัดชุด{{ $order->total_quantity }}
                         @endif
                     </h5>
                     <hr>
@@ -278,7 +291,7 @@
                             {{-- <p style="font-size: 15px;  margin-bottom: 5px;">เงินมัดจำ</p> --}}
                             {{-- <p style="font-size: 15px;  margin-bottom: 5px;">รวมประกันค่าเสียหาย</p> --}}
                             {{-- <p style="font-size: 15px;  margin-bottom: 5px;">ค่าบริการขยายเวลาเช่าชุด</p> --}}
-                            <p style="font-size: 15px;  margin-bottom: 5px; color: crimson">จำนวนเงินที่ต้องชำระสุทธิ</p>
+                            <p style="font-size: 15px;  margin-bottom: 5px;"><strong>จำนวนเงินที่ต้องชำระสุทธิ</strong></p>
                         </div>
                         <div class="media-body">
                             <p>&nbsp;</p>
@@ -295,11 +308,20 @@
                                 {{-- {{ number_format(array_sum($list_damage_insurance), 2) }}</p> --}}
                                 {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
                                 {{ number_format(array_sum($late_charge_late_charge), 2) }}</p> --}}
-                                {{ number_format($orderdetail->sum('damage_insurance', 2)) }}
+                            <p id="show_total_deposit"
+                                @if ($check_pickip_today == '1') style="display: none ; "
+                            @elseif($check_pickip_today == '0')
+                            style="display: block ; " @endif>
+                                {{ number_format($total_deposit, 2) }} บาท</p>
+                            <p id="show_total_price_and_damage_insurance"
+                                @if ($check_pickip_today == '0') style="display: none ;"
+                                @elseif($check_pickip_today == '1')
+                                    style="display: block ; " @endif>
+                                {{ number_format($total_price_and_damage_insurance, 2) }} บาท</p>
                         </div>
                     </div>
 
-                    -
+
 
 
 
@@ -312,6 +334,31 @@
                             </div>
                         </div>
                     </div>
+
+
+
+                    <script>
+                        var payment_status_one = document.getElementById('payment_status_one');
+                        var payment_status_two = document.getElementById('payment_status_two');
+
+                        var show_total_deposit = document.getElementById('show_total_deposit');
+                        var show_total_price_and_damage_insurance = document.getElementById('show_total_price_and_damage_insurance');
+
+                        payment_status_one.addEventListener('change', function() {
+                            if (this.checked) {
+                                show_total_deposit.style.display = 'block';
+                                show_total_price_and_damage_insurance.style.display = 'none';
+                            }
+                        });
+                        payment_status_two.addEventListener('change', function() {
+                            if (this.checked) {
+                                show_total_deposit.style.display = 'none';
+                                show_total_price_and_damage_insurance.style.display = ' block';
+                            }
+                        });
+                    </script>
+
+
                 </div>
             </div>
         </form>

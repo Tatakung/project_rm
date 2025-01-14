@@ -20,4 +20,11 @@ class Dressmea extends Model
         'initial_max',
         'current_mea'
     ];
+
+    public function dressmea_one_to_many_dressmeaadjust(){
+        return $this->hasMany(Dressmeaadjustment::class,'dressmea_id') ; 
+    }
+
+
+
 }

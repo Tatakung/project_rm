@@ -18,10 +18,13 @@ use App\Models\Typedress;
 use App\Models\Jewelry;
 use App\Models\Dressmeaadjustment;
 use App\Models\Dressmea;
-
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
-
+use App\Models\Decoration;
+use App\Models\Reservation;
+use App\Models\Reservationfilters;
+use App\Models\Jewelrysetitem;
+use App\Models\Receipt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -1268,17 +1271,16 @@ class ManageorderController extends Controller
             }
         }
 
-        if($request->hasFile('file_image_')){
-            $note_image = $request->input('note_image_') ; 
-            $file_image = $request->file('file_image_') ; 
-            foreach($file_image as $index => $file){
+        if ($request->hasFile('file_image_')) {
+            $note_image = $request->input('note_image_');
+            $file_image = $request->file('file_image_');
+            foreach ($file_image as $index => $file) {
                 $image_save = new Imagerent();
-                $image_save->order_detail_id = $id ; 
-                $image_save->image = $file->store('rent_images','public') ; 
+                $image_save->order_detail_id = $id;
+                $image_save->image = $file->store('rent_images', 'public');
                 $image_save->description = $note_image[$index] ?? null;
                 $image_save->save();
-            }    
-            
+            }
         }
 
         // อัปเดตข้อมูลการนัดลองชุด
@@ -1287,8 +1289,8 @@ class ManageorderController extends Controller
             $update_fitting = $request->input('update_fitting_');
             foreach ($fitting_id as $index => $id) {
                 $update = Fitting::find($id);
-                $update->fitting_date = $update_fitting[$index] ;
-                $update->save() ; 
+                $update->fitting_date = $update_fitting[$index];
+                $update->save();
             }
         }
 
@@ -1297,12 +1299,151 @@ class ManageorderController extends Controller
             $add_fitting = $request->input('add_fitting_');
             foreach ($add_fitting as $index => $date) {
                 $add_fitting = new Fitting();
-                $add_fitting->order_detail_id = $orderdetail->id ; 
+                $add_fitting->order_detail_id = $orderdetail->id;
                 $add_fitting->fitting_date = $date;
-                $add_fitting->fitting_status = 'ยังไม่มาลองชุด' ; 
+                $add_fitting->fitting_status = 'ยังไม่มาลองชุด';
                 $add_fitting->save();
             }
         }
         return redirect()->back()->with('success', 'จัดการสำเร็จ');
+    }
+
+    public function updatestatuspickuptotalrent(Request $request, $id)
+    {
+        $order = Order::find($id);
+        $dataorderdetail = Orderdetail::where('order_id', $order->id)->get();
+        foreach ($dataorderdetail as $detail) {
+            if ($detail->type_order == 2 || $detail->type_order == 4 ) {
+                if ($detail->status_detail == 'ถูกจอง') {
+                    //ตารางorderdetail
+                    $orderdetail = Orderdetail::find($detail->id);
+                    $orderdetail->status_detail = "กำลังเช่า";
+                    $orderdetail->save();
+                    //ตารางorderdetailstatus
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $detail->id;
+                    $create_status->status = "กำลังเช่า";
+                    $create_status->save();
+
+                    //ตารางreservation 
+                    $reservation = Reservation::find($detail->reservation_id);
+                    $reservation->status = 'กำลังเช่า';
+                    $reservation->save();
+
+                    // อัปเดตตารางdate
+                    $date_id = Date::where('order_detail_id', $detail->id)
+                        ->orderBy('created_at', 'desc')
+                        ->value('id');
+                    $update_real = Date::find($date_id);
+                    $update_real->actua_pickup_date = now(); //วันที่รับจริงๆ
+                    $update_real->save();
+
+
+                    if ($detail->status_payment == 1) {
+                        //ตารางpaymentstatus
+                        $create_paymentstatus = new Paymentstatus();
+                        $create_paymentstatus->order_detail_id = $detail->id;
+                        $create_paymentstatus->payment_status = 2;
+                        $create_paymentstatus->save();
+                        //ตารางorderdetail
+                        $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
+                        $orderdetail->save();
+                    }
+                }
+            }
+            elseif ($detail->type_order == 3) {
+                //ตารางorderdetail
+                $orderdetail = Orderdetail::find($detail->id);
+                $orderdetail->status_detail = "กำลังเช่า";
+                $orderdetail->save();
+                //ตารางorderdetailstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $detail->id;
+                $create_status->status = "กำลังเช่า";
+                $create_status->save();
+
+                //ตารางreservation 
+                $reservation = Reservation::find($detail->reservation_id);
+                $reservation->status = 'กำลังเช่า';
+                $reservation->save();
+
+                if ($detail->detail_many_one_re->jewelry_id) {
+                    $find_re_filter = Reservationfilters::where('reservation_id', $detail->detail_many_one_re->id)->first();
+                    $update_re_filter = Reservationfilters::find($find_re_filter->id);
+                    $update_re_filter->status = 'กำลังเช่า';
+                    $update_re_filter->save();
+
+                    $update_status_jewelry = Jewelry::find($detail->detail_many_one_re->jewelry_id);
+                    $update_status_jewelry->jewelry_status = 'กำลังถูกเช่า';
+                    $update_status_jewelry->save();
+                } elseif ($detail->detail_many_one_re->jewelry_set_id) {
+                    $find_re_filter = Reservationfilters::where('reservation_id', $detail->detail_many_one_re->id)->get();
+                    foreach ($find_re_filter as $item) {
+                        $update_re_filter = Reservationfilters::find($item->id);
+                        $update_re_filter->status = 'กำลังเช่า';
+                        $update_re_filter->save();
+                    }
+                    $jew_item_total = Jewelrysetitem::where('jewelry_set_id', $detail->detail_many_one_re->jewelry_set_id)->get();
+                    foreach ($jew_item_total as $item) {
+                        $update_status_jew = Jewelry::find($item->jewelry_id);
+                        $update_status_jew->jewelry_status = 'กำลังถูกเช่า';
+                        $update_status_jew->save();
+                    }
+                }
+
+                // อัปเดตตารางdate
+                $date_id = Date::where('order_detail_id', $detail->id)
+                    ->orderBy('created_at', 'desc')
+                    ->value('id');
+                $update_real = Date::find($date_id);
+                $update_real->actua_pickup_date = now(); //วันที่รับจริงๆ
+                $update_real->save();
+                if ($detail->status_payment == 1) {
+                    //ตารางpaymentstatus
+                    $create_paymentstatus = new Paymentstatus();
+                    $create_paymentstatus->order_detail_id = $detail->id;
+                    $create_paymentstatus->payment_status = 2;
+                    $create_paymentstatus->save();
+                    //ตารางorderdetail
+                    $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
+                    $orderdetail->save();
+                }
+            }
+            
+        }
+
+
+
+        // สร้างใบเสร็จรวม
+        $total_price_receipt = 0 ; 
+        $sum_decoration = 0 ; 
+        foreach($dataorderdetail as $item){
+            $decoration = Decoration::where('order_detail_id',$item->id)->get() ; 
+            foreach($decoration as $value){
+                $sum_decoration += $value->decoration_price ; 
+            }
+        }
+
+
+        foreach ($dataorderdetail as $item) {
+            $check_payment = Paymentstatus::where('order_detail_id', $item->id)
+                ->where('payment_status', 1)
+                ->exists();
+            if ($check_payment) {
+                $total_price_receipt+=  ($item->price - $item->deposit) + $item->damage_insurance;
+            }
+        }
+
+
+        $ceate_receipt = new Receipt();
+        $ceate_receipt->order_id = $order->id;
+        $ceate_receipt->receipt_type = 2;
+        $ceate_receipt->total_price = $total_price_receipt + $sum_decoration;
+        $ceate_receipt->save();
+
+
+
+
+        return redirect()->back()->with('success', 'สำเร็จแล้ว');
     }
 }

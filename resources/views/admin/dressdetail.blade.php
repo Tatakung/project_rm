@@ -46,7 +46,7 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h2 class="py-4" style="text-align: start">รายละเอียดของหมายเลขชุด
+                <h2 class="py-4" style="text-align: start">รายละเอียดของ{{ $name_type }}หมายเลขชุด
                     {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h2>
             </div>
         </div>
@@ -166,18 +166,30 @@
                     <div class="col-md-4">
                         <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                         <!-- <p><strong>รหัสชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</p> -->
-                        <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
+
+                        @if ($datadress->dress_price == null)
+                            <p><strong>ราคาเช่า:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                        @else
+                            <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
+                        @endif
+
+
+                        @if($datadress->dress_deposit == null)
+                        <p><strong>เงินมัดจำ:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                        @else
                         <p><strong>เงินมัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
-                        <p><strong>ค่าประกันชุด:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท
-                        </p>
+                        @endif
+
+                       @if($datadress->damage_insurance == null)
+                       <p><strong>ค่าประกันชุด:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                       @else
+                       <p><strong>ค่าประกันชุด:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท</p>
+                       @endif
+
+                        
 
 
-                        <!-- <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง -->
-                        {{-- <span
-                                @if ($check_admin == 1) style="display: block ; "
-                            @elseif($check_admin == 2)
-                            style="display: none ; " @endif><a
-                                    href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}">ดูประวัติ</a></span> --}}
+                       
                         </p>
 
 
@@ -203,14 +215,14 @@
                             $historyrepair = App\Models\Repair::whereIn('id', $list_two)->get();
                         @endphp
                         <!-- <p><strong>จำนวนครั้งที่ซ่อม</strong>
-                                        {{ $historyrepair->count() }} ครั้ง
-                                        {{-- <span
+                                            {{ $historyrepair->count() }} ครั้ง
+                                            {{-- <span
                                 @if ($check_admin == 1) style="display: block ; "
                             @elseif($check_admin == 2)
                             style="display: none ; " @endif><a
                                     href="">ดูประวัติ</a></span> --}}
-                                    </p>
-                                    <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p> -->
+                                        </p>
+                                        <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p> -->
 
                     </div>
 

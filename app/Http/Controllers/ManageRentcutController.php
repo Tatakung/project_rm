@@ -55,8 +55,8 @@ class ManageRentcutController extends Controller
             $order = new Order();
             $order->user_id = Auth::user()->id;
             $order->total_quantity = 1;
-            $order->total_price = $request->input('price') * $request->input('amount');
-            $order->total_deposit = $request->input('deposit') * $request->input('amount');
+            $order->total_price = $request->input('price');
+            $order->total_deposit = $request->input('deposit');
             $order->order_status = 0;
             $order->type_order = 3; //1.ตัด 2.เช่า 3.เช่าตัด
             $order->save();
@@ -67,8 +67,8 @@ class ManageRentcutController extends Controller
             $ID_ORDER = $check_order->id;
             // อัปเดตราคารวม + จำนวนรายการ
             $update_total_price = Order::find($check_order->id);
-            $update_total_price->total_price = $check_order->total_price + ($request->input('price') * $request->input('amount'));
-            $update_total_price->total_deposit = $check_order->total_deposit + ($request->input('deposit') * $request->input('amount'));
+            $update_total_price->total_price = $check_order->total_price + ($request->input('price'));
+            $update_total_price->total_deposit = $check_order->total_deposit + ($request->input('deposit'));
             $update_total_price->total_quantity = $check_order->total_quantity + 1;
             $update_total_price->save();
         }
@@ -101,7 +101,7 @@ class ManageRentcutController extends Controller
         $orderdetail->order_id = $ID_ORDER;
         $orderdetail->type_dress = $TYPE_DRESS;
         $orderdetail->type_order = 4; //1ตัดชุด 2เช่าชุด 3เช่าเครื่องประดับ 4เช่าตัด
-        $orderdetail->amount = $request->input('amount');
+        $orderdetail->amount = 1;
 
         if ($request->input('deposit') > $request->input('price')) {
             DB::rollback();
@@ -376,7 +376,12 @@ class ManageRentcutController extends Controller
         $is_admin = Auth::user()->is_admin;  //ตรวจสอบว่าเป็นแอดมินไหม
         $who_login = Auth::user()->id; //คนที่กำลังlogin
         $person_order = Order::where('id', $orderdetail->order_id)->value('user_id');  //คนที่รับ order
-        return view('employeerentcut.managedetailrentcut-for-doing-cut', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'employee', 'fitting', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal'));
+
+
+        $check_button_add_fitting_image = Orderdetailstatus::where('order_detail_id', $id)
+            ->where('status', 'ถูกจอง')
+            ->exists();
+        return view('employeerentcut.managedetailrentcut-for-doing-cut', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'employee', 'fitting', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal', 'check_button_add_fitting_image'));
     }
     public function storeTailoredDress($id)
     {
@@ -590,7 +595,7 @@ class ManageRentcutController extends Controller
         $create_status->save();
         return redirect()->route('detaildoingrentcut', ['id' => $orderdetail->id])->with('success', 'บันทึกสำเร็จ');
     }
-    // public function receiptdeposittotal($id)
+    // public function receiptreservation($id)
     // {
     //     $order = Order::find($id);
     //     $orderdetail = Orderdetail::where('order_id', $id)->get();
@@ -602,7 +607,7 @@ class ManageRentcutController extends Controller
     //     return $pdfs->stream();
     // }
 
-    public function receiptdeposittotal($id)
+    public function receiptreservation($id)
     {
         $receipt = Receipt::where('order_id', $id)
             ->where('receipt_type', 1)
@@ -611,28 +616,41 @@ class ManageRentcutController extends Controller
         $orderdetail = Orderdetail::where('order_id', $order->id)->get();
         $customer = Customer::find($order->customer_id);
 
-        $pdf = PDF::loadView('receipt.receipt_deposit_total', compact('receipt', 'order', 'orderdetail', 'customer'));
+        $pickup_return_only = Date::where('order_detail_id', Orderdetail::where('order_id', $order->id)->value('id'))->first();
+
+
+
+        $pdf = PDF::loadView('receipt.receipt-reservation-dress-or-jewelry', compact('receipt', 'order', 'orderdetail', 'customer', 'pickup_return_only'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
     }
 
-    public function receiptpickup($id)
+    public function receiptpickuprent($id)
     {
-        $orderdetail = Orderdetail::find($id);
-        $date = Date::where('order_detail_id', $orderdetail->id)
-            ->orderBy('created_at', 'desc')
-            ->first();
-        $receipt = Receipt::where('order_detail_id', $id)
+        $order = Order::find($id);
+        $orderdetails = Orderdetail::where('order_id', $order->id)->get();
+        // $date = Date::where('order_detail_id', $orderdetail->id)
+        //     ->orderBy('created_at', 'desc')
+        //     ->first();
+        $receipt = Receipt::where('order_id', $order->id)
             ->where('receipt_type', 2)
             ->first();
-        $order = Order::find($orderdetail->order_id);
         $customer = Customer::find($order->customer_id);
 
 
-        $decoration = Decoration::where('order_detail_id', $orderdetail->id)->get();
+        $transaction_date = $order->created_at->format('Y-m-d');
+        $only_rent = Date::where('order_detail_id', $orderdetails->first()->id)->first(); //วันนัดรับ - นัดคืน 
+        $only_payment = Paymentstatus::where('order_detail_id', $orderdetails->first()->id)
+            ->where('payment_status', 1)
+            ->exists();
+        // dd($only_rent->pickup_date) ; 
 
 
-        $pdf = PDF::loadView('receipt.receipt_pickup_dress_or_jew', compact('receipt', 'order', 'orderdetail', 'customer', 'date', 'decoration'));
+
+
+
+
+        $pdf = PDF::loadView('receipt.receipt_pickup_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'transaction_date', 'only_rent', 'only_payment'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
         return $pdfs->stream();
@@ -640,33 +658,55 @@ class ManageRentcutController extends Controller
 
 
 
-    public function receiptreturn($id)
+    public function receiptreturnrent($id)
     {
-        $orderdetail = Orderdetail::find($id);
-        $date = Date::where('order_detail_id', $orderdetail->id)
-            ->orderBy('created_at', 'desc')
-            ->first();
-        $receipt = Receipt::where('order_detail_id', $id)
+        $order = Order::find($id);
+        $orderdetails = Orderdetail::where('order_id', $order->id)->get();
+
+        // $date = Date::where('order_detail_id', $orderdetail->id)
+        //     ->orderBy('created_at', 'desc')
+        //     ->first();
+
+        $receipt = Receipt::where('order_id', $order->id)
             ->where('receipt_type', 3)
             ->first();
-        $order = Order::find($orderdetail->order_id);
+
         $customer = Customer::find($order->customer_id);
 
-        $decoration = Decoration::where('order_detail_id', $orderdetail->id)->get();
+
+        $price_damage_insurance = 0;
+        $price_return_late = 0;
+        $price_extend_time = 0;
+        foreach ($orderdetails as $item) {
+            $damage_insurance = AdditionalChange::where('order_detail_id', $item->id)
+                ->where('charge_type', 1)
+                ->first();
+            if ($damage_insurance) {
+                $price_damage_insurance += $damage_insurance->amount;
+            }
+
+            $return_late = AdditionalChange::where('order_detail_id', $item->id)
+                ->where('charge_type', 2)
+                ->first();
+            if ($return_late) {
+                $price_return_late += $return_late->amount;
+            }
+            $extend_time = AdditionalChange::where('order_detail_id', $item->id)
+                ->where('charge_type', 3)
+                ->first();
+            if ($extend_time) {
+                $price_extend_time += $extend_time->amount;
+            }
+        }
+
+
+  
+        
 
 
 
-        $price_damage_insurance = AdditionalChange::where('order_detail_id', $orderdetail->id)
-            ->where('charge_type', 1)
-            ->first();
 
-        $price_return_late = AdditionalChange::where('order_detail_id', $orderdetail->id)
-            ->where('charge_type', 2)
-            ->first();
-        $price_extend_time = AdditionalChange::where('order_detail_id', $orderdetail->id)
-            ->where('charge_type', 3)
-            ->first();
-        $pdf = PDF::loadView('receipt.receipt_return_dress_or_jew', compact('receipt', 'order', 'orderdetail', 'customer', 'date', 'decoration', 'price_damage_insurance', 'price_return_late', 'price_extend_time'));
+        $pdf = PDF::loadView('receipt.receipt_return_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'price_damage_insurance','price_return_late','price_extend_time'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
         return $pdfs->stream();

@@ -76,54 +76,460 @@ class OrderController extends Controller
 
 
     //ออเดอร์ดีเทล
-    public function ordertotaldetail(Request $request , $id)
+    public function ordertotaldetail(Request $request, $id)
     {
+
+
+        $order = Order::find($id);
+
+
+        if ($order->type_order == 1) {
+            return $this->ordertotaldetailone($id);
+        } elseif ($order->type_order == 2) {
+            return $this->ordertotaldetailtwo($id);
+        } elseif ($order->type_order == 3) {
+            return $this->ordertotaldetailthree($id);
+        }
+    }
+
+    private function ordertotaldetailone($id)
+    {
+        $order = Order::find($id);
+        $customer = Customer::find($order->customer_id);
+        $employee = User::find($order->user_id);
+        $order_id = $id;
+        $orderdetail = Orderdetail::where('order_id', $id)->get();
+        return view('employee.ordertotaldetailone', compact('order', 'order_id', 'orderdetail', 'customer', 'employee'));
+    }
+    private function ordertotaldetailtwo($id)
+    {
+        $order = Order::find($id);
+        $customer = Customer::find($order->customer_id);
+        $employee = User::find($order->user_id);
+        $order_id = $id;
+        $orderdetail = Orderdetail::where('order_id', $id)->get();
+
+
+        $date_now = now()->toDateString();
+
+        $date_only = Date::where('order_detail_id', $orderdetail->first()->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+
+
+        $receipt_one = Receipt::where('order_id', $id)
+            ->where('receipt_type', 1)
+            ->first();
+        $receipt_two = Receipt::where('order_id', $id)
+            ->where('receipt_type', 2)
+            ->first();
+
+        $receipt_three  = Receipt::where('order_id', $id)
+            ->where('receipt_type', 3)
+            ->first();
+
+
+        $is_fully_paid_number = 0; //เช็คว่าจ่ายเต็มหรือยัง
+        $remaining_balance = 0;
+        foreach ($orderdetail as $item) {
+            if ($item->status_payment == 1) {
+                $remaining_balance += $item->damage_insurance + ($item->price - $item->deposit);
+                $is_fully_paid_number = $is_fully_paid_number +  1;
+            }
+        }
+
+
+        if ($is_fully_paid_number == $orderdetail->count()) {
+            $is_fully_paid = 10; //หมายความว่า มันจ่ายแค่มัดจำทุกรายการ
+        } else {
+            $is_fully_paid = 20;
+        }
+
+        $total_price = $orderdetail->sum('price');
+        $total_deposit = $orderdetail->sum('deposit');
+        $total_damage_insurance = $orderdetail->sum('damage_insurance');
+
+
+        //เช็คปุ่มกดรับชุด-เครื่องประดับ พร้อมกัน
+        $queue_pass = false;
+        foreach ($orderdetail as $value) {
+            if ($value->type_order == 2) {
+                $dress_mea_adjuust = Dressmeaadjustment::where('order_detail_id', $value->id)->get();
+
+
+                // ตรวจสอบว่าถึงคิวมันหรือยัง
+                if ($value->shirtitems_id) {
+                    //  ตรวจสอบเฉพาะเสื้อก่อน
+                    $status_shirt = Reservation::where('status_completed', 0)
+                        ->where('dress_id', $value->dress_id)
+                        ->where('shirtitems_id', $value->shirtitems_id)
+                        ->whereNull('skirtitems_id')
+                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                        ->get();
+                    // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะผ้าถุง/เสื้อมาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
+                    $status_total_dress = Reservation::where('status_completed', 0)
+                        ->where('dress_id', $value->dress_id)
+                        ->whereNull('shirtitems_id')
+                        ->whereNull('skirtitems_id')
+                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                        ->get();
+                    $list__for__one = [];
+                    foreach ($status_shirt as $item) {
+                        $list__for__one[] = $item->id;
+                    }
+                    foreach ($status_total_dress as $item) {
+                        $list__for__one[] = $item->id;
+                    }
+                    $reservation_now = reservation::whereIn('id', $list__for__one)
+                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                        ->first();
+
+                    // เงื่อนไขที่1 ต้องเช็คว่าถึงคิวมันยัง 
+                    if ($reservation_now) {
+                        if ($reservation_now->id == $value->reservation_id) {
+                            $queue_pass = true;
+                        } elseif ($reservation_now->id != $value->reservation_id) {
+                            $queue_pass = false;
+                            break;
+                        }
+                    } else {
+                        $queue_pass = true;
+                    }
+
+                    // เงื่อนไขที่ 2 คือ ชุดต้องได้รับการปรับแก้ไขขนาดแล้ว 
+                    foreach ($dress_mea_adjuust as $item) {
+                        if ($item->new_size != $item->dressmeaadjust_many_to_one_dressmea->current_mea) {
+                            $queue_pass = false;
+                            break;
+                        } else {
+                            $queue_pass = true;
+                        }
+                    }
+                } elseif ($value->skirtitems_id) {
+
+                    //  ตรวจสอบเฉพาะผ้าถุงก่อน
+                    $status_skirt = Reservation::where('status_completed', 0)
+                        ->where('dress_id', $value->dress_id)
+                        ->where('skirtitems_id', $value->skirtitems_id)
+                        ->whereNull('shirtitems_id')
+                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                        ->get();
+                    // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะเสื้อและผ้าถุงมาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
+                    $status_total_dress = Reservation::where('status_completed', 0)
+                        ->where('dress_id', $value->dress_id)
+                        ->whereNull('shirtitems_id')
+                        ->whereNull('skirtitems_id')
+                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                        ->get();
+                    $list__for__one = [];
+                    foreach ($status_skirt as $item) {
+                        $list__for__one[] = $item->id;
+                    }
+                    foreach ($status_total_dress as $item) {
+                        $list__for__one[] = $item->id;
+                    }
+                    // เงื่อนไขที่1 ต้องเช็คว่าถึงคิวมันยัง 
+                    $reservation_now = reservation::whereIn('id', $list__for__one)
+                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                        ->first();
+                    if ($reservation_now) {
+                        if ($reservation_now->id == $value->reservation_id) {
+                            $queue_pass = true;
+                        } elseif ($reservation_now->id != $orderdetail->reservation_id) {
+                            $queue_pass = false;
+                            break;
+                        }
+                    } else {
+                        $queue_pass = true;
+                    }
+                    // เงื่อนไขที่ 2 คือ ชุดต้องได้รับการปรับแก้ไขขนาดแล้ว 
+                    foreach ($dress_mea_adjuust as $item) {
+                        if ($item->new_size != $item->dressmeaadjust_many_to_one_dressmea->current_mea) {
+                            $queue_pass = false;
+                            break;
+                        } else {
+                            $queue_pass = true;
+                        }
+                    }
+                } else {
+                    $reservation_now = Reservation::where('status_completed', 0)
+                        ->where('dress_id', $value->dress_id)
+                        ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
+                        ->first();
+
+                    if ($reservation_now) {
+                        if ($reservation_now->id == $value->reservation_id) {
+                            $queue_pass = true;
+                        } elseif ($reservation_now->id != $value->reservation_id) {
+                            $queue_pass = false;
+                            break;
+                        }
+                    } else {
+                        $queue_pass = true;
+                    }
+
+                    // เงื่อนไขที่ 2 คือ ชุดต้องได้รับการปรับแก้ไขขนาดแล้ว 
+                    foreach ($dress_mea_adjuust as $item) {
+                        if ($item->new_size != $item->dressmeaadjust_many_to_one_dressmea->current_mea) {
+                            $queue_pass = false;
+                            break;
+                        } else {
+                            $queue_pass = true;
+                        }
+                    }
+                }
+            } elseif ($value->type_order == 3) {
+
+                if ($value->detail_many_one_re->jewelry_id) {
+                    $list_check = [];
+                    $check_unique_jew_id = Reservation::where('status_completed', 0)
+                        ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
+                        ->where('jewelry_id', $value->detail_many_one_re->jewelry_id)
+                        ->get();
+                    foreach ($check_unique_jew_id as $item) {
+                        $list_check[] = $item->id;
+                    }
+
+
+                    $set_in_re = Reservation::where('status_completed', 0)
+                        ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
+                        ->whereNotNull('jewelry_set_id')
+                        ->get();
+
+                    foreach ($set_in_re as $re_set) {
+                        $item_for_jew_set = Jewelrysetitem::where('jewelry_set_id', $re_set->jewelry_set_id)->get();
+                        foreach ($item_for_jew_set as $item) {
+                            if ($value->detail_many_one_re->jewelry_id == $item->jewelry_id) {
+                                $list_check[] = $re_set->id;
+                            }
+                        }
+                    }
+                    $sort_queue = Reservation::whereIn('id', $list_check)
+                        ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
+                        ->first();
+
+                    if ($sort_queue) {
+                        if ($value->detail_many_one_re->id == $sort_queue->id) {
+                            //ถึงคิวคุณแล้ว
+                            if ($value->detail_many_one_re->status == 'ถูกจอง') {
+                                if ($value->detail_many_one_re->resermanytoonejew->jewelry_status != 'พร้อมให้เช่า') {
+                                    $queue_pass = false;
+                                    break;
+                                }
+                            }
+                            if ($value->detail_many_one_re->status == 'กำลังเช่า') {
+                                $check_bunton_pass = true;
+                            }
+                        }
+
+                        // ยังไม่ถึงคิว
+                        else {
+                            $queue_pass = false;
+                            break;
+                        }
+                    } else {
+                        $queue_pass = true;
+                    }
+                } elseif ($value->detail_many_one_re->jewelry_set_id) {
+
+                    $list_set = [];
+                    // แค่jewelry_set_idในตาราง reservation
+                    $jewwelry_set_id_in_reservation = Reservation::where('status_completed', 0)
+                        ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
+                        ->where('jewelry_set_id', $value->detail_many_one_re->jewelry_set_id)
+                        ->get();
+                    foreach ($jewwelry_set_id_in_reservation as $key => $value) {
+                        $list_set[] = $value->id;
+                    }
+                    // ส่วนjew_id
+                    $jew_set_item = Jewelrysetitem::where('jewelry_set_id', $value->detail_many_one_re->jewelry_set_id)->get();
+
+                    foreach ($jew_set_item as $key => $item) {
+                        $check_jew_id_in_re = Reservation::where('status_completed', 0)
+                            ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
+                            ->where('jewelry_id', $item->jewelry_id)
+                            ->get();
+
+                        if ($check_jew_id_in_re->isNotEmpty()) {
+                            foreach ($check_jew_id_in_re as $index) {
+                                $list_set[] = $index->id;
+                            }
+                        }
+                    }
+
+
+                    $sort_queue = Reservation::whereIn('id', $list_set)
+                        ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
+                        ->first();
+                    if ($sort_queue) {
+                        if ($value->detail_many_one_re->id == $sort_queue->id) {
+                            // คุณคือคิวแรก
+
+                            if ($value->detail_many_one_re->status == 'ถูกจอง') {
+                                $jew_set_id_for = Jewelrysetitem::where('jewelry_set_id', $value->detail_many_one_re->jewelry_set_id,)->get();
+                                foreach ($jew_set_id_for as $key => $index_for_item) {
+                                    $check_jew_status = Jewelry::find($index_for_item->jewelry_id);
+                                    if ($check_jew_status->jewelry_status != 'พร้อมให้เช่า') {
+                                        $queue_pass = false;
+                                        break;
+                                    } else {
+                                        $queue_pass = true;
+                                    }
+                                }
+                            }
+
+                            if ($value->detail_many_one_re->status == 'กำลังเช่า') {
+                                $queue_pass = true;
+                            }
+                        } else {
+                            $queue_pass = false;
+                            break;
+                        }
+                    } else {
+                        $queue_pass = true;
+                    }
+                }
+            }
+        }
+
+
+        // เช็คสถานะทั้งหมดของ order ว่า ถูกจองทั้งหมดไหม ถ้าถูกจองทั้งหมด จะได้ไม่ต้องแสดงปุ่มรับ
+        $check_number_detail_status = 0;
+        $return_number = 0;
+        foreach ($orderdetail as $detail) {
+            if ($detail->status_detail == 'กำลังเช่า') {
+                $check_number_detail_status = $check_number_detail_status + 1;
+            }
+            if ($detail->type_order == 2) {
+                if ($detail->status_detail == 'คืนชุดแล้ว') {
+                    $return_number += 1;
+                }
+            } elseif ($detail->type_order == 3) {
+                if ($detail->status_detail == 'คืนเครื่องประดับแล้ว') {
+                    $return_number += 1;
+                }
+            }
+        }
+        if ($check_number_detail_status >= 1) {
+            $check_text_detail_status = true;
+        } elseif ($check_number_detail_status == $orderdetail->count()) {
+            $check_text_detail_status = false;
+        } else {
+            $check_text_detail_status = true;
+        }
+
+        if ($return_number >= 1) {
+            $check_text_detail_status_two = false;
+        } else {
+            $check_text_detail_status_two = true;
+        }
+
+        if ($date_now == $date_only->pickup_date) {
+            $check_date_now = true;
+        } else {
+            $check_date_now = false;
+        }
+
+        // dd($check_date_now) ; 
+
+        $only_payment = Paymentstatus::where('order_detail_id', $orderdetail->first()->id)
+            ->where('payment_status', 1)
+            ->exists();
+        return view('employee.ordertotaldetailtwo', compact('order', 'order_id', 'orderdetail', 'customer', 'employee', 'receipt_one', 'receipt_two', 'receipt_three', 'remaining_balance', 'total_price', 'total_deposit', 'total_damage_insurance', 'is_fully_paid', 'date_only', 'queue_pass', 'check_text_detail_status', 'check_text_detail_status_two', 'check_date_now', 'only_payment'));
+    }
+    private function ordertotaldetailthree($id)
+    {
+        $order = Order::find($id);
+        $customer = Customer::find($order->customer_id);
+        $employee = User::find($order->user_id);
+        $order_id = $id;
+        $orderdetail = Orderdetail::where('order_id', $id)->get();
+
+        $receipt_one = Receipt::where('order_id', $id)
+            ->where('receipt_type', 1)
+            ->first();
+        $receipt_two = Receipt::where('order_id', $id)
+            ->where('receipt_type', 2)
+            ->first();
+
+        $receipt_three  = Receipt::where('order_id', $id)
+            ->where('receipt_type', 3)
+            ->first();
+
+        $date_now = now()->toDateString();
+
+        $date_only = Date::where('order_detail_id', $orderdetail->first()->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        // พูดง่ายๆก็คือว่า ถ้ามันมีเลข 1 หมายคววามว่า มันจ่ายมัดจำ
+        $only_payment = Paymentstatus::where('order_detail_id', $orderdetail->first()->id)
+            ->where('payment_status', 1)
+            ->exists();
+        $total_price = $orderdetail->sum('price');
+        $total_deposit = $orderdetail->sum('deposit');
+        $total_damage_insurance = $orderdetail->sum('damage_insurance');
+
+        $remaining_balance = 0;
+        $decoration_sum = 0;
+        foreach ($orderdetail as $item) {
+            if ($item->status_payment == 1) {
+                $remaining_balance += $item->damage_insurance + ($item->price - $item->deposit);
+            }
+
+
+            $decoration = Decoration::where('order_detail_id', $item->id)->get();
+            foreach ($decoration as $value) {
+                $decoration_sum += $value->decoration_price;
+            }
+        }
+        $remaining_balance = $remaining_balance + $decoration_sum;
+
+
+        // กำหนดปุ่มว่าจะให้มนักดได้ตอนไหน 
+        // $condition_one = 
+        // เงื่อนไขที่ 1 คือ สถานะทุกรายการ จะต้องเป็น มีคำว่าถูกจอง
+
+        $condition_one_number = 0;
+        $condition_two_number = 0 ; 
+        foreach ($orderdetail as $value) {
+
+            $check_status_two = Orderdetailstatus::where('order_detail_id', $value->id)
+                ->where('status', 'กำลังเช่า')
+                ->exists();
+                if ($check_status_two) {
+                    $condition_two_number += 1;
+                }
+
+            $check_status = Orderdetailstatus::where('order_detail_id', $value->id)
+                ->where('status', 'ถูกจอง')
+                ->exists();
+            if ($check_status) {
+                $condition_one_number += 1;
+            }
+        }
+        $pass_one = false;
+        if ($condition_one_number == $orderdetail->count()) {
+            $pass_one = true;
+        }
+
+
+        $pass_two = true ; 
+        if($condition_two_number == $orderdetail->count()){
+            $pass_two = false ; 
+        }
+
         
 
-        $order = Order::find($id) ; 
-
-
-        if($order->type_order == 1 ){
-            return $this->ordertotaldetailone($id) ; 
-        }
-        elseif($order->type_order == 2 ){
-            return $this->ordertotaldetailtwo($id) ; 
-        }
-        elseif($order->type_order == 3 ){
-            return $this->ordertotaldetailthree($id) ; 
-        }
-    }
-
-    private function ordertotaldetailone($id){
-        $order = Order::find($id) ; 
-        $customer = Customer::find($order->customer_id) ; 
-        $employee = User::find($order->user_id) ; 
-        $order_id = $id; 
-        $orderdetail = Orderdetail::where('order_id',$id)->get() ; 
-        return view('employee.ordertotaldetailone',compact('order','order_id','orderdetail','customer','employee')) ; 
-    }
-    private function ordertotaldetailtwo($id){
-        $order = Order::find($id) ; 
-        $customer = Customer::find($order->customer_id) ; 
-        $employee = User::find($order->user_id) ; 
-        $order_id = $id; 
-        $orderdetail = Orderdetail::where('order_id',$id)->get() ; 
-        return view('employee.ordertotaldetailtwo',compact('order','order_id','orderdetail','customer','employee')) ; 
-    }
-    private function ordertotaldetailthree($id){
-        $order = Order::find($id) ; 
-        $customer = Customer::find($order->customer_id) ; 
-        $employee = User::find($order->user_id) ; 
-        $order_id = $id; 
-        $orderdetail = Orderdetail::where('order_id',$id)->get() ; 
-        return view('employee.ordertotaldetailthree',compact('order','order_id','orderdetail','customer','employee')) ; 
+        return view('employee.ordertotaldetailthree', compact('total_price', 'total_deposit', 'total_damage_insurance', 'order', 'order_id', 'orderdetail', 'customer', 'employee', 'receipt_one', 'receipt_two', 'receipt_three', 'date_only', 'only_payment', 'remaining_balance', 'decoration_sum','pass_one','pass_two'));
     }
 
 
 
 
 
-    
+
 
 
 
@@ -342,6 +748,7 @@ class OrderController extends Controller
         $cost = Cost::where('order_detail_id', $id)->get();
         $date = Date::where('order_detail_id', $id)->get();
         $decoration = Decoration::where('order_detail_id', $id)->get();
+        $decoration_sum = $decoration->sum('decoration_price');
         $sum_dec = Decoration::where('order_detail_id', $orderdetail->id)->sum(
             'decoration_price',
         );
@@ -388,7 +795,9 @@ class OrderController extends Controller
             ->exists();
 
 
-        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup', 'receipt_bill_return',  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee'));
+
+
+        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup', 'receipt_bill_return',  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'decoration_sum'));
     }
     //จัดการตัดชุด
     private function managedetailcutdress($id)
@@ -404,6 +813,8 @@ class OrderController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
         $decoration = Decoration::where('order_detail_id', $id)->get();
+        $decco = Decoration::where('order_detail_id', $id)->get();
+        $decoration_sum = $decoration->sum('decoration_price');
         $imagerent = Imagerent::where('order_detail_id', $id)->get();
         $mea_dress = Dressmeasurement::where('dress_id', $orderdetail->dress_id)->get();
         $mea_orderdetail = Measurementorderdetail::where('order_detail_id', $id)->get();
@@ -426,7 +837,7 @@ class OrderController extends Controller
         $who_login = Auth::user()->id; //คนที่กำลังlogin
         $person_order = Order::where('id', $orderdetail->order_id)->value('user_id');  //คนที่รับ order
 
-        return view('employeecutdress.managedetailcutdress', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal'));
+        return view('employeecutdress.managedetailcutdress', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal', 'decoration_sum', 'decco'));
     }
 
 
@@ -1422,41 +1833,81 @@ class OrderController extends Controller
 
 
 
+            // ตรวจสอบว่าใน order นี้ มีทั้งหมดกี่รายการ
+            $count_index = 0;
+            $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)->get();
+            foreach ($data_orderdetail as $item) {
+                if ($item->status_detail == 'กำลังเช่า') {
+                    $count_index += 1;
+                }
+            }
+            // ถ้ามันตรวจสอบแล้วพบว่าทุกรายการ มันเป็น กำลังเช่า ทั้งหมดแล้ว แปลว่า จะต้องทำการสร้างใบเสร็จอัตโนมัติเลย
+            if ($count_index == $data_orderdetail->count()) {
+                // สร้างใบเสร็จรวม
+                $total_price_receipt = 0;
+                // $price_total_decoration = 0 ; 
+
+                $price_total_decoration = 0;
+                foreach ($data_orderdetail as $index) {
+                    $decoration_receipt = Decoration::where('order_detail_id', $index->id)->get();
+                    foreach ($decoration_receipt as $item) {
+                        $price_total_decoration += $item->decoration_price;
+                    }
+                }
+
+                foreach ($data_orderdetail as $item) {
+                    $check_payment = Paymentstatus::where('order_detail_id', $item->id)
+                        ->where('payment_status', 1)
+                        ->exists();
+
+                    if ($check_payment) {
+                        $total_price_receipt +=  ($item->price - $item->deposit) + $item->damage_insurance;
+                    }
+                }
+                $ceate_receipt = new Receipt();
+                $ceate_receipt->order_id = $orderdetail->order_id;
+                $ceate_receipt->receipt_type = 2;
+                $ceate_receipt->total_price = $total_price_receipt + $price_total_decoration;
+                $ceate_receipt->save();
+            }
+
+
+
+
+
+
             // สร้างใบเสร็จ
-            $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
-                ->where('payment_status', 1)
-                ->exists();
+            // $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
+            //     ->where('payment_status', 1)
+            //     ->exists();
 
-            // decoration(ส่วนที่เพิ่มเติมเข้ามา)
-            $decoration_receipt = Decoration::where('order_detail_id',$orderdetail->id)->get() ; 
-            // ถ้ามันมีข้อมูล
-            if($decoration_receipt->isNotEmpty()){
-                $price_total_decoration = $decoration_receipt->sum('decoration_price') ; 
-            }
-            // ถ้ามันไม่มีข้อมูล
-            else{
-                $price_total_decoration = 0 ; 
-            }
+            // // decoration(ส่วนที่เพิ่มเติมเข้ามา)
+            // $decoration_receipt = Decoration::where('order_detail_id', $orderdetail->id)->get();
+            // // ถ้ามันมีข้อมูล
+            // if ($decoration_receipt->isNotEmpty()) {
+            //     $price_total_decoration = $decoration_receipt->sum('decoration_price');
+            // }
+            // // ถ้ามันไม่มีข้อมูล
+            // else {
+            //     $price_total_decoration = 0;
+            // }
 
-            if ($check_payment_code_two_receipt) {
-                $total_price_receipt = ($orderdetail->price - $orderdetail->deposit) + $orderdetail->damage_insurance + $price_total_decoration;
-            } else {
-                $total_price_receipt = 0 + $price_total_decoration;
-            }
+            // if ($check_payment_code_two_receipt) {
+            //     $total_price_receipt = ($orderdetail->price - $orderdetail->deposit) + $orderdetail->damage_insurance + $price_total_decoration;
+            // } else {
+            //     $total_price_receipt = 0 + $price_total_decoration;
+            // }
 
 
+            // $ceate_receipt = new Receipt();
+            // $ceate_receipt->order_id = $orderdetail->order_id;
+            // $ceate_receipt->order_detail_id = $orderdetail->id;
+            // $ceate_receipt->receipt_type = 2;
+            // $ceate_receipt->total_price = $total_price_receipt;
+            // $ceate_receipt->save();
 
-            $ceate_receipt = new Receipt();
-            $ceate_receipt->order_id = $orderdetail->order_id;
-            $ceate_receipt->order_detail_id = $orderdetail->id;
-            $ceate_receipt->receipt_type = 2;
-            $ceate_receipt->total_price = $total_price_receipt;
-            $ceate_receipt->save();
 
-            
-        }
-        elseif ($status == "กำลังเช่า") {
-
+        } elseif ($status == "กำลังเช่า") {
             $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
             $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
             $late_chart = $request->input('late_chart'); //3.ค่าธรรมเนียมขยายระยะเวลาเช่า:
@@ -1550,10 +2001,12 @@ class OrderController extends Controller
                 $create_clean->clean_status = "รอดำเนินการ";
                 $create_clean->save();
                 //ตารางstatus
-                $create_status = new Orderdetailstatus();
-                $create_status->status = "รอดำเนินการ";
-                $create_status->clean_id = $create_clean->id;
-                $create_status->save();
+                // $create_status = new Orderdetailstatus();
+                // $create_status->status = "รอดำเนินการ";
+                // $create_status->clean_id = $create_clean->id;
+                // $create_status->save();
+
+
             } elseif ($request->input('return_status') == "ต้องซ่อมแซม") {
                 $next_message_index = 'ส่งซ่อม';
                 $text_for_reservation = "รอดำเนินการซ่อม";
@@ -1565,10 +2018,10 @@ class OrderController extends Controller
                 $create_repair->repair_type = $request->input('repair_type'); //10ทั้งชุด 20เสื้อ 30ผ้าถุง
                 $create_repair->save();
                 //ตารางstatus
-                $create_status = new Orderdetailstatus();
-                $create_status->status = "รอดำเนินการ";
-                $create_status->repair_id = $create_repair->id;
-                $create_status->save();
+                // $create_status = new Orderdetailstatus();
+                // $create_status->status = "รอดำเนินการ";
+                // $create_status->repair_id = $create_repair->id;
+                // $create_status->save();
             }
             //ตารางreservation 
             $reservation = Reservation::find($orderdetail->reservation_id);
@@ -1577,24 +2030,51 @@ class OrderController extends Controller
             $message_session = 'ลูกค้าคืนชุดแล้ว และชุดจะถูก' . $request->input('return_status') . 'ต่อไป';
 
             // สร้างใบเสร็จ
-            $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
-                ->where('payment_status', 1)
-                ->exists();
+            // $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
+            //     ->where('payment_status', 1)
+            //     ->exists();
+            // $additional_receipt = AdditionalChange::where('order_detail_id', $orderdetail->id)->get();
+            // if ($additional_receipt->isNotEmpty()) {
+            //     $total_additional_receipt = $additional_receipt->sum('amount');
+            // } else {
+            //     $total_additional_receipt = 0;
+            // }
+
+            // $ceate_receipt = new Receipt();
+            // $ceate_receipt->order_id = $orderdetail->order_id;
+            // $ceate_receipt->order_detail_id = $orderdetail->id;
+            // $ceate_receipt->receipt_type = 3;
+            // $ceate_receipt->total_price = $orderdetail->damage_insurance - $total_additional_receipt;
+            // $ceate_receipt->save();
 
 
-            $additional_receipt = AdditionalChange::where('order_detail_id',$orderdetail->id)->get() ; 
-            if($additional_receipt->isNotEmpty()){
-                $total_additional_receipt = $additional_receipt->sum('amount') ; 
+            // ถ้ามันตรวจสอบแล้วพบว่าทุกรายการ มันเป็น คืนชุด/คืนเครื่องประดับครบยัง ทั้งหมดแล้ว แปลว่า จะต้องทำการสร้างใบเสร็จอัตโนมัติเลย
+            $count_index = 0;
+            $additional_total = 0;
+            $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)->get();
+            $data_orderdetail_sum_damage_insurance = $data_orderdetail->sum('damage_insurance');
+            foreach ($data_orderdetail as $item) {
+                if ($item->type_order == 2) {
+                    if ($item->status_detail == 'คืนชุดแล้ว') {
+                        $count_index += 1;
+                    }
+                } elseif ($item->type_order == 3) {
+                    if ($item->status_detail == 'คืนเครื่องประดับแล้ว') {
+                        $count_index += 1;
+                    }
+                }
+                $additional_receipt = AdditionalChange::where('order_detail_id', $item->id)->get();
+                foreach ($additional_receipt as $value) {
+                    $additional_total += $value->amount;
+                }
             }
-            else{
-                $total_additional_receipt = 0 ; 
+            if ($count_index == $data_orderdetail->count()) {
+                $ceate_receipt = new Receipt();
+                $ceate_receipt->order_id = $orderdetail->order_id;
+                $ceate_receipt->receipt_type = 3;
+                $ceate_receipt->total_price = $data_orderdetail_sum_damage_insurance - $additional_total;
+                $ceate_receipt->save();
             }
-            $ceate_receipt = new Receipt();
-            $ceate_receipt->order_id = $orderdetail->order_id;
-            $ceate_receipt->order_detail_id = $orderdetail->id;
-            $ceate_receipt->receipt_type = 3 ; 
-            $ceate_receipt->total_price = $orderdetail->damage_insurance - $total_additional_receipt ; 
-            $ceate_receipt->save();
         }
         return redirect()->back()->with('success', $message_session);
     }
@@ -2475,8 +2955,7 @@ class OrderController extends Controller
                     $create_dress_mea_adjust->save();
                 }
             }
-        }
-        elseif ($textcharacter === "เสื้อ") {
+        } elseif ($textcharacter === "เสื้อ") {
             $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
             $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
             $data_shirt = Shirtitem::where('dress_id', $dress_id)->first();
@@ -2586,8 +3065,7 @@ class OrderController extends Controller
                     $create_dress_mea_adjust->save();
                 }
             }
-        }
-        elseif ($textcharacter === "กระโปรง/ผ้าถุง") {
+        } elseif ($textcharacter === "กระโปรง/ผ้าถุง") {
             $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
             $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
             $data_skirt = Skirtitem::where('dress_id', $dress_id)->first();

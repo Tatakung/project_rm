@@ -103,13 +103,15 @@
                                 )->get();
 
                                 $validate = false;
-                                foreach ($dress_mea_adjust as $index => $dressmeaadjust) {
-                                    $dressmea = App\Models\Dressmea::where('id', $dressmeaadjust->dressmea_id)->value(
-                                        'current_mea',
-                                    );
+                                foreach ($dress_mea_adjust as $index => $dressmeaadjust) { 
+                                    $dressmea = App\Models\Dressmea::where('id', $dressmeaadjust->dressmea_id)->value('current_mea');
+
                                     if ($dressmea != $dressmeaadjust->new_size) {
                                         $validate = true;
                                     }
+
+
+                                    
                                 }
                                 if ($validate) {
                                     $edit_message_mea = 'รอการปรับแก้ขนาด';

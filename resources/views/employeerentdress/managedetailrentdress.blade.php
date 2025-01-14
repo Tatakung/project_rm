@@ -159,7 +159,6 @@
 
         {{-- เช็คว่ามันอยู่คิวไหน --}}
         @php
-
             $reservation_now = App\Models\Reservation::where('status_completed', 0)
                 ->where('dress_id', $orderdetail->dress_id)
                 ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
@@ -175,7 +174,7 @@
                     ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
                     ->get();
 
-                // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะเสื้อมาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
+                // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะเสื้อและผ้าถุงมาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
                 $status_total_dress = App\Models\Reservation::where('status_completed', 0)
                     ->where('dress_id', $orderdetail->dress_id)
                     ->whereNull('shirtitems_id')
@@ -205,7 +204,10 @@
                 else {
                     $check_open_button = true;
                 }
-            } elseif ($orderdetail->shirtitems_id) {
+            }
+
+
+            elseif ($orderdetail->shirtitems_id) {
                 //  ตรวจสอบเฉพาะเสื้อก่อน
                 $status_shirt = App\Models\Reservation::where('status_completed', 0)
                     ->where('dress_id', $orderdetail->dress_id)
@@ -213,7 +215,7 @@
                     ->whereNull('skirtitems_id')
                     ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
                     ->get();
-                // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะผ้าถุงมาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
+                // ตรวจอสอบเช่าเฉพาะทั้งชุด แต่ห้ามเอาเช่าเฉพาะผ้าถุง/เสื้อ มาเกี่ยวข้อง เพราะอย่าไปนับคิวด้วย
                 $status_total_dress = App\Models\Reservation::where('status_completed', 0)
                     ->where('dress_id', $orderdetail->dress_id)
                     ->whereNull('shirtitems_id')
@@ -243,7 +245,8 @@
                 else {
                     $check_open_button = true;
                 }
-            } else {
+            }
+            else {
                 $reservation_now = App\Models\Reservation::where('status_completed', 0)
                     ->where('dress_id', $orderdetail->dress_id)
                     ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
@@ -496,10 +499,10 @@
                                         {{ $text_date }}
                                     </p>
 
-                                    <a href="{{ route('receiptpickup', ['id' => $orderdetail->id]) }}" target="_blank"
+                                    {{-- <a href="{{ route('receiptpickup', ['id' => $orderdetail->id]) }}" target="_blank"
                                         class="btn btn-sm btn-primary"@if ($receipt_bill_pickup) style="display: block ; "
                                     @else
-                                    style="display: none ; " @endif>ใบเสร็จรับชุด</a>
+                                    style="display: none ; " @endif>ใบเสร็จรับชุด</a> --}}
                                 </small>
                             </div>
 
@@ -532,10 +535,10 @@
                                         @endphp
                                         {{ $text_date }}
                                     </p>
-                                    <a href="{{ route('receiptreturn', ['id' => $orderdetail->id]) }}" target="_blank"
+                                    {{-- <a href="{{ route('receiptreturn', ['id' => $orderdetail->id]) }}" target="_blank"
                                         class="btn btn-sm btn-primary"@if ($receipt_bill_return) style="display: block ; "
                                     @else
-                                    style="display: none ; " @endif>ใบเสร็จคืนชุด</a>
+                                    style="display: none ; " @endif>ใบเสร็จคืนชุด</a> --}}
 
                                 </small>
                             </div>
@@ -730,7 +733,7 @@
 
 
 
-        
+
 
 
 
@@ -1013,20 +1016,22 @@
 
                         <h6 class="fw-bold mb-3">รายละเอียดการชำระเงิน</h6>
                         @if ($orderdetail->status_payment == 1)
-                            <div class="p-3 bg-light rounded mb-3">
+
+                            <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
                                     <span>ค่าเช่าชุด:</span>
-                                    <span>{{ number_format($orderdetail->price, 2) }} บาท</span>
-                                </div>
-                                <div class="d-flex justify-content-between text-secondary">
-                                    <span style="margin-left: 20px;">หักเงินมัดจำแล้ว:</span>
-                                    <span>-{{ number_format($orderdetail->deposit, 2) }} บาท</span>
-                                </div>
-                                <div class="d-flex justify-content-between border-top pt-2 fw-bold">
-                                    <span>ค่าเช่าชุดคงเหลือ:</span>
                                     <span>
-                                        {{ number_format($orderdetail->price - $orderdetail->deposit, 2) }} บาท
-                                        <i class="text-warning bi bi-exclamation-circle ms-2"></i>
+                                        {{ number_format($orderdetail->price, 2) }} บาท
+                                    </span>
+                                </div>
+                            </div>
+
+
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between">
+                                    <span>เงินประกัน:</span>
+                                    <span>
+                                        {{ number_format($orderdetail->damage_insurance, 2) }} บาท
                                     </span>
                                 </div>
                             </div>
@@ -1036,17 +1041,6 @@
                                     <span>เงินมัดจำ:</span>
                                     <span>
                                         {{ number_format($orderdetail->deposit, 2) }} บาท
-                                        <i class="text-success bi bi-check-circle ms-2"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between">
-                                    <span>เงินประกัน:</span>
-                                    <span>
-                                        {{ number_format($orderdetail->damage_insurance, 2) }} บาท
-                                        <i class="text-warning bi bi-exclamation-circle ms-2"></i>
                                     </span>
                                 </div>
                             </div>
@@ -1059,28 +1053,28 @@
                                         บาท</span>
                                 </div>
                                 <small class="text-muted" style="color:#0000CD ; ">
-                                    (ค่าเช่าชุดคงเหลือ {{ number_format($orderdetail->price - $orderdetail->deposit, 2) }}
+                                    (หักเงินมัดจำ {{ number_format($orderdetail->price - $orderdetail->deposit, 2) }}
                                     บาท
                                     + เงินประกัน
                                     {{ number_format($orderdetail->damage_insurance, 2) }} บาท)
                                 </small>
                             </div>
                         @elseif($orderdetail->status_payment == 2)
-                            <div class="p-3 bg-light rounded mb-3">
+                            <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
                                     <span>ค่าเช่าชุด:</span>
                                     <span>
                                         {{ number_format($orderdetail->price, 2) }} บาท
-                                        <i class="text-success bi bi-check-circle ms-2"></i>
                                     </span>
                                 </div>
                             </div>
-                            <div class="p-3 bg-light rounded mb-3">
+
+
+                            <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
                                     <span>เงินประกัน:</span>
                                     <span>
                                         {{ number_format($orderdetail->damage_insurance, 2) }} บาท
-                                        <i class="text-success bi bi-check-circle ms-2"></i>
                                     </span>
                                 </div>
                             </div>

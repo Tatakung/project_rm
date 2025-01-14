@@ -99,101 +99,6 @@
             </div>
 
 
-
-
-
-
-            <!-- รายการรับคืนเครื่องประดับ -->
-            <div class="col-md-6">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="fas fa-gem text-warning me-2"></i>
-                            <h5 class="card-title mb-0">เครื่องประดับที่ต้องรับคืนวันนี้</h5>
-                        </div>
-                        @if ($return_jewelry_today->count() > 0)
-                            @foreach ($return_jewelry_today as $item)
-                                <div class="ps-4">
-                                    <p class="fw-bold mb-1">
-
-                                        @if ($item->jewelry_id)
-                                            <p class="text-muted ms-2">
-                                                -{{ $item->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
-                                                {{ $item->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->resermanytoonejew->jewelry_code }}
-                                            </p>
-                                        @elseif($item->jewelry_set_id)
-                                            @php
-                                                if ($item->jewelry_set_id) {
-                                                    $set_jew_item = App\Models\Jewelrysetitem::where(
-                                                        'jewelry_set_id',
-                                                        $item->jewelry_set_id,
-                                                    )->get();
-                                                }
-                                            @endphp
-
-                                            @foreach ($set_jew_item as $item)
-                                                <p class="text-muted ms-2">
-                                                    -{{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
-                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
-                                                </p>
-                                            @endforeach
-                                        @endif
-                                </div>
-                            @endforeach
-                        @else
-                            <p class="text-muted ms-2">ไม่มีรายการแสดงผล</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- Tasks In Progress Section -->
-        <div class="row g-4 mb-2">
-
-
-
-            <div class="col-md-6">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="fas fa-tshirt text-primary me-2"></i>
-                            <h5 class="card-title mb-0">ชุดที่ต้องรับคืนวันนี้</h5>
-                        </div>
-                        @if ($return_dress_today->count() > 0)
-                            @foreach ($return_dress_today as $item)
-                                @if ($item->re_one_many_details->first() && in_array($item->re_one_many_details->first()->type_order, [2, 4]))
-                                    <div class="ps-4">
-                                        @if ($item->shirtitems_id)
-                                            <p class="text-muted ms-2">
-                                                -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                                {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
-                                                (ผ้าถุง)
-                                            </p>
-                                        @elseif($item->skirtitems_id)
-                                            <p class="text-muted ms-2">
-                                                -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                                {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
-                                                (เสื้อ)</p>
-                                        @else
-                                            <p class="text-muted ms-2">
-                                                -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                                {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
-                                                (ทั้งชุด)
-                                            </p>
-                                        @endif
-                                    </div>
-                                @endif
-                            @endforeach
-                        @else
-                            <p class="text-muted ms-2">ไม่มีรายการแสดงผล</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
             <!-- ชุดที่รอดำเนินการซักทั้งหมด -->
             <div class="col-6 g-4 mb-2">
                 <div class="card border-0 shadow-sm">
@@ -278,25 +183,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-
-        <!-- Fitting Appointments Section -->
-        <div class="row ">
-            {{-- <div class="col-6">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="fas fa-calendar-check text-info me-2"></i>
-                            <h5 class="card-title mb-0">นัดลองชุดวันนี้ (1)</h5>
-                        </div>
-                        <div class="ps-4">
-                            <p class="fw-bold mb-1">คุณวิภา สวยเสมอ</p>
-                            <p class="text-muted ms-2">- เช่าตัดชุดไทยบรหม</p>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
             <div class="col-6">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
@@ -379,6 +265,125 @@
                     </div>
                 </div>
             </div>
+
+
+            <!-- รายการรับคืนเครื่องประดับ -->
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-gem text-warning me-2"></i>
+                            <h5 class="card-title mb-0">เครื่องประดับที่ต้องรับคืนวันนี้</h5>
+                        </div>
+                        @if ($return_jewelry_today->count() > 0)
+                            @foreach ($return_jewelry_today as $item)
+                                <div class="ps-4">
+                                    <p class="fw-bold mb-1">
+
+                                        @if ($item->jewelry_id)
+                                            <p class="text-muted ms-2">
+                                                -{{ $item->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                {{ $item->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->resermanytoonejew->jewelry_code }}
+                                            </p>
+                                        @elseif($item->jewelry_set_id)
+                                            @php
+                                                if ($item->jewelry_set_id) {
+                                                    $set_jew_item = App\Models\Jewelrysetitem::where(
+                                                        'jewelry_set_id',
+                                                        $item->jewelry_set_id,
+                                                    )->get();
+                                                }
+                                            @endphp
+
+                                            @foreach ($set_jew_item as $item)
+                                                <p class="text-muted ms-2">
+                                                    -{{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
+                                                </p>
+                                            @endforeach
+                                        @endif
+                                </div>
+                            @endforeach
+                        @else
+                            <p class="text-muted ms-2">ไม่มีรายการแสดงผล</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            {{-- </div> --}}
+
+
+
+            <!-- Tasks In Progress Section -->
+            {{-- <div class="row g-4 mb-2"> --}}
+
+
+
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-tshirt text-primary me-2"></i>
+                            <h5 class="card-title mb-0">ชุดที่ต้องรับคืนวันนี้</h5>
+                        </div>
+                        @if ($return_dress_today->count() > 0)
+                            @foreach ($return_dress_today as $item)
+                                @if ($item->re_one_many_details->first() && in_array($item->re_one_many_details->first()->type_order, [2, 4]))
+                                    <div class="ps-4">
+                                        @if ($item->shirtitems_id)
+                                            <p class="text-muted ms-2">
+                                                -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                                {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
+                                                (ผ้าถุง)
+                                            </p>
+                                        @elseif($item->skirtitems_id)
+                                            <p class="text-muted ms-2">
+                                                -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                                {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
+                                                (เสื้อ)</p>
+                                        @else
+                                            <p class="text-muted ms-2">
+                                                -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                                {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
+                                                (ทั้งชุด)
+                                            </p>
+                                        @endif
+                                    </div>
+                                @endif
+                            @endforeach
+                        @else
+                            <p class="text-muted ms-2">ไม่มีรายการแสดงผล</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+
+            {{-- </div> --}}
+
+
+            <!-- Fitting Appointments Section -->
+            {{-- <div class="row "> --}}
+            {{-- <div class="col-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-calendar-check text-info me-2"></i>
+                            <h5 class="card-title mb-0">นัดลองชุดวันนี้ (1)</h5>
+                        </div>
+                        <div class="ps-4">
+                            <p class="fw-bold mb-1">คุณวิภา สวยเสมอ</p>
+                            <p class="text-muted ms-2">- เช่าตัดชุดไทยบรหม</p>
+                        </div>
+                    </div>
+                </div>
+            </div> --}}
+
+
+
+
+
+
         </div>
 
 

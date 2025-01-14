@@ -132,356 +132,170 @@
             </tr>
         </thead>
         <tbody>
-            {{-- <tr>
-                <td class="text-center" style="vertical-align: top;">1</td>
-                <td>ชำระมัดจำตัดชุดราตรี<br>
-                    <span class="sub-item" style="margin-left: 20px;">- ราคาเช่า 1300 บาท</span><br>
-                </td>
-                <td class="text-center" style="vertical-align: top;">1.00
-                </td>
-                <td class="text-center" style="vertical-align: top;">500.00</td>
-                <td class="text-center" style="vertical-align: top;">250.00</td>
-            </tr>
-            <tr>
-                <td class="text-center" style="vertical-align: top;">2</td>
-                <td>ชำระค่าเช่าชุดไทย A01 + เงินประกันชุด<br>
-                    <span class="sub-item" style="margin-left: 20px;">- ราคาเช่า 1300 บาท</span><br>
-                    <span class="sub-item" style="margin-left: 20px;">- ค่าประกันชุด 1300 บาท</span>
-                </td>
-                <td class="text-center" style="vertical-align: top;">1.00</td>
-                <td class="text-center" style="vertical-align: top;">200.00</td>
-                <td class="text-center" style="vertical-align: top;">100.00</td>
-            </tr> --}}
+
             @php
                 $count_index = 1;
             @endphp
 
-
-            @if ($orderdetail->type_order == 1)
-                รอก่อน
-            @elseif($orderdetail->type_order == 2)
-                @if ($orderdetail->detail_many_one_re->shirtitems_id)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>เงินประกันที่รับมา
-                            (เช่า{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
-                            {{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                            เสื้อ)</td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }} </td>
-                    </tr>
-                @elseif($orderdetail->detail_many_one_re->skirtitems_id)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>เงินประกันที่รับมา
-                            (เช่า{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
-                            {{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                            ผ้าถุง)</td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }} </td>
-                    </tr>
-                @else
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>เงินประกันที่รับมา
-                            (เช่า{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
-                            {{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                            ทั้งชุด )</td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }} </td>
-                    </tr>
+            @foreach ($orderdetails as $item)
+                @if ($item->type_order == 2)
+                    @if ($item->shirtitems_id)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>เงินประกันที่รับมา
+                                (เช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                เสื้อ)
+                            </td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }} <br>
+                            </td>
+                        </tr>
+                    @elseif($item->skirtitems_id)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>เงินประกันที่รับมา
+                                (เช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                ผ้าถุง)
+                            </td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }} <br>
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>เงินประกันที่รับมา
+                                (เช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                ทั้งชุด)
+                            </td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }} <br>
+                            </td>
+                        </tr>
+                    @endif
+                @elseif($item->type_order == 3)
+                    @if ($item->detail_many_one_re->jewelry_id)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>เงินประกันที่รับมา
+                                (เช่า{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }})
+                            </td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }} <br>
+                            </td>
+                        </tr>
+                    @elseif($item->detail_many_one_re->jewelry_set_id)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>เงินประกันที่รับมา
+                                (เช่าเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }})
+                            </td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }} <br>
+                            </td>
+                        </tr>
+                    @endif
                 @endif
+            @endforeach
+
+            @if ($price_damage_insurance == 0)
                 <tr>
                     <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                    <td>หัก ค่าเสียหาย </td>
+                    <td>หัก ค่าเสียหายทั้งหมด
+                    </td>
                     <td class="text-center" style="vertical-align: top;">1</td>
                     <td class="text-center" style="vertical-align: top;">
-                        @if ($price_damage_insurance)
-                            {{ number_format($price_damage_insurance->amount, 2) }}
-                        @else
-                            0.00
-                        @endif
-                    </td>
+                        0.00</td>
                     <td class="text-center" style="vertical-align: top;">
-                        @if ($price_damage_insurance)
-                            {{ number_format($price_damage_insurance->amount, 2) }}
-                        @else
-                            0.00
-                        @endif
+                        0.00 <br>
                     </td>
                 </tr>
-                @if ($price_return_late)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>หัก ค่าปรับส่งคืนชุดล่าช้า </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_return_late->amount, 2) }}
-
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_return_late->amount, 2) }}
-
-                        </td>
-                    </tr>
-                @endif
-                @if ($price_extend_time)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>หัก ค่าธรรมเนียมขยายเวลาเช่า </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_extend_time->amount, 2) }}
-
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_extend_time->amount, 2) }}
-
-                        </td>
-                    </tr>
-                @endif
-                @for ($i = $count_index; $i <= 11; $i++)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                    </tr>
-                @endfor
-            @elseif($orderdetail->type_order == 3)
-                @if ($orderdetail->detail_many_one_re->jewelry_id)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>เงินประกันที่รับมา
-                            (เช่า{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
-                            {{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_code }})
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }} </td>
-                    </tr>
-                @elseif($orderdetail->detail_many_one_re->jewelry_set_id)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>เงินประกันที่รับมา(เช่าเซตเครื่องประดับ{{ $orderdetail->detail_many_one_re->resermanytoonejewset->set_name }})
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }} </td>
-                    </tr>
-                @endif
-
-
+            @elseif($price_damage_insurance > 0)
                 <tr>
                     <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                    <td>หัก ค่าเสียหาย </td>
+                    <td>หัก ค่าเสียหายทั้งหมด
+                    </td>
                     <td class="text-center" style="vertical-align: top;">1</td>
                     <td class="text-center" style="vertical-align: top;">
-                        @if ($price_damage_insurance)
-                            {{ number_format($price_damage_insurance->amount, 2) }}
-                        @else
-                            0.00
-                        @endif
-                    </td>
+                        {{ number_format($price_damage_insurance, 2) }}</td>
                     <td class="text-center" style="vertical-align: top;">
-                        @if ($price_damage_insurance)
-                            {{ number_format($price_damage_insurance->amount, 2) }}
-                        @else
-                            0.00
-                        @endif
+                        {{ number_format($price_damage_insurance, 2) }} <br>
                     </td>
                 </tr>
-
-
-
-                @if ($price_return_late)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>หัก ค่าปรับส่งคืนชุดล่าช้า </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_return_late->amount, 2) }}
-
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_return_late->amount, 2) }}
-
-                        </td>
-                    </tr>
-                @endif
-                @if ($price_extend_time)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>หัก ค่าธรรมเนียมขยายเวลาเช่า </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_extend_time->amount, 2) }}
-
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_extend_time->amount, 2) }}
-
-                        </td>
-                    </tr>
-                @endif
-                @for ($i = $count_index; $i <= 11; $i++)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                    </tr>
-                @endfor
-            @elseif($orderdetail->type_order == 4)
-                <tr>
-                    <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                    <td>เงินประกันที่รับมา
-                        (เช่าตัด{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
-                        {{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                        ทั้งชุด )</td>
-                    <td class="text-center" style="vertical-align: top;">1</td>
-                    <td class="text-center" style="vertical-align: top;">
-                        {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                    <td class="text-center" style="vertical-align: top;">
-                        {{ number_format($orderdetail->damage_insurance, 2) }} </td>
-                </tr>
-                <tr>
-                    <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                    <td>หัก ค่าเสียหาย </td>
-                    <td class="text-center" style="vertical-align: top;">1</td>
-                    <td class="text-center" style="vertical-align: top;">
-                        @if ($price_damage_insurance)
-                            {{ number_format($price_damage_insurance->amount, 2) }}
-                        @else
-                            0.00
-                        @endif
-                    </td>
-                    <td class="text-center" style="vertical-align: top;">
-                        @if ($price_damage_insurance)
-                            {{ number_format($price_damage_insurance->amount, 2) }}
-                        @else
-                            0.00
-                        @endif
-                    </td>
-                </tr>
-                @if ($price_return_late)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>หัก ค่าปรับส่งคืนชุดล่าช้า </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_return_late->amount, 2) }}
-
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_return_late->amount, 2) }}
-
-                        </td>
-                    </tr>
-                @endif
-                @if ($price_extend_time)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>หัก ค่าธรรมเนียมขยายเวลาเช่า </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_extend_time->amount, 2) }}
-
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">
-
-                            {{ number_format($price_extend_time->amount, 2) }}
-
-                        </td>
-                    </tr>
-                @endif
-                @for ($i = $count_index; $i <= 11; $i++)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                    </tr>
-                @endfor
             @endif
 
 
-
-
-
-            {{-- <tr>
-                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                <td>ค่าเช่าชุดไทย V3 <br>
-                    <span class="sub-item" style="color: rgb(73, 66, 66) ; ">หักเงินมัดจำ (จ่ายเมื่อวันที่ 1 มกราคม 2567
-                        )</span><br>
-                    <span class="sub-item">คงเหลือชำระ</span>
-                </td>
-                <td class="text-center" style="vertical-align: top;">1</td>
-                <td class="text-center" style="vertical-align: top;">1500</td>
-                <td class="text-center" style="vertical-align: top;">1500 <br>
-                    <span class="sub-item" style="color: rgb(73, 66, 66) ; ">450.00</span><br>
-                    <span class="sub-item">1050.00</span>
-                </td>
-            </tr>
+            @if ($price_return_late > 0)
             <tr>
                 <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                <td>ค่าประกันชุดไทย V3</td>
+                <td>หัก ค่าปรับส่งคืนล่าช้า
+                </td>
                 <td class="text-center" style="vertical-align: top;">1</td>
-                <td class="text-center" style="vertical-align: top;">1500</td>
-                <td class="text-center" style="vertical-align: top;">1500</td>
-            </tr> --}}
-
-
-
-
-
-            @if ($receipt->total_price >= 0)
-                <tr>
-                    <td class="text-center" style="vertical-align: top ;   border-top: 1px solid black;"
-                        colspan="4">
-                        คืนเงินประกัน</td>
-                    <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
-                        {{ $receipt->total_price }}</td>
-                </tr>
-            @elseif($receipt->total_price < 0)
-                <tr>
-                    <td class="text-center" style="vertical-align: top ;   border-top: 1px solid black;"
-                        colspan="4">
-                        ลูกค้าต้องชำระเพิ่ม (<i>ค่าเสียหายเกินวงเกินประกัน</i>)</td>
-                    <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
-                        {{ number_format(abs($receipt->total_price), 2) }}
-                    </td>
-                </tr>
+                <td class="text-center" style="vertical-align: top;">
+                    {{ number_format($price_return_late, 2) }}</td>
+                <td class="text-center" style="vertical-align: top;">
+                    {{ number_format($price_return_late, 2) }} <br>
+                </td>
+            </tr>
+            @endif
+            @if ($price_extend_time > 0)
+            <tr>
+                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                <td>หัก ค่าธรรมเนียมขยายเวลาเช่า
+                </td>
+                <td class="text-center" style="vertical-align: top;">1</td>
+                <td class="text-center" style="vertical-align: top;">
+                    {{ number_format($price_extend_time, 2) }}</td>
+                <td class="text-center" style="vertical-align: top;">
+                    {{ number_format($price_extend_time, 2) }} <br>
+                </td>
+            </tr>
             @endif
 
+            
 
+
+            @for ($i = $count_index; $i <= 15; $i++)
+            <tr>
+                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+            </tr>
+        @endfor
+
+        @if ($receipt->total_price >= 0)
+        <tr>
+            <td class="text-center" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
+                คืนเงินประกัน</td>
+            <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
+                {{ $receipt->total_price }}</td>
+        </tr>
+    @elseif($receipt->total_price < 0)
+        <tr>
+            <td class="text-center" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
+                ลูกค้าต้องชำระเพิ่ม (<i>ค่าเสียหายเกินวงเกินประกัน</i>)</td>
+            <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
+                {{ number_format(abs($receipt->total_price), 2) }}
+            </td>
+        </tr>
+    @endif
         </tbody>
     </table>
     <!-- ส่วนลายเซ็น -->
@@ -509,32 +323,7 @@
         <p>หมายเหตุ :</p>
 
 
-        @if ($orderdetail->type_order == 1)
-        @elseif($orderdetail->type_order == 2)
-            {{-- <span class="sub-item" style="margin-left: 20px;">- กำหนดคืนชุดวันที่
-                {{ \Carbon\Carbon::parse($date->return_date)->locale('th')->isoFormat('D MMM') }}
-                {{ \Carbon\Carbon::parse($date->return_date)->year + 543 }}</span><br>
-            <span class="sub-item" style="margin-left: 20px;">-
-                จะได้รับเงินประกันคืนเมื่อคืนชุดตามกำหนดและชุดอยู่ในสภาพสมบูรณ์</span><br>
-            <span class="sub-item" style="margin-left: 20px;">- กรณีส่งคืนชุดล่าช้า หากเกินกำหนดวันคืนชุด
-                ผู้เช่าจะต้องชำระค่าปรับเพิ่มเติม คิดเป็นวันละ 200 บาท/ชุด</span><br> --}}
-        @elseif($orderdetail->type_order == 3)
-            {{-- <span class="sub-item" style="margin-left: 20px;">- กำหนดคืนเครื่องประดับวันที่
-                {{ \Carbon\Carbon::parse($date->return_date)->locale('th')->isoFormat('D MMM') }}
-                {{ \Carbon\Carbon::parse($date->return_date)->year + 543 }}</span><br>
-            <span class="sub-item" style="margin-left: 20px;">-
-                จะได้รับเงินประกันคืนเมื่อคืนเครื่องประดับตามกำหนดและชุดอยู่ในสภาพสมบูรณ์</span><br>
-            <span class="sub-item" style="margin-left: 20px;">- กรณีส่งคืนล่าช้า หากเกินกำหนดวันคืน
-                ผู้เช่าจะต้องชำระค่าปรับเพิ่มเติม คิดเป็นวันละ 200 บาท</span><br> --}}
-        @elseif($orderdetail->type_order == 4)
-            {{-- <span class="sub-item" style="margin-left: 20px;">- กำหนดคืนชุดวันที่
-                {{ \Carbon\Carbon::parse($date->return_date)->locale('th')->isoFormat('D MMM') }}
-                {{ \Carbon\Carbon::parse($date->return_date)->year + 543 }}</span><br>
-            <span class="sub-item" style="margin-left: 20px;">-
-                จะได้รับเงินประกันคืนเมื่อคืนชุดตามกำหนดและชุดอยู่ในสภาพสมบูรณ์</span><br>
-            <span class="sub-item" style="margin-left: 20px;">- กรณีส่งคืนชุดล่าช้า หากเกินกำหนดวันคืนชุด
-                ผู้เช่าจะต้องชำระค่าปรับเพิ่มเติม คิดเป็นวันละ 200 บาท/ชุด</span><br> --}}
-        @endif
+
 
 
 

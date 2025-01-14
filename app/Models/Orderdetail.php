@@ -39,6 +39,7 @@ class Orderdetail extends Model
         'late_fee',
         'total_other_price',
         'color',
+        'reservation_id'
     ];
     //ตารางorderdetail เป็น M - 1 ของตาราง order
     public function order()

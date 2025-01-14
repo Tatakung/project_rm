@@ -17,4 +17,13 @@ class Dressmeaadjustment extends Model
         'status',
         'name' , 
     ];
+    public function dressmeaadjust_many_to_one_dressmea(){
+        return $this->belongsTo(Dressmea::class,'dressmea_id') ; 
+    }
+
+
+
+
+
+
 }

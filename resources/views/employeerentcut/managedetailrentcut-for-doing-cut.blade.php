@@ -99,6 +99,14 @@
     </script>
 
 
+<ol class="breadcrumb" style="background-color: transparent; ">
+    <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
+    <li class="breadcrumb-item"><a
+            href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">รายละเอียดออเดอร์ที่
+            {{ $orderdetail->order_id }}</a></li>
+    <li class="breadcrumb-item active">{{ $orderdetail->title_name }}</li>
+</ol>
 
 
 
@@ -780,7 +788,6 @@
 
 
 
-                        <p><i class="bi bi-file-earmark-text"></i> จำนวนชุด : {{ $orderdetail->amount }} ชุด</p>
 
 
 
@@ -843,46 +850,9 @@
             </div>
         </div>
 
-        @if ($imagerent->count() > 0)
-            <div class="row mt-3 mb-3">
-                <div class="col-md-12">
-                    <div class="card shadow">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="d-flex justify-content-between align-items-center mt-2">
-                                        <h5 class="card-title">รูปภาพแสดงตัวแบบสำหรับเช่าตัด</h5>
-                                        <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#add_image"
-                                            @if ($is_admin == 1 && $orderdetail->status_detail != 'ส่งมอบชุดแล้ว') style="display: block ; "
-                                           @elseif($who_login == $person_order && $orderdetail->status_detail != 'ส่งมอบชุดแล้ว')
-                                           style="display: block ; "
-                                           @else
-                                           style="display: none ; " @endif>
-                                            +เพิ่มรูปภาพ
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                @foreach ($imagerent as $item)
-                                    <div class="col-md-6 col-lg-4 mb-4">
-                                        <div class="card h-100 shadow-sm">
-                                            <img src="{{ asset('storage/' . $item->image) }}" alt="Image description"
-                                                style="width: 100%; height: 300px;">
-                                            <div class="card-body">
-                                                <p class="card-text">{{ $item->description }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
+        
+            
+        
 
         @if ($round->count() > 0)
             <div class="row mt-3 mb-3">
@@ -979,11 +949,18 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="card-title">วันนัดลองชุด</h5>
                                     <button type="button" class="btn btn-primary" data-toggle="modal"
-                                        data-target="#modaladdfitting">เพิ่มวันนัดลองชุด</button>
+                                        data-target="#modaladdfitting"
+                                        @if($check_button_add_fitting_image)
+                                        style="display: none ; "
+                                        @else
+                                        style="display: block ; "
+                                        @endif
+                                        >เพิ่มวันนัดลองชุด</button>
                                 </div>
                             </div>
                         </div>
 
+                        @if($fitting->count() > 0 )
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -1132,7 +1109,9 @@
                                 @endforeach
                             </tbody>
                         </table>
-
+                        @else
+                        <p style="text-align: center ; ">ไม่ได้นัดลองชุดกับลูกค้า</p>
+                        @endif
 
 
 
@@ -1141,6 +1120,65 @@
                 </div>
             </div>
         </div>
+
+
+        <div class="row mt-3 mb-3">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <h5 class="card-title">รูปภาพแสดงตัวแบบสำหรับเช่าตัด</h5>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#add_image"
+                                        @if($check_button_add_fitting_image)
+                                        style="display: none ; " 
+                                        @else
+                                        style="display: block ; "
+                                        @endif
+                                       >
+                                        +เพิ่มรูปภาพ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($imagerent->count() > 0 )
+                        <div class="row mb-3">
+                            @foreach ($imagerent as $item)
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <img src="{{ asset('storage/' . $item->image) }}" alt="Image description"
+                                            style="width: 100%; height: 300px;">
+                                        <div class="card-body">
+                                            <p class="card-text">{{ $item->description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        @else
+                        <div class="row mb-3">ไม่มีรูปภาพแสดง</div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

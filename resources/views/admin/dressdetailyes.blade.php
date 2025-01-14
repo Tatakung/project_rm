@@ -12,13 +12,19 @@
             background-color: #ffffff;
             font-weight: bold;
         }
+
         .custom-modal-body {
-    background-color: #28a745; /* สีเขียวเข้ม */
-    color: #fff; /* ข้อความสีขาว */
-    padding: 20px; /* ระยะห่างภายใน */
-    border-radius: 5px; /* ขอบโค้งมน */
-    text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
-}
+            background-color: #28a745;
+            /* สีเขียวเข้ม */
+            color: #fff;
+            /* ข้อความสีขาว */
+            padding: 20px;
+            /* ระยะห่างภายใน */
+            border-radius: 5px;
+            /* ขอบโค้งมน */
+            text-align: center;
+            /* จัดข้อความให้อยู่ตรงกลาง */
+        }
     </style>
 
     <ol class="breadcrumb" style="background-color: transparent;">
@@ -33,14 +39,14 @@
             รายละเอียดของหมายเลขชุด{{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</li>
 
     </ol>
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <h2 class="py-4" style="text-align: start">รายละเอียดของหมายเลขชุด
-                {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h2 class="py-4" style="text-align: start">รายละเอียดของหมายเลขชุด
+                    {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h2>
+            </div>
         </div>
-    </div>
-    
+
 
 
 
@@ -86,7 +92,7 @@
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
-                                                                                                                                                                        </p> -->
+                                                                                                                                                                                </p> -->
                                 {{-- <p><strong>สถานะชุด:</strong> <span
                                         @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
                                         {{ $datadress->dress_status }}</span></p> --}}
@@ -98,10 +104,19 @@
                                     <li>ผ้าถุง : {{ $text_check_status_skirt }}</li>
                                 </ul> --}}
 
-                                <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
-                                <p><strong>เงินมัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
-                                <p><strong>ค่าประกันชุด:</strong>
-                                    {{ number_format($datadress->damage_insurance, 2) }} บาท</p>
+
+                                @if ($datadress->dress_price == null)
+                                    <p><strong>ราคาเช่า:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                                    <p><strong>เงินมัดจำ:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                                    <p><strong>ค่าประกันชุด:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                                @else
+                                    <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
+                                    <p><strong>เงินมัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท
+                                    </p>
+                                    <p><strong>ค่าประกันชุด:</strong> {{ number_format($datadress->damage_insurance, 2) }}
+                                        บาท</p>
+                                @endif
+
 
 
                                 {{-- <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $datadress->dress_rental }} ครั้ง --}}
@@ -156,7 +171,7 @@
 
                         </div>
                     </div>
-<hr>
+                    <hr>
 
                     <div class="container">
                         <h3 class="mt-3"style="text-align: center">คิวการเช่าทั้งชุด</h3>
@@ -203,32 +218,27 @@
                                 @endforeach
                             </div>
                             <div class="col-md-4">
-                                <p>
-                                    {{-- <strong>สถานะเสื้อปัจุบัน:</strong>
-                                    <span>
-                                        {{ $text_check_status_shirt }}
-                                    </span> --}}
-                                </p>
-                                <p><strong>ราคาเช่า:</strong> {{ number_format($shirtitem->shirtitem_price, 2) }} บาท</p>
-                                <p><strong>เงินมัดจำ:</strong> {{ number_format($shirtitem->shirtitem_deposit, 2) }} บาท
-                                </p>
-                                <p><strong>ค่าประกัน:</strong> {{ number_format($shirtitem->shirt_damage_insurance, 2) }}
-                                    บาท</p>
-                                {{-- <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $shirtitem->shirtitem_rental }} ครั้ง --}}
-                                    {{-- <a href="">
-                                        ดูประวัติ
-                                    </a> --}}
-                                </p>
-                                {{-- <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ --}}
-                                    {{-- <a href="">ดูประวัติ</a> --}}
-                                </p>
+
+
+
+                                @if ($shirtitem->shirtitem_price == null)
+                                    <p><strong>ราคาเช่า:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                                    <p><strong>เงินมัดจำ:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                                    <p><strong>ค่าประกัน:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                                @else
+                                    <p><strong>ราคาเช่า:</strong> {{ number_format($shirtitem->shirtitem_price, 2) }} บาท
+                                    </p>
+                                    <p><strong>เงินมัดจำ:</strong> {{ number_format($shirtitem->shirtitem_deposit, 2) }}
+                                        บาท</p>
+                                    <p><strong>ค่าประกัน:</strong>
+                                        {{ number_format($shirtitem->shirt_damage_insurance, 2) }}บาท</p>
+                                @endif
+
                             </div>
                             <div class="col-md-5">
                                 <p>
                                     <strong>ขนาดของเสื้อ</strong> (ปรับแก้ ขยาย/ลด ได้):
-                                    {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea_shirt">
-                                        <i class="bi bi-plus-square text-dark"></i>
-                                    </button> --}}
+
                                 <div class=" ">
                                     @php
                                         $list_check_name_shirt = [];
@@ -244,9 +254,6 @@
                                                 <td col-1>{{ $dress_mea_shirt->current_mea }} </td>
                                                 <td col-1>นิ้ว</td>
                                             </tr>
-                                            {{-- @php
-                                                $list_check_name_shirt[] = $item->measurementnow_dress_name;
-                                            @endphp --}}
                                         @endforeach
                                     </table>
 
@@ -255,7 +262,7 @@
                             </div>
                         </div>
                     </div>
-<hr>
+                    <hr>
                     <div class="container">
                         <h3 class="mt-3"style="text-align: center">คิวการเช่าเสื้อ</h3>
 
@@ -293,31 +300,26 @@
                                 @endforeach
                             </div>
                             <div class="col-md-4">
-                                {{-- <p><strong>สถานะผ้าถุงตอนนี้:</strong> <span>{{ $text_check_status_skirt }}</span> --}}
                                 </p>
-                                <p><strong>ราคาเช่า:</strong> {{ number_format($skirtitem->skirtitem_price, 2) }} บาท</p>
-                                <p><strong>เงินมัดจำ:</strong> {{ number_format($skirtitem->skirtitem_deposit, 2) }} บาท
-                                </p>
-                                <p><strong>ค่าประกัน:</strong>
-                                    {{ number_format($skirtitem->skirt_damage_insurance, 2) }} บาท</p>
-                                {{-- <p><strong>จำนวนครั้งที่ถูกเช่า:</strong> {{ $skirtitem->skirtitem_rental }} ครั้ง --}}
-                                    {{-- <span>
-                                        <a href="">ดูประวัติ</a>
-                                    </span> --}}
-                                </p>
-                                {{-- <p><strong>จำนวนครั้งที่ซ่อม:</strong> รอ --}}
-                                    {{-- <span>
-                                        <a href="">ดูประวัติ</a>
-                                    </span> --}}
-                                </p>
+
+                                @if ($skirtitem->skirtitem_price == null)
+                                    <p><strong>ราคาเช่า:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                                    <p><strong>เงินมัดจำ:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                                    <p><strong>ค่าประกัน:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                                @else
+                                    <p><strong>ราคาเช่า:</strong> {{ number_format($skirtitem->skirtitem_price, 2) }} บาท
+                                    </p>
+                                    <p><strong>เงินมัดจำ:</strong> {{ number_format($skirtitem->skirtitem_deposit, 2) }}
+                                        บาท</p>
+                                    <p><strong>ค่าประกัน:</strong>{{ number_format($skirtitem->skirt_damage_insurance, 2) }}
+                                        บาท</p>
+                                @endif
+
                             </div>
                             <div class="col-md-5">
                                 <p>
                                     <strong>ขนาดของผ้าถุง</strong> (ปรับแก้ ขยาย/ลด ได้):
-                                    {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal"
-                                        data-target="#add_mea_skirt">
-                                        <i class="bi bi-plus-square text-dark"></i>
-                                    </button> --}}
+                                    
                                 <div class=" ">
                                     @php
                                         $list_check_name_skirt = [];
@@ -336,10 +338,7 @@
                                                 </td>
                                                 <td>นิ้ว</td>
                                             </tr>
-                                            {{-- @php
-                                                $list_check_name_skirt[] =
-                                                    $measument_yes_separate_now_skirt->measurementnow_dress_name;
-                                            @endphp --}}
+                                            
                                         @endforeach
                                     </table>
 
@@ -398,7 +397,8 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_dress_deposit" style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
+                                            <label for="update_dress_deposit"
+                                                style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
                                             <input type="number" class="form-control"
                                                 name="update_dress_damage_insurance" id="update_dress_damage_insurance"
                                                 value="{{ $datadress->damage_insurance }}"
@@ -424,16 +424,17 @@
 
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_dress_description" style="font-weight:bold">คำอธิบายชุด</label>
+                                            <label for="update_dress_description"
+                                                style="font-weight:bold">คำอธิบายชุด</label>
                                             <textarea name="update_dress_description" id="update_dress_description" class="form-control" rows="3">{{ $datadress->dress_description }}</textarea>
                                         </div>
                                     </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn " data-dismiss="modal" style="background-color:#DADAE3;" >ยกเลิก</button>
-                            <button type="submit" class="btn " style="background-color:#ACE6B7;"
-                            >บันทึก</button>
+                            <button type="button" class="btn " data-dismiss="modal"
+                                style="background-color:#DADAE3;">ยกเลิก</button>
+                            <button type="submit" class="btn " style="background-color:#ACE6B7;">บันทึก</button>
                         </div>
                         </form>
                     </div>
@@ -477,7 +478,8 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_shirt_damage_insurance" style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
+                                            <label for="update_shirt_damage_insurance"
+                                                style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
                                             <input type="number" class="form-control"
                                                 name="update_shirt_damage_insurance" id="update_shirt_damage_insurance"
                                                 value="{{ $shirtitem->shirt_damage_insurance }}"
@@ -506,9 +508,9 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn " data-dismiss="modal"  style="background-color:#DADAE3;" >ยกเลิก</button>
-                                <button type="submit" class="btn " style="background-color:#ACE6B7;"
-                                >บันทึก</button>
+                                <button type="button" class="btn " data-dismiss="modal"
+                                    style="background-color:#DADAE3;">ยกเลิก</button>
+                                <button type="submit" class="btn " style="background-color:#ACE6B7;">บันทึก</button>
                             </div>
                         </form>
 
@@ -551,7 +553,8 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="update_skirt_deposit" style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
+                                            <label for="update_skirt_deposit"
+                                                style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
                                             <input type="number" class="form-control"
                                                 name="update_skirt_damage_insurance" id="update_skirt_damage_insurance"
                                                 value="{{ $skirtitem->skirt_damage_insurance }}"
@@ -580,7 +583,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" data-dismiss="modal" class="btn "  style="background-color:#DADAE3;" >ยกเลิก</button>
+                                <button type="button" data-dismiss="modal" class="btn "
+                                    style="background-color:#DADAE3;">ยกเลิก</button>
                                 <button type="submit" class="btn"style="background-color:#ACE6B7;">บันทึก</button>
                             </div>
                         </form>
@@ -610,7 +614,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn " data-dismiss="modal" style="background-color:#DADAE3;" >ยกเลิก</button>
+                            <button type="button" class="btn " data-dismiss="modal"
+                                style="background-color:#DADAE3;">ยกเลิก</button>
                             <button type="submit" class="btn " style="background-color:#ACE6B7;">ยืนยัน</button>
                         </div>
                     </form>
@@ -705,9 +710,9 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn " data-dismiss="modal"style="background-color:#DADAE3;"  >ยกเลิก</button>
-                            <button type="submit" class="btn " style="background-color:#ACE6B7;"
-                            >บันทึก</button>
+                            <button type="button" class="btn "
+                                data-dismiss="modal"style="background-color:#DADAE3;">ยกเลิก</button>
+                            <button type="submit" class="btn " style="background-color:#ACE6B7;">บันทึก</button>
                         </div>
                     </form>
                 </div>
@@ -838,7 +843,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn " data-dismiss="modal" style="background-color:#DADAE3;" >ยกเลิก</button>
+                            <button type="button" class="btn " data-dismiss="modal"
+                                style="background-color:#DADAE3;">ยกเลิก</button>
                             <button type="submit" class="btn" style="background-color:#ACE6B7;">บันทึก</button>
                         </div>
                     </form>
@@ -891,14 +897,14 @@
 
         <!-- ข้อความแจ้งเตือน -->
         <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
-    <div class="modal-dialog custom-modal-dialog">
-        <div class="modal-content custom-modal-content">
-            <div class="modal-body custom-modal-body">
-                {{ session('success') }}
+            <div class="modal-dialog custom-modal-dialog">
+                <div class="modal-content custom-modal-content">
+                    <div class="modal-body custom-modal-body">
+                        {{ session('success') }}
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
         <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
             <div class="modal-dialog custom-modal-dialog">

@@ -132,491 +132,604 @@
             </tr>
         </thead>
         <tbody>
-            {{-- <tr>
-                <td class="text-center" style="vertical-align: top;">1</td>
-                <td>ชำระมัดจำตัดชุดราตรี<br>
-                    <span class="sub-item" style="margin-left: 20px;">- ราคาเช่า 1300 บาท</span><br>
-                </td>
-                <td class="text-center" style="vertical-align: top;">1.00
-                </td>
-                <td class="text-center" style="vertical-align: top;">500.00</td>
-                <td class="text-center" style="vertical-align: top;">250.00</td>
-            </tr>
-            <tr>
-                <td class="text-center" style="vertical-align: top;">2</td>
-                <td>ชำระค่าเช่าชุดไทย A01 + เงินประกันชุด<br>
-                    <span class="sub-item" style="margin-left: 20px;">- ราคาเช่า 1300 บาท</span><br>
-                    <span class="sub-item" style="margin-left: 20px;">- ค่าประกันชุด 1300 บาท</span>
-                </td>
-                <td class="text-center" style="vertical-align: top;">1.00</td>
-                <td class="text-center" style="vertical-align: top;">200.00</td>
-                <td class="text-center" style="vertical-align: top;">100.00</td>
-            </tr> --}}
-            @php
-                // ถ้าจ่ายเงินมัดจำ ตัวแปร check_payment จะเป็น true
-                $check_payment = App\Models\Paymentstatus::where('order_detail_id', $orderdetail->id)
-                    ->where('payment_status', 1)
-                    ->exists();
-            @endphp
-
             @php
                 $count_index = 1;
             @endphp
 
-
-            @if ($orderdetail->type_order == 1)
-                รอก่อน
-            @elseif($orderdetail->type_order == 2)
-                @if ($check_payment)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>ค่าเช่า{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
-                            {{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                            <br>
-                            <span class="sub-item" style="color: rgb(133, 126, 126) ; ">หักเงินมัดจำ (จ่ายเมื่อวันที่
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }})</span><br>
-                            <span class="sub-item">คงเหลือชำระ</span>
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->price, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->price, 2) }} <br>
-                            <span class="sub-item"
-                                style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->deposit, 2) }}</span><br>
-                            <span
-                                class="sub-item">{{ number_format($orderdetail->price - $orderdetail->deposit, 2) }}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>ค่าประกัน{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
-                            {{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                    </tr>
-                    @for ($i = $count_index; $i <= 11; $i++)
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        </tr>
-                    @endfor
-                @else
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>ค่าเช่า{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
-                            {{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                            <br>
-                            <span class="sub-item" style="color: rgb(133, 126, 126) ; ">ชำระแล้ว (จ่ายเมื่อวันที่
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                )</span><br>
-                            <span class="sub-item">คงเหลือชำระ</span>
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->price, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->price, 2) }} <br>
-                            <span class="sub-item"
-                                style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->price, 2) }}</span><br>
-                            <span class="sub-item">0.00 </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>ค่าประกัน{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
-                            {{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $orderdetail->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                            <br>
-                            <span class="sub-item" style="color: rgb(133, 126, 126) ; ">ชำระแล้ว (จ่ายเมื่อวันที่
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                )</span><br>
-                            <span class="sub-item">คงเหลือชำระ</span>
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }} <br>
-                            <span class="sub-item"
-                                style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->damage_insurance, 2) }}
-                            </span> <br>
-                            <span class="sub-item">0.00 </span>
-
-                        </td>
-                    </tr>
-                    @for ($i = $count_index; $i <= 10; $i++)
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        </tr>
-                    @endfor
-                @endif
-            @elseif($orderdetail->type_order == 3)
-                @if ($check_payment)
-                    @if ($orderdetail->detail_many_one_re->jewelry_id)
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                            <td>ค่าเช่า{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
-                                {{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_code }}
-                                <br>
-                                <span class="sub-item" style="color: rgb(133, 126, 126) ; ">หักเงินมัดจำ
-                                    (จ่ายเมื่อวันที่
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }})</span><br>
-                                <span class="sub-item">คงเหลือชำระ</span>
-                            </td>
-                            <td class="text-center" style="vertical-align: top;">1</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->price, 2) }}</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->price, 2) }} <br>
-                                <span class="sub-item"
-                                    style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->deposit, 2) }}</span><br>
-                                <span
-                                    class="sub-item">{{ number_format($orderdetail->price - $orderdetail->deposit, 2) }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                            <td>ค่าประกัน{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
-                                {{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_code }}
-                            </td>
-                            <td class="text-center" style="vertical-align: top;">1</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        </tr>
-                        @for ($i = $count_index; $i <= 11; $i++)
+            {{-- เงื่อนไขที่ 1 คือ มาเช่าไปเลย วอคอิน(ไม่มีdecoration แน่นอน) --}}
+            @if ($only_rent->pickup_date == $transaction_date)
+                {{-- ราคาเช่า --}}
+                @foreach ($orderdetails as $item)
+                    @if ($item->type_order == 2)
+                        @if ($item->shirtitems_id)
                             <tr>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td>&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (เสื้อ)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
                             </tr>
-                        @endfor
-                    @elseif($orderdetail->detail_many_one_re->jewelry_set_id)
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                            <td>ค่าเช่าเซตเครื่องประดับ{{ $orderdetail->detail_many_one_re->resermanytoonejewset->set_name }}
-                                <br>
-                                <span class="sub-item" style="color: rgb(133, 126, 126) ; ">หักเงินมัดจำ
-                                    (จ่ายเมื่อวันที่
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }})</span><br>
-                                <span class="sub-item">คงเหลือชำระ</span>
-                            </td>
-                            <td class="text-center" style="vertical-align: top;">1</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->price, 2) }}</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->price, 2) }} <br>
-                                <span class="sub-item"
-                                    style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->deposit, 2) }}</span><br>
-                                <span
-                                    class="sub-item">{{ number_format($orderdetail->price - $orderdetail->deposit, 2) }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                            <td>ค่าประกันเซตเครื่องประดับ{{ $orderdetail->detail_many_one_re->resermanytoonejewset->set_name }}
-                            </td>
-                            <td class="text-center" style="vertical-align: top;">1</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        </tr>
-                        @for ($i = $count_index; $i <= 11; $i++)
+                        @elseif($item->skirtitems_id)
                             <tr>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td>&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ผ้าถุง)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
                             </tr>
-                        @endfor
+                        @else
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ทั้งชุด)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @elseif($item->type_order == 3)
+                        @if ($item->detail_many_one_re->jewelry_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                    {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->detail_many_one_re->jewelry_set_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่าเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
                     @endif
-                @else
-                    @if ($orderdetail->detail_many_one_re->jewelry_id)
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                            <td>ค่าเช่า{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
-                                {{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_code }}
-                                <br>
-                                <span class="sub-item" style="color: rgb(133, 126, 126) ; ">ชำระแล้ว (จ่ายเมื่อวันที่
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                    )</span><br>
-                                <span class="sub-item">คงเหลือชำระ</span>
-                            </td>
-                            <td class="text-center" style="vertical-align: top;">1</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->price, 2) }}</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->price, 2) }} <br>
-                                <span class="sub-item"
-                                    style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->price, 2) }}</span><br>
-                                <span class="sub-item">0.00 </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                            <td>ค่าประกัน{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
-                                {{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $orderdetail->detail_many_one_re->resermanytoonejew->jewelry_code }}
-                                <br>
-                                <span class="sub-item" style="color: rgb(133, 126, 126) ; ">ชำระแล้ว (จ่ายเมื่อวันที่
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                    )</span><br>
-                                <span class="sub-item">คงเหลือชำระ</span>
-                            </td>
-                            <td class="text-center" style="vertical-align: top;">1</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->damage_insurance, 2) }} <br>
-                                <span class="sub-item"
-                                    style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->damage_insurance, 2) }}
-                                </span> <br>
-                                <span class="sub-item">0.00 </span>
-
-                            </td>
-                        </tr>
-                        @for ($i = $count_index; $i <= 10; $i++)
-                            <tr>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td>&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            </tr>
-                        @endfor
-                    @elseif($orderdetail->detail_many_one_re->jewelry_set_id)
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                            <td>ค่าเช่าเซตเครื่องประดับ{{ $orderdetail->detail_many_one_re->resermanytoonejewset->set_name }}
-                                <br>
-                                <span class="sub-item" style="color: rgb(133, 126, 126) ; ">ชำระแล้ว (จ่ายเมื่อวันที่
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                    )</span><br>
-                                <span class="sub-item">คงเหลือชำระ</span>
-                            </td>
-                            <td class="text-center" style="vertical-align: top;">1</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->price, 2) }}</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->price, 2) }} <br>
-                                <span class="sub-item"
-                                    style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->price, 2) }}</span><br>
-                                <span class="sub-item">0.00 </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                            <td>ค่าประกันเซตเครื่องประดับ{{ $orderdetail->detail_many_one_re->resermanytoonejewset->set_name }}
-                                <br>
-                                <span class="sub-item" style="color: rgb(133, 126, 126) ; ">ชำระแล้ว (จ่ายเมื่อวันที่
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                    )</span><br>
-                                <span class="sub-item">คงเหลือชำระ</span>
-                            </td>
-                            <td class="text-center" style="vertical-align: top;">1</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($orderdetail->damage_insurance, 2) }} <br>
-                                <span class="sub-item"
-                                    style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->damage_insurance, 2) }}
-                                </span> <br>
-                                <span class="sub-item">0.00 </span>
-
-                            </td>
-                        </tr>
-                        @for ($i = $count_index; $i <= 10; $i++)
-                            <tr>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td>&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            </tr>
-                        @endfor
-                    @endif
-
-                @endif
-            @elseif($orderdetail->type_order == 4)
-                @if ($check_payment)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>ค่าเช่าตัด{{ $orderdetail->type_dress }}
-                            <br>
-                            <span class="sub-item" style="color: rgb(133, 126, 126) ; ">หักเงินมัดจำ (จ่ายเมื่อวันที่
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }})</span><br>
-                            <span class="sub-item">คงเหลือชำระ</span>
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->price, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->price, 2) }} <br>
-                            <span class="sub-item"
-                                style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->deposit, 2) }}</span><br>
-                            <span
-                                class="sub-item">{{ number_format($orderdetail->price - $orderdetail->deposit, 2) }}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>ค่าประกันเช่าตัด{{ $orderdetail->type_dress }}
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                    </tr>
-
-                    @foreach ($decoration as $item)
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                            <td>{{ $item->decoration_description }}</td>
-                            <td class="text-center" style="vertical-align: top;">1</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($item->decoration_price, 2) }}</td>
-                            <td class="text-center" style="vertical-align: top;">
-                                {{ number_format($item->decoration_price, 2) }}</td>
-                        </tr>
-                    @endforeach
-
-
-                    @for ($i = $count_index; $i <= 11; $i++)
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        </tr>
-                    @endfor
-                @else
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>ค่าเช่าตัด{{ $orderdetail->type_dress }}
-                            <br>
-                            <span class="sub-item" style="color: rgb(133, 126, 126) ; ">ชำระแล้ว (จ่ายเมื่อวันที่
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                )</span><br>
-                            <span class="sub-item">คงเหลือชำระ</span>
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->price, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->price, 2) }} <br>
-                            <span class="sub-item"
-                                style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->price, 2) }}</span><br>
-                            <span class="sub-item">0.00 </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>ค่าประกัน{{ $orderdetail->type_dress }}
-                            <br>
-                            <span class="sub-item" style="color: rgb(133, 126, 126) ; ">ชำระแล้ว (จ่ายเมื่อวันที่
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                {{ \Carbon\Carbon::parse($date->pickup_date)->year + 543 }}
-                                )</span><br>
-                            <span class="sub-item">คงเหลือชำระ</span>
-                        </td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($orderdetail->damage_insurance, 2) }} <br>
-                            <span class="sub-item"
-                                style="color: rgb(133, 126, 126) ; ">{{ number_format($orderdetail->damage_insurance, 2) }}
-                            </span> <br>
-                            <span class="sub-item">0.00 </span>
-
-                        </td>
-                    </tr>
-                    @foreach ($decoration as $item)
-                    <tr>
-                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                        <td>{{ $item->decoration_description }}</td>
-                        <td class="text-center" style="vertical-align: top;">1</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($item->decoration_price, 2) }}</td>
-                        <td class="text-center" style="vertical-align: top;">
-                            {{ number_format($item->decoration_price, 2) }}</td>
-                    </tr>
                 @endforeach
+                {{-- ประกัน --}}
+                @foreach ($orderdetails as $item)
+                    @if ($item->type_order == 2)
+                        @if ($item->shirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (เสื้อ)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->skirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ผ้าถุง)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ทั้งชุด)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @elseif($item->type_order == 3)
+                        @if ($item->detail_many_one_re->jewelry_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                    {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->detail_many_one_re->jewelry_set_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกันเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @endif
+                @endforeach
+            @elseif($only_rent->pickup_date != $transaction_date && $only_payment == true)
+                {{-- เงื่อนไขที่ 2 คือ จองไว้ และชำระแค่มัดจำก่อน(อาจจะมี deccoration ในกรณีเช่าตัด)  --}}
 
-                    @for ($i = $count_index; $i <= 10; $i++)
-                        <tr>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                            <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                        </tr>
-                    @endfor
-                @endif
+                {{-- ราคาเช่า --}}
+                @foreach ($orderdetails as $item)
+                    @if ($item->type_order == 2)
+                        @if ($item->shirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (เสื้อ)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->skirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ผ้าถุง)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ทั้งชุด)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @elseif($item->type_order == 3)
+                        @if ($item->detail_many_one_re->jewelry_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                    {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->detail_many_one_re->jewelry_set_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่าเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @endif
+                @endforeach
+                {{-- ประกัน --}}
+                @foreach ($orderdetails as $item)
+                    @if ($item->type_order == 2)
+                        @if ($item->shirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (เสื้อ)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->skirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ผ้าถุง)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ทั้งชุด)
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @elseif($item->type_order == 3)
+                        @if ($item->detail_many_one_re->jewelry_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                    {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->detail_many_one_re->jewelry_set_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกันเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @endif
+                @endforeach
+                {{-- มัดจำที่ชำระแล้ว --}}
+                @foreach ($orderdetails as $item)
+                    @if ($item->type_order == 2)
+                        @if ($item->shirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>มัดจำ{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (เสื้อ)
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->skirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>มัดจำ{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ผ้าถุง)
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }} <br>
+                                </td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>มัดจำ{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ทั้งชุด)
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @elseif($item->type_order == 3)
+                        @if ($item->detail_many_one_re->jewelry_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>มัดจำ{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                    {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->detail_many_one_re->jewelry_set_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>มัดจำเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->deposit, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @endif
+                @endforeach
+                อาจจะมีdecoration ตรงนี้
+
+            @elseif($only_rent->pickup_date != $transaction_date && $only_payment == false)
+                {{-- เงื่อนไขที่ 3 คือ จองไว้ แล้วจ่ายเต็มไปเลย(อาจจะมีdecoration เพิ่มเข้ามานะ) --}}
+
+                {{-- ราคาเช่า --}}
+                @foreach ($orderdetails as $item)
+                    @if ($item->type_order == 2)
+                        @if ($item->shirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (เสื้อ) <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->skirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ผ้าถุง) <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ทั้งชุด) <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @elseif($item->type_order == 3)
+                        @if ($item->detail_many_one_re->jewelry_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่า{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                    {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->detail_many_one_re->jewelry_set_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ค่าเช่าเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->price, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @endif
+                @endforeach
+                {{-- ประกัน --}}
+                @foreach ($orderdetails as $item)
+                    @if ($item->type_order == 2)
+                        @if ($item->shirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (เสื้อ) <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->skirtitems_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ผ้าถุง) <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                    {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
+                                    (ทั้งชุด) <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>  
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @elseif($item->type_order == 3)
+                        @if ($item->detail_many_one_re->jewelry_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกัน{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                    {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @elseif($item->detail_many_one_re->jewelry_set_id)
+                            <tr>
+                                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                                <td>ประกันเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                        {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                                </td>
+                                <td class="text-center" style="vertical-align: top;">1</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }}</td>
+                                <td class="text-center" style="vertical-align: top;">
+                                    {{ number_format($item->damage_insurance, 2) }} <br>
+                                </td>
+                            </tr>
+                        @endif
+                    @endif
+                @endforeach
+                {{-- อาจจะมีdecorationเพิ่มเข้ามา --}}
+                
+
+
+
+
+
             @endif
 
-
-
-
-
-            {{-- <tr>
-                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                <td>ค่าเช่าชุดไทย V3 <br>
-                    <span class="sub-item" style="color: rgb(73, 66, 66) ; ">หักเงินมัดจำ (จ่ายเมื่อวันที่ 1 มกราคม 2567
-                        )</span><br>
-                    <span class="sub-item">คงเหลือชำระ</span>
-                </td>
-                <td class="text-center" style="vertical-align: top;">1</td>
-                <td class="text-center" style="vertical-align: top;">1500</td>
-                <td class="text-center" style="vertical-align: top;">1500 <br>
-                    <span class="sub-item" style="color: rgb(73, 66, 66) ; ">450.00</span><br>
-                    <span class="sub-item">1050.00</span>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                <td>ค่าประกันชุดไทย V3</td>
-                <td class="text-center" style="vertical-align: top;">1</td>
-                <td class="text-center" style="vertical-align: top;">1500</td>
-                <td class="text-center" style="vertical-align: top;">1500</td>
-            </tr> --}}
-
-
-
-
-
-
-
-
-
+            
+            
+            @for ($i = $count_index; $i <= 15; $i++)
+                <tr>
+                    <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                    <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                    <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                </tr>
+            @endfor
             <tr>
                 <td class="text-center" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
                     รวมเงิน</td>
@@ -625,12 +738,12 @@
             </tr>
 
 
-
-
-
-
         </tbody>
     </table>
+
+
+
+
     <!-- ส่วนลายเซ็น -->
     <table style="margin-top: 10px;">
         <tr>
@@ -651,12 +764,13 @@
         </tr>
     </table>
 
+   
 
     <div style="margin-top: 10px;">
         <p>หมายเหตุ :</p>
 
 
-        @if ($orderdetail->type_order == 1)
+        {{-- @if ($orderdetail->type_order == 1)
         @elseif($orderdetail->type_order == 2)
             <span class="sub-item" style="margin-left: 20px;">- กำหนดคืนชุดวันที่
                 {{ \Carbon\Carbon::parse($date->return_date)->locale('th')->isoFormat('D MMM') }}
@@ -681,7 +795,7 @@
                 จะได้รับเงินประกันคืนเมื่อคืนชุดตามกำหนดและชุดอยู่ในสภาพสมบูรณ์</span><br>
             <span class="sub-item" style="margin-left: 20px;">- กรณีส่งคืนชุดล่าช้า หากเกินกำหนดวันคืนชุด
                 ผู้เช่าจะต้องชำระค่าปรับเพิ่มเติม คิดเป็นวันละ 200 บาท/ชุด</span><br>
-        @endif
+        @endif --}}
 
 
 

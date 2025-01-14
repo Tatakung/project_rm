@@ -247,10 +247,13 @@ class EmployeeController extends Controller
         $clean->clean_status = "กำลังส่งซัก";
         $clean->save();
         //ตารางstatus
-        $create_status = new Orderdetailstatus();
-        $create_status->status = "กำลังส่งซัก";
-        $create_status->clean_id = $clean->id;
-        $create_status->save();
+        // $create_status = new Orderdetailstatus();
+        // $create_status->status = "กำลังส่งซัก";
+        // $create_status->clean_id = $clean->id;
+        // $create_status->save();
+
+
+
         $reservation = Reservation::find($clean->reservation_id);
         $reservation->status = "กำลังส่งซัก";
         $reservation->save();
@@ -263,10 +266,10 @@ class EmployeeController extends Controller
         $clean->clean_status = "ซักเสร็จแล้ว";
         $clean->save();
         //ตารางstatus
-        $create_status = new Orderdetailstatus();
-        $create_status->status = "ซักเสร็จแล้ว";
-        $create_status->clean_id = $clean->id;
-        $create_status->save();
+        // $create_status = new Orderdetailstatus();
+        // $create_status->status = "ซักเสร็จแล้ว";
+        // $create_status->clean_id = $clean->id;
+        // $create_status->save();
         //ตารางreservation 
         $reservation = Reservation::find($clean->reservation_id);
         $reservation->status = "ซักเสร็จแล้ว";
@@ -372,10 +375,10 @@ class EmployeeController extends Controller
         $clean->clean_status = "ซักเสร็จแล้ว";
         $clean->save();
         //ตารางstatus
-        $order_status = new Orderdetailstatus();
-        $order_status->clean_id = $clean->id;
-        $order_status->status = "ซักเสร็จแล้ว";
-        $order_status->save();
+        // $order_status = new Orderdetailstatus();
+        // $order_status->clean_id = $clean->id;
+        // $order_status->status = "ซักเสร็จแล้ว";
+        // $order_status->save();
 
         //เพิ่มข้อมูลในตาราง repair 
         $create_repair = new Repair();
@@ -386,10 +389,10 @@ class EmployeeController extends Controller
         $create_repair->reservation_id =  $clean->reservation_id;
         $create_repair->save();
         //ตารางstatus
-        $order_status = new Orderdetailstatus();
-        $order_status->repair_id = $create_repair->id;
-        $order_status->status = "รอดำเนินการ";
-        $order_status->save();
+        // $order_status = new Orderdetailstatus();
+        // $order_status->repair_id = $create_repair->id;
+        // $order_status->status = "รอดำเนินการ";
+        // $order_status->save();
         //ตารางreservation 
         $reservation = Reservation::find($clean->reservation_id);
         $reservation->status = "รอดำเนินการซ่อม";
@@ -406,10 +409,10 @@ class EmployeeController extends Controller
             $repair->repair_status = "กำลังซ่อม";
             $repair->save();
             // ตารางstatus
-            $create_status = new Orderdetailstatus();
-            $create_status->repair_id = $repair->id;
-            $create_status->status = 'กำลังซ่อม';
-            $create_status->save();
+            // $create_status = new Orderdetailstatus();
+            // $create_status->repair_id = $repair->id;
+            // $create_status->status = 'กำลังซ่อม';
+            // $create_status->save();
             // ตารางreservation
             $reservation = Reservation::find($repair->reservation_id);
             $reservation->status = "กำลังซ่อม";
@@ -483,10 +486,10 @@ class EmployeeController extends Controller
         $repair->repair_status = "ซ่อมเสร็จแล้ว";
         $repair->save();
         // ตารางstatus
-        $create_status = new Orderdetailstatus();
-        $create_status->repair_id = $repair->id;
-        $create_status->status = "ซ่อมเสร็จแล้ว";
-        $create_status->save();
+        // $create_status = new Orderdetailstatus();
+        // $create_status->repair_id = $repair->id;
+        // $create_status->status = "ซ่อมเสร็จแล้ว";
+        // $create_status->save();
         // ตารางreservation
         $reservation = Reservation::find($repair->reservation_id);
         $reservation->status = "รอดำเนินการส่งซัก";
@@ -628,10 +631,10 @@ class EmployeeController extends Controller
             $repair->repair_status = "ซ่อมเสร็จแล้ว";
             $repair->save();
             // ตารางstatus
-            $create_status = new Orderdetailstatus();
-            $create_status->repair_id = $repair->id;
-            $create_status->status = "ซ่อมเสร็จแล้ว";
-            $create_status->save();
+            // $create_status = new Orderdetailstatus();
+            // $create_status->repair_id = $repair->id;
+            // $create_status->status = "ซ่อมเสร็จแล้ว";
+            // $create_status->save();
             // ตารางreservation
             $reservation = Reservation::find($repair->reservation_id);
             $reservation->status = "ซ่อมเสร็จแล้ว";
@@ -694,10 +697,10 @@ class EmployeeController extends Controller
             $repair->repair_status = "ซ่อมเสร็จแล้ว";
             $repair->save();
             // ตารางstatus
-            $create_status = new Orderdetailstatus();
-            $create_status->repair_id = $repair->id;
-            $create_status->status = "ซ่อมเสร็จแล้ว";
-            $create_status->save();
+            // $create_status = new Orderdetailstatus();
+            // $create_status->repair_id = $repair->id;
+            // $create_status->status = "ซ่อมเสร็จแล้ว";
+            // $create_status->save();
             // ตารางreservation
             $reservation = Reservation::find($repair->reservation_id);
             $reservation->status = 'รอดำเนินการส่งซัก';
@@ -708,10 +711,10 @@ class EmployeeController extends Controller
             $create_clean->clean_status = "รอดำเนินการ";
             $create_clean->save();
             // ตารางstatus
-            $create_status = new Orderdetailstatus();
-            $create_status->clean_id = $create_clean->id;
-            $create_status->status = "รอดำเนินการ";
-            $create_status->save();
+            // $create_status = new Orderdetailstatus();
+            // $create_status->clean_id = $create_clean->id;
+            // $create_status->status = "รอดำเนินการ";
+            // $create_status->save();
         }
         return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
     }
@@ -741,6 +744,7 @@ class EmployeeController extends Controller
         $repairs_not_null = Repair::where('repair_status', "กำลังซ่อม")
             ->whereNull('reservationfilter_id')
             ->whereNotNull('clean_id')->get();
+            
         return view('employee.repair', compact('repair', 'repairs_null', 'repairs_not_null', 'repair_pending'));
     }
     public function reservedress()
@@ -1519,8 +1523,7 @@ class EmployeeController extends Controller
                             $update_status_jew->save();
                         }
                     }
-                }
-                else {
+                } else {
                     //ตารางorderdetailstatus 
                     $create_status = new Orderdetailstatus();
                     $create_status->order_detail_id = $orderdetail->id;
@@ -1554,8 +1557,7 @@ class EmployeeController extends Controller
                         }
                     }
                 }
-            }
-            elseif ($orderdetail->type_order == 4) {
+            } elseif ($orderdetail->type_order == 4) {
                 //เช่าตัด
                 //ตารางorderdetailstatus 
                 $create_status = new Orderdetailstatus();
@@ -1589,6 +1591,7 @@ class EmployeeController extends Controller
         $orderdetail_for_receipt = Orderdetail::where('order_id', $order_id)->get();
         foreach ($orderdetail_for_receipt as $item) {
             $detail = Orderdetail::find($item->id);
+
             if ($detail->status_payment == 1) {
                 $total_price_receipt += $detail->deposit;
             } elseif ($detail->status_payment == 2) {
@@ -1596,12 +1599,33 @@ class EmployeeController extends Controller
             }
         }
 
-        // สร้างใบเสร็จรับเงิน
-        $create_receipt = new Receipt();
-        $create_receipt->order_id = $order_id;
-        $create_receipt->total_price = $total_price_receipt;
-        $create_receipt->receipt_type = 1; //1ชำระครั้งแรก 2ชำระวันรับชุด 3คืนเงินประกัน
-        $create_receipt->save();
+
+
+        // date_now
+        $this_order_detail_only = Orderdetail::where('order_id', $order_id)->first();
+        $this_pickup_only = Date::where('order_detail_id', $this_order_detail_only->id)->value('pickup_date');
+
+        if ($this_pickup_only == $date_now) {
+            // สร้างใบเสร็จรับเงิน
+            $create_receipt = new Receipt();
+            $create_receipt->order_id = $order_id;
+            $create_receipt->total_price = $total_price_receipt;
+            $create_receipt->receipt_type = 2; //1ตอนที่จอง 2ตอนที่มารับชุด 3ตอนที่มาคืน
+            $create_receipt->save();
+        } else {
+            // สร้างใบเสร็จรับเงิน
+            $create_receipt = new Receipt();
+            $create_receipt->order_id = $order_id;
+            $create_receipt->total_price = $total_price_receipt;
+            $create_receipt->receipt_type = 1; //1ตอนที่จอง 2ตอนที่มารับชุด 3ตอนที่มาคืน
+            $create_receipt->save();
+        }
+
+
+
+
+
+
 
         return redirect()->route('employee.ordertotaldetail', ['id' => $order_id]);
     }

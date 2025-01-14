@@ -498,7 +498,7 @@
 
                                             <td>
                                                 <button class="btn" type="button" data-toggle="modal" style="background-color:#E3A499 ;"
-                                                    data-target="#need_to_repair{{ $clean->id }}">ต้องซ่อม</button>
+                                                    data-target="#need_to_repair{{ $clean->id }}">ต้องซ่อม456</button>
                                                 <button class="btn " type="button" data-toggle="modal" style="background-color:#ACE6B7;border:0"
                                                     data-target="#modalbuttoncleanrowpagetwo{{ $clean->id }}">พร้อมให้เช่าต่อ</button>
                                             </td>

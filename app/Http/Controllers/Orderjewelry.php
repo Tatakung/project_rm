@@ -17,6 +17,7 @@ use App\Models\ChargeJewelry;
 use App\Models\Reservationfilters;
 use App\Models\Typejewelry;
 use App\Models\Receipt;
+use App\Models\Decoration;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -320,6 +321,7 @@ class Orderjewelry extends Controller
             $create_order->user_id = $employee_id;
             $create_order->total_quantity = 1;
             $create_order->order_status = 0;
+            $create_order->type_order = 2; //1.คือตัด 2.เช่า 3.เช่าตัด
             $create_order->save();
 
             //ตารางorderdetail
@@ -342,6 +344,7 @@ class Orderjewelry extends Controller
         }
         return redirect()->back()->with('success', 'เพิ่มลงตะกร้าสำเร็จ');
     }
+
 
 
     public function actionupdatereceivejewelry(Request $request, $id)
@@ -380,8 +383,7 @@ class Orderjewelry extends Controller
             $update_status_jewelry = Jewelry::find($reservation->jewelry_id);
             $update_status_jewelry->jewelry_status = 'กำลังถูกเช่า';
             $update_status_jewelry->save();
-        }
-        elseif ($reservation->jewelry_set_id) {
+        } elseif ($reservation->jewelry_set_id) {
 
             $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->get();
             foreach ($find_re_filter as $item) {
@@ -389,7 +391,7 @@ class Orderjewelry extends Controller
                 $update_re_filter->status = 'กำลังเช่า';
                 $update_re_filter->save();
             }
-            
+
             $jew_item_total = Jewelrysetitem::where('jewelry_set_id', $reservation->jewelry_set_id)->get();
             foreach ($jew_item_total as $item) {
                 $update_status_jew = Jewelry::find($item->jewelry_id);
@@ -421,21 +423,64 @@ class Orderjewelry extends Controller
             $orderdetail->save();
         }
 
-        // สร้างใบเสร็จ
-        $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
-            ->where('payment_status', 1)
-            ->exists();
-        if ($check_payment_code_two_receipt) {
-            $total_price_receipt = ($orderdetail->price - $orderdetail->deposit) + $orderdetail->damage_insurance;
-        } else {
-            $total_price_receipt = 0;
+        // ตรวจสอบว่าใน order นี้ มีทั้งหมดกี่รายการ
+        $count_index = 0;
+        $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)->get();
+        foreach ($data_orderdetail as $item) {
+            if ($item->status_detail == 'กำลังเช่า') {
+                $count_index += 1;
+            }
         }
-        $ceate_receipt = new Receipt();
-        $ceate_receipt->order_id = $orderdetail->order_id;
-        $ceate_receipt->order_detail_id = $orderdetail->id;
-        $ceate_receipt->receipt_type = 2;
-        $ceate_receipt->total_price = $total_price_receipt;
-        $ceate_receipt->save();
+
+        // ถ้ามันตรวจสอบแล้วพบว่าทุกรายการ มันเป็น กำลังเช่า ทั้งหมดแล้ว แปลว่า จะต้องทำการสร้างใบเสร็จอัตโนมัติเลย
+        if ($count_index == $data_orderdetail->count()) {
+            // สร้างใบเสร็จรวม
+
+            $price_total_decoration = 0;
+            foreach ($data_orderdetail as $index) {
+                $decoration_receipt = Decoration::where('order_detail_id', $index->id)->get();
+                foreach ($decoration_receipt as $item) {
+                    $price_total_decoration += $item->decoration_price;
+                }
+            }
+
+            $total_price_receipt = 0;
+            foreach ($data_orderdetail as $item) {
+                $check_payment = Paymentstatus::where('order_detail_id', $item->id)
+                    ->where('payment_status', 1)
+                    ->exists();
+                if ($check_payment) {
+                    $total_price_receipt +=  ($item->price - $item->deposit) + $item->damage_insurance;
+                }
+            }
+            $ceate_receipt = new Receipt();
+            $ceate_receipt->order_id = $orderdetail->order_id;
+            $ceate_receipt->receipt_type = 2;
+            $ceate_receipt->total_price = $total_price_receipt + $price_total_decoration;
+            $ceate_receipt->save();
+        }
+
+
+
+        // สร้างใบเสร็จ
+        // $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
+        //     ->where('payment_status', 1)
+        //     ->exists();
+        // if ($check_payment_code_two_receipt) {
+        //     $total_price_receipt = ($orderdetail->price - $orderdetail->deposit) + $orderdetail->damage_insurance;
+        // } else {
+        //     $total_price_receipt = 0;
+        // }
+        // $ceate_receipt = new Receipt();
+        // $ceate_receipt->order_id = $orderdetail->order_id;
+        // $ceate_receipt->order_detail_id = $orderdetail->id;
+        // $ceate_receipt->receipt_type = 2;
+        // $ceate_receipt->total_price = $total_price_receipt;
+        // $ceate_receipt->save();
+
+
+
+
         return redirect()->back()->with('success', $message_session);
     }
 
@@ -658,23 +703,53 @@ class Orderjewelry extends Controller
 
 
         // สร้างใบเสร็จ
-        $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
-            ->where('payment_status', 1)
-            ->exists();
+        // $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
+        //     ->where('payment_status', 1)
+        //     ->exists();
 
 
-        $additional_receipt = AdditionalChange::where('order_detail_id', $orderdetail->id)->get();
-        if ($additional_receipt->isNotEmpty()) {
-            $total_additional_receipt = $additional_receipt->sum('amount');
-        } else {
-            $total_additional_receipt = 0;
+        // $additional_receipt = AdditionalChange::where('order_detail_id', $orderdetail->id)->get();
+        // if ($additional_receipt->isNotEmpty()) {
+        //     $total_additional_receipt = $additional_receipt->sum('amount');
+        // } else {
+        //     $total_additional_receipt = 0;
+        // }
+        // $ceate_receipt = new Receipt();
+        // $ceate_receipt->order_id = $orderdetail->order_id;
+        // $ceate_receipt->order_detail_id = $orderdetail->id;
+        // $ceate_receipt->receipt_type = 3;
+        // $ceate_receipt->total_price = $orderdetail->damage_insurance - $total_additional_receipt;
+        // $ceate_receipt->save();
+
+        // ถ้ามันตรวจสอบแล้วพบว่าทุกรายการ มันเป็น คืนชุด/คืนเครื่องประดับครบยัง ทั้งหมดแล้ว แปลว่า จะต้องทำการสร้างใบเสร็จอัตโนมัติเลย
+        $count_index = 0;
+        $additional_total = 0 ;
+        $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)->get();
+        $data_orderdetail_sum_damage_insurance = $data_orderdetail->sum('damage_insurance');
+        foreach ($data_orderdetail as $item) {
+            if ($item->type_order == 2) {
+                if ($item->status_detail == 'คืนชุดแล้ว') {
+                    $count_index += 1;
+                }
+            } elseif ($item->type_order == 3) {
+                if ($item->status_detail == 'คืนเครื่องประดับแล้ว') {
+                    $count_index += 1;
+                }
+            }
+            $additional_receipt = AdditionalChange::where('order_detail_id', $item->id)->get();
+            foreach ($additional_receipt as $value) {
+                $additional_total += $value->amount;
+            }
         }
-        $ceate_receipt = new Receipt();
-        $ceate_receipt->order_id = $orderdetail->order_id;
-        $ceate_receipt->order_detail_id = $orderdetail->id;
-        $ceate_receipt->receipt_type = 3;
-        $ceate_receipt->total_price = $orderdetail->damage_insurance - $total_additional_receipt;
-        $ceate_receipt->save();
+        if ($count_index == $data_orderdetail->count()) {
+            $ceate_receipt = new Receipt();
+            $ceate_receipt->order_id = $orderdetail->order_id;
+            $ceate_receipt->receipt_type = 3;
+            $ceate_receipt->total_price = $data_orderdetail_sum_damage_insurance - $additional_total;
+            $ceate_receipt->save();
+        }
+
+
 
 
 

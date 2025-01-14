@@ -246,7 +246,7 @@
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-secondary" type="button" data-toggle="modal"
-                                                        data-target="#modalbuttonrepairrowpageone{{ $repair->id }}">อัพเดตสถานะ</button>
+                                                        data-target="#modalbuttonrepairrowpageone{{ $repair->id }}">อัพเดตสถานะ123</button>
                                                 </td>
                                                 <div class="row mt-3">
                                                     <div class="modal fade" id="modalbuttonrepairrowpageone{{ $repair->id }}" role="dialog" aria-hidden="true">
@@ -487,7 +487,7 @@
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#update_two_no_clean{{$repair->id}}">อัพเดตสถานะ</button>
+                                                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#update_two_no_clean{{$repair->id}}">อัพเดตสถานะ789</button>
                                                         </td>
 
                                                         <div class="modal fade" id="update_two_no_clean{{$repair->id}}" role="dialog" aria-hidden="true" data-backdrop="static">
@@ -724,7 +724,7 @@
                                                         </td>
 
                                                         <td>
-                                                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#butonpagetwocleanyes{{$repair->id}}">อัพเดตสถานะ</button>
+                                                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#butonpagetwocleanyes{{$repair->id}}">อัพเดตสถานะ132465789</button>
                                                         </td>
 
                                                         <div class="modal fade" role="dialog" aria-hidden="true" id="butonpagetwocleanyes{{$repair->id}}" data-backdrop="static">

@@ -169,7 +169,7 @@
             </div>
             <button type="submit" class="btn mb-3" style="background-color:#ACE6B7;"
                         id="button_save">บันทึกการแก้ไข</button>
-                    <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}" class="btn  mb-3"
+                    <a href="{{ route('detaildoingrentcut', ['id' => $orderdetail->id]) }}" class="btn  mb-3"
                         style="background-color:#DADAE3;">ยกเลิก</a>
         </div>
         

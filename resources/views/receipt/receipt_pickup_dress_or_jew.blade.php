@@ -83,7 +83,7 @@
             <td width="50%">
                 <strong style="font-size: 25px;">ร้านเปลือกไหม</strong><br>
                 81/1 ถ.โพนพิสัย ต.หมากแข้ง อ.เมือง จ.อุดรธานี 41000<br>
-                โทรศัพท์ 081-8717-791<br>
+                โทรศัพท์ 098-1472-866<br>
                 เลขประจำตัวผู้เสียภาษี 1623651970
             </td>
             <td width="35%" style="text-align: right;">
@@ -135,7 +135,6 @@
             @php
                 $count_index = 1;
             @endphp
-
             {{-- เงื่อนไขที่ 1 คือ มาเช่าไปเลย วอคอิน(ไม่มีdecoration แน่นอน) --}}
             @if ($only_rent->pickup_date == $transaction_date)
                 {{-- ราคาเช่า --}}
@@ -364,6 +363,18 @@
                                 </td>
                             </tr>
                         @endif
+                    @elseif($item->type_order == 4)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>ค่าเช่าตัด{{ $item->type_dress }}
+                            </td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->price, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->price, 2) }} <br>
+                            </td>
+                        </tr>
                     @endif
                 @endforeach
                 {{-- ประกัน --}}
@@ -439,6 +450,18 @@
                                 </td>
                             </tr>
                         @endif
+                    @elseif($item->type_order == 4)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>ประกันเช่าตัด{{ $item->type_dress }}
+                            </td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->damage_insurance, 2) }} <br>
+                            </td>
+                        </tr>
                     @endif
                 @endforeach
                 {{-- มัดจำที่ชำระแล้ว --}}
@@ -529,10 +552,41 @@
                                 </td>
                             </tr>
                         @endif
+                    @elseif($item->type_order == 4)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>มัดจำเช่าตัด{{ $item->type_dress }}
+                                <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                    {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                            </td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->deposit, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->deposit, 2) }} <br>
+                            </td>
+                        </tr>
                     @endif
                 @endforeach
-                อาจจะมีdecoration ตรงนี้
-
+                {{-- อาจจะมีdecoration ตรงนี้ --}}
+                @foreach ($orderdetails as $item)
+                    @php
+                        $decoration = App\Models\Decoration::where('order_detail_id', $item->id)->get();
+                    @endphp
+                    @foreach ($decoration as $items)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>{{ $items->decoration_description }}</td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($items->decoration_price, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($items->decoration_price, 2) }} <br>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endforeach
             @elseif($only_rent->pickup_date != $transaction_date && $only_payment == false)
                 {{-- เงื่อนไขที่ 3 คือ จองไว้ แล้วจ่ายเต็มไปเลย(อาจจะมีdecoration เพิ่มเข้ามานะ) --}}
 
@@ -544,7 +598,8 @@
                                 <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
                                 <td>ค่าเช่า{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
                                     {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                                    (เสื้อ) <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                    (เสื้อ)
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
                                         {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
                                 </td>
@@ -621,6 +676,21 @@
                                 </td>
                             </tr>
                         @endif
+                    @elseif($item->type_order == 4)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>ค่าเช่าตัด{{ $item->type_dress }}
+                                <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                    {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                            </td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->price, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($item->price, 2) }} <br>
+                            </td>
+                        </tr>
                     @endif
                 @endforeach
                 {{-- ประกัน --}}
@@ -631,7 +701,8 @@
                                 <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
                                 <td>ประกัน{{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->type_dress_name }}
                                     {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
-                                    (เสื้อ) <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                    (เสื้อ)
+                                    <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
                                         {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
                                 </td>
@@ -665,7 +736,7 @@
                                     {{ $item->detail_many_one_re->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->detail_many_one_re->reservation_many_to_one_dress->dress_code }}
                                     (ทั้งชุด) <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
                                         {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>  
+                                        {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
                                 </td>
                                 <td class="text-center" style="vertical-align: top;">1</td>
                                 <td class="text-center" style="vertical-align: top;">
@@ -708,10 +779,42 @@
                                 </td>
                             </tr>
                         @endif
+                    @elseif($item->type_order == 4)
+                    <tr>
+                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                        <td>ประกันเช่าตัด{{$item->type_dress}}
+                            <span style="color: rgb(133, 126, 126) ; font-size: 17px; ">(ชำระเมื่อ
+                                {{ \Carbon\Carbon::parse($transaction_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($transaction_date)->year + 543 }})</span>
+                        </td>
+                        <td class="text-center" style="vertical-align: top;">1</td>
+                        <td class="text-center" style="vertical-align: top;">
+                            {{ number_format($item->damage_insurance, 2) }}</td>
+                        <td class="text-center" style="vertical-align: top;">
+                            {{ number_format($item->damage_insurance, 2) }} <br>
+                        </td>
+                    </tr>
                     @endif
                 @endforeach
                 {{-- อาจจะมีdecorationเพิ่มเข้ามา --}}
-                
+                {{-- อาจจะมีdecoration ตรงนี้ --}}
+                @foreach ($orderdetails as $item)
+                    @php
+                        $decoration = App\Models\Decoration::where('order_detail_id', $item->id)->get();
+                    @endphp
+                    @foreach ($decoration as $items)
+                        <tr>
+                            <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                            <td>{{ $items->decoration_description }}</td>
+                            <td class="text-center" style="vertical-align: top;">1</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($items->decoration_price, 2) }}</td>
+                            <td class="text-center" style="vertical-align: top;">
+                                {{ number_format($items->decoration_price, 2) }} <br>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endforeach
 
 
 
@@ -719,9 +822,9 @@
 
             @endif
 
-            
-            
-            @for ($i = $count_index; $i <= 15; $i++)
+
+
+            @for ($i = $count_index; $i <= 13; $i++)
                 <tr>
                     <td class="text-center" style="vertical-align: top;">&nbsp;</td>
                     <td>&nbsp;</td>
@@ -731,10 +834,17 @@
                 </tr>
             @endfor
             <tr>
-                <td class="text-center" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
-                    รวมเงิน</td>
+                <td class="text-right" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
+                    <span>รวมเป็นเงิน (บาท)</span><br>
+                    <span>ภาษีมูลค่าเพิ่ม 7 % (บาท)</span><br>
+                    <span><strong>จำนวนเงินทั้งสิ้น (บาท)</strong></span>
+                </td>
                 <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
-                    {{ $receipt->total_price }}</td>
+                    <span>{{ number_format($receipt->total_price , 2 ) }}</span><br>
+                    <span>0.00</span><br>
+                    <span><strong>{{ number_format($receipt->total_price , 2) }}</strong></span>
+
+                </td>
             </tr>
 
 
@@ -749,14 +859,14 @@
         <tr>
             <td width="50%" class="text-center">
                 (..........................................................)<br>
-                ชื่อผู้รับเงิน<br>
-                พนักงาน<br>
+                ผู้รับเงิน<br>
+                คุณ{{$receipt->receipt_many_to_one_user->name}} {{$receipt->receipt_many_to_one_user->lname}} (พนักงาน)<br>
                 วันที่ {{ \Carbon\Carbon::parse($receipt->created_at)->locale('th')->isoFormat('D MMM') }}
                 {{ \Carbon\Carbon::parse($receipt->created_at)->year + 543 }}
             </td>
             <td width="50%" class="text-center">
                 (..........................................................)<br>
-                ชื่อลูกค้า<br>
+                ผู้ชำระเงิน<br>
                 คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} <br>
                 วันที่ {{ \Carbon\Carbon::parse($receipt->created_at)->locale('th')->isoFormat('D MMM') }}
                 {{ \Carbon\Carbon::parse($receipt->created_at)->year + 543 }}
@@ -764,10 +874,21 @@
         </tr>
     </table>
 
-   
+
 
     <div style="margin-top: 10px;">
         <p>หมายเหตุ :</p>
+
+        
+
+
+        <span class="sub-item" style="margin-left: 20px;">-
+            นัดคืนวันที่
+            {{ \Carbon\Carbon::parse($only_rent->return_date)->locale('th')->isoFormat('D MMM') }}
+            {{ \Carbon\Carbon::parse($only_rent->return_date)->year + 543 }}
+        </span>
+
+
 
 
         {{-- @if ($orderdetail->type_order == 1)

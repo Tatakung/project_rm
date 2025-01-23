@@ -10,14 +10,20 @@ use App\Models\Dressmeasurementnow;
 use App\Models\Expense;
 use App\Models\Shirtitem;
 use App\Models\Skirtitem;
+
+use App\Models\PriceHistory_Shirt;
+use App\Models\PriceHistory_Skirt;
+
+
 use App\Models\Typedress;
 use App\Models\Orderdetail;
+use App\Models\PriceHistory_Dress;
 use App\Models\User;
 use App\Models\Reservation;
 use App\Models\Dressmeasurementcutedit;
 use App\Models\Date;
-
 use App\Models\Repair;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -309,9 +315,11 @@ class DressController extends Controller
 
         $mea_dress = Dressmea::where('dress_id', $id)->get();
 
-
+        $historydress = PriceHistory_Dress::where('dress_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
         $check_admin = Auth::user()->is_admin;
-        return view('admin.dressdetail', compact('date_reservations', 'datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now', 'history_reservation', 'check_admin'));
+        return view('admin.dressdetail', compact('date_reservations', 'datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now', 'history_reservation', 'check_admin', 'historydress'));
     }
 
     // แยกได้
@@ -436,83 +444,93 @@ class DressController extends Controller
             ->where('status_completed', 0)
             ->get();
 
+        $historydress = PriceHistory_Dress::where('dress_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $historypriceshirt = PriceHistory_Shirt::where('shirtitems_id', $shirtitem->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $historypriceskirt = PriceHistory_Skirt::where('skirtitems_id', $skirtitem->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+
 
         $check_admin = Auth::user()->is_admin;
 
-        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress', 'date_reservations_dress', 'date_reservations_shirt', 'date_reservations_skirt', 'check_admin'));
+
+
+
+
+        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress', 'date_reservations_dress', 'date_reservations_shirt', 'date_reservations_skirt', 'check_admin', 'historydress','historypriceshirt','historypriceskirt'));
     }
 
 
     //อัปเดตชุดnoyes
     public function updatedressnoyes(Request $request, $id)
     {
-        DB::beginTransaction();
-        try {
-            //ตารางdress
-            $update_dress = Dress::find($id);
-            if ($request->input('update_dress_deposit') > $request->input('update_dress_price')) {
-                DB::rollback();
-                return redirect()->back()->with('fail', 'ราคาชุดต้องมากกว่าราคามัดจำ');
-            }
-            $update_dress->dress_price = $request->input('update_dress_price');
-            $update_dress->dress_deposit = $request->input('update_dress_deposit');
-            $update_dress->damage_insurance = $request->input('update_damage_insurance');
-            $update_dress->dress_description = $request->input('update_dress_description');
-            $update_dress->save();
 
 
-            DB::commit();
-            return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
-        } catch (\Exception $e) {
-            DB::rollback();
+
+        //ตารางdress
+        $update_dress = Dress::find($id);
+        if ($update_dress->dress_price != $request->input('update_dress_price')) {
+
+            $historydress = new PriceHistory_Dress();
+            $historydress->dress_id = $id;
+            $historydress->old_price = $update_dress->dress_price;
+            $historydress->new_price = $request->input('update_dress_price');
+            $historydress->save();
         }
+        $update_dress->dress_price = $request->input('update_dress_price');
+        $update_dress->dress_deposit = $request->input('update_dress_deposit');
+        $update_dress->damage_insurance = $request->input('update_damage_insurance');
+        $update_dress->dress_description = $request->input('update_dress_description');
+        $update_dress->save();
+        return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
     }
 
     //อัปเดตชุดyesshirt
     public function updatedressyesshirt(Request $request, $id)
     {
-        DB::beginTransaction();
-        try {
-            //ตารางshirt
-            $update_shirt = Shirtitem::find($id);
-            if ($request->input('update_shirt_deposit') > $request->input('update_shirt_price')) {
-                DB::rollback();
-                return redirect()->back()->with('fail', 'ราคาชุดต้องมากกว่าราคามัดจำ');
-            }
-            $update_shirt->shirtitem_price = $request->input('update_shirt_price');
-            $update_shirt->shirtitem_deposit = $request->input('update_shirt_deposit');
-            $update_shirt->shirt_damage_insurance = $request->input('update_shirt_damage_insurance');
-            $update_shirt->save();
 
-            DB::commit();
-            return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
-        } catch (\Exception $e) {
-            DB::rollback();
+        //ตารางshirt
+        $update_shirt = Shirtitem::find($id);
+        if ($update_shirt->shirtitem_price != $request->input('update_shirt_price')) {
+            $historydress = new PriceHistory_Shirt();
+            $historydress->shirtitems_id = $id;
+            $historydress->old_price = $update_shirt->shirtitem_price;
+            $historydress->new_price = $request->input('update_shirt_price');
+            $historydress->save();
         }
+        $update_shirt->shirtitem_price = $request->input('update_shirt_price');
+        $update_shirt->shirtitem_deposit = $request->input('update_shirt_deposit');
+        $update_shirt->shirt_damage_insurance = $request->input('update_shirt_damage_insurance');
+        $update_shirt->save();
+
+
+        return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
     }
 
-    //อัปเดตชุดyesshirt
+    //อัปเดตชุดyesskirt
     public function updatedressyesskirt(Request $request, $id)
     {
-
-        DB::beginTransaction();
-        try {
-            //ตารางskirt
-            $update_skirt = Skirtitem::find($id);
-            if ($request->input('update_skirt_deposit') > $request->input('update_skirt_price')) {
-                DB::rollback();
-                return redirect()->back()->with('fail', 'ราคาชุดต้องมากกว่าราคามัดจำ');
-            }
-            $update_skirt->skirtitem_price = $request->input('update_skirt_price');
-            $update_skirt->skirtitem_deposit = $request->input('update_skirt_deposit');
-            $update_skirt->skirt_damage_insurance = $request->input('update_skirt_damage_insurance');
-            $update_skirt->save();
-
-            DB::commit();
-            return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
-        } catch (\Exception $e) {
-            DB::rollback();
+        //ตารางskirt
+        $update_skirt = Skirtitem::find($id);
+        if ($update_skirt->skirtitem_price != $request->input('update_skirt_price')) {
+            $historydress = new PriceHistory_Skirt();
+            $historydress->skirtitems_id = $id;
+            $historydress->old_price = $update_skirt->skirtitem_price;
+            $historydress->new_price = $request->input('update_skirt_price');
+            $historydress->save();
         }
+        $update_skirt->skirtitem_price = $request->input('update_skirt_price');
+        $update_skirt->skirtitem_deposit = $request->input('update_skirt_deposit');
+        $update_skirt->skirt_damage_insurance = $request->input('update_skirt_damage_insurance');
+        $update_skirt->save();
+        return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
     }
 
 
@@ -714,28 +732,50 @@ class DressController extends Controller
     //บันทึกค่าใช้จ่าย
     public function expense()
     {
-        $dataexpense = Expense::orderBy('date', 'desc')->get();
-        return view('admin.expense', compact('dataexpense'));
+        $dataexpense = Expense::orderBy('date', 'desc')->paginate(8);
+        $expense = Expense::orderBy('date', 'desc')->get() ; 
+        $today = now()->toDateString() ; 
+        $month = 0 ; 
+        $year = 0 ; 
+        return view('admin.expense', compact('dataexpense','today','month','year','expense'));
     }
+    public function expensefilter(Request $request){
+        
+        $month = $request->input('month') ; 
+        $year = $request->input('year') ; 
+        $today = now()->toDateString() ; 
+        $dataexpense = Expense::orderBy('date', 'desc');
+        $expense = Expense::orderBy('date', 'desc') ; 
 
+        if($month != 0 ){
+            $dataexpense->whereMonth('date',$month) ; 
+            $expense->whereMonth('date',$month) ; 
+        }
+        if($year != 0){
+            $dataexpense->whereYear('date',$year) ; 
+            $expense->whereYear('date',$year) ; 
+        }
+        $dataexpense = $dataexpense->paginate(8) ; 
+        $expense = $expense->get() ; 
 
+        return view('admin.expense', compact('dataexpense','today','month','year','expense'));
+    }
+    
 
     public function saveexpense(Request $request)
     {
-
         if ($request->input('expense_type') == 'other_expense') {
             $expense_type = $request->input('other_expense_type');
         } else {
             $expense_type = $request->input('expense_type');
         }
-
         $save = new Expense();
         $save->date = $request->input('expense_date');
         $save->expense_type = $expense_type;
         $save->expense_value = $request->input('expense_value');
         $save->employee_id = Auth::user()->id;
         $save->save();
-        return redirect()->back()->with('success', "เพิ่มค่าใช้จ่ายสำเร็จ !");
+        return redirect()->route('admin.expense')->with('success', "เพิ่มค่าใช้จ่ายสำเร็จ !") ; 
     }
 
 
@@ -1195,8 +1235,11 @@ class DressController extends Controller
 
     public function dresswaitprice()
     {
-        $dress_wait = Dress::whereNull('dress_price')->paginate(5);
-        return view('admin.dress-wait-price', compact('dress_wait'));
+        $dress_wait = Dress::where('dress_price', 0)
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+        $count_dress = Dress::where('dress_price', 0)->count();
+        return view('admin.dress-wait-price', compact('dress_wait', 'count_dress'));
     }
     public function dresswaitpricesaved(Request $request, $id)
     {
@@ -1221,8 +1264,7 @@ class DressController extends Controller
             $dress->dress_deposit = $deposit_dress;
             $dress->damage_insurance = $insurance_dress;
             $dress->save();
-        }
-        elseif ($dress->separable == 2) {
+        } elseif ($dress->separable == 2) {
             $dress->dress_price = $price_dress;
             $dress->dress_deposit = $deposit_dress;
             $dress->damage_insurance = $insurance_dress;
@@ -1243,6 +1285,6 @@ class DressController extends Controller
             $skirt->skirt_damage_insurance = $skirt_insurance;
             $skirt->save();
         }
-        return redirect()->back()->with('success','สำเร็จ') ; 
+        return redirect()->back()->with('success', 'สำเร็จ');
     }
 }

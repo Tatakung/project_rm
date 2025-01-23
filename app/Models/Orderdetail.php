@@ -120,6 +120,13 @@ class Orderdetail extends Model
     {
         return $this->hasMany(Receipt::class, 'order_detail_id');
     }
+    public function orderdetail_one_to_many_receiptreturn()
+    {
+        return $this->hasMany(ReceiptReturn::class, 'order_detail_id');
+    }
+    
+
+
     public function orderdetail_one_to_one_SeparateRentability()
     {
         return $this->hasOne(SeparateRentability::class, 'order_detail_id');

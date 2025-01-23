@@ -37,6 +37,17 @@
         @endif
     </script>
 
+
+<ol class="breadcrumb" style="background-color: transparent; ">
+    <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">ออเดอร์ที่{{ $orderdetail->order_id }}</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}">รายละเอียดออเดอร์ที่ {{ $orderdetail->id }}</a></li>
+
+    <li class="breadcrumb-item">เลื่อนวันนัดรับ-นัดคืน</li>
+</ol>
+
+
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-12" style="text-align: center ;">
@@ -210,6 +221,22 @@
                                 <div class="col-md-6">
                                     <button type="submit" class="btn btn-secondary mb-2">ตรวจสอบ</button>
                         </form>
+
+
+
+                        <h5>เงื่อนไขการเลื่อนวันนัดรับ-นัดคืน</h5>
+                        <p>
+                            การเลื่อนวันนัดรับ-นัดคืนจะต้องเป็นไปตามเงื่อนไขดังต่อไปนี้:
+                        </p>
+                        <ul>
+                            <li>
+                                <strong>วันนัดรับ:</strong> สามารถเลื่อนวันได้ล่วงหน้า <strong>ไม่เกิน 7 วันก่อนวันนัดรับเดิม</strong> เพื่อเผื่อเวลาสำหรับการคืนเครื่องประดับจากลูกค้าคนก่อนหน้า
+                            </li>
+                            <li>
+                                <strong>วันนัดคืน:</strong> สามารถเลื่อนวันได้ภายหลัง <strong>ไม่เกิน 7 วันหลังจากวันนัดคืนเดิม</strong> ทั้งนี้ต้องไม่มีลูกค้าคนอื่นจองในช่วงเวลาดังกล่าว 
+                            </li>
+                           
+                        </ul>
 
 
                     </div>

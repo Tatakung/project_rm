@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>ใบเสร็จรับเงิน</title>
+    <title>ใบเสร็จคืนเงินประกัน</title>
     <style>
         @font-face {
             font-family: 'THSarabunNew';
@@ -83,11 +83,11 @@
             <td width="50%">
                 <strong style="font-size: 25px;">ร้านเปลือกไหม</strong><br>
                 81/1 ถ.โพนพิสัย ต.หมากแข้ง อ.เมือง จ.อุดรธานี 41000<br>
-                โทรศัพท์ 081-8717-791<br>
+                โทรศัพท์ 098-1472-866<br>
                 เลขประจำตัวผู้เสียภาษี 1623651970
             </td>
             <td width="35%" style="text-align: right;">
-                <strong style="font-size: 25px;">ใบเสร็จรับเงิน</strong><br>
+                <strong style="font-size: 25px;">ใบเสร็จคืนเงินประกัน</strong><br>
                 {{-- สำเนา --}}
             </td>
         </tr>
@@ -210,13 +210,26 @@
                             </td>
                         </tr>
                     @endif
+                @elseif($item->type_order == 4)
+                    <tr>
+                        <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                        <td>เงินประกันที่รับมา
+                            (เช่าตัด{{ $item->type_dress }})
+                        </td>
+                        <td class="text-center" style="vertical-align: top;">1</td>
+                        <td class="text-center" style="vertical-align: top;">
+                            {{ number_format($item->damage_insurance, 2) }}</td>
+                        <td class="text-center" style="vertical-align: top;">
+                            {{ number_format($item->damage_insurance, 2) }} <br>
+                        </td>
+                    </tr>
                 @endif
             @endforeach
 
             @if ($price_damage_insurance == 0)
                 <tr>
                     <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                    <td>หัก ค่าเสียหายทั้งหมด
+                    <td>หักค่าเสียหายทั้งหมด
                     </td>
                     <td class="text-center" style="vertical-align: top;">1</td>
                     <td class="text-center" style="vertical-align: top;">
@@ -228,7 +241,7 @@
             @elseif($price_damage_insurance > 0)
                 <tr>
                     <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                    <td>หัก ค่าเสียหายทั้งหมด
+                    <td>หักค่าเสียหายทั้งหมด
                     </td>
                     <td class="text-center" style="vertical-align: top;">1</td>
                     <td class="text-center" style="vertical-align: top;">
@@ -241,81 +254,133 @@
 
 
             @if ($price_return_late > 0)
-            <tr>
-                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                <td>หัก ค่าปรับส่งคืนล่าช้า
-                </td>
-                <td class="text-center" style="vertical-align: top;">1</td>
-                <td class="text-center" style="vertical-align: top;">
-                    {{ number_format($price_return_late, 2) }}</td>
-                <td class="text-center" style="vertical-align: top;">
-                    {{ number_format($price_return_late, 2) }} <br>
-                </td>
-            </tr>
+                <tr>
+                    <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                    <td>หักค่าปรับส่งคืนล่าช้า
+                    </td>
+                    <td class="text-center" style="vertical-align: top;">1</td>
+                    <td class="text-center" style="vertical-align: top;">
+                        {{ number_format($price_return_late, 2) }}</td>
+                    <td class="text-center" style="vertical-align: top;">
+                        {{ number_format($price_return_late, 2) }} <br>
+                    </td>
+                </tr>
             @endif
             @if ($price_extend_time > 0)
-            <tr>
-                <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
-                <td>หัก ค่าธรรมเนียมขยายเวลาเช่า
-                </td>
-                <td class="text-center" style="vertical-align: top;">1</td>
-                <td class="text-center" style="vertical-align: top;">
-                    {{ number_format($price_extend_time, 2) }}</td>
-                <td class="text-center" style="vertical-align: top;">
-                    {{ number_format($price_extend_time, 2) }} <br>
-                </td>
-            </tr>
+                <tr>
+                    <td class="text-center" style="vertical-align: top;">{{ $count_index++ }}</td>
+                    <td>หักค่าธรรมเนียมขยายเวลาเช่า
+                    </td>
+                    <td class="text-center" style="vertical-align: top;">1</td>
+                    <td class="text-center" style="vertical-align: top;">
+                        {{ number_format($price_extend_time, 2) }}</td>
+                    <td class="text-center" style="vertical-align: top;">
+                        {{ number_format($price_extend_time, 2) }} <br>
+                    </td>
+                </tr>
             @endif
 
-            
 
 
-            @for ($i = $count_index; $i <= 15; $i++)
-            <tr>
-                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-                <td class="text-center" style="vertical-align: top;">&nbsp;</td>
-            </tr>
-        @endfor
 
-        @if ($receipt->total_price >= 0)
-        <tr>
-            <td class="text-center" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
-                คืนเงินประกัน</td>
-            <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
-                {{ $receipt->total_price }}</td>
-        </tr>
-    @elseif($receipt->total_price < 0)
-        <tr>
-            <td class="text-center" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
-                ลูกค้าต้องชำระเพิ่ม (<i>ค่าเสียหายเกินวงเกินประกัน</i>)</td>
-            <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
-                {{ number_format(abs($receipt->total_price), 2) }}
-            </td>
-        </tr>
-    @endif
+            @for ($i = $count_index; $i <= 13; $i++)
+                <tr>
+                    <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                    <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                    <td class="text-center" style="vertical-align: top;">&nbsp;</td>
+                </tr>
+            @endfor
+
+            @if ($receipt->total_price >= 0)
+                
+                <tr>
+                    <td class="text-right" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
+                        <span>คืนเงินประกัน (บาท)</span><br>
+                        <span>ภาษีมูลค่าเพิ่ม 7 % (บาท)</span><br>
+                        <span><strong>จำนวนคืนเงินประกันทั้งสิ้น (บาท)</strong></span>
+                    </td>
+                    <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
+                        <span>{{ $receipt->total_price }}</span><br>
+                        <span>0.00</span><br>
+                        <span><strong>{{ $receipt->total_price }}</strong></span>
+    
+                    </td>
+                </tr>
+    
+
+            @elseif($receipt->total_price < 0)
+                
+
+
+                <tr>
+                    <td class="text-right" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
+                        <span>ลูกค้าต้องชำระเพิ่ม (<i>ค่าเสียหายเกินวงเกินประกัน</i>)</span><br>
+                        <span>ภาษีมูลค่าเพิ่ม 7 % (บาท)</span><br>
+                        <span><strong>จำนวนเงินที่ต้องชำระเพิ่มทั้งสิ้น (บาท)</strong></span>
+                    </td>
+                    <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
+                        <span>{{ number_format(abs($receipt->total_price) , 2 ) }}</span><br>
+                        <span>0.00</span><br>
+                        <span><strong>{{ number_format(abs($receipt->total_price) , 2) }}</strong></span>
+    
+                    </td>
+                </tr>
+
+
+
+
+
+
+            @endif
         </tbody>
     </table>
     <!-- ส่วนลายเซ็น -->
     <table style="margin-top: 10px;">
+
+        @if($receipt->total_price >= 0 )
         <tr>
             <td width="50%" class="text-center">
                 (..........................................................)<br>
-                ชื่อผู้รับเงิน<br>
-                พนักงาน<br>
+                ผู้จ่ายเงิน<br>
+                คุณ{{$receipt->receiptreturn_many_to_one_user->name}} {{$receipt->receiptreturn_many_to_one_user->lname}} (พนักงาน)<br>
                 วันที่ {{ \Carbon\Carbon::parse($receipt->created_at)->locale('th')->isoFormat('D MMM') }}
                 {{ \Carbon\Carbon::parse($receipt->created_at)->year + 543 }}
             </td>
             <td width="50%" class="text-center">
                 (..........................................................)<br>
-                ชื่อลูกค้า<br>
-                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} <br>
+                ผู้รับเงิน<br>
+                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}<br>
                 วันที่ {{ \Carbon\Carbon::parse($receipt->created_at)->locale('th')->isoFormat('D MMM') }}
                 {{ \Carbon\Carbon::parse($receipt->created_at)->year + 543 }}
             </td>
         </tr>
+        @elseif($receipt->total_price < 0 )
+
+        <tr>
+            <td width="50%" class="text-center">
+                (..........................................................)<br>
+                ผู้รับเงิน<br>
+                คุณ{{$receipt->receiptreturn_many_to_one_user->name}} {{$receipt->receiptreturn_many_to_one_user->lname}} (พนักงาน)<br>
+                วันที่ {{ \Carbon\Carbon::parse($receipt->created_at)->locale('th')->isoFormat('D MMM') }}
+                {{ \Carbon\Carbon::parse($receipt->created_at)->year + 543 }}
+            </td>
+            <td width="50%" class="text-center">
+                (..........................................................)<br>
+                ผู้ชำระเงิน<br>
+                คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}<br>
+                วันที่ {{ \Carbon\Carbon::parse($receipt->created_at)->locale('th')->isoFormat('D MMM') }}
+                {{ \Carbon\Carbon::parse($receipt->created_at)->year + 543 }}
+            </td>
+        </tr>
+
+        @endif
+
+        
+
+
+        
     </table>
 
 

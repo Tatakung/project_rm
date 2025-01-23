@@ -8,7 +8,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-10">
                     <div class="card shadow-lg border-0 rounded-lg">
-                        <div class="card-header bg-gradient-primary text-dark py-3">
+                        <div class="card-header text-dark py-3">
                             <h3 class="text-center mb-0">
                                 <i class="fas fa-tshirt me-2"></i>
                                 ชุดนี้เป็นชุดที่ได้มาจากการเช่าตัด และจะถูกเพิ่มเข้าสู่ระบบต่อไป
@@ -19,7 +19,7 @@
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="bg-light p-3 rounded mb-3">
-                                        <h5 class="text-primary mb-3">
+                                        <h5 class=" mb-3">
                                             <i class="fas fa-info-circle me-2"></i>
                                             <strong>ข้อมูลชุด</strong>
                                         </h5>
@@ -128,7 +128,7 @@
 
                                 <div class="col-md-6">
                                     {{-- <div class="mt-3 bg-light p-3 rounded">
-                                        <h5 class="text-primary mb-3">
+                                        <h5 class=" mb-3">
                                             <i class="fas fa-ruler me-2"></i>
                                             <strong>ขนาดชุด(นิ้ว)</strong>
                                         </h5>
@@ -143,7 +143,7 @@
                                         </div>
                                     </div> --}}
                                     <div class="bg-light p-3 rounded">
-                                        <h5 class="text-primary mb-3">
+                                        <h5 class=" mb-3">
                                             <i class="fas fa-image me-2"></i>
                                             <strong>อัปโหลดรูปภาพ</strong>
                                         </h5>
@@ -152,9 +152,7 @@
                                             <div class="input-group">
                                                 <input type="file" name="dress_image" id="dressImage"
                                                     class="form-control" accept="image/*" required>
-                                                <button class="btn btn-outline-secondary" type="button">
-                                                    <i class="fas fa-upload"></i>
-                                                </button>
+
                                             </div>
                                             <small class="form-text text-muted">
                                                 รองรับไฟล์ PNG, JPG (ขนาดไม่เกิน 5MB)
@@ -166,7 +164,7 @@
                                 <div class="col-12 mt-3">
                                     <div class="card border-light">
                                         <div class="card-header bg-light">
-                                            <h5 class="text-primary mb-0">
+                                            <h5 class=" mb-0">
                                                 <i class="fas fa-comment-dots me-2"></i>
                                                 รายละเอียดเพิ่มเติม
                                             </h5>
@@ -183,8 +181,8 @@
                                 <div class="col-12 mt-3" id="big_total_dress">
                                     <div class="card border-light">
                                         <div class="card-header bg-light">
-                                            <h5 class="text-primary mb-0">
-                                                <i class="fas fa-ruler me-2"></i>
+                                            <h5 class=" mb-0">
+ 
                                                 ข้อมูลขนาดของ{{ $orderdetail->type_dress }}
                                                 {{ $typedress->specific_letter }}{{ $next_code }} (หน่วยเป็นนิ้ว)
                                             </h5>
@@ -210,13 +208,13 @@
                                                             <div class="col-md-3">
                                                                 <input type="number" class="form-control"
                                                                     name="number_total_min_[]" placeholder="ขนาดต่ำสุด"
-                                                                    step="0.01" min="0">
+                                                                    step="0.01" min="0" required max="{{ $item->new_size }}">
                                                             </div>
 
                                                             <div class="col-md-3">
                                                                 <input type="number" class="form-control"
                                                                     name="number_total_max_[]" placeholder="ขนาดสูงสุด"
-                                                                    step="0.01" min="0">
+                                                                    step="0.01" min="{{ $item->new_size }}" required>
                                                             </div>
 
                                                             {{-- <div class="col-md-2">
@@ -231,25 +229,16 @@
                                     </div>
                                 </div>
 
-
-
-
-
-
-
-
-
-
                             </div>
                         </div>
 
                         {{-- Action Buttons --}}
-                        <div class="card-footer text-center">
-                            <button type="submit" class="btn btn-primary me-2">
-                                <i class="fas fa-save me-2"></i>บันทึกข้อมูลชุด
+                        <div class="card-footer text-end">
+                            <button type="submit" class="btn me-2" style="background-color:#ACE6B7">
+                                บันทึกข้อมูลชุด
                             </button>
                             <button type="reset" class="btn btn-secondary">
-                                <i class="fas fa-undo me-2"></i>ยกเลิก
+                                ยกเลิก
                             </button>
                         </div>
                     </div>

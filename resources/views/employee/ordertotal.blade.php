@@ -42,22 +42,7 @@
 
         <div class="card mb-4">
 
-            <div class="card-header ">
-                <form action="{{ route('employee.searchordertotal') }}" class="d-flex justify-content-end">
-                    <div class="row">
-                        <div class="col-8">
-                            <input type="text" name="name_search" class="form-control" placeholder="ค้นหาชื่อ"
-                                value="{{ $name_search }}">
-                        </div>
-                        <div class="col">
-                            <button class="btn btn-s" style="background-color:#BACEE6 ;">
-                                <i class="bi bi-search"></i> ค้นหา
-                            </button>
-                        </div>
-                    </div>
-                </form>
 
-            </div>
 
 
 
@@ -69,50 +54,49 @@
                             <th style="width: 200px;">วันที่ทำรายการ</th>
                             <th>หมายเลขออเดอร์</th>
                             <th>ชื่อ-สกุลลูกค้า</th>
-                            <th>ยอดรวม</th>
+                            {{-- <th>ยอดรวม</th> --}}
                             <th>รายการ</th>
                             <th>รายละเอียด</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($customers as $customer)
-                            @foreach ($customer->orders as $order)
-                                @if ($order->order_status == 1)
-                                    <tr>
-                                        <td>
-                                            @if($order->type_order == 1 )
-                                            ตัดชุด
-                                            @elseif($order->type_order == 2 )
-                                            เช่า
-                                            @elseif($order->type_order == 3 )
-                                            เช่าตัด
-                                            @endif
-                                        </td>
-                                        <td>
-                                            {{ \Carbon\Carbon::parse($order->created_at)->locale('th')->isoFormat('D MMM') }}
-                                            {{ \Carbon\Carbon::parse($order->created_at)->year + 543 }}
-                                            <span style="font-size: 12px; color: red ; " id="show_day{{$order->id}}">(2
-                                                วันที่แล้ว)</span>
-
-                                            <script>
-                                                var created_at_order = new Date('{{ $order->created_at }}');
-                                                var now = new Date();
-                                                var total_days = Math.ceil(   (now - created_at_order) / (1000 * 60 * 60 * 24) -1     );
-                                                if(total_days == 0){
-                                                    document.getElementById('show_day{{$order->id}}').innerHTML = '(วันนี้)'; 
-
-                                                }
-                                                else{
-                                                    document.getElementById('show_day{{$order->id}}').innerHTML = '( ' + total_days + ' วันที่แล้ว )' ; 
-
-                                                }
-                                            </script>
+                        @foreach ($order as $item)
 
 
-                                        </td>
-                                        <td>OR{{ $order->id }}</td>
-                                        <td>คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</td>
-                                        <td>
+                            <tr>
+                                <td>
+                                    @if ($item->type_order == 1)
+                                        ตัดชุด
+                                    @elseif($item->type_order == 2)
+                                        เช่า
+                                    @elseif($item->type_order == 3)
+                                        เช่าตัด
+                                    @endif
+                                </td>
+                                <td>
+                                    {{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                    <span style="font-size: 12px; color: red ; " id="show_day{{ $item->id }}">(2
+                                        วันที่แล้ว)</span>
+
+                                    <script>
+                                        var created_at_order = new Date('{{ $item->created_at }}');
+                                        var now = new Date();
+                                        var total_days = Math.ceil((now - created_at_order) / (1000 * 60 * 60 * 24) - 1);
+                                        if (total_days == 0) {
+                                            document.getElementById('show_day{{ $item->id }}').innerHTML = '(วันนี้)';
+
+                                        } else {
+                                            document.getElementById('show_day{{ $item->id }}').innerHTML = '( ' + total_days + ' วันที่แล้ว )';
+
+                                        }
+                                    </script>
+
+
+                                </td>
+                                <td>OR{{ $item->id }}</td>
+                                <td>คุณ{{ $item->customer->customer_fname }} {{ $item->customer->customer_lname }}</td>
+                                {{-- <td>
                                             @php
                                                 $orderdetail_price = App\Models\Orderdetail::where(
                                                     'order_id',
@@ -121,38 +105,22 @@
                                             @endphp
 
                                             {{ number_format($orderdetail_price) }}
-                                        </td>
-                                        <td>{{ $order->total_quantity }} รายการ</td>
-                                        <td>
-                                            <a href="{{ route('employee.ordertotaldetail', ['id' => $order->id ]) }}"
-                                                class="btn btn-sm" style="background-color:#DADAE3;">
-                                                ดูรายละเอียด
-                                            </a>
-                                        </td>
-                                        
-                                    </tr>
-                                @endif
-                            @endforeach
+                                        </td> --}}
+                                <td>{{ $item->total_quantity }} รายการ</td>
+                                <td>
+                                    <a href="{{ route('employee.ordertotaldetail', ['id' => $item->id]) }}"
+                                        class="btn btn-sm" style="background-color:#DADAE3;">
+                                        ดูรายละเอียด
+                                    </a>
+                                </td>
+
+                            </tr>
+
                         @endforeach
+                        
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-@endsection
-
-@section('scripts')
-    <script>
-        $(document).ready(function() {
-            $('#ordersTable').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Thai.json"
-                },
-                "order": [
-                    [1, "desc"]
-                ],
-                "pageLength": 25
-            });
-        });
-    </script>
 @endsection

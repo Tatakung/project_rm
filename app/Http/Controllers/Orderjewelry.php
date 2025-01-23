@@ -17,6 +17,7 @@ use App\Models\ChargeJewelry;
 use App\Models\Reservationfilters;
 use App\Models\Typejewelry;
 use App\Models\Receipt;
+use App\Models\ReceiptReturn;
 use App\Models\Decoration;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -57,49 +58,43 @@ class Orderjewelry extends Controller
         $start_date_fil = Carbon::parse($start_date);
         $end_date_fil = Carbon::parse($end_date);
 
-        $fil_start_7 = $start_date_fil->copy()->subDays(7);
-        $fil_start_1 = $start_date_fil->copy()->subDays(1);
-        $fil_be_start = $start_date_fil->copy();
-        $fil_be_end = $end_date_fil->copy();
-        $fil_end_1 = $end_date_fil->copy()->addDays(1);
-        $fil_end_7 = $end_date_fil->copy()->addDays(7);
+        $fil_start_7 = $start_date_fil->copy()->subDays(7); //ถอยหลังไป 7 วัน
+        $fil_end_7 = $end_date_fil->copy()->addDays(7); // บวกเพิ่มไป 7 วัน 
 
-
-        $jew_set = Jewelryset::all(); //9,10,11
+        $jew_set = Jewelryset::all(); // 9 10 11
 
 
         $list_pass_set_id = [];
 
         foreach ($jew_set as $value) {
-            $jew_id_in_set = Jewelrysetitem::where('jewelry_set_id', $value->id)->get();
+            //  รอบแรก วน 9 ก่อน 
+
+
+            $jew_id_in_set = Jewelrysetitem::where('jewelry_set_id', $value->id)->get(); // 2  แถว
+
+            // 114 122 
+            $validate_pass = true;
             foreach ($jew_id_in_set as $jew) {
+                // วน 122
                 $check_jew_in_fil = Reservationfilters::where('jewelry_id', $jew->jewelry_id)
                     ->where('status_completed', 0)
-                    ->get();  // 3 แถว 
-                $validate_pass = true;
+                    ->get();  // 
+                // สมมุดว่า มี jewelry_id ที่ 114 ทั้งหมด 3 แถว                    
                 foreach ($check_jew_in_fil as $item) {
                     $start_re = Carbon::parse($item->start_date);
                     $end_re = Carbon::parse($item->end_date);
-                    if ($start_re->between($fil_start_7, $fil_start_1) || $end_re->between($fil_start_7, $fil_start_1)) {
+                    if ($start_re->between($fil_start_7, $fil_end_7) || $end_re->between($fil_start_7, $fil_end_7)) {
                         $validate_pass = false;
                         break;
                     }
-
-                    if ($start_re->between($fil_be_start, $fil_be_end) || $end_re->between($fil_be_start, $fil_be_end)) {
-                        $validate_pass = false;
-                        break;
-                    }
-
-                    if ($start_re->between($fil_end_1, $fil_end_7) || $end_re->between($fil_end_1, $fil_end_7)) {
-                        $validate_pass = false;
-                        break;
-                    }
-                }
-                if ($validate_pass) {
-                    $list_pass_set_id[] = $jew->jewelry_set_id;
                 }
             }
+            // ถ้ามันผ่านทุกเงื่อนไขแล้วอะ แปลว่ามันผ่านทุกเงื่อนไข 
+            if ($validate_pass) {
+                $list_pass_set_id[] = $value->id;
+            }
         }
+
 
         $list_pass_set_id = array_unique($list_pass_set_id);
         $jewelry_pass = Jewelryset::whereIn('id', $list_pass_set_id)->get();
@@ -120,12 +115,8 @@ class Orderjewelry extends Controller
         $jewel = Jewelry::where('type_jewelry_id', $jewelry_type)->get();
         $list_pass_id = [];
 
-        $fil_start_7 = $start_date_fil->copy()->subDays(7);
-        $fil_start_1 = $start_date_fil->copy()->subDays(1);
-        $fil_be_start = $start_date_fil->copy();
-        $fil_be_end = $end_date_fil->copy();
-        $fil_end_1 = $end_date_fil->copy()->addDays(1);
-        $fil_end_7 = $end_date_fil->copy()->addDays(7);
+        $fil_start_7 = $start_date_fil->copy()->subDays(7); // ถอยหลังกลับไป 7 วัน 
+        $fil_end_7 = $end_date_fil->copy()->addDays(7); // บวกเพิ่มขึ้นไป 7 วัน 
 
         foreach ($jewel as $jew) {
             $reservation = Reservationfilters::where('jewelry_id', $jew->id)
@@ -135,21 +126,13 @@ class Orderjewelry extends Controller
             foreach ($reservation as $re) {
                 $start_re = Carbon::parse($re->start_date);
                 $end_re = Carbon::parse($re->end_date);
-                if ($start_re->between($fil_start_7, $fil_start_1) || $end_re->between($fil_start_7, $fil_start_1)) {
-                    $validate_pass = false;
-                    break;
-                }
-
-                if ($start_re->between($fil_be_start, $fil_be_end) || $end_re->between($fil_be_start, $fil_be_end)) {
-                    $validate_pass = false;
-                    break;
-                }
-
-                if ($start_re->between($fil_end_1, $fil_end_7) || $end_re->between($fil_end_1, $fil_end_7)) {
+                if ($start_re->between($fil_start_7, $fil_end_7) || $end_re->between($fil_start_7, $fil_end_7)) {
                     $validate_pass = false;
                     break;
                 }
             }
+
+            // หลังจากที่มันเช็คทั้งหมดเสร็จแล้ว ถ้า $validate_pass เป็น true หมายความว่า มันผ่านเงื่อนไข
             if ($validate_pass) {
                 $list_pass_id[] = $jew->id;
             }
@@ -346,7 +329,6 @@ class Orderjewelry extends Controller
     }
 
 
-
     public function actionupdatereceivejewelry(Request $request, $id)
     {
 
@@ -425,7 +407,9 @@ class Orderjewelry extends Controller
 
         // ตรวจสอบว่าใน order นี้ มีทั้งหมดกี่รายการ
         $count_index = 0;
-        $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)->get();
+        $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)
+            ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+            ->get();
         foreach ($data_orderdetail as $item) {
             if ($item->status_detail == 'กำลังเช่า') {
                 $count_index += 1;
@@ -455,6 +439,7 @@ class Orderjewelry extends Controller
             }
             $ceate_receipt = new Receipt();
             $ceate_receipt->order_id = $orderdetail->order_id;
+            $ceate_receipt->employee_id = Auth::user()->id;
             $ceate_receipt->receipt_type = 2;
             $ceate_receipt->total_price = $total_price_receipt + $price_total_decoration;
             $ceate_receipt->save();
@@ -496,7 +481,6 @@ class Orderjewelry extends Controller
         $orderdetail = Orderdetail::find($id);
         $datareservation = Reservation::find($orderdetail->reservation_id);
         $check_for_set_or_item = $request->input('check_for_set_or_item');
-
 
         $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
         $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
@@ -631,34 +615,56 @@ class Orderjewelry extends Controller
                 $create_repair->repair_status = 'รอดำเนินการ';
                 $create_repair->repair_type = 1;  //1.ยังไม่ทำความสะอาด 2.ทำความสะอาดแล้ว 
                 $create_repair->save();
+            } elseif ($actionreturnitem == 'lost') {
+                // สูญหาย
+                //ตารางorderdetail
+                $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                $orderdetail->save();
+
+                // อัปเดตตารางdate
+                $date_id = Date::where('order_detail_id', $id)
+                    ->orderBy('created_at', 'desc')
+                    ->value('id');
+                $update_real = Date::find($date_id);
+                $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                $update_real->save();
+
+
+                //ตารางorderdetailstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $id;
+                $create_status->status = "คืนเครื่องประดับแล้ว";
+                $create_status->save();
+                //ตารางorderdetailstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $id;
+                $create_status->status = "สูญหาย";
+                $create_status->save();
+
+
+                //ตารางreservation
+                $reservation = Reservation::find($orderdetail->reservation_id);
+                $reservation->status = 'คืนเครื่องประดับแล้ว';
+                $reservation->status_completed = 1; //เสร็จแล้ว
+                $reservation->save();
+
+                // ตารางหลอก
+                $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->first();
+                $update_re_filter = Reservationfilters::find($find_re_filter->id);
+                $update_re_filter->status = 'สูญหาย';
+                $update_re_filter->status_completed = 1; //เสร็จแล้ว
+                $update_re_filter->save();
+
+                // อัปเดตสถานะเครื่องประดับ
+                $update_status_jewelry = Jewelry::find($reservation->jewelry_id);
+                $update_status_jewelry->jewelry_status = 'สูญหาย';
+                $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                $update_status_jewelry->save();
             }
         }
         // เช่าเป็นเซต
         elseif ($check_for_set_or_item == 'set') {
 
-            //ตารางorderdetail
-            $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
-            $orderdetail->save();
-
-            // อัปเดตตารางdate
-            $date_id = Date::where('order_detail_id', $id)
-                ->orderBy('created_at', 'desc')
-                ->value('id');
-            $update_real = Date::find($date_id);
-            $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
-            $update_real->save();
-
-            //ตารางorderdetailstatus
-            $create_status = new Orderdetailstatus();
-            $create_status->order_detail_id = $id;
-            $create_status->status = "คืนเครื่องประดับแล้ว";
-            $create_status->save();
-
-            //ตารางreservation
-            $reservation = Reservation::find($orderdetail->reservation_id);
-            $reservation->status = 'คืนเครื่องประดับแล้ว';
-            $reservation->status_completed = 1; //เสร็จแล้ว
-            $reservation->save();
 
             $refil_id = $request->input('refil_id_');
             $action_set = $request->input('action_set_');
@@ -666,6 +672,33 @@ class Orderjewelry extends Controller
             $refil_jewelry_id = $request->input('refil_jewelry_id_');
             foreach ($refil_id as $index =>  $item) {
                 if ($action_set[$index] == 'clean') {
+
+                    //ตารางorderdetail
+                    $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                    $orderdetail->save();
+
+                    // อัปเดตตารางdate
+                    $date_id = Date::where('order_detail_id', $id)
+                        ->orderBy('created_at', 'desc')
+                        ->value('id');
+                    $update_real = Date::find($date_id);
+                    $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                    $update_real->save();
+
+                    //ตารางorderdetailstatus
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $id;
+                    $create_status->status = "คืนเครื่องประดับแล้ว";
+                    $create_status->save();
+
+                    //ตารางreservation
+                    $reservation = Reservation::find($orderdetail->reservation_id);
+                    $reservation->status = 'คืนเครื่องประดับแล้ว';
+                    $reservation->status_completed = 1; //เสร็จแล้ว
+                    $reservation->save();
+
+
+
                     // ตารางหลอก
                     $update_re_filter = Reservationfilters::find($refil_id[$index]);
                     $update_re_filter->status = 'รอทำความสะอาด';
@@ -676,6 +709,31 @@ class Orderjewelry extends Controller
                     $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
                     $update_status_jewelry->save();
                 } elseif ($action_set[$index] == 'repair') {
+
+                    //ตารางorderdetail
+                    $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                    $orderdetail->save();
+
+                    // อัปเดตตารางdate
+                    $date_id = Date::where('order_detail_id', $id)
+                        ->orderBy('created_at', 'desc')
+                        ->value('id');
+                    $update_real = Date::find($date_id);
+                    $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                    $update_real->save();
+
+                    //ตารางorderdetailstatus
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $id;
+                    $create_status->status = "คืนเครื่องประดับแล้ว";
+                    $create_status->save();
+
+                    //ตารางreservation
+                    $reservation = Reservation::find($orderdetail->reservation_id);
+                    $reservation->status = 'คืนเครื่องประดับแล้ว';
+                    $reservation->status_completed = 1; //เสร็จแล้ว
+                    $reservation->save();
+
 
                     // ตารางหลอก
                     $update_re_filter = Reservationfilters::find($refil_id[$index]);
@@ -694,37 +752,56 @@ class Orderjewelry extends Controller
                     $create_repair->repair_status = 'รอดำเนินการ';
                     $create_repair->repair_type = 1;  //1.ยังไม่ทำความสะอาด 2.ทำความสะอาดแล้ว 
                     $create_repair->save();
+                } elseif ($action_set[$index] == 'lost') {
+
+                    //ตารางorderdetail
+                    $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                    $orderdetail->save();
+
+                    // อัปเดตตารางdate
+                    $date_id = Date::where('order_detail_id', $id)
+                        ->orderBy('created_at', 'desc')
+                        ->value('id');
+                    $update_real = Date::find($date_id);
+                    $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                    $update_real->save();
+
+                    //ตารางorderdetailstatus
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $id;
+                    $create_status->status = "คืนเครื่องประดับแล้ว";
+                    $create_status->save();
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $id;
+                    $create_status->status = "สูญหาย";
+                    $create_status->save();
+
+                    //ตารางreservation
+                    $reservation = Reservation::find($orderdetail->reservation_id);
+                    $reservation->status = 'คืนเครื่องประดับแล้ว';
+                    $reservation->status_completed = 1; //เสร็จแล้ว
+                    $reservation->save();
+
+
+                    // ตารางหลอก
+                    $update_re_filter = Reservationfilters::find($refil_id[$index]);
+                    $update_re_filter->status = 'สูญหาย';
+                    $update_re_filter->save();
+                    // อัปเดตสถานะเครื่องประดับ
+                    $update_status_jewelry = Jewelry::find($refil_jewelry_id[$index]);
+                    $update_status_jewelry->jewelry_status = 'สูญหาย';
+                    $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                    $update_status_jewelry->save();
                 }
             }
         }
 
-
-
-
-
-        // สร้างใบเสร็จ
-        // $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
-        //     ->where('payment_status', 1)
-        //     ->exists();
-
-
-        // $additional_receipt = AdditionalChange::where('order_detail_id', $orderdetail->id)->get();
-        // if ($additional_receipt->isNotEmpty()) {
-        //     $total_additional_receipt = $additional_receipt->sum('amount');
-        // } else {
-        //     $total_additional_receipt = 0;
-        // }
-        // $ceate_receipt = new Receipt();
-        // $ceate_receipt->order_id = $orderdetail->order_id;
-        // $ceate_receipt->order_detail_id = $orderdetail->id;
-        // $ceate_receipt->receipt_type = 3;
-        // $ceate_receipt->total_price = $orderdetail->damage_insurance - $total_additional_receipt;
-        // $ceate_receipt->save();
-
         // ถ้ามันตรวจสอบแล้วพบว่าทุกรายการ มันเป็น คืนชุด/คืนเครื่องประดับครบยัง ทั้งหมดแล้ว แปลว่า จะต้องทำการสร้างใบเสร็จอัตโนมัติเลย
         $count_index = 0;
-        $additional_total = 0 ;
-        $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)->get();
+        $additional_total = 0;
+        $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)
+            ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+            ->get();
         $data_orderdetail_sum_damage_insurance = $data_orderdetail->sum('damage_insurance');
         foreach ($data_orderdetail as $item) {
             if ($item->type_order == 2) {
@@ -742,20 +819,13 @@ class Orderjewelry extends Controller
             }
         }
         if ($count_index == $data_orderdetail->count()) {
-            $ceate_receipt = new Receipt();
+            $ceate_receipt = new ReceiptReturn();
             $ceate_receipt->order_id = $orderdetail->order_id;
             $ceate_receipt->receipt_type = 3;
             $ceate_receipt->total_price = $data_orderdetail_sum_damage_insurance - $additional_total;
+            $ceate_receipt->employee_id = Auth::user()->id ; 
             $ceate_receipt->save();
         }
-
-
-
-
-
-
-
-
         return redirect()->back()->with('success', 'ลูกค้าคืนเครื่องประดับแล้ว');
     }
 
@@ -818,9 +888,11 @@ class Orderjewelry extends Controller
         $clean_pending = Reservationfilters::where('status_completed', 0)
             ->where('status', 'รอทำความสะอาด')
             ->get();
+
         $clean_doing_wash = Reservationfilters::where('status_completed', 0)
             ->where('status', 'กำลังทำความสะอาด')
             ->get();
+
         return view('employeerentjewelry.jewelry-clean', compact('clean_pending', 'clean_doing_wash'));
     }
 
@@ -1067,5 +1139,19 @@ class Orderjewelry extends Controller
         }
         $history = Repair::whereIn('id', $list_two)->get();
         return view('employeerentjewelry.jewelry-repaired-history', compact('jewelry', 'typejewelry', 'history'));
+    }
+
+    public function jewelryproblemcancel()
+    {
+        $jewelry = Jewelry::whereIn('jewelry_status', ['สูญหาย', 'ยุติการให้เช่า'])->get();
+        $list = [];
+        foreach ($jewelry as $item) {
+            $reseraton = Reservationfilters::where('status_completed', 0)->where('jewelry_id', $item->id)->get();
+            foreach ($reseraton as $index) {
+                $list[] = $index->reservationtorefil->re_one_many_details->first()->id;
+            }
+        }
+        $orderdetail = Orderdetail::whereIn('id', $list)->get();
+        return view('employeerentjewelry.jewelry-problem', compact('orderdetail'));
     }
 }

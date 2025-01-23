@@ -56,14 +56,11 @@
 
     <div class="container">
         <!-- Header -->
-        <div class="row mt-4">
-            <div class="col-12 text-center">
-                <h2>จัดการการส่งซัก</h2>
-                <p class="lead">ดูและอัพเดตสถานะการซักของชุด</p>
-            </div>
-        </div>
+                <h1 class="text-start my-4">จัดการการส่งซัก</h1>
+                <p >การซักชุดทุกชุดควรเสร็จภายใน 7 วันหลังจากลูกค้านำชุดมาคืน เพื่อให้สามารถตรวจสอบและซ่อมแซมชุดได้ทันท่วงที
+                รวมถึงเตรียมพร้อมสำหรับการให้เช่าครั้งต่อไป</p>
 
-        <!-- Status Summary Cards -->
+        <!-- Status Summary Cards
         <div class="row mb-1">
             <div class="col-md-6 mb-3">
                 <div class="card">
@@ -81,11 +78,11 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="alert alert-info text-center" role="alert">
+        </div> -->
+        <!-- <div class="alert alert-info text-center" role="alert">
             การซักชุดทุกชุดควรเสร็จภายใน 7 วันหลังจากลูกค้านำชุดมาคืน เพื่อให้สามารถตรวจสอบและซ่อมแซมชุดได้ทันท่วงที
             รวมถึงเตรียมพร้อมสำหรับการให้เช่าครั้งต่อไป
-        </div>
+        </div> -->
 
         <!-- Laundry List -->
         <div class="card mb-4">
@@ -498,7 +495,7 @@
 
                                             <td>
                                                 <button class="btn" type="button" data-toggle="modal" style="background-color:#E3A499 ;"
-                                                    data-target="#need_to_repair{{ $clean->id }}">ต้องซ่อม456</button>
+                                                    data-target="#need_to_repair{{ $clean->id }}">ต้องซ่อม</button>
                                                 <button class="btn " type="button" data-toggle="modal" style="background-color:#ACE6B7;border:0"
                                                     data-target="#modalbuttoncleanrowpagetwo{{ $clean->id }}">พร้อมให้เช่าต่อ</button>
                                             </td>

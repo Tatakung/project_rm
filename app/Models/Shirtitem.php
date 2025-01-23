@@ -25,5 +25,8 @@ class Shirtitem extends Model
     public function shirtitemmtodress(){
         return $this->belongsTo(Dress::class,'dress_id') ; 
     }
+    public function shirt_one_to_many_historyshirt(){
+        return $this->hasMany(PriceHistory_Shirt::class,'shirtitems_id') ; 
+    }
 
 }

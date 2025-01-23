@@ -91,7 +91,6 @@
                     $list_check[] = $item->id;
                 }
 
-
                 $set_in_re = App\Models\Reservation::where('status_completed', 0)
                     ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
                     ->whereNotNull('jewelry_set_id')
@@ -111,7 +110,7 @@
 
                 $sort_queue = App\Models\Reservation::whereIn('id', $list_check)
                     ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
-                    ->first();
+                    ->first(); 
                 $check_bunton_pass = true; //ตัวเช็คในการกดปุ่มอัพเดตสถานะ
 
                 if ($sort_queue) {
@@ -128,6 +127,10 @@
                         $check_bunton_pass = false;
                     }
                 }
+                else{
+                    $check_bunton_pass = true;
+                }
+                
 
                 // dd($check_bunton_pass) ;
             }
@@ -141,7 +144,6 @@
                 foreach ($jewwelry_set_id_in_reservation as $key => $value) {
                     $list_set[] = $value->id;
                 }
-
 
                 // ส่วนjew_id
                 $jew_set_item = App\Models\Jewelrysetitem::where('jewelry_set_id', $reservation->jewelry_set_id)->get();
@@ -157,14 +159,7 @@
                             $list_set[] = $value->id;
                         }
                     }
-
-
-   
                 }
-
-
-
-
 
                 $sort_queue = App\Models\Reservation::whereIn('id', $list_set)
                     ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
@@ -192,6 +187,9 @@
                         $check_bunton_pass = false;
                     }
                 }
+                else{
+                    $check_bunton_pass = true;
+                }
             }
         @endphp
 
@@ -202,58 +200,192 @@
             @if ($reservation->jewelry_id && $reservation->re_one_many_details->first()->status_detail != 'คืนเครื่องประดับแล้ว')
                 @if ($reservation->id != $sort_queue->id)
                     {{-- ไม่ใช่คิวแรก --}}
-                    <div class="row mt-2">
-                        <div class="col-md-12">
+
+                    
+                    @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                        @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                            @if (
+                                $reservation->resermanytoonejew->jewelry_status == 'สูญหาย' ||
+                                    $reservation->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
                             <div class="alert alert-danger" role="alert">
-                                <strong>แจ้งเตือน:</strong> เครื่องประดับนี้<span> {{ $sort_queue->status }} </span>
-                                โดยลูกค้าท่านอื่น ไม่สามารถดำเนินการในรายการนี้ได้
-                                <hr>
-                                <p class="mb-0">
-                                    @php
-                                        $find_order_detail_now = App\Models\Orderdetail::where(
-                                            'reservation_id',
-                                            $sort_queue->id,
-                                        )->first();
-                                        $find_order_detail_id = App\Models\Orderdetail::find(
-                                            $find_order_detail_now->id,
-                                        );
-                                        $customer_id_re = App\Models\order::where(
-                                            'id',
-                                            $find_order_detail_id->order_id,
-                                        )->value('customer_id');
-                                        $customer_fname_re = App\Models\Customer::where('id', $customer_id_re)->value(
-                                            'customer_fname',
-                                        );
-                                        $customer_lname_re = App\Models\Customer::where('id', $customer_id_re)->value(
-                                            'customer_lname',
-                                        );
-                                    @endphp
-                                    <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
-                                        href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
-                                    &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
-                                    &bull; วันที่เช่า:
-                                    {{ \Carbon\carbon::parse($sort_queue->start_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\carbon::parse($sort_queue->start_date)->year + 543 }}
-                                    <br>
-                                    &bull; กำหนดคืน:
-                                    {{ \Carbon\carbon::parse($sort_queue->end_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\carbon::parse($sort_queue->end_date)->year + 543 }}
-                                </p>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @elseif(
+                        $reservation->resermanytoonejew->jewelry_status == 'สูญหาย' ||
+                            $reservation->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า')
+                        <div class="alert alert-danger" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                    <p class="mb-0"><strong>เครื่องประดับชิ้นนี้
+                                            {{ $reservation->resermanytoonejew->jewelry_status }}
+                                            กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                            {{ $customer->customer_phone }}</strong></p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @elseif($reservation->id == $sort_queue->id)
-                    @if ($reservation->resermanytoonejew->jewelry_status != 'พร้อมให้เช่า')
+                    @else
                         <div class="row mt-2">
                             <div class="col-md-12">
                                 <div class="alert alert-danger" role="alert">
-
-                                    <strong>แจ้งเตือน:</strong> เครื่องประดับชิ้นนี้<span>
-                                        {{ $reservation->resermanytoonejew->jewelry_status }} </span>
-                                    กรุณารอจนกว่าจะพร้อมใช้งาน
-
-
+                                    <strong>แจ้งเตือน:</strong> เครื่องประดับนี้<span> {{ $sort_queue->status }} </span>
+                                    โดยลูกค้าท่านอื่น ไม่สามารถดำเนินการในรายการนี้ได้
+                                    <hr>
+                                    <p class="mb-0">
+                                        @php
+                                            $find_order_detail_now = App\Models\Orderdetail::where(
+                                                'reservation_id',
+                                                $sort_queue->id,
+                                            )->first();
+                                            $find_order_detail_id = App\Models\Orderdetail::find(
+                                                $find_order_detail_now->id,
+                                            );
+                                            $customer_id_re = App\Models\order::where(
+                                                'id',
+                                                $find_order_detail_id->order_id,
+                                            )->value('customer_id');
+                                            $customer_fname_re = App\Models\Customer::where(
+                                                'id',
+                                                $customer_id_re,
+                                            )->value('customer_fname');
+                                            $customer_lname_re = App\Models\Customer::where(
+                                                'id',
+                                                $customer_id_re,
+                                            )->value('customer_lname');
+                                        @endphp
+                                        <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
+                                            href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
+                                        &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
+                                        &bull; วันที่เช่า:
+                                        {{ \Carbon\carbon::parse($sort_queue->start_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\carbon::parse($sort_queue->start_date)->year + 543 }}
+                                        <br>
+                                        &bull; กำหนดคืน:
+                                        {{ \Carbon\carbon::parse($sort_queue->end_date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\carbon::parse($sort_queue->end_date)->year + 543 }}
+                                    </p>
                                 </div>
+                            </div>
+                        </div>
+                    @endif
+                @elseif($reservation->id == $sort_queue->id)
+                    {{-- คิวแรก --}}
+                    
+                    @if ($reservation->resermanytoonejew->jewelry_status != 'พร้อมให้เช่า')
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+
+                                @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                    @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                        @if (
+                                            $reservation->resermanytoonejew->jewelry_status == 'สูญหาย' ||
+                                                $reservation->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า')
+                                            <div class="alert alert-danger" role="alert">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                                    <div>
+                                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                        <p class="mb-0">
+                                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                            </strong>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="alert alert-danger" role="alert">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                                    <div>
+                                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                        <p class="mb-0">
+                                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                            </strong>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                        <div class="alert alert-danger" role="alert">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                    <p class="mb-0">
+                                                        <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @elseif (
+                                    $reservation->resermanytoonejew->jewelry_status == 'สูญหาย' ||
+                                        $reservation->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0"><strong>เครื่องประดับชิ้นนี้
+                                                        {{ $reservation->resermanytoonejew->jewelry_status }}
+                                                        กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                                        {{ $customer->customer_phone }}</strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="alert alert-danger" role="alert">
+                                        <strong>แจ้งเตือน:</strong> เครื่องประดับชิ้นนี้<span>
+                                            {{ $reservation->resermanytoonejew->jewelry_status }} </span>
+                                        กรุณารอจนกว่าจะพร้อมใช้งาน
+                                    </div>
+                                @endif
+
+
+
+
+
+
                             </div>
                         </div>
                     @endif
@@ -286,8 +418,66 @@
                     </div>
                 @endif
             @endif
+        @else
+
+
+
+        @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                        @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                            @if (
+                                $reservation->resermanytoonejew->jewelry_status == 'สูญหาย' ||
+                                    $reservation->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        @endif
+        
+
+
+
+
 
         @endif
+
+
+        
 
         <h4 class="mt-2"><strong>รายการ :
                 @if ($reservation->jewelry_id)
@@ -346,7 +536,7 @@
                             @endphp
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
+                                    {{-- <i class="fas fa-check"></i> --}}
                                 </div>
                                 <p>ถูกจอง</p>
                                 <small>
@@ -360,7 +550,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    // ->addHours(7)
+                                                    ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -373,9 +563,57 @@
 
                             <div class="status-line "></div>
 
+
+
+
+
+                            @if (in_array('ยกเลิกโดยทางร้าน', $list_status) || in_array('ยกเลิกโดยลูกค้า', $list_status))
+                                <div class="status-step text-center">
+                                    <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif">
+                                        {{-- <i class="fas fa-check"></i> --}}
+                                    </div>
+                                    <p>ยกเลิกการจอง</p>
+                                    <small>
+                                        <p>
+                                            @php
+                                                $created_at = App\Models\Orderdetailstatus::where(
+                                                    'order_detail_id',
+                                                    $orderdetail->id,
+                                                )
+                                                    ->whereIn('status', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+                                                    ->first();
+                                                if ($created_at) {
+                                                    $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                        ->addHours(7)
+                                                        ->format('d/m/Y H:i');
+                                                } else {
+                                                    $text_date = 'รอดำเนินการ';
+                                                }
+                                            @endphp
+                                            {{ $text_date }}
+                                        </p>
+                                    </small>
+                                </div>
+                                <div class="status-line "></div>
+                            @endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('กำลังเช่า', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
+                                    {{-- <i class="fas fa-check"></i> --}}
                                 </div>
                                 <p>กำลังเช่า</p>
                                 <small>
@@ -389,7 +627,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    // ->addHours(7)
+                                                    ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -414,7 +652,7 @@
 
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('คืนเครื่องประดับแล้ว', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
+                                    {{-- <i class="fas fa-check"></i> --}}
                                 </div>
                                 <p>คืนเครื่องประดับแล้ว</p>
                                 <small>
@@ -428,7 +666,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    // ->addHours(7)
+                                                    ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -473,7 +711,7 @@
                                             style="width: 154px; height: auto;">
                                     </div>
                                 @elseif($reservation->jewelry_set_id)
-                                    <p>ชื่อเซตเครื่องประดับ : เซต{{$setjewelry->set_name}}</p>
+                                    <p>ชื่อเซตเครื่องประดับ : เซต{{ $setjewelry->set_name }}</p>
                                     <p>ประกอบด้วย :</p>
                                     <div class="row">
                                         @foreach ($setjewelryitem as $item)
@@ -724,7 +962,7 @@
                 <form action="{{ route('employee.actionupdatereceivejewelry', ['id' => $orderdetail->id]) }}"
                     method="POST">
                     @csrf
-                    
+
                     <div class="modal-header">
                         <h5 class="modal-title w-100 text-center" id="updatestatusLabel">อัปเดตสถานะการเช่า</h5>
                     </div>
@@ -750,7 +988,6 @@
 
                         <h6 class="fw-bold mb-3">รายละเอียดการชำระเงิน</h6>
                         @if ($orderdetail->status_payment == 1)
-
                             <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
                                     <span>ค่าเช่าเครื่องประดับ:</span>
@@ -772,7 +1009,10 @@
 
                             <div class="p-3 bg-light rounded mb-3">
                                 <div class="d-flex justify-content-between">
-                                    <span>เงินมัดจำ:</span>
+                                    <span>เงินมัดจำ: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                            )</span></span>
                                     <span>
                                         {{ number_format($orderdetail->deposit, 2) }} บาท
                                     </span>
@@ -796,7 +1036,11 @@
                         @elseif($orderdetail->status_payment == 2)
                             <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
-                                    <span>ค่าเช่าเครื่องประดับ:</span>
+                                    <span>ค่าเช่าเครื่องประดับ: <span
+                                            style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                            )</span></span>
                                     <span>
                                         {{ number_format($orderdetail->price, 2) }} บาท
                                     </span>
@@ -806,7 +1050,10 @@
 
                             <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
-                                    <span>เงินประกัน:</span>
+                                    <span>เงินประกัน: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                            )</span></span>
                                     <span>
                                         {{ number_format($orderdetail->damage_insurance, 2) }} บาท
                                     </span>
@@ -830,8 +1077,8 @@
 
 
 
-                    
-                    
+
+
                     <div class="modal-footer">
                         <button type="button" class="btn " data-dismiss="modal"
                             style="background-color:#DADAE3;">ยกเลิก</button>
@@ -1025,6 +1272,7 @@
                                                     class="form-control">
                                                     <option value="cleanitem" selected>ส่งทำความสะอาด</option>
                                                     <option value="repairitem">ต้องซ่อม</option>
+                                                    <option value="lost">สูญหาย</option>
                                                 </select>
 
                                                 <div id="showrepair_detail_item" class="mt-2" style="display: none;">
@@ -1075,6 +1323,8 @@
                                                         class="form-control">
                                                         <option value="clean" selected>ส่งทำความสะอาด</option>
                                                         <option value="repair">ต้องซ่อม</option>
+                                                        <option value="lost">สูญหาย</option>
+
                                                     </select>
 
                                                     <div id="repair_details{{ $item->id }}" class="mt-2"

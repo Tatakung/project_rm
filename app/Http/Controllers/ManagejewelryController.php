@@ -110,8 +110,6 @@ class ManagejewelryController extends Controller
 
 
 
-
-
         //เช็ควันที่
         $value_start_date = $request->input('new_pickup_date');
         $value_end_date = $request->input('new_return_date');
@@ -120,37 +118,25 @@ class ManagejewelryController extends Controller
         $pickup = Carbon::parse($request->input('new_pickup_date'));
         $return = Carbon::parse($request->input('new_return_date'));
 
-        $past_7 = $pickup->copy()->subDays(7);
-        $past_1 = $pickup->copy()->subDays(1);
-        $pickup_start = $pickup->copy();
-        $return_end = $return->copy();
-        $future_1 = $return->copy()->addDays(1);
-        $future_7 = $return->copy()->addDays(7);
+        $past_7 = $pickup->copy()->subDays(7); //ถอยกลับไป 7 วัน
+        
+        $future_7 = $return->copy()->addDays(7);//เพิ่มไป 7 วัน
 
         $check_reservation = Reservationfilters::where('status_completed', 0)
             ->where('jewelry_id', $reser->jewelry_id)
             ->whereNot('reservation_id', $reser->id)
             ->get();
 
-
-
         $condition = true;
         foreach ($check_reservation as $item) {
             $reservation_start = Carbon::parse($item->start_date);
             $reservation_end = Carbon::parse($item->end_date);
 
-            if ($reservation_start->between($past_7, $past_1) ||  $reservation_end->between($past_7, $past_1)) {
+            if ($reservation_start->between($past_7, $future_7) ||  $reservation_end->between($past_7, $future_7)) {
                 $condition = false;
                 break;
             }
-            if ($reservation_start->between($pickup_start, $return_end) || $reservation_end->between($pickup_start, $return_end)) {
-                $condition = false;
-                break;
-            }
-            if ($reservation_start->between($future_1, $future_7) || $reservation_end->between($future_1, $future_7)) {
-                $condition = false;
-                break;
-            }
+            
         }
         if ($condition == true) {
             session()->flash('condition', 'passsuccesst');
@@ -292,16 +278,9 @@ class ManagejewelryController extends Controller
 
 
 
-        $fil_start_7 = $start_date_fil->copy()->subDays(7);
-        $fil_start_1 = $start_date_fil->copy()->subDays(1);
-        $fil_be_start = $start_date_fil->copy();
-        $fil_be_end = $end_date_fil->copy();
-        $fil_end_1 = $end_date_fil->copy()->addDays(1);
-        $fil_end_7 = $end_date_fil->copy()->addDays(7);
-
-
-
-
+        $fil_start_7 = $start_date_fil->copy()->subDays(7);//ถอยกลับไป 7 วัน
+        $fil_end_7 = $end_date_fil->copy()->addDays(7); //เพิ่มไป 7 วัน
+        
         $jew_id_in_set = Jewelrysetitem::where('jewelry_set_id', $reser->jewelry_set_id)->get();
         $condition = true;
         foreach ($jew_id_in_set as $jew) {
@@ -312,20 +291,16 @@ class ManagejewelryController extends Controller
             foreach ($check_jew_in_fil as $item) {
                 $start_re = Carbon::parse($item->start_date);
                 $end_re = Carbon::parse($item->end_date);
-                if ($start_re->between($fil_start_7, $fil_start_1) || $end_re->between($fil_start_7, $fil_start_1)) {
+                if ($start_re->between($fil_start_7, $fil_end_7) || $end_re->between($fil_start_7, $fil_end_7)) {
                     $condition = false;
                     break;
                 }
 
-                if ($start_re->between($fil_be_start, $fil_be_end) || $end_re->between($fil_be_start, $fil_be_end)) {
-                    $condition = false;
-                    break;
-                }
+                
 
-                if ($start_re->between($fil_end_1, $fil_end_7) || $end_re->between($fil_end_1, $fil_end_7)) {
-                    $condition = false;
-                    break;
-                }
+
+          
+                
             }
         }
 

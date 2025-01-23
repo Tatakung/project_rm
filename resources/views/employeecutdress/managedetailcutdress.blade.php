@@ -301,66 +301,111 @@
 
                             <!-- Modal -->
                             <div class="modal fade" id="updatestatus_to_deliver" tabindex="-1"
-                                aria-labelledby="updatestatus_to_deliverLabel" aria-hidden="true" data-backdrop="static">
-                                <div class="modal-dialog modal-lg">
+                                aria-labelledby="updatestatusLabel" aria-hidden="true" data-backdrop="static">
+                                <div class="modal-dialog" style="max-width: 40% ; ">
                                     <div class="modal-content">
                                         <form
                                             action="{{ route('employee.actionupdatestatuscutdress', ['id' => $orderdetail->id]) }}"
                                             method="POST">
                                             @csrf
-                                            <div class="modal-header" style="background-color:#EAD8C0 ;">
-                                                <h5 class="modal-title" id="readyToDeliverModalLabel">ยืนยันการส่งมอบชุด
-                                                </h5>
 
+                                            <div class="modal-header">
+                                                <h5 class="modal-title w-100 text-center" id="updatestatusLabel">
+                                                    ยืนยันการส่งมอบชุด</h5>
                                             </div>
+
+
                                             <div class="modal-body">
-                                                <h5 class="mb-3">รายละเอียดการสั่งตัด</h5>
-                                                <div class="row mb-2">
-                                                    <div class="col-md-6">
-                                                        <p><strong>ชื่อลูกค้า:</strong>
-                                                            <span>คุณ{{ $customer->customer_fname }}
-                                                                {{ $customer->customer_lname }}</span>
-                                                        </p>
-                                                        <p><strong>วันที่สั่งตัดชุด:</strong>
-                                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
-
-                                                            </span></p>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <p><strong>กำหนดส่งมอบชุด:</strong> <span>
-                                                                {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                                                {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
-                                                            </span></p>
-                                                        <p><strong>ระยะเวลาในการตัด:</strong>-<span></span></p>
-                                                    </div>
-                                                </div>
                                                 <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <p><strong>ราคาตัดชุด:</strong>
-                                                            <span>{{ $orderdetail->price }}</span> บาท
-                                                        </p>
-                                                        <p><strong>จ่ายแล้ว:</strong>
-                                                            <span>{{ $orderdetail->deposit }}</span> บาท
-                                                        </p>
+                                                    <div class="col-6">
+                                                        <strong>ชื่อลูกค้า:</strong> คุณ{{ $customer->customer_fname }}
+                                                        {{ $customer->customer_lname }}
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <p><strong>คงเหลือ:</strong>
-                                                            <span></span>{{ number_format($orderdetail->price - $orderdetail->deposit) }}
-                                                            บาท
-                                                        </p>
+
+                                                </div>
+
+                                                <div class="row mb-3">
+
+                                                    <div class="col-6">
+                                                        <strong>กำหนดวันส่งมอบชุด:</strong>
+                                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
                                                     </div>
                                                 </div>
 
-                                                <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
-                                                <div class="alert alert-info"
-                                                    style="background-color: #e9f7f9; border-color: #bee5eb; color: #0c5460; font-size: 1.2rem; padding: 10px;">
-                                                    <p>ยอดคงเหลือที่ต้องชำระ: <strong
-                                                            id="totalDue">{{ number_format($orderdetail->price - $orderdetail->deposit) }}
-                                                            บาท</strong></p>
-                                                </div>
 
+                                                <h6 class="fw-bold mb-3">รายละเอียดการชำระเงิน</h6>
+                                                @if ($orderdetail->status_payment == 1)
+                                                    <div class="p-3 bg-light rounded">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span>ค่าตัดชุด:</span>
+                                                            <span>
+                                                                {{ number_format($orderdetail->price, 2) }} บาท
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+
+
+
+                                                    <div class="p-3 bg-light rounded mb-3">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span>เงินมัดจำ: <span
+                                                                    style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ
+                                                                    {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                                    {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                                                    )</span></span>
+                                                            <span>
+                                                                {{ number_format($orderdetail->deposit, 2) }} บาท
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="p-4 bg-opacity-10 rounded mt-4"
+                                                        style="background-color: #F0FFFF	 ; ">
+                                                        <div class="d-flex justify-content-between fw-bold text-info">
+                                                            <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
+                                                            <span class="fs-5"
+                                                                style="color:#0000CD ; ">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance, 2) }}
+                                                                บาท</span>
+                                                        </div>
+
+                                                    </div>
+                                                @elseif($orderdetail->status_payment == 2)
+                                                    <div class="p-3 bg-light rounded">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span>ค่าตัดชุด: <span
+                                                                    style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ
+                                                                    {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                                    {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                                                    )</span></span>
+                                                            <span>
+                                                                {{ number_format($orderdetail->price, 2) }} บาท
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+
+
+
+
+                                                    <div class="p-4 bg-opacity-10 rounded mt-4"
+                                                        style="background-color: #F0FFFF	 ; ">
+                                                        <div class="d-flex justify-content-between fw-bold text-info">
+                                                            <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
+                                                            <span class="fs-5" style="color:#0000CD ; ">0.00
+                                                                บาท</span>
+                                                        </div>
+                                                        <small class="text-muted" style="color:#0000CD ; ">
+                                                            ชำระเงินครบเรียบร้อยแล้ว
+                                                            <i class="text-success bi bi-check-circle ms-2"></i>
+                                                        </small>
+                                                    </div>
+                                                @endif
                                             </div>
+
+
+
                                             <div class="modal-footer">
                                                 <button type="button" class="btn" style="background-color:#DADAE3;"
                                                     data-dismiss="modal">ยกเลิก</button>
@@ -374,75 +419,90 @@
 
 
                             <div class="modal fade" id="updatestatus_to_deliver_after_edit" tabindex="-1"
-                                aria-labelledby="confirmDeliveryModalLabel" aria-hidden="true" data-backdrop="static">
-                                <div class="modal-dialog modal-lg">
+                                aria-labelledby="updatestatusLabel" aria-hidden="true" data-backdrop="static">
+                                <div class="modal-dialog" style="max-width: 40% ; ">
                                     <div class="modal-content">
+
                                         <form
                                             action="{{ route('employee.actionupdatestatuscutdress', ['id' => $orderdetail->id]) }}"
                                             method="POST">
                                             @csrf
 
-                                            <div class="modal-header " style="background-color:#EAD8C0 ;">
-                                                <h5 class="modal-title" id="confirmDeliveryModalLabel">ยืนยันการส่งมอบชุด
-                                                </h5>
 
+                                            <div class="modal-header">
+                                                <h5 class="modal-title w-100 text-center" id="confirmDeliveryModalLabel">
+                                                    ยืนยันการส่งมอบชุด</h5>
                                             </div>
+
+
                                             <div class="modal-body">
-                                                <h6 class="mb-3">รายละเอียดการสั่งตัด</h6>
-                                                <div class="row mb-2">
-                                                    <div class="col-md-6">
-                                                        <p><strong>ชื่อลูกค้า:</strong> คุณ{{ $customer->customer_fname }}
-                                                            {{ $customer->customer_lname }}</p>
-                                                        <p><strong>วันที่สั่งตัดชุด:</strong>
-                                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
-                                                        </p>
-                                                        <p><strong>ราคาตัดชุด:</strong>
-                                                            {{ number_format($orderdetail->price, 2) }} บาท</p>
+                                                <div class="row mb-3">
+                                                    <div class="col-6">
+                                                        <strong>ชื่อลูกค้า:</strong> คุณ{{ $customer->customer_fname }}
+                                                        {{ $customer->customer_lname }}
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <p><strong>กำหนดส่งมอบชุด:</strong>
-                                                            {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                                            {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}</p>
-                                                        <p><strong>เงินมัดจำ:</strong>
-                                                            {{ number_format($orderdetail->deposit, 2) }} บาท</p>
-                                                        {{-- <p><strong>ยอดคงเหลือ:</strong>
-                                                            {{ number_format($orderdetail->price - $orderdetail->deposit, 2) }}
-                                                            บาท</p> --}}
+
+                                                </div>
+
+                                                <div class="row mb-3">
+
+                                                    <div class="col-6">
+                                                        <strong>วันที่นัดส่งมอบชุด:</strong>
+                                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
                                                     </div>
                                                 </div>
 
-                                                @if ($decoration->count() > 0)
-                                                    <h6 class="mt-3 mb-2">ค่าใช้จ่ายเพิ่มเติม</h6>
-                                                    <ul>
+
+                                                <h6 class="fw-bold mb-3">รายการเพิ่มเติม</h6>
+                                                @if ($decoration_sum > 0)
+                                                    @if ($decoration->count() > 0)
                                                         @foreach ($decoration as $item)
-                                                            <li>{{ $item->decoration_description }}:
-                                                                {{ number_format($item->decoration_price, 2) }} บาท</li>
+                                                            <div class="p-3 bg-light rounded">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span>{{ $item->decoration_description }}:</span>
+                                                                    <span>
+                                                                        {{ number_format($item->decoration_price, 2) }} บาท
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                         @endforeach
-                                                    </ul>
-                                                    <p><strong>รวมค่าใช้จ่ายเพิ่มเติม:</strong>
-                                                        {{ number_format($decoration->sum('decoration_price')), 2 }} บาท
-                                                    </p>
+                                                    @endif
+
+
+                                                    <div class="p-4 bg-opacity-10 rounded mt-4"
+                                                        style="background-color: #F0FFFF	 ; ">
+                                                        <div class="d-flex justify-content-between fw-bold text-info">
+                                                            <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
+                                                            <span class="fs-5"
+                                                                style="color:#0000CD ; ">{{ number_format($decoration_sum , 2 ) }}
+                                                                บาท</span>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                @elseif($decoration_sum == 0)
+                                                    
+
+
+                                                
+                                                    <div class="p-4 bg-opacity-10 rounded mt-4"
+                                                        style="background-color: #F0FFFF	 ; ">
+                                                        <div class="d-flex justify-content-between fw-bold text-info">
+                                                            <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
+                                                            <span class="fs-5" style="color:#0000CD ; ">0.00
+                                                                บาท</span>
+                                                        </div>
+                                                        <small class="text-muted" style="color:#0000CD ; ">
+                                                            ชำระเงินครบเรียบร้อยแล้ว
+                                                            <i class="text-success bi bi-check-circle ms-2"></i>
+                                                        </small>
+                                                    </div>
                                                 @endif
-
-                                                {{-- <h6 class="mt-3 mb-2">สรุปยอดชำระ</h6>
-                                                <p><strong>ยอดรวมทั้งหมด:</strong>
-                                                    {{ number_format($orderdetail->price + $decoration->sum('decoration_price'), 2) }}
-                                                    บาท</p> --}}
-
-
-                                                <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
-                                                <div class="alert alert-info"
-                                                    style="background-color: #e9f7f9; border-color: #bee5eb; color: #0c5460; font-size: 1.2rem; padding: 10px;">
-                                                    <p>ยอดคงเหลือที่ต้องชำระ: <strong
-                                                            id="totalDue">{{ number_format($decoration->sum('decoration_price')), 2 }}
-                                                            บาท</strong></p>
-                                                </div>
-
-
-
-
                                             </div>
+
+
+
+
                                             <div class="modal-footer">
                                                 <button type="button" class="btn" style="background-color:#DADAE3;"
                                                     data-dismiss="modal">ยกเลิก</button>
@@ -715,18 +775,19 @@
             </div>
         </div>
 
+        <h3 class="mt-5 ">ข้อมูลการตัดชุด</h3>
         <div class="row mt-3 d-flex align-items-stretch">
 
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h5 class="card-title">ข้อมูลการตัดชุด</h5>
                         @php
                             $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
                             $customer = App\Models\Customer::find($customer_id);
                         @endphp
                         <p><span class="bi bi-person"></span> ชื่อลูกค้า : คุณ{{ $customer->customer_fname }}
-                            {{ $customer->customer_lname }}</p>
+                            {{ $customer->customer_lname }}
+                        </p>
 
 
 
@@ -734,12 +795,32 @@
                             {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }} <span id="span_still_one"></span>
                         </p>
-                        {{-- <script>
-                            var pickup_date = new Date('{{ $Date->pickup_date }}');
-                            var date_now = new Date();
-                            var still_one = Math.ceil((pickup_date - date_now) / (1000 * 60 * 60 * 24));
-                            document.getElementById('span_still_one').innerHTML = ' (เหลือเวลาอีก ' + still_one + ' วัน)';
-                        </script> --}}
+
+                        <p><i class="bi bi-file-earmark-text"></i> จำนวนชุด : {{ $orderdetail->amount }} ชุด</p>
+                        <!-- ใช้ไอคอน file-earmark-text แทนจำนวนชุด -->
+
+                        @php
+                            $user_id = App\Models\Order::where('id', $orderdetail->order_id)->value('user_id');
+                            $user = App\Models\User::find($user_id);
+                        @endphp
+                        <p><span class="bi bi-person"></span> พนักงานผู้รับออเดอร์ : คุณ{{ $user->name }}
+                            {{ $user->lname }}
+                        </p>
+
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+
+                        @php
+                            $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
+                            $customer = App\Models\Customer::find($customer_id);
+                        @endphp
+
 
                         <p><i class="bi bi-currency-dollar"></i> ราคาตัดชุด (บาท) :
                             {{ number_format($orderdetail->price, 2) }} บาท
@@ -748,9 +829,6 @@
                         <p><i class="bi bi-currency-dollar"></i> เงินมัดจำ (บาท) :
                             {{ number_format($orderdetail->deposit, 2) }} บาท
                         </p>
-
-                        <p><i class="bi bi-file-earmark-text"></i> จำนวนชุด : {{ $orderdetail->amount }} ชุด</p>
-                        <!-- ใช้ไอคอน file-earmark-text แทนจำนวนชุด -->
 
                         <p><i class="bi bi-text-left"></i> ผ้า :
                             @if ($orderdetail->cloth == 1)
@@ -772,8 +850,7 @@
                             $user_id = App\Models\Order::where('id', $orderdetail->order_id)->value('user_id');
                             $user = App\Models\User::find($user_id);
                         @endphp
-                        <p><span class="bi bi-person"></span> พนักงานผู้รับออเดอร์ : คุณ{{ $user->name }}
-                            {{ $user->lname }}</p>
+
 
 
 
@@ -843,24 +920,26 @@
 
 
                         @if($imagerent->count() > 0 )
-                        <div class="row mb-3">
-                            @foreach ($imagerent as $item)
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card h-100 shadow-sm">
-                                        <img src="{{ asset('storage/' . $item->image) }}" alt="Image description"
-                                            style="width: 100%; height: 300px;">
-                                        <div class="card-body">
-                                            <p class="card-text">{{ $item->description }}</p>
-                                        </div>
-                                    </div>
+                    <div class="row mb-3">
+                        @foreach ($imagerent as $item)
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="{{ asset('storage/' . $item->image) }}" alt="Image description"
+                                    style="width: 100%; height: 300px;">
+                                
+                            </div>
+                            <div class="card-body">
+                                    <p class="card-text">หมายเหตุ :{{ $item->description }}</p>
                                 </div>
-                            @endforeach
                         </div>
-                        @else
-                        <div class="row mb-3">
-                            <p>ไม่มีรูปภาพสำหรับตัวแบบในการเช่าตัดชุด</p>
-                        </div>
-                        @endif
+                        @endforeach
+                        
+                    </div>
+                    @else
+                    <div class=" d-flex align-items-center mt-2" >
+                        <p>ไม่มีรูปภาพสำหรับตัวแบบในการเช่าตัดชุด</p>
+                    </div>
+                    @endif
 
 
                     </div>
@@ -1016,42 +1095,42 @@
                             </div>
 
                             <!-- ข้อมูลการเงิน -->
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center text-secondary mb-3">
-                                    <i class="bi bi-coin me-2"></i>
-                                    <span class="fw-medium">ข้อมูลการเงิน</span>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center text-dark mb-3">
+                                
+                                <span class="fw-medium">ข้อมูลการเงิน</span>
+                            </div>
+                            <div class="ms-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-secondary">รายได้ค่าเช่าชุด</span>
+                                    <span class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
+                                        บาท</span>
                                 </div>
-                                <div class="ms-4">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-secondary">รายได้ค่าเช่าชุด</span>
-                                        <span class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
-                                            บาท</span>
-                                    </div>
 
 
 
-                                    @if ($decco->count() > 0)
-                                        @foreach ($decco as $item)
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <span class="text-secondary"> {{ $item->decoration_description }} </span>
-                                                <span
-                                                    class="fw-medium text-secondary">{{ number_format($item->decoration_price, 2) }}
-                                                    บาท</span>
-                                            </div>
-                                        @endforeach
-                                    @endif
-
-
-
-                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                                        <span class="text-secondary fw-medium"><strong>รายได้รวมทั้งหมด</strong></span>
-
-                                        <span
-                                            class="fw-medium fs-5 text-primary">{{ number_format($orderdetail->price + $decoration_sum, 2) }}
-                                            บาท</span>
-
-                                    </div>
+                                @if ($decco->count() > 0)
+                                @foreach ($decco as $item)
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-secondary"> {{ $item->decoration_description }} </span>
+                                    <span
+                                        class="fw-medium text-secondary">{{ number_format($item->decoration_price, 2) }}
+                                        บาท</span>
                                 </div>
+                                @endforeach
+                                @endif
+
+
+
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                    <span class="text-secondary fw-medium"><strong>รายได้รวมทั้งหมด</strong></span>
+
+                                    <span
+                                        class="fw-medium fs-5">{{ number_format($orderdetail->price + $decoration_sum, 2) }}
+                                        บาท</span>
+
+                                </div>
+                            </div>
 
 
 
@@ -1073,7 +1152,7 @@
                     <form action="{{ route('employee.savecutdressaddimage', ['id' => $orderdetail->id]) }}"
                         method="POST" enctype="multipart/form-data">
                         @csrf
-                        <div class="modal-header">
+                        <div class="modal-header" style="background-color:#EAD8C0 ;">
                             <h5 class="modal-title">รูปภาพตัวแบบสำหรับการตัดชุด</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -1095,8 +1174,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-danger" type="button" data-dismiss="modal">ยกเลิก</button>
-                            <button class="btn btn-success" type="submit">ยืนยัน</button>
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">ยกเลิก</button>
+                            <button class="btn " style="background-color:#ACE6B7;" type="submit">ยืนยัน</button>
                         </div>
                     </form>
                 </div>

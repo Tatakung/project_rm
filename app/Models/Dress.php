@@ -71,4 +71,11 @@ class Dress extends Model
         return $this->hasMany(Reservation::class,'dress_id')  ; 
     }
 
+    public function dress_one_to_many_historydress(){
+        return $this->hasMany(PriceHistory_Dress::class,'dress_id') ; 
+    }
+
+
+
+
 }

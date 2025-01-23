@@ -1,100 +1,260 @@
 @extends('layouts.adminlayout')
 
 @section('content')
-    <ol class="breadcrumb" style="background: white ; ">
-        <li class="breadcrumb-item active">ค่าใช้จ่าย</li>
-    </ol>
+    <div class="container-fluid py-4">
+        <!-- บันทึกรายจ่าย -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>บันทึกรายจ่าย
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ route('admin.saveexpense') }}" method="POST">
+                    @csrf
+                    <div class="row">
+                        <!-- แถวที่ 1: วันที่และจำนวนเงิน -->
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">วันที่ <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" value="{{ $today }}" id="date"
+                                name="expense_date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">จำนวนเงิน <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="amount" name="expense_value"
+                                    min="1" step="0.01" required>
+                                <span class="input-group-text">บาท</span>
+                            </div>
+                        </div>
 
-    
+                        <!-- แถวที่ 2: ประเภทรายจ่ายและช่องสำหรับอื่นๆ -->
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">ประเภทรายจ่าย <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-control" id="category" name="expense_type" required>
+                                <option value="">เลือกประเภทรายจ่าย</option>
+                                <option value="ค่าผ้า">ค่าผ้า</option>
+                                <option value="ค่าน้ำ">ค่าน้ำ</option>
+                                <option value="ค่าไฟ">ค่าไฟ</option>
+                                <option value="ค่าซ่อมบำรุง">ค่าซ่อมบำรุง</option>
+                                <option value="ค่าซักรีด">ค่าซักรีด</option>
+                                <option value="ค่าวัสดุสิ้นเปลือง">ค่าวัสดุสิ้นเปลือง</option>
+                                <option value="other_expense">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div id="otherCategoryGroup" style="display: none;">
+                                <label for="other_category" class="form-label">ระบุประเภทรายจ่ายอื่นๆ <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="other_category" name="other_expense_type">
+                            </div>
+                        </div>
+
+                        <!-- แถวที่ 3: รายละเอียด -->
+                        {{-- <div class="col-12 mb-3">
+                        <label for="description" class="form-label">รายละเอียดเพิ่มเติม</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div> --}}
+
+                        <!-- แถวที่ 4: ปุ่มบันทึก -->
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>บันทึกรายจ่าย
+                            </button>
+                            {{-- <button type="reset" class="btn btn-secondary ms-2">
+                            <i class="fas fa-redo me-2"></i>ล้างข้อมูล
+                        </button> --}}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            // แสดง/ซ่อนช่องกรอกประเภทอื่นๆ
+            document.getElementById('category').addEventListener('change', function() {
+                var otherCategoryGroup = document.getElementById('otherCategoryGroup');
+                var otherCategoryInput = document.getElementById('other_category');
+
+                if (this.value === 'other_expense') {
+                    otherCategoryGroup.style.display = 'block';
+                    otherCategoryInput.required = true;
+                } else {
+                    otherCategoryGroup.style.display = 'none';
+                    otherCategoryInput.required = false;
+                    otherCategoryInput.value = '';
+                }
+            });
+        </script>
+
+        @php
+            $value_month = 0;
+            $value_year = 2025;
+        @endphp
+
+        <!-- ตารางแสดงรายการ -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-history me-2"></i>ประวัติรายจ่าย
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+
+
+                    {{-- Filter Section --}}
+
+                    <div class="container">
+
+                        <form action="{{route('expensefilter')}}" method="GET">
+                            @csrf
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <select class="form-control rounded-lg border" id="month" name="month" required>
+                                    <option value="0" {{ $month == 0 ? 'selected' : '' }}>ทุกเดือน</option>
+                                    <option value="1" {{ $month == 1 ? 'selected' : '' }}>มกราคม</option>
+                                    <option value="2" {{ $month == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
+                                    <option value="3" {{ $month == 3 ? 'selected' : '' }}>มีนาคม</option>
+                                    <option value="4" {{ $month == 4 ? 'selected' : '' }}>เมษายน</option>
+                                    <option value="5" {{ $month == 5 ? 'selected' : '' }}>พฤษภาคม</option>
+                                    <option value="6" {{ $month == 6 ? 'selected' : '' }}>มิถุนายน</option>
+                                    <option value="7" {{ $month == 7 ? 'selected' : '' }}>กรกฎาคม</option>
+                                    <option value="8" {{ $month == 8 ? 'selected' : '' }}>สิงหาคม</option>
+                                    <option value="9" {{ $month == 9 ? 'selected' : '' }}>กันยายน</option>
+                                    <option value="10" {{ $month == 10 ? 'selected' : '' }}>ตุลาคม</option>
+                                    <option value="11" {{ $month == 11 ? 'selected' : '' }}>พฤศจิกายน</option>
+                                    <option value="12" {{ $month == 12 ? 'selected' : '' }}>ธันวาคม</option>
+                                </select>
+                            </div>
+                            <div class="col-md-5 mb-3">
+                                <select class="form-control rounded-lg border" id="year" name="year" required>
+                                    <option value="0" {{ $year == 0 ? 'selected' : '' }}>ทุกปี</option>
+                                    @for ($i = 2023; $i <= now()->year; $i++)
+                                        <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>
+                                            {{ $i + 543 }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <button type="submit" class="btn w-100 rounded-lg"
+                                    style="background-color: #EBF5FF; color: #1E40AF;">
+                                    <i class="bi bi-search"></i> ค้นหา
+                                </button>
+                            </div>
+                        </div>
+                    </form>
 
 
 
+                        {{-- Summary Section --}}
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <div class="rounded-lg p-4" style="background-color: #EBF5FF;">
+                                    <div class="text-muted mb-1" style="font-size: 0.875rem;">รายจ่ายรวมทั้งหมด</div>
+                                    <div class="fw-bold" style="font-size: 1.5rem; color: #1E40AF;">
+                                        {{ number_format($expense->sum('expense_value'), 2) }} บาท
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 mb-3">
+                                <div class="rounded-lg p-4" style="background-color: #F5F3FF;">
+                                    <div class="text-muted mb-1" style="font-size: 0.875rem;">รายการที่บันทึก</div>
+                                    <div class="fw-bold" style="font-size: 1.5rem; color: #5B21B6;">
+                                        {{ $expense->count() }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-
-    <main class="container mt-4">
-        <h2 class="text-center mb-4">บัญชีค่าใช้จ่ายที่เกี่ยวข้องกับธุรกิจ</h2>
-
-        <form action="{{ route('admin.saveexpense') }}" method="POST" class="bg-light p-4 rounded shadow-sm">
-            @csrf
-            <div class="form-row">
-                <div class="form-group col-md-3">
-                    <label for="expense_date">วันที่</label>
-                    @php
-                        $now = date('Y-m-d');
-                        $today = \Carbon\Carbon::today()->toDateString();
-                    @endphp
-                    <input type="date" name="expense_date" id="expense_date" class="form-control" required
-                        value="{{ $now }}" min="{{ $today }}">
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="expense_type">ประเภทค่าใช้จ่าย</label>
-                    <select name="expense_type" id="expense_type" class="form-control" required>
-                        <option value="" disabled selected>เลือกรายการ</option>
-                        <option value="ค่าน้ำ">ค่าน้ำ</option>
-                        <option value="ค่าไฟ">ค่าไฟ</option>
-                        <option value="ค่าซัก">ค่าซัก</option>
-                        <option value="other_expense">อื่นๆ</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-3" id="show_aira_other" style="display: none ; ">
-                    <label for="expense_value">ประเภทค่าใช้จ่ายอื่นๆ</label>
-                    <input type="text" name="other_expense_type" id="other_expense_type" class="form-control"
-                        placeholder="ระบุประเภทค่าใช้จ่าย">
-                </div>
-
-
-                <script>
-                    var expense_type = document.getElementById('expense_type');
-                    var show_aira_other = document.getElementById('show_aira_other');
-                    var other_expense_type = document.getElementById('other_expense_type');
-
-                    expense_type.addEventListener('change', function() {
-                        if (expense_type.value === "other_expense") {
-                            show_aira_other.style.display = 'block';
-                            other_expense_type.setAttribute('required', 'required');
-                        } else {
-                            show_aira_other.style.display = 'none';
-                            other_expense_type.removeAttribute('required');
-                            other_expense_type.value = '';
+                    <style>
+                        .rounded-lg {
+                            border-radius: 0.5rem;
                         }
 
-                    });
-                </script>
+                        .form-control {
+                            padding: 0.5rem 1rem;
+                            border-color: #E5E7EB;
+                        }
+
+                        .form-control:focus {
+                            border-color: #3B82F6;
+                            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+                        }
+
+                        .btn {
+                            padding: 0.5rem 1rem;
+                            transition: all 0.2s;
+                        }
+
+                        .btn:hover {
+                            opacity: 0.9;
+                        }
+                    </style>
 
 
 
+                    @if($dataexpense->count() > 0 )
+                    <table class="table table-hover">
+                        <thead>
+                            <tr style="text-align: center ; ">
+                                <th>วันที่</th>
+                                <th>ประเภท</th>
+                                <th class="text-end">จำนวนเงิน</th>
+                                <th>ผู้บันทึก</th>
+                                <th>การจัดการ</th>
+                            </tr>
+                        </thead>
 
+                        <tbody>
+                            @foreach ($dataexpense as $item)
+                                <tr style="text-align: center ; ">
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($item->date)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($item->date)->year + 543 }}
+                                    </td>
+                                    <td>{{ $item->expense_type }}</td>
+                                    <td class="text-end">{{ number_format($item->expense_value, 2) }} บาท</td>
+                                    <td>
+                                        @if ($item->expense_many_to_one_user->is_admin == 1)
+                                            เจ้าของร้าน
+                                        @else
+                                            คุณ{{ $item->expense_many_to_one_user->name }}
+                                            {{ $item->expense_many_to_one_user->lname }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="" method="POST" class="d-inline"
+                                                onsubmit="return confirm('ต้องการลบรายการนี้ใช่หรือไม่?')">
+                                                @csrf
 
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @else
+                    <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
+                    @endif
 
-                <div class="form-group col-md-3">
-                    <label for="expense_value">ราคา</label>
-                    <input type="number" name="expense_value" id="expense_value" class="form-control" placeholder="ราคา"
-                        step="0.01" min="0" required>
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-center mt-4">
+                        {{ $dataexpense->links() }}
+                    </div>
                 </div>
             </div>
-            <button class="btn btn-danger" type="submit">บันทึกค่าใช้จ่าย</button>
-        </form>
-
-        <div class="table-responsive mt-4" style="max-height: 400px; overflow-y: auto;">
-            <table class="table table-bordered table-striped">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">วันที่</th>
-                        <th scope="col">ประเภทค่าใช้จ่าย</th>
-                        <th scope="col">ราคา</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($dataexpense as $item)
-                        <tr>
-                            <td>{{ \Carbon\Carbon::parse($item->date)->locale('th')->isoFormat('D MMM ') }}{{ \Carbon\Carbon::parse($item->date)->addYears(543)->format('Y') }}
-                            </td>
-                            <td>{{ $item->expense_type }}</td>
-                            <td>{{ $item->expense_value }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
         </div>
-    </main>
+    </div>
 @endsection

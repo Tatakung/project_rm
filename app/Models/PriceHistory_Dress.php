@@ -6,17 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Expense extends Model
+class PriceHistory_Dress extends Model
 {
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
-        'date',
-        'expense_type',
-        'expense_value',
-        'employee_id',
+        'dress_id',
+        'old_price',
+        'new_price',
     ];
-    public function expense_many_to_one_user(){
-        return $this->belongsTo(User::class,'employee_id') ; 
+    public function historydress_many_to_one_dress(){
+        return $this->belongsTo(Dress::class,'dress_id') ; 
     }
+
+    
 }

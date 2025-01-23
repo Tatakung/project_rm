@@ -39,6 +39,19 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'user_id');
     }
 
+    public function user_one_to_many_receipt(){
+        return $this->hasMany(Receipt::class,'employee_id') ;
+    }
+
+    public function user_one_to_many_receiptreturn(){
+        return $this->hasMany(ReceiptReturn::class,'employee_id') ;
+    }
+
+    public function user_one_to_many_expense(){
+        return $this->hasMany(Expense::class,'employee_id') ; 
+    }
+
+
     /**
      * The attributes that should be hidden for serialization.
      *

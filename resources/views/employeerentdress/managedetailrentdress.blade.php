@@ -1038,7 +1038,9 @@
 
                             <div class="p-3 bg-light rounded mb-3">
                                 <div class="d-flex justify-content-between">
-                                    <span>เงินมัดจำ:</span>
+                                    <span>เงินมัดจำ: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                        )</span></span>
                                     <span>
                                         {{ number_format($orderdetail->deposit, 2) }} บาท
                                     </span>
@@ -1062,7 +1064,9 @@
                         @elseif($orderdetail->status_payment == 2)
                             <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
-                                    <span>ค่าเช่าชุด:</span>
+                                    <span>ค่าเช่าชุด: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                        )</span></span>
                                     <span>
                                         {{ number_format($orderdetail->price, 2) }} บาท
                                     </span>
@@ -1072,7 +1076,9 @@
 
                             <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
-                                    <span>เงินประกัน:</span>
+                                    <span>เงินประกัน: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                        )</span></span>
                                     <span>
                                         {{ number_format($orderdetail->damage_insurance, 2) }} บาท
                                     </span>
@@ -1093,6 +1099,11 @@
                             </div>
                         @endif
                     </div>
+
+
+
+
+                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
                         <button type="submit" class="btn btn-success">ยืนยันการอัปเดตสถานะ</button>

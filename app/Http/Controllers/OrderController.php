@@ -35,6 +35,8 @@ use App\Models\AdjustmentRound;
 use App\Models\Jewelryimage;
 use App\Models\Typejewelry;
 use App\Models\Jewelrysetitem;
+use App\Models\ReceiptReturn;
+
 use App\Models\Reservationfilters;
 use App\Models\Jewelryset;
 
@@ -49,10 +51,14 @@ class OrderController extends Controller
     {
         // $customers = Customer::with('orders')->get();
         $name_search = null;
-        $customers = Customer::with('orders')
+        // $customers = Customer::with('orders')
+        //     ->orderBy('created_at', 'desc')
+        //     ->get();
+
+        $order = Order::where('order_status', 1)
             ->orderBy('created_at', 'desc')
-            ->get();
-        return view('employee.ordertotal', compact('customers', 'name_search'));
+            ->whereNotNull('type_order')->get();
+        return view('employee.ordertotal', compact('name_search', 'order'));
     }
 
     public function searchordertotal(Request $request)
@@ -109,6 +115,9 @@ class OrderController extends Controller
         $order_id = $id;
         $orderdetail = Orderdetail::where('order_id', $id)->get();
 
+        $orderdetail_modal =  Orderdetail::where('order_id', $id)
+            ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+            ->get();
 
         $date_now = now()->toDateString();
 
@@ -125,7 +134,7 @@ class OrderController extends Controller
             ->where('receipt_type', 2)
             ->first();
 
-        $receipt_three  = Receipt::where('order_id', $id)
+        $receipt_three  = ReceiptReturn::where('order_id', $id)
             ->where('receipt_type', 3)
             ->first();
 
@@ -153,7 +162,7 @@ class OrderController extends Controller
 
         //เช็คปุ่มกดรับชุด-เครื่องประดับ พร้อมกัน
         $queue_pass = false;
-        foreach ($orderdetail as $value) {
+        foreach ($orderdetail_modal as $value) {
             if ($value->type_order == 2) {
                 $dress_mea_adjuust = Dressmeaadjustment::where('order_detail_id', $value->id)->get();
 
@@ -236,13 +245,15 @@ class OrderController extends Controller
                     if ($reservation_now) {
                         if ($reservation_now->id == $value->reservation_id) {
                             $queue_pass = true;
-                        } elseif ($reservation_now->id != $orderdetail->reservation_id) {
+                        } elseif ($reservation_now->id != $value->reservation_id) {
                             $queue_pass = false;
                             break;
                         }
                     } else {
                         $queue_pass = true;
                     }
+
+
                     // เงื่อนไขที่ 2 คือ ชุดต้องได้รับการปรับแก้ไขขนาดแล้ว 
                     foreach ($dress_mea_adjuust as $item) {
                         if ($item->new_size != $item->dressmeaadjust_many_to_one_dressmea->current_mea) {
@@ -332,19 +343,18 @@ class OrderController extends Controller
                         $queue_pass = true;
                     }
                 } elseif ($value->detail_many_one_re->jewelry_set_id) {
-
+                    // dd($value->id) ; 
                     $list_set = [];
                     // แค่jewelry_set_idในตาราง reservation
                     $jewwelry_set_id_in_reservation = Reservation::where('status_completed', 0)
                         ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
                         ->where('jewelry_set_id', $value->detail_many_one_re->jewelry_set_id)
                         ->get();
-                    foreach ($jewwelry_set_id_in_reservation as $key => $value) {
-                        $list_set[] = $value->id;
+                    foreach ($jewwelry_set_id_in_reservation as $key => $valueee) {
+                        $list_set[] = $valueee->id;
                     }
                     // ส่วนjew_id
                     $jew_set_item = Jewelrysetitem::where('jewelry_set_id', $value->detail_many_one_re->jewelry_set_id)->get();
-
                     foreach ($jew_set_item as $key => $item) {
                         $check_jew_id_in_re = Reservation::where('status_completed', 0)
                             ->whereIn('status', ['ถูกจอง', 'กำลังเช่า'])
@@ -397,6 +407,7 @@ class OrderController extends Controller
         // เช็คสถานะทั้งหมดของ order ว่า ถูกจองทั้งหมดไหม ถ้าถูกจองทั้งหมด จะได้ไม่ต้องแสดงปุ่มรับ
         $check_number_detail_status = 0;
         $return_number = 0;
+        $new_status_check_number = 0;
         foreach ($orderdetail as $detail) {
             if ($detail->status_detail == 'กำลังเช่า') {
                 $check_number_detail_status = $check_number_detail_status + 1;
@@ -409,6 +420,14 @@ class OrderController extends Controller
                 if ($detail->status_detail == 'คืนเครื่องประดับแล้ว') {
                     $return_number += 1;
                 }
+            }
+
+
+            $check_status_new = Orderdetailstatus::where('order_detail_id', $detail->id)
+                ->where('status', 'กำลังเช่า')
+                ->exists();
+            if ($check_status_new) {
+                $new_status_check_number += 1;
             }
         }
         if ($check_number_detail_status >= 1) {
@@ -436,7 +455,17 @@ class OrderController extends Controller
         $only_payment = Paymentstatus::where('order_detail_id', $orderdetail->first()->id)
             ->where('payment_status', 1)
             ->exists();
-        return view('employee.ordertotaldetailtwo', compact('order', 'order_id', 'orderdetail', 'customer', 'employee', 'receipt_one', 'receipt_two', 'receipt_three', 'remaining_balance', 'total_price', 'total_deposit', 'total_damage_insurance', 'is_fully_paid', 'date_only', 'queue_pass', 'check_text_detail_status', 'check_text_detail_status_two', 'check_date_now', 'only_payment'));
+
+        $check_button_new = true;
+        if ($new_status_check_number == $orderdetail->count()) {
+            $check_button_new = false;
+        }
+
+
+
+
+
+        return view('employee.ordertotaldetailtwo', compact('order', 'order_id', 'orderdetail', 'customer', 'employee', 'receipt_one', 'receipt_two', 'receipt_three', 'remaining_balance', 'total_price', 'total_deposit', 'total_damage_insurance', 'is_fully_paid', 'date_only', 'queue_pass', 'check_text_detail_status', 'check_text_detail_status_two', 'check_date_now', 'only_payment', 'check_button_new', 'orderdetail_modal'));
     }
     private function ordertotaldetailthree($id)
     {
@@ -492,15 +521,15 @@ class OrderController extends Controller
         // เงื่อนไขที่ 1 คือ สถานะทุกรายการ จะต้องเป็น มีคำว่าถูกจอง
 
         $condition_one_number = 0;
-        $condition_two_number = 0 ; 
+        $condition_two_number = 0;
         foreach ($orderdetail as $value) {
 
             $check_status_two = Orderdetailstatus::where('order_detail_id', $value->id)
                 ->where('status', 'กำลังเช่า')
                 ->exists();
-                if ($check_status_two) {
-                    $condition_two_number += 1;
-                }
+            if ($check_status_two) {
+                $condition_two_number += 1;
+            }
 
             $check_status = Orderdetailstatus::where('order_detail_id', $value->id)
                 ->where('status', 'ถูกจอง')
@@ -515,25 +544,13 @@ class OrderController extends Controller
         }
 
 
-        $pass_two = true ; 
-        if($condition_two_number == $orderdetail->count()){
-            $pass_two = false ; 
+        $pass_two = true;
+        if ($condition_two_number == $orderdetail->count()) {
+            $pass_two = false;
         }
 
-        
-
-        return view('employee.ordertotaldetailthree', compact('total_price', 'total_deposit', 'total_damage_insurance', 'order', 'order_id', 'orderdetail', 'customer', 'employee', 'receipt_one', 'receipt_two', 'receipt_three', 'date_only', 'only_payment', 'remaining_balance', 'decoration_sum','pass_one','pass_two'));
+        return view('employee.ordertotaldetailthree', compact('total_price', 'total_deposit', 'total_damage_insurance', 'order', 'order_id', 'orderdetail', 'customer', 'employee', 'receipt_one', 'receipt_two', 'receipt_three', 'date_only', 'only_payment', 'remaining_balance', 'decoration_sum', 'pass_one', 'pass_two'));
     }
-
-
-
-
-
-
-
-
-
-
 
 
     public function cutadjust($id)
@@ -747,8 +764,11 @@ class OrderController extends Controller
         $fitting = Fitting::where('order_detail_id', $id)->get();
         $cost = Cost::where('order_detail_id', $id)->get();
         $date = Date::where('order_detail_id', $id)->get();
+
         $decoration = Decoration::where('order_detail_id', $id)->get();
+
         $decoration_sum = $decoration->sum('decoration_price');
+
         $sum_dec = Decoration::where('order_detail_id', $orderdetail->id)->sum(
             'decoration_price',
         );
@@ -777,7 +797,7 @@ class OrderController extends Controller
             ->where('status_completed', 0)
             ->orderByRaw(" STR_TO_DATE(start_date, '%Y-%m-%d') asc")
             ->first();
-
+        $sum_additional = AdditionalChange::where('order_detail_id', $id)->sum('amount');
 
         $his_dress_adjust = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
 
@@ -795,9 +815,7 @@ class OrderController extends Controller
             ->exists();
 
 
-
-
-        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup', 'receipt_bill_return',  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'decoration_sum'));
+        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup', 'receipt_bill_return',  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'decoration_sum', 'sum_additional'));
     }
     //จัดการตัดชุด
     private function managedetailcutdress($id)
@@ -941,14 +959,8 @@ class OrderController extends Controller
         $pickup = Carbon::parse($request->input('new_pickup_date'));
         $return = Carbon::parse($request->input('new_return_date'));
 
-        $past_7 = $pickup->copy()->subDays(7);
-        $past_1 = $pickup->copy()->subDays(1);
-        $pickup_start = $pickup->copy();
-        $return_end = $return->copy();
-        $future_1 = $return->copy()->addDays(1);
-        $future_7 = $return->copy()->addDays(7);
-
-
+        $past_7 = $pickup->copy()->subDays(7); //ถอยกลับไป 7 วัน
+        $future_7 = $return->copy()->addDays(7); // เพิ่มเข้าไป 7 วัน 
         $check_reservation = Reservation::where('status_completed', 0)
             ->where('dress_id', $dress->id)
             ->whereNot('id', $reser->id)
@@ -959,15 +971,7 @@ class OrderController extends Controller
             $reservation_start = Carbon::parse($item->start_date);
             $reservation_end = Carbon::parse($item->end_date);
 
-            if ($reservation_start->between($past_7, $past_1) ||  $reservation_end->between($past_7, $past_1)) {
-                $condition = false;
-                break;
-            }
-            if ($reservation_start->between($pickup_start, $return_end) || $reservation_end->between($pickup_start, $return_end)) {
-                $condition = false;
-                break;
-            }
-            if ($reservation_start->between($future_1, $future_7) || $reservation_end->between($future_1, $future_7)) {
+            if ($reservation_start->between($past_7, $future_7) ||  $reservation_end->between($past_7, $future_7)) {
                 $condition = false;
                 break;
             }
@@ -1051,12 +1055,8 @@ class OrderController extends Controller
         $input_end = \Carbon\Carbon::parse($value_end_date);
 
 
-        $input_start_7 = $input_start->copy()->subDays(7);
-        $input_start_1 = $input_start->copy()->subDays(1);
-        $input_start_betwwen = $input_start->copy();
-        $input_end_between = $input_end->copy();
-        $input_end_1 = $input_end->copy()->addDays(1);
-        $input_end_7 = $input_end->copy()->addDays(7);
+        $input_start_7 = $input_start->copy()->subDays(7); //ถอยกลับไป 7 วัน
+        $input_end_7 = $input_end->copy()->addDays(7); //เพิ่มไป 7 วัน
 
         $condition = true;
         // เช็คแค่ทั้งชุด
@@ -1069,15 +1069,7 @@ class OrderController extends Controller
         foreach ($reservation_check_total_dress as $item) {
             $reser_start = \Carbon\Carbon::parse($item->start_date);
             $reser_end = \Carbon\Carbon::parse($item->end_date);
-            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+            if ($reser_start->between($input_start_7, $input_end_7)   || $reser_end->between($input_start_7, $input_end_7)) {
                 $condition = false;
                 break;
             }
@@ -1090,15 +1082,7 @@ class OrderController extends Controller
         foreach ($reservation_check_total_shirt as $item) {
             $reser_start = \Carbon\Carbon::parse($item->start_date);
             $reser_end = \Carbon\Carbon::parse($item->end_date);
-            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+            if ($reser_start->between($input_start_7, $input_end_7)   || $reser_end->between($input_start_7, $input_end_7)) {
                 $condition = false;
                 break;
             }
@@ -1111,20 +1095,11 @@ class OrderController extends Controller
         foreach ($reservation_check_total_skirt as $item) {
             $reser_start = \Carbon\Carbon::parse($item->start_date);
             $reser_end = \Carbon\Carbon::parse($item->end_date);
-            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+            if ($reser_start->between($input_start_7, $input_end_7)   || $reser_end->between($input_start_7, $input_end_7)) {
                 $condition = false;
                 break;
             }
         }
-
 
         if ($condition == true) {
             session()->flash('condition', 'passsuccesst');
@@ -1310,12 +1285,8 @@ class OrderController extends Controller
         $input_end = \Carbon\Carbon::parse($value_end_date);
 
 
-        $input_start_7 = $input_start->copy()->subDays(7);
-        $input_start_1 = $input_start->copy()->subDays(1);
-        $input_start_betwwen = $input_start->copy();
-        $input_end_between = $input_end->copy();
-        $input_end_1 = $input_end->copy()->addDays(1);
-        $input_end_7 = $input_end->copy()->addDays(7);
+        $input_start_7 = $input_start->copy()->subDays(7); //ถอยกลับไป 7 วัน
+        $input_end_7 = $input_end->copy()->addDays(7); //บวกเพิ่มไป 7 วัน
 
         $condition = true;
         // เช็คแค่ทั้งชุด
@@ -1327,15 +1298,7 @@ class OrderController extends Controller
         foreach ($reservation_check_total_dress as $item) {
             $reser_start = \Carbon\Carbon::parse($item->start_date);
             $reser_end = \Carbon\Carbon::parse($item->end_date);
-            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+            if ($reser_start->between($input_start_7, $input_end_7)   || $reser_end->between($input_start_7, $input_end_7)) {
                 $condition = false;
                 break;
             }
@@ -1349,15 +1312,7 @@ class OrderController extends Controller
         foreach ($reservation_check_total_shirt as $item) {
             $reser_start = \Carbon\Carbon::parse($item->start_date);
             $reser_end = \Carbon\Carbon::parse($item->end_date);
-            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+            if ($reser_start->between($input_start_7, $input_end_7)   || $reser_end->between($input_start_7, $input_end_7)) {
                 $condition = false;
                 break;
             }
@@ -1521,13 +1476,8 @@ class OrderController extends Controller
         $input_end = \Carbon\Carbon::parse($value_end_date);
 
 
-        $input_start_7 = $input_start->copy()->subDays(7);
-        $input_start_1 = $input_start->copy()->subDays(1);
-        $input_start_betwwen = $input_start->copy();
-        $input_end_between = $input_end->copy();
-        $input_end_1 = $input_end->copy()->addDays(1);
-        $input_end_7 = $input_end->copy()->addDays(7);
-
+        $input_start_7 = $input_start->copy()->subDays(7); //ถอยกลับไป 7 วัน
+        $input_end_7 = $input_end->copy()->addDays(7); // เพิ่ม 7 วัน 
         $condition = true;
         // เช็คแค่ทั้งชุด
         $reservation_check_total_dress = Reservation::where('status_completed', 0)
@@ -1538,15 +1488,7 @@ class OrderController extends Controller
         foreach ($reservation_check_total_dress as $item) {
             $reser_start = \Carbon\Carbon::parse($item->start_date);
             $reser_end = \Carbon\Carbon::parse($item->end_date);
-            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+            if ($reser_start->between($input_start_7, $input_end_7)   || $reser_end->between($input_start_7, $input_end_7)) {
                 $condition = false;
                 break;
             }
@@ -1560,15 +1502,7 @@ class OrderController extends Controller
         foreach ($reservation_check_total_skirt as $item) {
             $reser_start = \Carbon\Carbon::parse($item->start_date);
             $reser_end = \Carbon\Carbon::parse($item->end_date);
-            if ($reser_start->between($input_start_7, $input_start_1)   || $reser_end->between($input_start_7, $input_start_1)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_start_betwwen, $input_end_between)   || $reser_end->between($input_start_betwwen, $input_end_between)) {
-                $condition = false;
-                break;
-            }
-            if ($reser_start->between($input_end_1, $input_end_7)   || $reser_end->between($input_end_1, $input_end_7)) {
+            if ($reser_start->between($input_start_7, $input_end_7)   || $reser_end->between($input_start_7, $input_end_7)) {
                 $condition = false;
                 break;
             }
@@ -1835,7 +1769,9 @@ class OrderController extends Controller
 
             // ตรวจสอบว่าใน order นี้ มีทั้งหมดกี่รายการ
             $count_index = 0;
-            $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)->get();
+            $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)
+                ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+                ->get();
             foreach ($data_orderdetail as $item) {
                 if ($item->status_detail == 'กำลังเช่า') {
                     $count_index += 1;
@@ -1868,45 +1804,9 @@ class OrderController extends Controller
                 $ceate_receipt->order_id = $orderdetail->order_id;
                 $ceate_receipt->receipt_type = 2;
                 $ceate_receipt->total_price = $total_price_receipt + $price_total_decoration;
+                $ceate_receipt->employee_id = Auth::user()->id;
                 $ceate_receipt->save();
             }
-
-
-
-
-
-
-            // สร้างใบเสร็จ
-            // $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
-            //     ->where('payment_status', 1)
-            //     ->exists();
-
-            // // decoration(ส่วนที่เพิ่มเติมเข้ามา)
-            // $decoration_receipt = Decoration::where('order_detail_id', $orderdetail->id)->get();
-            // // ถ้ามันมีข้อมูล
-            // if ($decoration_receipt->isNotEmpty()) {
-            //     $price_total_decoration = $decoration_receipt->sum('decoration_price');
-            // }
-            // // ถ้ามันไม่มีข้อมูล
-            // else {
-            //     $price_total_decoration = 0;
-            // }
-
-            // if ($check_payment_code_two_receipt) {
-            //     $total_price_receipt = ($orderdetail->price - $orderdetail->deposit) + $orderdetail->damage_insurance + $price_total_decoration;
-            // } else {
-            //     $total_price_receipt = 0 + $price_total_decoration;
-            // }
-
-
-            // $ceate_receipt = new Receipt();
-            // $ceate_receipt->order_id = $orderdetail->order_id;
-            // $ceate_receipt->order_detail_id = $orderdetail->id;
-            // $ceate_receipt->receipt_type = 2;
-            // $ceate_receipt->total_price = $total_price_receipt;
-            // $ceate_receipt->save();
-
-
         } elseif ($status == "กำลังเช่า") {
             $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
             $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
@@ -2029,29 +1929,15 @@ class OrderController extends Controller
             $reservation->save();
             $message_session = 'ลูกค้าคืนชุดแล้ว และชุดจะถูก' . $request->input('return_status') . 'ต่อไป';
 
-            // สร้างใบเสร็จ
-            // $check_payment_code_two_receipt = Paymentstatus::where('order_detail_id', $orderdetail->id)
-            //     ->where('payment_status', 1)
-            //     ->exists();
-            // $additional_receipt = AdditionalChange::where('order_detail_id', $orderdetail->id)->get();
-            // if ($additional_receipt->isNotEmpty()) {
-            //     $total_additional_receipt = $additional_receipt->sum('amount');
-            // } else {
-            //     $total_additional_receipt = 0;
-            // }
 
-            // $ceate_receipt = new Receipt();
-            // $ceate_receipt->order_id = $orderdetail->order_id;
-            // $ceate_receipt->order_detail_id = $orderdetail->id;
-            // $ceate_receipt->receipt_type = 3;
-            // $ceate_receipt->total_price = $orderdetail->damage_insurance - $total_additional_receipt;
-            // $ceate_receipt->save();
 
 
             // ถ้ามันตรวจสอบแล้วพบว่าทุกรายการ มันเป็น คืนชุด/คืนเครื่องประดับครบยัง ทั้งหมดแล้ว แปลว่า จะต้องทำการสร้างใบเสร็จอัตโนมัติเลย
             $count_index = 0;
             $additional_total = 0;
-            $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)->get();
+            $data_orderdetail = Orderdetail::where('order_id', $orderdetail->order_id)
+                ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+                ->get();
             $data_orderdetail_sum_damage_insurance = $data_orderdetail->sum('damage_insurance');
             foreach ($data_orderdetail as $item) {
                 if ($item->type_order == 2) {
@@ -2062,15 +1948,24 @@ class OrderController extends Controller
                     if ($item->status_detail == 'คืนเครื่องประดับแล้ว') {
                         $count_index += 1;
                     }
+                } elseif ($item->type_order == 4) {
+                    if ($item->status_detail == 'คืนชุดแล้ว') {
+                        $count_index += 1;
+                    }
                 }
+
+
+
+
                 $additional_receipt = AdditionalChange::where('order_detail_id', $item->id)->get();
                 foreach ($additional_receipt as $value) {
                     $additional_total += $value->amount;
                 }
             }
             if ($count_index == $data_orderdetail->count()) {
-                $ceate_receipt = new Receipt();
+                $ceate_receipt = new ReceiptReturn();
                 $ceate_receipt->order_id = $orderdetail->order_id;
+                $ceate_receipt->employee_id = Auth::user()->id;
                 $ceate_receipt->receipt_type = 3;
                 $ceate_receipt->total_price = $data_orderdetail_sum_damage_insurance - $additional_total;
                 $ceate_receipt->save();
@@ -2504,13 +2399,13 @@ class OrderController extends Controller
         $end_date_filter = Carbon::parse($request->input('end_date'));
 
         $type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
-        $dress = Dress::where('type_dress_id', $type_id)->get();
-        $fil_start_7 = $star_date_filter->copy()->subDays(7);
-        $fil_start_1 = $star_date_filter->copy()->subDays(1);
-        $fil_be_start = $star_date_filter->copy();
-        $fil_be_end = $end_date_filter->copy();
-        $fil_end_1 = $end_date_filter->copy()->addDays(1);
-        $fil_end_7 = $end_date_filter->copy()->addDays(7);
+        $dress = Dress::where('type_dress_id', $type_id)
+            ->where('dress_price', '!=', 0)
+            ->get();
+
+        $fil_start_7 = $star_date_filter->copy()->subDays(7); //ถอยไป 7 วัน
+        $fil_end_7 = $end_date_filter->copy()->addDays(7); // เพิ่มไป 7 วัน 
+
 
         $list_pass_dress_id = [];
         foreach ($dress as $index) {
@@ -2525,15 +2420,9 @@ class OrderController extends Controller
                         $re_start = Carbon::parse($re->start_date);
                         $re_end  = Carbon::parse($re->end_date);
 
-                        if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                        if ($re_start->between($fil_start_7, $fil_end_7) || $re_end->between($fil_start_7, $fil_end_7)) {
                             $validate_pass = false;
                             break;
-                        }
-                        if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
-                            $validate_pass = false;
-                        }
-                        if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
-                            $validate_pass = false;
                         }
                     }
                 }
@@ -2545,16 +2434,10 @@ class OrderController extends Controller
 
                 $validate_pass = true;
 
-                $fil_start_7 = $star_date_filter->copy()->subDays(7);
-                $fil_start_1 = $star_date_filter->copy()->subDays(1);
-                $fil_be_start = $star_date_filter->copy();
-                $fil_be_end = $end_date_filter->copy();
-                $fil_end_1 = $end_date_filter->copy()->addDays(1);
-                $fil_end_7 = $end_date_filter->copy()->addDays(7);
+                $fil_start_7 = $star_date_filter->copy()->subDays(7); //ถอยไป 7 วัน
+                $fil_end_7 = $end_date_filter->copy()->addDays(7); // เพิ่มไป 7 วัน
 
-
-
-                // เช็คแค่เฉพาะเช่าทั้งชุดก่อน
+                // เช็คแค่เฉพาะเช่าทั้งชุดก่อน เสื้อและผ้าถุงไม่เกี่ยว 
                 $reservation_dress = Reservation::where('dress_id', $index->id)
                     ->whereNull('shirtitems_id')
                     ->whereNull('skirtitems_id')
@@ -2565,21 +2448,15 @@ class OrderController extends Controller
                         $re_start = Carbon::parse($re->start_date);
                         $re_end  = Carbon::parse($re->end_date);
 
-                        if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                        if ($re_start->between($fil_start_7, $fil_end_7) || $re_end->between($fil_start_7, $fil_end_7)) {
                             $validate_pass = false;
                             break;
-                        }
-                        if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
-                            $validate_pass = false;
-                        }
-                        if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
-                            $validate_pass = false;
                         }
                     }
                 }
 
 
-                //เช็คเฉพาะเสื้อ
+                //เช็คเฉพาะเสื้อเท่านั้น
                 $shirt_id = Shirtitem::where('dress_id', $index->id)->value('id');
                 $reservation_shirt = Reservation::where('shirtitems_id', $shirt_id)
                     ->where('status_completed', 0)
@@ -2589,20 +2466,14 @@ class OrderController extends Controller
                         $re_start = Carbon::parse($re->start_date);
                         $re_end  = Carbon::parse($re->end_date);
 
-                        if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                        if ($re_start->between($fil_start_7, $fil_end_7) || $re_end->between($fil_start_7, $fil_end_7)) {
                             $validate_pass = false;
                             break;
-                        }
-                        if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
-                            $validate_pass = false;
-                        }
-                        if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
-                            $validate_pass = false;
                         }
                     }
                 }
 
-                //เช็คเฉพาะผ้าถุง
+                //เช็คเฉพาะผ้าถุงเท่านั้น
                 $skirt_id = Skirtitem::where('dress_id', $index->id)->value('id');
                 $reservation_skirt = Reservation::where('skirtitems_id', $skirt_id)
                     ->where('status_completed', 0)
@@ -2612,20 +2483,13 @@ class OrderController extends Controller
                         $re_start = Carbon::parse($re->start_date);
                         $re_end  = Carbon::parse($re->end_date);
 
-                        if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                        if ($re_start->between($fil_start_7, $fil_end_7) || $re_end->between($fil_start_7, $fil_end_7)) {
                             $validate_pass = false;
                             break;
                         }
-                        if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
-                            $validate_pass = false;
-                        }
-                        if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
-                            $validate_pass = false;
-                        }
                     }
                 }
-
-
+                // สุดท้ายแล้วอะ ที่เราเช็คเฉพาะทั้งชุด  เฉพาะเสื้อ เฉพาะผ้าถุง ถ้า$validate_pass มันยังเป็น true นั้นแปลว่า มันผ่าน
                 if ($validate_pass) {
                     $list_pass_dress_id[] = $index->id;
                 }
@@ -2645,9 +2509,6 @@ class OrderController extends Controller
 
 
 
-
-
-
     public function addrentdresstocardfiltershirt(Request $request)
     {
         $typedress = Typedress::all();
@@ -2661,21 +2522,22 @@ class OrderController extends Controller
 
         $type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
         $dress = Dress::where('type_dress_id', $type_id)
+            ->where('dress_price', '!=', 0)
             ->where('separable', 2)
             ->get();
-        $fil_start_7 = $star_date_filter->copy()->subDays(7);
+        $fil_start_7 = $star_date_filter->copy()->subDays(7); //ถอยหลังไป 7 วัน
         $fil_start_1 = $star_date_filter->copy()->subDays(1);
         $fil_be_start = $star_date_filter->copy();
         $fil_be_end = $end_date_filter->copy();
         $fil_end_1 = $end_date_filter->copy()->addDays(1);
-        $fil_end_7 = $end_date_filter->copy()->addDays(7);
+        $fil_end_7 = $end_date_filter->copy()->addDays(7); // เพิ่มขึ้นไป 7 วัน
 
         $list_pass_dress_id = [];
 
         foreach ($dress as $index) {
 
             $validate_pass = true;
-            //เช็คเฉพาะเสื้อ
+            //เช็คเฉพาะเสื้อเท่านั้น
             $shirt_id = Shirtitem::where('dress_id', $index->id)->value('id');
             $reservation_shirt = Reservation::where('shirtitems_id', $shirt_id)
                 ->where('status_completed', 0)
@@ -2684,20 +2546,13 @@ class OrderController extends Controller
                 foreach ($reservation_shirt as $re) {
                     $re_start = Carbon::parse($re->start_date);
                     $re_end  = Carbon::parse($re->end_date);
-
-                    if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                    if ($re_start->between($fil_start_7, $fil_end_7) || $re_end->between($fil_start_7, $fil_end_7)) {
                         $validate_pass = false;
                         break;
                     }
-                    if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
-                        $validate_pass = false;
-                    }
-                    if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
-                        $validate_pass = false;
-                    }
                 }
             }
-            // เช็คแค่เฉพาะเช่าทั้งชุด
+            // เช็คแค่เฉพาะเช่าทั้งชุดเท่านั้น
             $reservation_dress = Reservation::where('dress_id', $index->id)
                 ->whereNull('shirtitems_id')
                 ->whereNull('skirtitems_id')
@@ -2707,20 +2562,14 @@ class OrderController extends Controller
                 foreach ($reservation_dress as $re) {
                     $re_start = Carbon::parse($re->start_date);
                     $re_end  = Carbon::parse($re->end_date);
-
-                    if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                    if ($re_start->between($fil_start_7, $fil_end_7) || $re_end->between($fil_start_7, $fil_end_7)) {
                         $validate_pass = false;
                         break;
-                    }
-                    if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
-                        $validate_pass = false;
-                    }
-                    if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
-                        $validate_pass = false;
                     }
                 }
             }
 
+            // สุดท้ายแล้ว ถ้าเช็คว่า เช่าเฉพาะเสื้อ  และ เช่าเฉพาะทั้งชุด มันผ่านเงื่อนไขก็ผ่าน
             if ($validate_pass) {
                 $list_pass_dress_id[] = $index->id;
             }
@@ -2750,19 +2599,20 @@ class OrderController extends Controller
 
         $type_id = Typedress::where('type_dress_name', $dress_type)->value('id');
         $dress = Dress::where('type_dress_id', $type_id)
+            ->where('dress_price', '!=', 0)
             ->where('separable', 2)
             ->get();
-        $fil_start_7 = $star_date_filter->copy()->subDays(7);
+        $fil_start_7 = $star_date_filter->copy()->subDays(7); //ถอยไป 7 วัน
         $fil_start_1 = $star_date_filter->copy()->subDays(1);
         $fil_be_start = $star_date_filter->copy();
         $fil_be_end = $end_date_filter->copy();
         $fil_end_1 = $end_date_filter->copy()->addDays(1);
-        $fil_end_7 = $end_date_filter->copy()->addDays(7);
+        $fil_end_7 = $end_date_filter->copy()->addDays(7); // เพิ่มขึ้น 7 วัน
         $list_pass_dress_id = [];
 
         foreach ($dress as $index) {
             $validate_pass = true;
-            //เช็คเฉพาะผ้าถุง
+            //เช็คเฉพาะผ้าถุงเท่านั้น
             $skirt_id = Skirtitem::where('dress_id', $index->id)->value('id');
             $reservation_skirt = Reservation::where('skirtitems_id', $skirt_id)
                 ->where('status_completed', 0)
@@ -2772,19 +2622,13 @@ class OrderController extends Controller
                     $re_start = Carbon::parse($re->start_date);
                     $re_end  = Carbon::parse($re->end_date);
 
-                    if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                    if ($re_start->between($fil_start_7, $fil_end_7) || $re_end->between($fil_start_7, $fil_end_7)) {
                         $validate_pass = false;
                         break;
                     }
-                    if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
-                        $validate_pass = false;
-                    }
-                    if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
-                        $validate_pass = false;
-                    }
                 }
             }
-            // เช็คแค่เฉพาะเช่าทั้งชุด
+            // เช็คแค่เฉพาะเช่าทั้งชุดเท่านั้น
             $reservation_dress = Reservation::where('dress_id', $index->id)
                 ->whereNull('shirtitems_id')
                 ->whereNull('skirtitems_id')
@@ -2795,18 +2639,13 @@ class OrderController extends Controller
                     $re_start = Carbon::parse($re->start_date);
                     $re_end  = Carbon::parse($re->end_date);
 
-                    if ($re_start->between($fil_start_7, $fil_start_1) || $re_end->between($fil_start_7, $fil_start_1)) {
+                    if ($re_start->between($fil_start_7, $fil_end_7) || $re_end->between($fil_start_7, $fil_end_7)) {
                         $validate_pass = false;
                         break;
                     }
-                    if ($re_start->between($fil_be_start, $fil_be_end) || $re_end->between($fil_be_start, $fil_be_end)) {
-                        $validate_pass = false;
-                    }
-                    if ($re_start->between($fil_end_1, $fil_end_7) || $re_end->between($fil_end_1, $fil_end_7)) {
-                        $validate_pass = false;
-                    }
                 }
             }
+            // สุดท้ายแล้ว พอเช็คเช่าเฉพาะทั้งชุด และ เช่าเฉพาะผ้าถุงอะ  แปลว่าถ้ามัยังเป็นจริงก็มันผ่านเงื่อนไขทั้งหมดแล้ว
             if ($validate_pass) {
                 $list_pass_dress_id[] = $index->id;
             }
@@ -2821,16 +2660,6 @@ class OrderController extends Controller
         }
         return view('employeerentdress.adddresstocart', compact('dress', 'start_date', 'end_date', 'character', 'typedress', 'dress_type', 'dress_pass', 'textcharacter', 'start_date', 'end_date'));
     }
-
-
-
-
-
-
-
-
-
-
 
 
 

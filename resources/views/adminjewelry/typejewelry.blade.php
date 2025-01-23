@@ -47,14 +47,21 @@
         }
 
         body {
-            /* font-family: 'Barlow', sans-serif; */
             font-family: "Bai Jamjuree", sans-serif;
         }
     </style>
 </head>
 
 </html>
-
+<ol class="breadcrumb" style="background-color: transparent;">
+    <li class="breadcrumb-item">
+        <a href="{{route('admin.jewelrytotal')}}" style="color: black ; ">จัดการเครื่องประดับ</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="" style="color: black ;">ประเภท{{$typename}}</a>
+    </li>
+   
+</ol>
 
 <body>
     <div class="container  mt-5">

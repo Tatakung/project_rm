@@ -20,7 +20,6 @@ class Repair extends Model
         'reservation_id' ,
         'clean_id' , 
         'reservationfilter_id'
-        
     ];
 
     public function repair_many_to_one_reservationfilter()

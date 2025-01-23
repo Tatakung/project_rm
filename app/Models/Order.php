@@ -41,7 +41,11 @@ class Order extends Model
     {
         return $this->hasMany(Receipt::class, 'order_id');
     }
-
+    
+    public function order_one_many_receiptreturn()
+    {
+        return $this->hasMany(ReceiptReturn::class, 'order_id');
+    }
     
 
 

@@ -25,4 +25,11 @@ class Skirtitem extends Model
     public function skirtitemmtodress(){
         return $this->belongsTo(Dress::class,'dress_id') ; 
     }
+
+    public function skirt_one_to_many_historyskirt(){
+        return $this->hasMany(PriceHistory_Skirt::class,'skirtitems_id') ; 
+    }
+
+
+
 }

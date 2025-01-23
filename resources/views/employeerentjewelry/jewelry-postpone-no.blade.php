@@ -37,6 +37,17 @@
         @endif
     </script>
 
+    <ol class="breadcrumb" style="background-color: transparent; ">
+        <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">ออเดอร์ที่{{ $orderdetail->order_id }}</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}">รายละเอียดออเดอร์ที่ {{ $orderdetail->id }}</a></li>
+
+        <li class="breadcrumb-item">เลื่อนวันนัดรับ-นัดคืน</li>
+    </ol>
+
+
+
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-12" style="text-align: center ;">
@@ -98,7 +109,9 @@
                 <h2 class="card-title">ลำดับคิวเช่าของ {{ $typejewelry->type_jewelry_name }}
                     {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</h2>
                 <ul>
-                    <li>สถานะ {{ $typejewelry->type_jewelry_name }}{{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }} ปัจุจุบัน : {{$jewelry->jewelry_status}}</li>
+                    <li>สถานะ
+                        {{ $typejewelry->type_jewelry_name }}{{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
+                        ปัจุจุบัน : {{ $jewelry->jewelry_status }}</li>
                 </ul>
                 คิวการเช่าเรียงตามวันที่นัดรับ
                 <table class="table table-striped">
@@ -178,7 +191,7 @@
                             method="GET">
                             @csrf
                             <div class="form-group">
-                                <label for="new_pickup_date">วันที่นัดรับชุดใหม่</label>
+                                <label for="new_pickup_date">วันที่นัดรับเครื่องประดับใหม่</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">
@@ -192,7 +205,7 @@
 
 
                             <div class="form-group">
-                                <label for="new_return_date">วันที่นัดคืนชุดใหม่</label>
+                                <label for="new_return_date">วันที่นัดคืนเครื่องประดับใหม่</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">
@@ -210,6 +223,24 @@
                                 <div class="col-md-6">
                                     <button type="submit" class="btn btn-secondary mb-2">ตรวจสอบ</button>
                         </form>
+
+
+
+                        <h5>เงื่อนไขการเลื่อนวันนัดรับ-นัดคืน</h5>
+                        <p>
+                            การเลื่อนวันนัดรับ-นัดคืนจะต้องเป็นไปตามเงื่อนไขดังต่อไปนี้:
+                        </p>
+                        <ul>
+                            <li>
+                                <strong>วันนัดรับ:</strong> สามารถเลื่อนวันได้ล่วงหน้า <strong>ไม่เกิน 7
+                                    วันก่อนวันนัดรับเดิม</strong> เพื่อเผื่อเวลาสำหรับการคืนเครื่องประดับจากลูกค้าคนก่อนหน้า
+                            </li>
+                            <li>
+                                <strong>วันนัดคืน:</strong> สามารถเลื่อนวันได้ภายหลัง <strong>ไม่เกิน 7
+                                    วันหลังจากวันนัดคืนเดิม</strong> ทั้งนี้ต้องไม่มีลูกค้าคนอื่นจองในช่วงเวลาดังกล่าว
+                            </li>
+
+                        </ul>
 
 
                     </div>

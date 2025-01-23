@@ -79,10 +79,12 @@
                                             $customer = App\Models\Customer::find($customer_id);
                                         @endphp
 
-                                        title: 'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} - {{ $reservation->status }}',
-                                        start: '{{ $reservation->start_date }}',
-                                        end: '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
-                                            color: '{{ $reservation->status == 'ถูกจอง' ? '#ff0000' : '#257e4a' }}'
+                                        title:
+                                            'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} - {{ $reservation->status }} ',
+                                            start: '{{ $reservation->start_date }}',
+                                            end:
+                                            '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
+                                            color: '#ff0000' // สีแดงสำหรับเช่าทั้งชุด
                                     },
                                 @endforeach
 
@@ -126,7 +128,7 @@
                                     {
                                         title: 'ชุด:{{ $text_status }}',
                                         start: new Date().toISOString().split('T')[0], // ใช้วันที่ปัจจุบัน
-                                        color: '#ff0000' // สีแดง
+                                        color: '#8A2BE2' // สีแดง
                                     }
                                 @endif
                             ],
@@ -221,7 +223,8 @@
                         @endphp
 
 
-                        <form action="{{ route('employee.ordertotaldetailpostponecheckeddresstotal', ['id' => $orderdetail->id]) }}"
+                        <form
+                            action="{{ route('employee.ordertotaldetailpostponecheckeddresstotal', ['id' => $orderdetail->id]) }}"
                             method="GET">
                             @csrf
                             <div class="form-group">
@@ -260,11 +263,28 @@
 
 
                         <h5>เงื่อนไขการเลื่อนวันนัดรับ-นัดคืน</h5>
-                        <li>สามารถเลื่อนวันนัดล่วงหน้าได้ไม่เกิน 30 วัน</li>
-                        <li>ไม่สามารถเลื่อนวันนัดย้อนหลังได้</li>
-                        <li>ระยะเวลาการเช่าต้องไม่เกิน 7 วัน</li>
-                        <li>วันคืนชุดต้องมากกว่าวันรับชุด</li>
-                        <li>สามารถเลื่อนวันนัดได้ 1 ครั้งต่อการเช่า 1 รายการ</li>
+                        <p>
+                            การเลื่อนวันนัดรับ-นัดคืนจะต้องเป็นไปตามเงื่อนไขดังต่อไปนี้:
+                        </p>
+                        <ul>
+                            <li>
+                                <strong>วันนัดรับ:</strong> สามารถเลื่อนวันได้ล่วงหน้า <strong>ไม่เกิน 7
+                                    วันก่อนวันนัดรับเดิม</strong> เพื่อเผื่อเวลาสำหรับการคืนชุดจากลูกค้าคนก่อนหน้า
+                                หรือการซักและซ่อมแซมชุดก่อนถึงวันนัดรับใหม่
+                            </li>
+                            <li>
+                                <strong>วันนัดคืน:</strong> สามารถเลื่อนวันได้ภายหลัง <strong>ไม่เกิน 7
+                                    วันหลังจากวันนัดคืนเดิม</strong> ทั้งนี้ต้องไม่มีลูกค้าคนอื่นจองชุดในช่วงเวลาดังกล่าว
+                                เพื่อเผื่อเวลาในกรณีที่ลูกค้าคืนชุดล่าช้า หรือมีการซักและซ่อมแซมชุด
+                            </li>
+
+                        </ul>
+                        <p>
+                            กรุณาติดต่อร้านล่วงหน้าเพื่อแจ้งความประสงค์ในการเลื่อนวัน
+                            และตรวจสอบความพร้อมของชุดในวันที่ต้องการเปลี่ยนแปลง
+                        </p>
+
+
 
 
                     </div>

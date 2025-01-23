@@ -1438,10 +1438,9 @@ class ManageorderController extends Controller
         $ceate_receipt = new Receipt();
         $ceate_receipt->order_id = $order->id;
         $ceate_receipt->receipt_type = 2;
+        $ceate_receipt->employee_id = Auth::user()->id;
         $ceate_receipt->total_price = $total_price_receipt + $sum_decoration;
         $ceate_receipt->save();
-
-
 
 
         return redirect()->back()->with('success', 'สำเร็จแล้ว');

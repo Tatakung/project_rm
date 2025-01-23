@@ -41,7 +41,7 @@
         <div class="row">
             <div class="col-md-12" style="text-align: center ;">
                 <h2>เลื่อนวันนัดรับ - นัดคืนชุด</h2>
-                <p>{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
+                <p>{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)</p>
 
             </div>
         </div>
@@ -79,10 +79,12 @@
                                             $customer = App\Models\Customer::find($customer_id);
                                         @endphp
 
-                                        title: 'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} - {{ $reservation->status }}',
-                                        start: '{{ $reservation->start_date }}',
-                                        end: '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
-                                            color: '{{ $reservation->status == 'ถูกจอง' ? '#ff0000' : '#257e4a' }}'
+                                        title:
+                                            'คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }} - {{ $reservation->status }}',
+                                            start: '{{ $reservation->start_date }}',
+                                            end:
+                                            '{{ \Carbon\Carbon::parse($reservation->end_date)->addDay()->format('Y-m-d') }}',
+                                            color: '#ff0000'
                                     },
                                 @endforeach
 
@@ -103,14 +105,14 @@
                                             color: '#3788d8' // สีน้ำเงินสำหรับเช่าเฉพาะเสื้อ
                                     },
                                 @endforeach
-                                
+
 
                                 // เพิ่ม event สำหรับวันที่ปัจจุบัน
                                 @if ($text_status != 'อยู่ในร้าน')
                                     {
                                         title: 'ชุด:{{ $text_status }}',
                                         start: new Date().toISOString().split('T')[0], // ใช้วันที่ปัจจุบัน
-                                        color: '#ff0000' // สีแดง
+                                        color: '#8A2BE2' // สีแดง
                                     }
                                 @endif
                             ],
@@ -129,7 +131,7 @@
                         style="display: inline-block; width: 12px; height: 12px; background-color: #3788d8; border-radius: 50%; margin-right: 5px;"></span>
                     เช่าเฉพาะเสื้อ
                 </p>
-                
+
             </div>
             <div class="col-md-5">
                 <h2 class="card-title">ลำดับคิว</h2>
@@ -179,10 +181,11 @@
         <div class="row mt-5 mb-5">
             <div class="col-md-12">
                 <h3 style="text-align: start ; ">ข้อมูลการเช่า</h3>
-                
+
                 <div class="card shadow">
                     <div class="card-body">
-                        <p>เช่า{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)</p>
+                        <p>เช่า{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                            (เสื้อ)</p>
 
 
                         <p>ผู้เช่า : คุณ{{ $cus->customer_fname }} {{ $cus->customer_lname }}</p>
@@ -198,7 +201,8 @@
                         @endphp
 
 
-                        <form action="{{ route('employee.ordertotaldetailpostponecheckeddressshirt', ['id' => $orderdetail->id]) }}"
+                        <form
+                            action="{{ route('employee.ordertotaldetailpostponecheckeddressshirt', ['id' => $orderdetail->id]) }}"
                             method="GET">
                             @csrf
                             <div class="form-group">
@@ -237,11 +241,23 @@
 
 
                         <h5>เงื่อนไขการเลื่อนวันนัดรับ-นัดคืน</h5>
-                        <li>สามารถเลื่อนวันนัดล่วงหน้าได้ไม่เกิน 30 วัน</li>
-                        <li>ไม่สามารถเลื่อนวันนัดย้อนหลังได้</li>
-                        <li>ระยะเวลาการเช่าต้องไม่เกิน 7 วัน</li>
-                        <li>วันคืนชุดต้องมากกว่าวันรับชุด</li>
-                        <li>สามารถเลื่อนวันนัดได้ 1 ครั้งต่อการเช่า 1 รายการ</li>
+                        <p>
+                            การเลื่อนวันนัดรับ-นัดคืนจะต้องเป็นไปตามเงื่อนไขดังต่อไปนี้:
+                        </p>
+                        <ul>
+                            <li>
+                                <strong>วันนัดรับ:</strong> สามารถเลื่อนวันได้ล่วงหน้า <strong>ไม่เกิน 7
+                                    วันก่อนวันนัดรับเดิม</strong> เพื่อเผื่อเวลาสำหรับการคืนชุดจากลูกค้าคนก่อนหน้า
+                                หรือการซักและซ่อมแซมชุดก่อนถึงวันนัดรับใหม่
+                            </li>
+                            <li>
+                                <strong>วันนัดคืน:</strong> สามารถเลื่อนวันได้ภายหลัง <strong>ไม่เกิน 7
+                                    วันหลังจากวันนัดคืนเดิม</strong> ทั้งนี้ต้องไม่มีลูกค้าคนอื่นจองชุดในช่วงเวลาดังกล่าว
+                                เพื่อเผื่อเวลาในกรณีที่ลูกค้าคืนชุดล่าช้า หรือมีการซักและซ่อมแซมชุด
+                            </li>
+
+                        </ul>
+
 
 
                     </div>
@@ -309,8 +325,8 @@
         </div>
 
 
-        <div class="modal fade" id="rescheduleModal" tabindex="-1" role="dialog"
-            aria-labelledby="rescheduleModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal fade" id="rescheduleModal" tabindex="-1" role="dialog" aria-labelledby="rescheduleModalLabel"
+            aria-hidden="true" data-backdrop="static">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <form action="{{ route('employee.postponecheckedpass', ['id' => $orderdetail->id]) }}"

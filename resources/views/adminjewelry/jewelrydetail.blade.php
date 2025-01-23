@@ -15,15 +15,10 @@
 
         .custom-modal-body {
             background-color: #28a745;
-            /* สีเขียวเข้ม */
             color: #fff;
-            /* ข้อความสีขาว */
             padding: 20px;
-            /* ระยะห่างภายใน */
             border-radius: 5px;
-            /* ขอบโค้งมน */
             text-align: center;
-            /* จัดข้อความให้อยู่ตรงกลาง */
         }
     </style>
 
@@ -33,7 +28,7 @@
             <a href="" style="color: black ; ">จัดการเครื่องประดับ</a>
         </li>
         <li class="breadcrumb-item">
-            <a href="" style="color: black ;">ประเภท{{ $data_type->type_jewelry_name }}</a>
+            <a href="{{route('admin.typejewelry',['id' => $datajewelry->type_jewelry_id])}}" style="color: black ;">ประเภท{{ $data_type->type_jewelry_name }}</a>
         </li>
         <li class="breadcrumb-item active">
             รายละเอียดของหมายเลขเครื่องประดับ {{ $data_type->specific_letter }}{{ $datajewelry->jewelry_code }}
@@ -150,7 +145,7 @@
                 <div class="row">
                     <div class="d-flex">
 
-                        <div class="p-2">
+                        <div class="p-2 ml-3">
                             <img src="{{ asset('storage/' . $dataimage->jewelry_image) }}" alt=""
                                 style="max-height: 350px; width: auto;">
                         </div>
@@ -169,7 +164,14 @@
                     </div>
 
 
-                    <div class="ml-2"
+                    
+
+
+
+
+                </div>
+
+<div class="ml-2"
                         @if ($is_admin == 1) style="display: block;  "
                     @elseif($is_admin == 0)
                         style="display: none ; " @endif>
@@ -182,13 +184,6 @@
                             <i class="bi bi-tools"></i> ประวัติการซ่อม
                         </a>
                     </div>
-
-
-
-
-                </div>
-
-
 
 
 
@@ -227,11 +222,11 @@
 
                             <div class="d-flex justify-content-between align-items-center p-3 mb-2 border rounded">
                                 <div>
-                                    <div><strong>{{ $item->jewitem_m_to_o_jewset->set_name }}</strong></div>
-                                    <div class="text-muted">รหัสเซต: SET00{{ $item->jewitem_m_to_o_jewset->id }}</div>
+                                    <div style="color:#000"><strong>{{ $item->jewitem_m_to_o_jewset->set_name }}</strong></div>
+                                    <div class="text-muted">รหัสเซต: SET{{ $item->jewitem_m_to_o_jewset->id }}</div>
                                 </div>
                                 <div>
-                                    <strong>{{ number_format($item->jewitem_m_to_o_jewset->set_price, 2) }} บาท</strong>
+                                    <strong style="color:#000">{{ number_format($item->jewitem_m_to_o_jewset->set_price, 2) }} บาท</strong>
                                 </div>
                             </div>
                         </a>

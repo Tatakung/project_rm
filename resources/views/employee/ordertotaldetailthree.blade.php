@@ -90,6 +90,11 @@
             vertical-align: middle;
             text-align: center;
         }
+        .list-group-item.active{
+            background-color: #F7F9FA !important;
+            color: black !important;
+            border-color:#DADAE3;
+        }
     </style>
 
     <ol class="breadcrumb">
@@ -125,6 +130,21 @@
                 document.getElementById('show_history_day').innerHTML = '(เมื่อ ' + history_day + ' วันที่แล้ว)';
             }
         </script>
+
+                <button type="button"class="btn btn-c "  data-toggle="modal" data-target="#show_modal_pickup_total"
+            @if ($pass_one == true) 
+                @if ($pass_two == true) 
+                    style="display: block ; background-color:#DADAE3;"
+                @else
+                    style="display: none ; background-color:#DADAE3;"
+                @endif 
+            @else
+                style="display: none ; background-color:#DADAE3;"
+            @endif
+            >
+            รับชุด (ทั้งหมด)
+        </button>
+
         <table class="table table-striped shadow-sm">
             <thead>
                 <tr>
@@ -186,37 +206,23 @@
                         </td>
 
 
-
-
                     </tr>
                 @endforeach
             </tbody>
         </table>
-        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#show_modal_pickup_total"
-            @if ($pass_one == true) 
-                @if ($pass_two == true) 
-                style="display: block"
-                @else
-                style="display: none ; "
-                @endif 
-            @else
-            style="display: none ; "
-            @endif
-            >
-            รับชุด (ทั้งหมด)
-        </button>
+
     </div>
 
 
     <div class="container mt-4 mb-4">
 
-        <p class="mt-5">ประวัติใบเสร็จ</p>
+        <h3>ประวัติใบเสร็จ</h3>
 
 
         @if ($receipt_one)
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
                 <div>
-                    <p class="mb-1">ใบเสร็จรับเงิน(จอง)</p>
+                    <p class="mb-1">ใบเสร็จ</p>
                     <p class="mb-1">วันที่:
                         {{ Carbon\Carbon::parse($receipt_one->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_one->created_at)->year + 543 }}
@@ -224,10 +230,7 @@
                     </p>
                 </div>
                 <a href="{{ route('receiptreservation', ['id' => $order_id]) }}" target="_blank"
-                    class="btn btn-sm btn-primary" tabindex="-1">พิมพ์ใบเสร็จ</a>
-
-
-
+                    class="btn btn-sm "style="background-color:#DADAE3;" tabindex="-1">พิมพ์ใบเสร็จ</a>
 
             </div>
         @endif
@@ -237,7 +240,7 @@
         @if ($receipt_two)
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
                 <div>
-                    <p class="mb-1">ใบเสร็จรับชุด</p>
+                    <p class="mb-1">ใบเสร็จ</p>
                     <p class="mb-1">วันที่:
                         {{ Carbon\Carbon::parse($receipt_two->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_two->created_at)->year + 543 }}
@@ -245,22 +248,22 @@
                     </p>
                 </div>
                 <a href="{{ route('receiptpickuprent', ['id' => $order_id]) }}" target="_blank"
-                    class="btn btn-sm btn-primary" tabindex="-1">พิมพ์ใบเสร็จ {{ $receipt_two->id }}</a>
+                    class="btn btn-sm " style="background-color:#DADAE3;" tabindex="-1">พิมพ์ใบเสร็จ</a>
             </div>
         @endif
 
         @if ($receipt_three)
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
                 <div>
-                    <p class="mb-1">ใบเสร็จคืนชุด</p>
+                    <p class="mb-1">ใบเสร็จ</p>
                     <p class="mb-1">วันที่:
                         {{ Carbon\Carbon::parse($receipt_three->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_three->created_at)->year + 543 }}
 
                     </p>
                 </div>
-                <a href="{{ route('receiptreturnrent', ['id' => $order_id]) }}" target="_blank" class="btn btn-primary"
-                    tabindex="-1">ดูใบเสร็จ{{ $receipt_three->id }}</a>
+                <a href="{{ route('receiptreturnrent', ['id' => $order_id]) }}" target="_blank" class="btn btn-sm " style="background-color:#DADAE3;"
+                    tabindex="-1">พิมพ์ใบเสร็จ</a>
             </div>
         @endif
     </div>
@@ -320,7 +323,7 @@
 
                                 </tr>
                             @endforeach
-                            <tr>
+                            <tr style="background-color:rgb(240, 240, 240);">
                                 <td><strong>รวมทั้งหมด</strong></td>
                                 <td> {{ number_format($total_price, 2) }} </td>
                                 <td> {{ number_format($total_damage_insurance, 2) }} </td>
@@ -359,8 +362,8 @@
                 <form action="{{ route('updatestatuspickuptotalrent', ['id' => $order_id]) }}" method="POST">
                     @csrf
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
-                        <button type="submit" class="btn btn-primary">ยืนยัน</button>
+                        <button type="button" class="btn " style="background-color:#DADAE3;" data-dismiss="modal">ปิด</button>
+                        <button type="submit" class="btn " style="background-color:#ACE6B7">ยืนยัน</button>
                     </div>
                 </form>
             </div>

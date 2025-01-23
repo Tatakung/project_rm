@@ -56,38 +56,15 @@
 
     <div class="container">
         <!-- Header -->
-        <div class="row mt-4">
-            <div class="col-12 text-center">
-                <h2>จัดการทำความสะอาดเครื่องประดับ</h2>
-                <p class="lead">ดูและอัพเดตสถานะการของเครื่องประดับ</p>
-            </div>
-        </div>
 
-        <!-- Status Summary Cards -->
-        <div class="row mb-1">
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body"style="background-color:#EBE5B2; border:0;">
-                        <h5 class="card-title">รอดำเนินการ</h5>
-                        <p style="font-size: 20px;">{{ $clean_pending->count() }} รายการ</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body "style="background-color:#EAC39D ; border:0;">
-                        <h5 class="card-title">กำลังทำความสะอาด</h5>
-                        <p style="font-size: 20px;">{{ $clean_doing_wash->count() }} รายการ</p>
-                    </div>
-                </div>
-            </div>
 
-        </div>
-        <div class="alert alert-info text-center" role="alert">
-            การทำความสะอาดเครื่องประดับควรเสร็จภายใน 7 วันหลังจากลูกค้านำมาคืน
+                <h1 class="my-4 text-start">จัดการทำความสะอาดเครื่องประดับ</h1>
+                <p>การทำความสะอาดเครื่องประดับควรเสร็จภายใน 7 วันหลังจากลูกค้านำมาคืน
             เพื่อให้สามารถตรวจสอบและซ่อมแซมเครื่องประดับได้ทันท่วงที
-            รวมถึงเตรียมพร้อมสำหรับการให้เช่าครั้งต่อไป
-        </div>
+            รวมถึงเตรียมพร้อมสำหรับการให้เช่าครั้งต่อไป</p>
+
+
+
 
         <!-- Laundry List -->
         <div class="card mb-4">

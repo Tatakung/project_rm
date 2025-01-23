@@ -94,7 +94,7 @@
                 <div class="col-md-4">
                     <label for="" class="form-label" style="color: #848383 ;">วันนัดรับ - วันนัดคืน</label>
                     <input type="text" id="date-range" class="w-full p-2 border rounded"
-                        placeholder="เลือกวันที่รับและคืนชุด">
+                        placeholder="เลือกวันที่รับและคืน">
                     <input type="hidden" name="start_date" id="start_date">
                     <input type="hidden" name="end_date" id="end_date">
                 </div>
@@ -286,9 +286,9 @@
                                 <img src="{{ asset('images/setjewelry.jpg') }}" class="card-img-top custom-img"
                                     alt="">
                                 <div class="card-body">
-                                    <p><strong>jew_set_id:</strong> {{ $jewset->id }}</p>
+                                    {{-- <p><strong>jew_set_id:</strong> {{ $jewset->id }}</p> --}}
                                     <h5 class="card-title">{{ $jewset->set_name }}</h5>
-                                    <p class="card-title">รหัส: SET00{{ $jewset->id }}</p>
+                                    {{-- <p class="card-title">รหัส: SET00{{ $jewset->id }}</p> --}}
                                 </div>
                             </button>
                         </div>
@@ -319,7 +319,7 @@
                                             <p><strong>ราคามัดจำ:</strong> {{ number_format($jewset->set_price * 0.3) }}
                                                 บาท</p>
                                             <p><strong>เงินประกัน:</strong> {{ $jewset->set_price }} บาท</p>
-                                            <p>ในเซตประกอบด้วย</p>
+                                            <p>ในเซตนี้ประกอบด้วย</p>
                                             @php
                                                 $item_jew = App\Models\Jewelrysetitem::where(
                                                     'jewelry_set_id',
@@ -327,7 +327,7 @@
                                                 )->get();
                                             @endphp
                                             @foreach ($item_jew as $item)
-                                                <li>{{$item->jewelry_id}}
+                                                <li>
                                                     {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
                                                     {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
                                                     

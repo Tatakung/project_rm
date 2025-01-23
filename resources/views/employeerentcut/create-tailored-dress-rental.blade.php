@@ -1,6 +1,46 @@
 @extends('layouts.adminlayout')
 @section('content')
     <style>
+        #add_mea_skirt{
+            background-color: #3498db;
+            /* ปุ่มสีฟ้า */
+            color: #fff;
+            /* ตัวอักษรสีขาว */
+            border: none;
+            /* ลบขอบปุ่ม */
+            border-radius: 4px;
+            /* มุมปุ่มโค้ง */
+            padding: 8px 12px;
+            /* ระยะห่างด้านในของปุ่ม */
+            font-size: 14px;
+            /* ขนาดตัวอักษรของปุ่ม */
+            cursor: pointer;
+            /* เปลี่ยนเคอร์เซอร์เมื่อชี้ที่ปุ่ม */
+            margin-left: 10px;
+            /* ระยะห่างจากข้อความ */
+            transition: background-color 0.3s ease;
+            /* เอฟเฟกต์เปลี่ยนสี */
+        }
+        #add_mea_shirt{
+            background-color: #3498db;
+            /* ปุ่มสีฟ้า */
+            color: #fff;
+            /* ตัวอักษรสีขาว */
+            border: none;
+            /* ลบขอบปุ่ม */
+            border-radius: 4px;
+            /* มุมปุ่มโค้ง */
+            padding: 8px 12px;
+            /* ระยะห่างด้านในของปุ่ม */
+            font-size: 14px;
+            /* ขนาดตัวอักษรของปุ่ม */
+            cursor: pointer;
+            /* เปลี่ยนเคอร์เซอร์เมื่อชี้ที่ปุ่ม */
+            margin-left: 10px;
+            /* ระยะห่างจากข้อความ */
+            transition: background-color 0.3s ease;
+            /* เอฟเฟกต์เปลี่ยนสี */
+        }
         #button_add_mea {
             background-color: #3498db;
             /* ปุ่มสีฟ้า */
@@ -747,4 +787,26 @@
             </div>
         </div>
     </form>
+
+    <script>
+        var select_type_dress_for_type = document.getElementById('type_dress') ; 
+        var show_rental_option1 = document.getElementById('rental_option1') ; 
+        var show_timple_for_dress_separated_no = document.getElementById('for_dress_separated_no') ; 
+        select_type_dress_for_type.addEventListener('change',function(){
+            if(select_type_dress_for_type.value == 'ชุดราตรี'){
+                show_rental_option1.checked = true ; 
+                show_timple_for_dress_separated_no.style.display = 'block' ; 
+            }
+            
+            
+
+        }) ; 
+    </script>
+
+
+
+
+
+
+
 @endsection

@@ -45,11 +45,69 @@
 
     <div class="container">
         <div class="row">
-            <div class="col">
+            <div class="col-md-6">
                 <h2 class="py-4" style="text-align: start">รายละเอียดของ{{ $name_type }}หมายเลขชุด
                     {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h2>
             </div>
+
         </div>
+
+        <!-- Modal แสดงประวัติการแก้ไขราคา -->
+        <div class="modal fade" id="priceHistoryModal" tabindex="-1" aria-labelledby="priceHistoryModalLabel"
+            aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="priceHistoryModalLabel">ประวัติการปรับแก้ไขราคาเช่า -
+                            {{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>วันที่แก้ไข</th>
+                                        <th>ราคาเดิม</th>
+                                        <th>ราคาใหม่</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($historydress as $item)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                            </td>
+                                            <td>{{number_format($item->old_price , 2 )}} บาท</td>
+                                            <td>{{number_format($item->new_price , 2 )}} บาท</td>
+                                            
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -57,8 +115,8 @@
             <div class="card-header"><i class="bi bi-info-circle"></i> รายละเอียดชุด
                 <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal"
                     @if ($check_admin == 1) style="display: block ; "
-                @elseif($check_admin == 0)
-                style="display: none ; " @endif>
+                    @elseif($check_admin == 0)
+                        style="display: none ; " @endif>
                     <i class="bi bi-pencil-square text-dark"></i>
                 </button>
             </div>
@@ -167,29 +225,35 @@
                         <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                         <!-- <p><strong>รหัสชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</p> -->
 
-                        @if ($datadress->dress_price == null)
+                        @if ($datadress->dress_price == 0)
                             <p><strong>ราคาเช่า:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
                         @else
                             <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
                         @endif
 
 
-                        @if($datadress->dress_deposit == null)
-                        <p><strong>เงินมัดจำ:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                        @if ($datadress->dress_deposit == 0)
+                            <p><strong>เงินมัดจำ:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
                         @else
-                        <p><strong>เงินมัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
+                            <p><strong>เงินมัดจำ:</strong> {{ number_format($datadress->dress_deposit, 2) }} บาท</p>
                         @endif
 
-                       @if($datadress->damage_insurance == null)
-                       <p><strong>ค่าประกันชุด:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
-                       @else
-                       <p><strong>ค่าประกันชุด:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท</p>
-                       @endif
+                        @if ($datadress->damage_insurance == 0)
+                            <p><strong>ค่าประกันชุด:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
+                        @else
+                            <p><strong>ค่าประกันชุด:</strong> {{ number_format($datadress->damage_insurance, 2) }} บาท</p>
+                        @endif
 
-                        
+                        @if ($datadress->source_type == 2)
+                            <span style="color: rgb(132, 126, 126)">*ชุดนี้มาจากรายการเช่าตัด* </span>
+                        @endif
 
 
-                       
+
+
+
+
+
                         </p>
 
 
@@ -215,14 +279,14 @@
                             $historyrepair = App\Models\Repair::whereIn('id', $list_two)->get();
                         @endphp
                         <!-- <p><strong>จำนวนครั้งที่ซ่อม</strong>
-                                            {{ $historyrepair->count() }} ครั้ง
-                                            {{-- <span
+                                                    {{ $historyrepair->count() }} ครั้ง
+                                                    {{-- <span
                                 @if ($check_admin == 1) style="display: block ; "
                             @elseif($check_admin == 2)
                             style="display: none ; " @endif><a
                                     href="">ดูประวัติ</a></span> --}}
-                                        </p>
-                                        <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p> -->
+                                                </p>
+                                                <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p> -->
 
                     </div>
 
@@ -272,6 +336,13 @@
                             class="btn btn-outline-secondary">
                             <i class="bi bi-tools"></i> ประวัติการซ่อม
                         </a>
+
+
+                        <button type="button" class="btn btn-outline-dark" data-toggle="modal"
+                            data-target="#priceHistoryModal">
+                            <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
+                        </button>
+
                     </div>
 
 

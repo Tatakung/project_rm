@@ -81,7 +81,7 @@
                                         <h6 style="color: black;">ชุดแยก: เสื้อและผ้าถุง</h6>
                                     @endif
                                 
-                                    @if($item->dress_price == null)
+                                    @if($item->dress_price == 0)
                                         ยังไม่ได้กำหนดราคา
                                     @else
                                         <h6 style="color: black;">ราคาเช่า: {{ number_format($item->dress_price, 2) }} บาท</h6>

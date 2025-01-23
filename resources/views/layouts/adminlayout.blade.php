@@ -203,7 +203,7 @@
                         <a href="{{ route('admin.dresstotal') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             รายการชุด</a>
-                        <a href="{{route('dresswaitprice')}}"
+                        <a href="{{ route('dresswaitprice') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             ชุดที่รอกำหนดราคา</a>
 
@@ -228,6 +228,12 @@
                     class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
                     <i class="bi bi-clipboard-plus"></i>
                     <span class="ml-2">เพิ่มออเดอร์</span>
+                </a>
+
+                <a href="{{ route('admin.expense') }}"
+                    class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
+                    <i class="bi bi-clipboard-plus"></i>
+                    <span class="ml-2">บันทึกรายจ่าย</span>
                 </a>
 
 
@@ -434,7 +440,12 @@
                 <span class="bi bi-plus-circle"></span>
                 <span class="ml-2">เพิ่มออเดอร์</span>
             </a>
-
+            <a href="{{ route('admin.expense') }}"
+                class="list-group-item @if (Route::currentRouteName() == 'admin.expense') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
+                <span class="bi bi-plus-circle"></span>
+                <span class="ml-2">บันทึกรายจ่าย</span>
+            </a>
 
 
 
@@ -639,6 +650,14 @@
                                 style="font-size: 0.8rem;">{{ $repair_jewelry }}</span>
                         @endif
                     </a>
+                    <a href="{{route('jewelryproblemcancel')}}"
+                    class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                    การจองที่ได้รับผลกระทบ
+                        <span class="badge custom-badge ml-1"
+                            style="font-size: 0.8rem;"></span>
+                </a>
+
+
                 </div>
             </div>
 
@@ -646,7 +665,9 @@
                 data-toggle="collapse" data-target="#rentcut-collapse" id="d1">
                 <div>
                     <span class="bi bi-scissors"></span>
-                    <span class="ml-2">เช่าตัดชุด</span>
+                    <span class="ml-2">เช่าตัดชุด
+
+                    </span>
                 </div>
                 <span class="bi bi-chevron-down small"></span>
             </button>
@@ -655,12 +676,26 @@
                     <a href="{{ route('queuerentcuttotal') }}"
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                         คิวเช่าตัด
-                        <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
-                            ยังไม่ได้ใส่
-                        </span>
+
+                        @php
+                            $count_rent_cut = App\Models\Orderdetail::where('type_order', 4)
+                                ->whereIn('status_detail', ['รอดำเนินการตัด', 'เริ่มดำเนินการตัด'])
+                                ->count();
+                        @endphp
+
+                        @if ($count_rent_cut > 0)
+                            <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
+                                {{ $count_rent_cut }}
+                            </span>
+                        @endif
+
+
                     </a>
                 </div>
             </div>
+
+
+
         </div>
     @endif
     <div class="col-md-9 col-lg-10 ml-md-auto px-0 ms-md-auto">

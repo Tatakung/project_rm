@@ -6,17 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Expense extends Model
+class PriceHistory_Skirt extends Model
 {
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
-        'date',
-        'expense_type',
-        'expense_value',
-        'employee_id',
+        'skirtitems_id',
+        'old_price',
+        'new_price',
     ];
-    public function expense_many_to_one_user(){
-        return $this->belongsTo(User::class,'employee_id') ; 
+
+    public function historyskirt_many_to_one_skirt(){
+        return $this->belongsTo(Skirtitem::class,'skirtitems_id') ; 
     }
+
+
+
 }

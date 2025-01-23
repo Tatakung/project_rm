@@ -75,7 +75,10 @@
                     <div class="card-header">
                         <i class="bi bi-info-circle"></i> รายละเอียดชุด
                         <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal">
-                            <i class="bi bi-pencil-square text-dark"></i>
+                            <i class="bi bi-pencil-square text-dark"
+                                @if ($check_admin == 1) style="display: block ; "
+                    @elseif($check_admin == 0)
+                        style="display: none ; " @endif></i>
                         </button>
                     </div>
                     <div class="card-body">
@@ -92,7 +95,7 @@
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
-                                                                                                                                                                                </p> -->
+                                                                                                                                                                                                            </p> -->
                                 {{-- <p><strong>สถานะชุด:</strong> <span
                                         @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
                                         {{ $datadress->dress_status }}</span></p> --}}
@@ -105,7 +108,7 @@
                                 </ul> --}}
 
 
-                                @if ($datadress->dress_price == null)
+                                @if ($datadress->dress_price == 0)
                                     <p><strong>ราคาเช่า:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
                                     <p><strong>เงินมัดจำ:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
                                     <p><strong>ค่าประกันชุด:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
@@ -165,6 +168,10 @@
                                     class="btn btn-outline-secondary">
                                     <i class="bi bi-tools"></i> ประวัติการซ่อม
                                 </a>
+                                <button type="button" class="btn btn-outline-dark" data-toggle="modal"
+                                    data-target="#priceHistoryModal">
+                                    <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
+                                </button>
                             </div>
 
 
@@ -203,7 +210,10 @@
                     <div class="card-header">
                         <i class="bi bi-info-circle"></i> รายละเอียดเสื้อ
                         <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotalshirt">
-                            <i class="bi bi-pencil-square text-dark"></i>
+                            <i class="bi bi-pencil-square text-dark"
+                                @if ($check_admin == 1) style="display: block ; "
+                    @elseif($check_admin == 0)
+                        style="display: none ; " @endif></i>
                         </button>
                     </div>
                     <div class="card-body">
@@ -221,7 +231,7 @@
 
 
 
-                                @if ($shirtitem->shirtitem_price == null)
+                                @if ($shirtitem->shirtitem_price == 0)
                                     <p><strong>ราคาเช่า:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
                                     <p><strong>เงินมัดจำ:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
                                     <p><strong>ค่าประกัน:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
@@ -260,6 +270,27 @@
                                 </div>
                                 </p>
                             </div>
+                            <div class="ml-3"
+                                @if ($check_admin == 1) style="display: block ; "
+                @elseif($check_admin == 0)
+                style="display: none ; " @endif>
+
+                                <button type="button" class="btn btn-outline-dark" data-toggle="modal"
+                                    data-target="#priceHistoryModalshirt">
+                                    <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
+                                </button>
+
+                            </div>
+
+
+
+
+
+
+
+
+
+
                         </div>
                     </div>
                     <hr>
@@ -283,8 +314,10 @@
                         <i class="bi bi-info-circle"></i> รายละเอียดผ้าถุง
                         <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal"
                             data-target="#edittotalskirt">
-                            <i class="bi bi-pencil-square text-dark
-                            "></i>
+                            <i class="bi bi-pencil-square text-dark"
+                                @if ($check_admin == 1) style="display: block ; "
+                    @elseif($check_admin == 0)
+                        style="display: none ; " @endif></i>
                         </button>
                     </div>
                     <div class="card-body">
@@ -302,7 +335,7 @@
                             <div class="col-md-4">
                                 </p>
 
-                                @if ($skirtitem->skirtitem_price == null)
+                                @if ($skirtitem->skirtitem_price == 0)
                                     <p><strong>ราคาเช่า:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
                                     <p><strong>เงินมัดจำ:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
                                     <p><strong>ค่าประกัน:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
@@ -319,7 +352,7 @@
                             <div class="col-md-5">
                                 <p>
                                     <strong>ขนาดของผ้าถุง</strong> (ปรับแก้ ขยาย/ลด ได้):
-                                    
+
                                 <div class=" ">
                                     @php
                                         $list_check_name_skirt = [];
@@ -338,15 +371,34 @@
                                                 </td>
                                                 <td>นิ้ว</td>
                                             </tr>
-                                            
                                         @endforeach
                                     </table>
-
 
 
                                 </div>
                                 </p>
                             </div>
+
+
+                            <div class="ml-3"
+                                @if ($check_admin == 1) style="display: block ; "
+                    @elseif($check_admin == 0)
+                    style="display: none ; " @endif>
+
+
+
+                                <button type="button" class="btn btn-outline-dark" data-toggle="modal"
+                                    data-target="#priceHistoryModalskirt">
+                                    <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
+                                </button>
+
+                            </div>
+
+
+
+
+
+
 
 
                         </div>
@@ -400,7 +452,7 @@
                                             <label for="update_dress_deposit"
                                                 style="font-weight:bold">ราคาประกันค่าเสียหาย</label>
                                             <input type="number" class="form-control"
-                                                name="update_dress_damage_insurance" id="update_dress_damage_insurance"
+                                                name="update_damage_insurance" id="update_dress_damage_insurance"
                                                 value="{{ $datadress->damage_insurance }}"
                                                 placeholder="กรุณากรอกราคาประกันค่าเสียหาย" readonly>
                                         </div>
@@ -668,7 +720,8 @@
                                                     @if (in_array('บ่าหน้า', $list_check_name_shirt)) style="display: none;" @endif>บ่าหน้า
                                                 </option>
                                                 <option value="บ่าหลัง"
-                                                    @if (in_array('บ่าหลัง', $list_check_name_shirt)) style="display: none;" @endif>บ่าหลัง
+                                                    @if (in_array('บ่าหลัง', $list_check_name_shirt)) style="display: none;" @endif>
+                                                    บ่าหลัง
                                                 </option>
                                                 <option value="รอบคอ"
                                                     @if (in_array('รอบคอ', $list_check_name_shirt)) style="display: none;" @endif>รอบคอ
@@ -851,6 +904,148 @@
                 </div>
             </div>
         </div>
+        <!-- Modal แสดงประวัติการแก้ไขราคาทั้งชุด -->
+        <div class="modal fade" id="priceHistoryModal" tabindex="-1" aria-labelledby="priceHistoryModalLabel"
+            aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="priceHistoryModalLabel">ประวัติการปรับแก้ไขราคาเช่า -
+                            {{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>วันที่แก้ไข</th>
+                                        <th>ราคาเดิม</th>
+                                        <th>ราคาใหม่</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($historydress as $item)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                            </td>
+                                            <td>{{ number_format($item->old_price, 2) }} บาท</td>
+                                            <td>{{ number_format($item->new_price, 2) }} บาท</td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal แสดงประวัติการแก้ไขราคาเสื้อ -->
+        <div class="modal fade" id="priceHistoryModalshirt" tabindex="-1" aria-labelledby="priceHistoryModalshirt"
+            aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="priceHistoryModalshirt">ประวัติการปรับแก้ไขราคาเช่า -
+                            {{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }} (เสื้อ)</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>วันที่แก้ไข</th>
+                                        <th>ราคาเดิม</th>
+                                        <th>ราคาใหม่</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($historypriceshirt as $item)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                            </td>
+                                            <td>{{ number_format($item->old_price, 2) }} บาท</td>
+                                            <td>{{ number_format($item->new_price, 2) }} บาท</td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal แสดงประวัติการแก้ไขราคาผ้าถุง -->
+        <div class="modal fade" id="priceHistoryModalskirt" tabindex="-1" aria-labelledby="priceHistoryModalskirt"
+            aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="priceHistoryModalskirt">ประวัติการปรับแก้ไขราคาเช่า -
+                            {{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }} (ผ้าถุง)</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>วันที่แก้ไข</th>
+                                        <th>ราคาเดิม</th>
+                                        <th>ราคาใหม่</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($historypriceskirt as $item)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                            </td>
+                                            <td>{{ number_format($item->old_price, 2) }} บาท</td>
+                                            <td>{{ number_format($item->new_price, 2) }} บาท</td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         <script>
             var add_measurement_skirt = document.getElementById('add_measurement');

@@ -16,7 +16,6 @@
                 {{ \Carbon\Carbon::parse($fitting->fitting_date)->year + 543 }}
             </h2>
 
-            ของคุณ {{ $customer->customer_fname }} {{ $customer->customer_lname }}
 
 
             <div class="card mb-4 shadow">
@@ -150,7 +149,7 @@
                                     ']" placeholder="ราคา (บาท)" required min="0">' +
                                     '</div>' +
                                     '<div class="col-md-2">' +
-                                    '<button  class="btn btn-danger" onclick="delete_dec(' + count_decoration + ')">ลบ</button>' +
+                                    '<button style="background-color:#E9AEA7" class="btn" onclick="delete_dec(' + count_decoration + ')">ลบ</button>' +
                                     '</div>';
 
                                 div.innerHTML = input;
@@ -158,6 +157,7 @@
 
                             });
 
+                            
                             function delete_dec(count_decoration) {
                                 var delete_decoration = document.getElementById('decoration' + count_decoration);
                                 delete_decoration.remove();
@@ -167,6 +167,7 @@
 
                 </div>
             </div>
+            
             <button type="submit" class="btn mb-3" style="background-color:#ACE6B7;"
                         id="button_save">บันทึกการแก้ไข</button>
                     <a href="{{ route('detaildoingrentcut', ['id' => $orderdetail->id]) }}" class="btn  mb-3"

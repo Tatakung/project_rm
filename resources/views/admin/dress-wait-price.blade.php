@@ -1,5 +1,14 @@
 @extends('layouts.adminlayout')
 @section('content')
+<style>
+        .btn-c {
+            background-color:rgb(255, 255, 255);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            color: black;
+            border: none;
+            font-weight: bold;
+        }
+</style>
 <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
     <div class="modal-dialog custom-modal-dialog" role="document">
         <div class="modal-content custom-modal-content"
@@ -39,7 +48,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h2 class="card-title mb-0">ชุดรอกำหนดราคา</h2>
-                <p class="text-muted">พบ {{ count($dress_wait) }} รายการที่รอการกำหนดราคา</p>
+                <p class="text-muted">พบ {{ $count_dress }} รายการที่รอการกำหนดราคา</p>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -63,10 +72,10 @@
                                     <td class="align-middle">{{ $item->typedress->type_dress_name }}
                                         {{ $item->typedress->specific_letter }}{{ $item->dress_code }}</td>
                                     <td class="align-middle">
-                                        <span class="badge bg-warning">รอกำหนดราคา</span>
+                                        <span style="color:rgb(178, 153, 41);"><strong>รอกำหนดราคา</strong></span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <button type="button" class="btn btn-outline-primary" data-toggle="modal"
+                                        <button type="button" class="btn btn-c" data-toggle="modal"
                                             data-target="#priceModal{{ $item->id }}">
                                             กำหนดราคา
                                         </button>
@@ -95,7 +104,7 @@
                                                     <div class="text-center mb-4">
                                                         <img src="{{ asset('storage/' . $item->dressimages->first()->dress_image) }}"
                                                             alt="ภาพชุด" class="img-thumbnail"
-                                                            style="width: 150px; height: 180px; object-fit: cover;">
+                                                            style="width: 200px; height: 230px; object-fit: cover;">
                                                     </div>
 
                                                     <div class="mb-4">
@@ -195,10 +204,6 @@
                                                                 });
                                                             });
                                                         </script>
-
-
-
-
                                                     </div>
 
                                                     <div class="mb-4"
@@ -250,12 +255,7 @@
                                                                 });
                                                             });
                                                         </script>
-                                                    
-                                                        
-
-
-
-                                                    
+                                                                               
 
                                                     </div>
 
@@ -271,12 +271,9 @@
                                                             ยกเลิก
                                                         </a>
 
-                                                        <button type="submit" class="btn btn-dark">บันทึกราคา</button>
+                                                        <button type="submit" class="btn"style="background-color:#ACE6B7">บันทึกราคา</button>
                                                     </div>
                                                 </div>
-
-
-
 
                                             </form>
                                         </div>

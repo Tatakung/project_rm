@@ -90,6 +90,11 @@
             vertical-align: middle;
             text-align: center;
         }
+        .list-group-item.active{
+            background-color: #F7F9FA !important;
+            color: black !important;
+            border-color:#DADAE3;
+        }
     </style>
 
     <ol class="breadcrumb">
@@ -111,8 +116,6 @@
                     {{ \Carbon\Carbon::parse($order->created_at)->year +543 }}
                     <span id="show_history_day" style="font-size: 14px; color: rgb(158, 143, 143) ; "></span>
                 </p>
-                <a href="{{ route('receiptdeposittotal', ['id' => $order_id]) }}" class="btn btn-primary btn-sm mt-2"
-                    target="_blank">ใบเสร็จรับเงิน</a>
             </div>
         </div>
         <script>
@@ -146,7 +149,7 @@
 
 
 
-                        
+                
                         <td>
                             ตัด{{$item->type_dress}}
                         </td>

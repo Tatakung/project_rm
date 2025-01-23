@@ -55,7 +55,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/typedress/dressdetail/historydressrentyesshirt/filter/{id}', [DressController::class, 'historydressrentyesshirtfilter'])->name('admin.historydressrentyesshirtfilter');
     Route::get('/admin/typedress/dressdetail/historydressrentyesskirt/filter/{id}', [DressController::class, 'historydressrentyesskirtfilter'])->name('admin.historydressrentyesskirtfilter');
 
-    
+
     Route::post('/admin/adddress-form/save', [DressController::class, 'savedress'])->name('admin.savedress'); //บันทึกข้อมูล 
     Route::get('/gettypename/{typename}', [DressController::class, 'autodresscode']);
     // Route::get('/admin/dresstotal', [DressController::class, 'dresstotal'])->name('admin.dresstotal'); //ชุดทั้งหมด
@@ -89,13 +89,13 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/managesetjewelry', [JewelryController::class, 'managesetjewelry'])->name('admin.managesetjewelry'); //หน้าจัดเซตเครื่องประดับ
     Route::get('/admin/managesetjewelryfilter', [JewelryController::class, 'managesetjewelryfilter'])->name('admin.managesetjewelryfilter'); //หน้าหลังจากฟิเลเตอร์ 
 
-    Route::post('/admin/managesetjewelrysubmit', [JewelryController::class, 'managesetjewelrysubmit'])->name('admin.managesetjewelrysubmit'); 
+    Route::post('/admin/managesetjewelrysubmit', [JewelryController::class, 'managesetjewelrysubmit'])->name('admin.managesetjewelrysubmit');
 
 
 
-    Route::get('/admin/dress-wait-price', [DressController::class, 'dresswaitprice'])->name('dresswaitprice');  
+    Route::get('/admin/dress-wait-price', [DressController::class, 'dresswaitprice'])->name('dresswaitprice');
 
-    Route::post('/admin/dress-wait-price/save/{id}', [DressController::class, 'dresswaitpricesaved'])->name('dresswaitpricesaved');  
+    Route::post('/admin/dress-wait-price/save/{id}', [DressController::class, 'dresswaitpricesaved'])->name('dresswaitpricesaved');
 
 
 
@@ -107,8 +107,6 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/changepassword', [RegisterController::class, 'changepassword'])->name('admin.changepassword'); //หน้าเปลี่ยนรหัสผ่าน 
     Route::post('/admin/updatepassword', [RegisterController::class, 'password_action'])->name('admin.updatepassword');
 
-    Route::get('/admin/expense', [DressController::class, 'expense'])->name('admin.expense'); //บันทึกค่าใช้จ่าย
-    Route::post('/admin/saveexpense', [DressController::class, 'saveexpense'])->name('admin.saveexpense'); //บันทึกค่าใช้จ่าย
 
 
 
@@ -126,20 +124,17 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
-    Route::get('/jewelry-rented-history/{id}', [Orderjewelry::class, 'showrentedhistory'])->name('showrentedhistory'); 
-    Route::get('/jewelry-rented-historyfilter/{id}', [Orderjewelry::class, 'showrentedhistoryfilter'])->name('showrentedhistoryfilter'); 
+    Route::get('/jewelry-rented-history/{id}', [Orderjewelry::class, 'showrentedhistory'])->name('showrentedhistory');
+    Route::get('/jewelry-rented-historyfilter/{id}', [Orderjewelry::class, 'showrentedhistoryfilter'])->name('showrentedhistoryfilter');
 
 
-    Route::get('/jewelry-repair-history/{id}', [Orderjewelry::class, 'showrepairjewelryhistory'])->name('showrepairjewelryhistory'); 
-
-
-
-    Route::get('/jewelry-set-rented-history/{id}', [Orderjewelry::class, 'showjewsetrentedhistory'])->name('showjewsetrentedhistory'); 
-
-    Route::get('/jewelry-set-rented-history/filter/{id}', [Orderjewelry::class, 'showjewsetrentedhistoryfilter'])->name('showjewsetrentedhistoryfilter'); 
+    Route::get('/jewelry-repair-history/{id}', [Orderjewelry::class, 'showrepairjewelryhistory'])->name('showrepairjewelryhistory');
 
 
 
+    Route::get('/jewelry-set-rented-history/{id}', [Orderjewelry::class, 'showjewsetrentedhistory'])->name('showjewsetrentedhistory');
+
+    Route::get('/jewelry-set-rented-history/filter/{id}', [Orderjewelry::class, 'showjewsetrentedhistoryfilter'])->name('showjewsetrentedhistoryfilter');
 });
 
 
@@ -161,7 +156,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/clean', [EmployeeController::class, 'clean'])->name('employee.clean');
     Route::get('/employee/dressadjust', [EmployeeController::class, 'dressadjust'])->name('employee.dressadjust');
 
-    
+
     Route::get('/employee/dressadjust/filter', [EmployeeController::class, 'dressadjustfilter'])->name('employee.dressadjustfilter');
 
 
@@ -198,7 +193,13 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::post('/employee/repair/update-statusrepairupdatestatustocleanorreadybutton/{id}', [EmployeeController::class, 'repairupdatestatustocleanorreadybutton'])->name('employee.repairupdatestatustocleanorreadybutton');
 
+
+    Route::get('/expenses', [DressController::class, 'expense'])->name('admin.expense'); //บันทึกค่าใช้จ่าย
+
+    Route::get('/expenses/filter', [DressController::class, 'expensefilter'])->name('expensefilter'); //บันทึกค่าใช้จ่าย
+
     
+    Route::post('/saveexpense', [DressController::class, 'saveexpense'])->name('admin.saveexpense'); //บันทึกค่าใช้จ่าย
 
 
 
@@ -285,14 +286,14 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
 
-    Route::get('/employee/addorder/addrent-dresstocard', [OrderController::class, 'addrentdresstocard'])->name('employee.addrentdresstocard'); 
-    Route::get('/employee/addorder/addrent-dresstocardfilter', [OrderController::class, 'addrentdresstocardfilter'])->name('employee.addrentdresstocardfilter'); 
+    Route::get('/employee/addorder/addrent-dresstocard', [OrderController::class, 'addrentdresstocard'])->name('employee.addrentdresstocard');
+    Route::get('/employee/addorder/addrent-dresstocardfilter', [OrderController::class, 'addrentdresstocardfilter'])->name('employee.addrentdresstocardfilter');
 
 
-    Route::get('/employee/addorder/addrent-jewelrytocard', [Orderjewelry::class, 'addrentjewelrytocard'])->name('employee.addrentjewelrytocard'); 
-    Route::get('/employee/addorder/addrent-jewelrytocardfilter', [Orderjewelry::class, 'addrentjewelrytocardfilter'])->name('employee.addrentjewelrytocardfilter'); 
-    Route::post('/employee/addorder/addrent-jewelrytocardfilter/addtocard', [Orderjewelry::class, 'addrentjewelrytocardaddtocard'])->name('employee.addrentjewelrytocardaddtocard'); 
-    Route::post('/employee/addorder/addrent-jewelrytocardfilter/addtocardset', [Orderjewelry::class, 'addrentjewelrytocardaddtocardset'])->name('employee.addrentjewelrytocardaddtocardset'); 
+    Route::get('/employee/addorder/addrent-jewelrytocard', [Orderjewelry::class, 'addrentjewelrytocard'])->name('employee.addrentjewelrytocard');
+    Route::get('/employee/addorder/addrent-jewelrytocardfilter', [Orderjewelry::class, 'addrentjewelrytocardfilter'])->name('employee.addrentjewelrytocardfilter');
+    Route::post('/employee/addorder/addrent-jewelrytocardfilter/addtocard', [Orderjewelry::class, 'addrentjewelrytocardaddtocard'])->name('employee.addrentjewelrytocardaddtocard');
+    Route::post('/employee/addorder/addrent-jewelrytocardfilter/addtocardset', [Orderjewelry::class, 'addrentjewelrytocardaddtocardset'])->name('employee.addrentjewelrytocardaddtocardset');
 
 
 
@@ -328,38 +329,38 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/ordertotal/detail/show/updatenotecutdress/{id}', [OrderController::class, 'actionupdatenotecutdress'])->name('employee.actionupdatenotecutdress'); //อัปเดต
 
 
-    Route::get('/jewelry-pickup-queue', [Orderjewelry::class, 'showpickupqueuejewelry'])->name('showpickupqueuejewelry'); 
+    Route::get('/jewelry-pickup-queue', [Orderjewelry::class, 'showpickupqueuejewelry'])->name('showpickupqueuejewelry');
 
-    Route::get('/jewelry-return-queue', [Orderjewelry::class, 'showreturnqueuejewelry'])->name('showreturnqueuejewelry'); 
+    Route::get('/jewelry-return-queue', [Orderjewelry::class, 'showreturnqueuejewelry'])->name('showreturnqueuejewelry');
 
-    Route::get('/jewelry-return-queue/filter', [Orderjewelry::class, 'showreturnqueuejewelryfilter'])->name('showreturnqueuejewelryfilter'); 
+    Route::get('/jewelry-return-queue/filter', [Orderjewelry::class, 'showreturnqueuejewelryfilter'])->name('showreturnqueuejewelryfilter');
 
-    Route::get('/jewelry-pickup-queue/filter', [Orderjewelry::class, 'showpickupqueuejewelryfilter'])->name('showpickupqueuejewelryfilter'); 
-    Route::get('/jewelry-cleaning', [Orderjewelry::class, 'showcleanjewelry'])->name('showcleanjewelry'); 
-    Route::get('/jewelry-repairing', [Orderjewelry::class, 'showrepairjewelry'])->name('showrepairjewelry'); 
-
-
+    Route::get('/jewelry-pickup-queue/filter', [Orderjewelry::class, 'showpickupqueuejewelryfilter'])->name('showpickupqueuejewelryfilter');
+    Route::get('/jewelry-cleaning', [Orderjewelry::class, 'showcleanjewelry'])->name('showcleanjewelry');
+    Route::get('/jewelry-repairing', [Orderjewelry::class, 'showrepairjewelry'])->name('showrepairjewelry');
 
 
 
 
-    Route::post('/jewelry-cleaning/update-to-cleaning/{id}', [Orderjewelry::class, 'jewelryupdatetocleaning'])->name('jewelryupdatetocleaning'); 
-    Route::post('/jewelry-cleaning/update-to-cleaned /{id}', [Orderjewelry::class, 'jewelryupdatetocleaned'])->name('jewelryupdatetocleaned'); 
-    Route::post('/jewelry-cleaning/update-to-cleanedbutrepair /{id}', [Orderjewelry::class, 'jewelryupdatetocleanedbutrepair'])->name('jewelryupdatetocleanedbutrepair'); 
+
+
+    Route::post('/jewelry-cleaning/update-to-cleaning/{id}', [Orderjewelry::class, 'jewelryupdatetocleaning'])->name('jewelryupdatetocleaning');
+    Route::post('/jewelry-cleaning/update-to-cleaned /{id}', [Orderjewelry::class, 'jewelryupdatetocleaned'])->name('jewelryupdatetocleaned');
+    Route::post('/jewelry-cleaning/update-to-cleanedbutrepair /{id}', [Orderjewelry::class, 'jewelryupdatetocleanedbutrepair'])->name('jewelryupdatetocleanedbutrepair');
 
 
 
-    Route::post('/jewelry-repairing/update-to-repairing/{id}', [Orderjewelry::class, 'jewelryupdatetorepairing'])->name('jewelryupdatetorepairing'); 
-    Route::post('/jewelry-repairing/update-to-repaired/{id}', [Orderjewelry::class, 'jewelryupdatetorepaired'])->name('jewelryupdatetorepaired'); 
+    Route::post('/jewelry-repairing/update-to-repairing/{id}', [Orderjewelry::class, 'jewelryupdatetorepairing'])->name('jewelryupdatetorepairing');
+    Route::post('/jewelry-repairing/update-to-repaired/{id}', [Orderjewelry::class, 'jewelryupdatetorepaired'])->name('jewelryupdatetorepaired');
 
 
-    Route::get('/jewelry-postpone/postpone-route/{id}', [ManagejewelryController::class, 'postponeroutejewelry'])->name('postponeroutejewelry'); 
+    Route::get('/jewelry-postpone/postpone-route/{id}', [ManagejewelryController::class, 'postponeroutejewelry'])->name('postponeroutejewelry');
 
     Route::get('/jewelry-postpone/postpone-route/checked-noset/{id}', [ManagejewelryController::class, 'postponeroutejewelrycheckednoset'])->name('postponeroutejewelrycheckednoset');
-    Route::post('/jewelry-postpone/postpone-route/checked/pass/{id}', [ManagejewelryController::class, 'postponecheckedpassjewelry'])->name('postponecheckedpassjewelry'); 
+    Route::post('/jewelry-postpone/postpone-route/checked/pass/{id}', [ManagejewelryController::class, 'postponecheckedpassjewelry'])->name('postponecheckedpassjewelry');
 
 
-    Route::get('/jewelry-postpone/postpone-route/checked-yesset/{id}', [ManagejewelryController::class, 'postponeroutejewelrycheckedyesset'])->name('postponeroutejewelrycheckedyesset'); 
+    Route::get('/jewelry-postpone/postpone-route/checked-yesset/{id}', [ManagejewelryController::class, 'postponeroutejewelrycheckedyesset'])->name('postponeroutejewelrycheckedyesset');
 
 
 
@@ -368,16 +369,18 @@ Route::middleware(['web', 'auth'])->group(function () {
     // Route::get('/testtab', function () {
     //     return view('testtab');
     // });
-    Route::get('/testtab', [DressController::class, 'testtab']); 
+    Route::get('/testtab', [DressController::class, 'testtab']);
 
 
-    Route::get('/employee/adddresstocart', [OrderController::class, 'adddresstocart'])->name('adddresstocart'); 
+    Route::get('/employee/adddresstocart', [OrderController::class, 'adddresstocart'])->name('adddresstocart');
     Route::post('/employee/addtocart', [OrderController::class, 'addtocart'])->name('addtocart'); //เพิ่มชุด/เสื้อ/กระโปรง/ผผ้าถุง ลงบนตะกร้า 
 
     Route::post('/employee/ordertotal/detail/show/updatereceivejewelry/{id}', [Orderjewelry::class, 'actionupdatereceivejewelry'])->name('employee.actionupdatereceivejewelry'); //อัปเดตสถานะเช่าเครื่องประดับ
     Route::post('/employee/ordertotal/detail/show/updatereturnjewelry/{id}', [Orderjewelry::class, 'updatereturnjewelry'])->name('employee.updatereturnjewelry'); //อัปเดตสถานะคืนเครื่องประดับ
 
 
+    
+    Route::get('/jewelry-problem-cancel', [Orderjewelry::class, 'jewelryproblemcancel'])->name('jewelryproblemcancel'); 
 
 
 
@@ -389,28 +392,29 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
 
-    Route::get('/employee/ordertotal/detail/show/making-dress/{id}/{order_detail_id}', [ManageRentcutController::class, 'rentcutmakingdress'])->name('rentcutmakingdress'); 
+    Route::get('/employee/ordertotal/detail/show/making-dress/{id}/{order_detail_id}', [ManageRentcutController::class, 'rentcutmakingdress'])->name('rentcutmakingdress');
 
 
-    Route::post('/employee/ordertotal/detail/show/making-dress/saved/{id}', [ManageRentcutController::class, 'rentcutmakingdresssave'])->name('rentcutmakingdresssave'); 
+    Route::post('/employee/ordertotal/detail/show/making-dress/saved/{id}', [ManageRentcutController::class, 'rentcutmakingdresssave'])->name('rentcutmakingdresssave');
 
 
     Route::post('/employee/ordertotal/detail/show/updatestatusrentcutpickup/{id}', [ManageRentcutController::class, 'actionupdatestatusrentcutpickup'])->name('actionupdatestatusrentcutpickup'); //อัปเดตสถานะเช่าชุด
 
-    Route::get('/employee/ordertotal/detail/show/doing-cut-rent/{id}', [ManageRentcutController::class, 'detaildoingrentcut'])->name('detaildoingrentcut'); 
+    Route::get('/employee/ordertotal/detail/show/doing-cut-rent/{id}', [ManageRentcutController::class, 'detaildoingrentcut'])->name('detaildoingrentcut');
 
-    Route::get('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/{id}', [ManageRentcutController::class, 'storeTailoredDress'])->name('storeTailoredDress'); 
-    Route::post('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/saved/{id}', [ManageRentcutController::class, 'storeTailoredDresssaved'])->name('storeTailoredDresssaved'); 
-    Route::get('/receipt-reservation/{id}', [ManageRentcutController::class, 'receiptreservation'])->name('receiptreservation'); 
+    Route::get('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/{id}', [ManageRentcutController::class, 'storeTailoredDress'])->name('storeTailoredDress');
+    Route::post('/employee/ordertotal/detail/show/doing-cut-rent/add-dress/saved/{id}', [ManageRentcutController::class, 'storeTailoredDresssaved'])->name('storeTailoredDresssaved');
+    Route::get('/receipt-reservation/{id}', [ManageRentcutController::class, 'receiptreservation'])->name('receiptreservation');
 
-    Route::get('/receipt-pickup-rent/{id}', [ManageRentcutController::class, 'receiptpickuprent'])->name('receiptpickuprent'); 
-    Route::get('/receipt-return-rent/{id}', [ManageRentcutController::class, 'receiptreturnrent'])->name('receiptreturnrent'); 
+    Route::get('/receipt-pickup-rent/{id}', [ManageRentcutController::class, 'receiptpickuprent'])->name('receiptpickuprent');
+    Route::get('/receipt-return-rent/{id}', [ManageRentcutController::class, 'receiptreturnrent'])->name('receiptreturnrent');
 
 
 
     Route::post('/employee/ordertotal/detail/update-status-pickup-total-rent/{id}', [ManageorderController::class, 'updatestatuspickuptotalrent'])->name('updatestatuspickuptotalrent');
 
 
+    Route::post('/employee/ordertotal/detail/cancel-order-rent/{id}', [DashboardController::class, 'cancelorderrent'])->name('cancelorderrent');
 
 
 
@@ -418,6 +422,5 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
 
-    Route::get('/textbutton', [ManageRentcutController::class, 'textbutton'])->name('textbutton'); 
-
+    Route::get('/textbutton', [ManageRentcutController::class, 'textbutton'])->name('textbutton');
 });

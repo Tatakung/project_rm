@@ -60,7 +60,7 @@
                 </a>
             </li>
 
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a href="#paged" class="nav-link" data-toggle="tab">ตัดเสร็จแล้ว
                     @if ($cutdresss_page_three->count() > 0)
                         <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
@@ -68,7 +68,7 @@
                         </span>
                     @endif
                 </a>
-            </li>
+            </li> --}}
 
         </ul>
 

@@ -71,7 +71,7 @@
             <th>ชุด</th>
             <th>ชื่อลูกค้า</th>
             <th>วันที่คืนชุด</th>
-            <th>ค่าปรับ(หากล่าช้า)</th>
+            {{-- <th>ค่าปรับ(หากล่าช้า)</th> --}}
             <th>สถานะชุด</th>
             <th>ดูรายละเอียด</th>
         </tr>
@@ -112,14 +112,14 @@
                 คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
             </td>
 
-            <td style="width: 120px;">
+            <td >
                 {{ \Carbon\Carbon::parse($reservation->end_date)->locale('th')->isoFormat('D MMM') }}
                 {{ \Carbon\Carbon::parse($reservation->end_date)->year + 543 }}
                 <span style="color: red ; " id="showday{{ $reservation->id }}"></span>
             </td>
-            <td style="width: 300px;">
+            {{-- <td >
                 <p id="late{{ $reservation->id }}"></p>
-            </td>
+            </td> --}}
             <script>
                 var end_date = new Date('{{ $reservation->end_date }}');
                 end_date.setHours(0, 0, 0, 0);

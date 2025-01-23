@@ -58,6 +58,7 @@
         .status-step small {
             color: #6c757d;
         }
+        
     </style>
 
 
@@ -555,7 +556,7 @@
 
         <div class="row mt-3 d-flex align-items-stretch">
             <div class="col-md-6">
-                <div class="card shadow">
+                <div class="card shadow h-100">
                     <div class="card-body">
 
                         <div class="row">
@@ -564,7 +565,7 @@
                                     height="auto">
                             </div>
                             <div class="col-md-8">
-                                <h5>ข้อมุลชุด</h5>
+                                <h5>ข้อมูลชุด</h5>
                                 <p>ประเภทชุด : {{ $typename }}</p>
                                 <p>หมายเลขชุด : {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
                                 {{-- <p>รายละเอียด : {{ $dress->dress_description }}</p> --}}
@@ -722,7 +723,7 @@
                             <!-- ข้อมูลระยะเวลา -->
                             <div class="col-md-6 mb-4">
                                 <div class="d-flex align-items-center text-secondary mb-3">
-                                    <i class="bi bi-calendar3 me-2"></i>
+                                    
                                     <span class="fw-medium">ข้อมูลระยะเวลา</span>
                                 </div>
                                 <div class="ms-4">
@@ -761,12 +762,12 @@
                             <!-- ข้อมูลการเงิน -->
                             <div class="col-md-6">
                                 <div class="d-flex align-items-center text-secondary mb-3">
-                                    <i class="bi bi-coin me-2"></i>
+                                    
                                     <span class="fw-medium">ข้อมูลการเงิน</span>
                                 </div>
                                 <div class="ms-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-secondary">รายได้ค่าเช่าชุด</span>
+                                        <span class="text-secondary">รายได้ค่าเช่าตัดชุด</span>
                                         <span class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
                                             บาท</span>
                                     </div>
@@ -820,28 +821,29 @@
                                         @endif
                                     </div>
 
-                                    @if($decoration->count() > 0)
-                                    @foreach ($decoration as $item)
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-secondary"> {{$item->decoration_description}} </span>
-                                        <span class="fw-medium text-secondary">{{ number_format($item->decoration_price, 2) }}
-                                            บาท</span>
-                                    </div>
-                                    @endforeach
+                                    @if ($decoration->count() > 0)
+                                        @foreach ($decoration as $item)
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <span class="text-secondary"> {{ $item->decoration_description }} </span>
+                                                <span
+                                                    class="fw-medium text-secondary">{{ number_format($item->decoration_price, 2) }}
+                                                    บาท</span>
+                                            </div>
+                                        @endforeach
                                     @endif
-                                   
-                                    
+
+
 
 
                                     <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                         <span class="text-secondary fw-medium"><strong>รายได้รวมทั้งหมด</strong></span>
                                         @if ($additional->count() <= 0)
                                             <span
-                                                class="fw-medium fs-5 text-primary">{{ number_format($orderdetail->price + $decoration_sum , 2) }}
+                                                class="fw-medium fs-5 text-primary">{{ number_format($orderdetail->price + $decoration_sum, 2) }}
                                                 บาท</span>
                                         @elseif($additional->count() > 0)
                                             <span
-                                                class="fw-medium fs-5 text-primary">{{ number_format($orderdetail->price + $sum_additional + $decoration_sum , 2) }}
+                                                class="fw-medium fs-5 text-primary">{{ number_format($orderdetail->price + $sum_additional + $decoration_sum, 2) }}
                                                 บาท</span>
                                         @endif
                                     </div>
@@ -895,84 +897,164 @@
 
 
     <!-- Modal สำหรับยืนยันการอัปเดตสถานะพร้อมรายละเอียดเพิ่มเติม -->
-    <div class="modal fade" id="updatestatus" tabindex="-1" role="dialog" aria-labelledby="updatestatusLabel"
-        aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog modal-lg" role="document">
+    <div class="modal fade" id="updatestatus" tabindex="-1" aria-labelledby="updatestatusLabel" aria-hidden="true"
+        data-backdrop="static">
+        <div class="modal-dialog" style="max-width: 40% ; ">
             <div class="modal-content">
                 <form action="{{ route('employee.actionupdatestatusrentdress', ['id' => $orderdetail->id]) }}"
                     method="POST">
                     @csrf
 
-                    <div class="modal-header" style="background-color:#EAD8C0 ;">
-                        <h5 class="modal-title" id="updatestatusLabel">
-                            อัปเดตสถานะการเช่า</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                            style="color: white;">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+
+                    <div class="modal-header">
+                        <h5 class="modal-title w-100 text-center" id="updatestatusLabel">อัปเดตสถานะการเช่า</h5>
                     </div>
+
                     <div class="modal-body">
-                        <h6 class="mb-3">รายละเอียดการจอง:</h6>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <th style="width: 30%; text-align: left; padding: 10px;">ชื่อลูกค้า:</th>
-                                    <td style="padding: 10px;">คุณ{{ $customer->customer_fname }}
-                                        {{ $customer->customer_lname }}</td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 30%; text-align: left; padding: 10px;">วันที่นัดรับ:</th>
-                                    <td style="padding: 10px;">
-                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}</td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 30%; text-align: left; padding: 10px;">ส่วนต่างที่ต้องจ่าย:</th>
-                                    <td style="padding: 10px;">
-                                        {{ number_format($orderdetail->price - $orderdetail->deposit) }} บาท</td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 30%; text-align: left; padding: 10px;">เงินประกัน:</th>
-                                    <td style="padding: 10px;">{{ number_format($orderdetail->damage_insurance, 2) }} บาท
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        @if ($decoration->count() > 0)
-                            <p>รายการเพิ่มเติมพิเศษ</p>
-                            <ul>
-                                @foreach ($decoration as $item)
-                                    <li>{{ $item->decoration_description }} ราคา: {{ $item->decoration_price }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-                        <!-- สรุปการชำระเงิน -->
-                        <h6 class="mt-4 mb-3">สรุปการชำระเงิน:</h6>
-                        <div class="alert alert-info"
-                            style="background-color: #e9f7f9; border-color: #bee5eb; color: #0c5460; font-size: 1.2rem; padding: 10px;">
+                        <div class="row mb-3">
+
+                            <div class="col-6">
+                                <strong>วันที่นัดรับชุด:</strong>
+                                {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
+                            </div>
+                        </div>
+
+
+                        <h6 class="fw-bold mb-3">รายละเอียดการชำระเงิน</h6>
+                        @if ($orderdetail->status_payment == 1)
+
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between">
+                                    <span>ค่าเช่าชุด: </span>
+                                    <span>
+                                        {{ number_format($orderdetail->price, 2) }} บาท
+                                    </span>
+                                </div>
+                            </div>
 
                             @if ($decoration->count() > 0)
+                                @foreach ($decoration as $item)
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="d-flex justify-content-between">
+                                            <span>{{ $item->decoration_description }}:</span>
+                                            <span>
+                                                {{ number_format($item->decoration_price, 2) }} บาท
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
 
-                                <p>ยอดคงเหลือที่ต้องชำระ: <strong
-                                        id="totalDue">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance + $sum_dec) }}
-                                        บาท</strong>
-                                </p>
-                            @else
-                                <p>ยอดคงเหลือที่ต้องชำระ: <strong
-                                        id="totalDue">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance) }}
-                                        บาท</strong>
-                                </p>
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between">
+                                    <span>เงินประกัน:</span>
+                                    <span>
+                                        {{ number_format($orderdetail->damage_insurance, 2) }} บาท
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-light rounded mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>เงินมัดจำ: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                        )</span></span>
+                                    <span>
+                                        {{ number_format($orderdetail->deposit, 2) }} บาท
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-opacity-10 rounded mt-4" style="background-color: #F0FFFF	 ; ">
+                                <div class="d-flex justify-content-between fw-bold text-info">
+                                    <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
+                                    <span class="fs-5"
+                                        style="color:#0000CD ; ">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance + $decoration_sum , 2) }}
+                                        บาท</span>
+                                </div>
+                                <small class="text-muted" style="color:#0000CD ; ">
+                                    (หักเงินมัดจำ {{ number_format($orderdetail->price - $orderdetail->deposit, 2) }}
+                                    บาท)
+                                </small>
+                            </div>
+                        @elseif($orderdetail->status_payment == 2)
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between">
+                                    <span>ค่าเช่าชุด: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                        )</span></span>
+                                    <span>
+                                        {{ number_format($orderdetail->price, 2) }} บาท
+                                    </span>
+                                </div>
+                            </div>
+                            @if ($decoration->count() > 0)
+                                @foreach ($decoration as $item)
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="d-flex justify-content-between">
+                                            <span>{{ $item->decoration_description }}:</span>
+                                            <span>
+                                                {{ number_format($item->decoration_price, 2) }} บาท
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between">
+                                    <span>เงินประกัน: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                        )</span></span>
+                                    <span>
+                                        {{ number_format($orderdetail->damage_insurance, 2) }} บาท
+                                    </span>
+                                </div>
+                            </div>
+
+                            @if($decoration_sum == 0 )
+                            <div class="p-4 bg-opacity-10 rounded mt-4" style="background-color: #F0FFFF	 ; ">
+                                <div class="d-flex justify-content-between fw-bold text-info">
+                                    <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
+                                    <span class="fs-5" style="color:#0000CD ; ">0.00
+                                        บาท</span>
+                                </div>
+                                <small class="text-muted" style="color:#0000CD ; ">
+                                    ชำระเงินครบเรียบร้อยแล้ว
+                                    <i class="text-success bi bi-check-circle ms-2"></i>
+                                </small>
+                            </div>
+                            @elseif($decoration_sum > 0)
+                            <div class="p-4 bg-opacity-10 rounded mt-4" style="background-color: #F0FFFF	 ; ">
+                                <div class="d-flex justify-content-between fw-bold text-info">
+                                    <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
+                                    <span class="fs-5"
+                                        style="color:#0000CD ; ">{{ number_format($decoration_sum , 2) }}
+                                        บาท</span>
+                                </div>
+
+                            </div>
                             @endif
 
 
-                        </div>
+
+
+
+
+
+                        @endif
                     </div>
+
+
+
+
                     <div class="modal-footer">
-                        <button type="button" class="btn " data-dismiss="modal"
-                            style="background-color:#DADAE3;">ยกเลิก</button>
-                        <button type="submit" class="btn " id="confirmUpdateButton"
-                            style="background-color:#ACE6B7;">ยืนยันการอัปเดตสถานะ</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-success">ยืนยันการอัปเดตสถานะ</button>
                     </div>
+
+
                 </form>
             </div>
         </div>

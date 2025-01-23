@@ -1,4 +1,9 @@
 @extends('layouts.adminlayout')
+<style>
+    .form-label{
+        font-weight: bold;
+    }
+</style>
 @section('content')
 <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-lg" role="document">
@@ -7,7 +12,7 @@
                 บันทึกข้อมูลสำเร็จ
             </div>
             <div class="modal-body">
-                <strong>กรุณานำรหัสชุดเหล่านี้ไปติดไว้ กำกับกับชุดที่ท่านได้เพิ่ม:</strong>
+                {{-- <strong>กรุณานำรหัสชุดเหล่านี้ไปติดไว้ กำกับกับชุดที่ท่านได้เพิ่ม:</strong> --}}
                 <ul>
                     @if (session('warn'))
                         @foreach (session('warn') as $warn)
@@ -19,7 +24,7 @@
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">ตกลง</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">ตกลง</button>
             </div>
             </form>
         </div>
@@ -35,7 +40,9 @@
     <form action="{{ route('admin.savejewelry') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="container mt-5">
-            <h5>แบบฟอร์มเพิ่มเครื่องประดับ</h5>
+            <div class="card shadow">
+                <div class="card-body">
+            <h3>แบบฟอร์มเพิ่มเครื่องประดับ</h3>
             <div class="row">
                 <div class="col-md-6">
                     <label for="select_type" class="form-label">เลือกประเภทเครื่องประดับที่ต้องการเพิ่ม</label>
@@ -100,7 +107,7 @@
                     });
                 </script>
 
-                <div class="col-md-6">
+                <div class="col-md-6" style="display:none ; ">
                     <label for="" class="form-label">จำนวน</label>
                     <input type="number" name="jewelry_count" id="jewelry_count" min="1" max="100"
                         class="form-control" value="1">
@@ -122,7 +129,9 @@
                 </div>
             </div>
         </div>
-        <div class="container mt-5 mb-5" style="text-align: right ; ">
+        </div>
+        </div>
+        <div class="container mt-3 mb-5" style="text-align: right ; ">
             <div class="col-md-12">
                 <button class="btn btn-success" type="submit">ยืนยันการเพิ่มเครื่องประดับ</button>
             </div>

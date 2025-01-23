@@ -70,6 +70,20 @@
             background-color: #2980b9;
             /* เปลี่ยนสีเมื่อชี้ */
         }
+        #button_add_fitting {
+            background-color: #3498db;       
+            color: #fff;          
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 14px;
+            margin-left: 10px;
+            transition: background-color 0.3s ease; /* เอฟเฟกต์เปลี่ยนสี */
+        }
+        #button_add_fitting:hover {
+            background-color: #2980b9;
+            /* เปลี่ยนสีเมื่อชี้ */
+        }
     </style>
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">

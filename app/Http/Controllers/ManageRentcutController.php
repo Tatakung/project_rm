@@ -28,6 +28,7 @@ use App\Models\Skirtitem;
 use App\Models\AdditionalChange;
 use App\Models\Typedress;
 use App\Models\User;
+use App\Models\ReceiptReturn;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -412,9 +413,11 @@ class ManageRentcutController extends Controller
         $dress = Dress::where('type_dress_id', $typedress->id)->max('dress_code');
         $next_code = $dress + 1;
 
-        $show_price_input = $request->input('show_price_input');
-        $show_price_shirt_input = $request->input('show_price_shirt_input');
-        $show_price_skirt_input = $request->input('show_price_skirt_input');
+        $show_price_input = $request->input('show_price_input') ?? 0 ;
+        $show_price_shirt_input = $request->input('show_price_shirt_input') ?? 0 ;
+        $show_price_skirt_input = $request->input('show_price_skirt_input') ?? 0 ;
+
+
 
         $dress = new Dress();
         $dress->type_dress_id = $typedress->id;
@@ -595,17 +598,7 @@ class ManageRentcutController extends Controller
         $create_status->save();
         return redirect()->route('detaildoingrentcut', ['id' => $orderdetail->id])->with('success', 'บันทึกสำเร็จ');
     }
-    // public function receiptreservation($id)
-    // {
-    //     $order = Order::find($id);
-    //     $orderdetail = Orderdetail::where('order_id', $id)->get();
-    //     $customer = Customer::find($order->customer_id);
-    //     $total_deposit = $orderdetail->sum('deposit');
 
-    //     $date_now = now();
-    //     $pdfs = PDF::loadview('receipt.receipt_deposit_total', compact('order', 'orderdetail', 'customer', 'date_now', 'total_deposit'));
-    //     return $pdfs->stream();
-    // }
 
     public function receiptreservation($id)
     {
@@ -616,11 +609,13 @@ class ManageRentcutController extends Controller
         $orderdetail = Orderdetail::where('order_id', $order->id)->get();
         $customer = Customer::find($order->customer_id);
 
+        $employee = User::find($order->user_id) ; 
+
         $pickup_return_only = Date::where('order_detail_id', Orderdetail::where('order_id', $order->id)->value('id'))->first();
 
 
 
-        $pdf = PDF::loadView('receipt.receipt-reservation-dress-or-jewelry', compact('receipt', 'order', 'orderdetail', 'customer', 'pickup_return_only'));
+        $pdf = PDF::loadView('receipt.receipt-reservation-dress-or-jewelry', compact('receipt', 'order', 'orderdetail', 'customer', 'pickup_return_only','employee'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
     }
@@ -628,7 +623,9 @@ class ManageRentcutController extends Controller
     public function receiptpickuprent($id)
     {
         $order = Order::find($id);
-        $orderdetails = Orderdetail::where('order_id', $order->id)->get();
+        $orderdetails = Orderdetail::where('order_id', $order->id)
+        ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+        ->get();
         // $date = Date::where('order_detail_id', $orderdetail->id)
         //     ->orderBy('created_at', 'desc')
         //     ->first();
@@ -636,8 +633,7 @@ class ManageRentcutController extends Controller
             ->where('receipt_type', 2)
             ->first();
         $customer = Customer::find($order->customer_id);
-
-
+        $employee = User::find($order->user_id) ; 
         $transaction_date = $order->created_at->format('Y-m-d');
         $only_rent = Date::where('order_detail_id', $orderdetails->first()->id)->first(); //วันนัดรับ - นัดคืน 
         $only_payment = Paymentstatus::where('order_detail_id', $orderdetails->first()->id)
@@ -647,10 +643,7 @@ class ManageRentcutController extends Controller
 
 
 
-
-
-
-        $pdf = PDF::loadView('receipt.receipt_pickup_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'transaction_date', 'only_rent', 'only_payment'));
+        $pdf = PDF::loadView('receipt.receipt_pickup_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'transaction_date', 'only_rent', 'only_payment','employee'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
         return $pdfs->stream();
@@ -661,19 +654,19 @@ class ManageRentcutController extends Controller
     public function receiptreturnrent($id)
     {
         $order = Order::find($id);
-        $orderdetails = Orderdetail::where('order_id', $order->id)->get();
+        $orderdetails = Orderdetail::where('order_id', $order->id)
+        ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+        ->get();
 
         // $date = Date::where('order_detail_id', $orderdetail->id)
         //     ->orderBy('created_at', 'desc')
         //     ->first();
 
-        $receipt = Receipt::where('order_id', $order->id)
+        $receipt = ReceiptReturn::where('order_id', $order->id)
             ->where('receipt_type', 3)
             ->first();
-
         $customer = Customer::find($order->customer_id);
-
-
+        $employee = User::find($order->user_id) ; 
         $price_damage_insurance = 0;
         $price_return_late = 0;
         $price_extend_time = 0;
@@ -698,15 +691,7 @@ class ManageRentcutController extends Controller
                 $price_extend_time += $extend_time->amount;
             }
         }
-
-
-  
-        
-
-
-
-
-        $pdf = PDF::loadView('receipt.receipt_return_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'price_damage_insurance','price_return_late','price_extend_time'));
+        $pdf = PDF::loadView('receipt.receipt_return_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'price_damage_insurance','price_return_late','price_extend_time','employee'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
         return $pdfs->stream();

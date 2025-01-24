@@ -729,12 +729,24 @@ class OrderController extends Controller
             $imagejewelry = Jewelryimage::where('jewelry_id', $jewelry->id)->first();
             $setjewelry = null;
             $setjewelryitem = null;
+            $check_not_ready = false ; 
         } else {
             $setjewelry = Jewelryset::find($reservation->jewelry_set_id);
             $setjewelryitem = Jewelrysetitem::where('jewelry_set_id', $setjewelry->id)->get();
             $jewelry = null;
             $typejewelry = null;
             $imagejewelry = null;
+            $check_not_ready = false;
+            foreach ($setjewelryitem as $itemm) {
+                $jewel = Jewelry::find($itemm->jewelry_id);
+                if (
+                    $jewel->jewelry_status == 'สูญหาย' ||
+                    $jewel->jewelry_status == 'ยุติการให้เช่า'
+                ) {
+                    $check_not_ready = true;
+                    break;
+                }
+            }
         }
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
         $additional = AdditionalChange::where('order_detail_id', $id)->get();
@@ -750,7 +762,13 @@ class OrderController extends Controller
 
         $sum_additional = AdditionalChange::where('order_detail_id', $id)->sum('amount');
 
-        return view('employeerentjewelry.managedetailrentjewelry', compact('additional', 'sum_additional', 'orderdetail', 'reservation', 'jewelry', 'receipt_bill_pickup', 'typejewelry', 'receipt_bill_return', 'orderdetailstatus', 'setjewelry', 'imagejewelry', 'order', 'customer', 'user', 'setjewelryitem', 'Date', 'reservationfilter', 'additional'));
+
+
+
+
+
+
+        return view('employeerentjewelry.managedetailrentjewelry', compact('additional', 'sum_additional', 'orderdetail', 'reservation', 'jewelry', 'receipt_bill_pickup', 'typejewelry', 'receipt_bill_return', 'orderdetailstatus', 'setjewelry', 'imagejewelry', 'order', 'customer', 'user', 'setjewelryitem', 'Date', 'reservationfilter', 'additional','check_not_ready'));
     }
 
     //จัดการเช่าตัด

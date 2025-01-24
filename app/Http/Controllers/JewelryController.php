@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jewelry;
+use App\Models\JewelryHistory;
 use App\Models\Jewelryimage;
 use App\Models\Jewelryset;
+use App\Models\JewelrySetHistory;
 use App\Models\Jewelrysetitem;
 use App\Models\Typejewelry;
 use App\Models\User;
@@ -109,8 +111,9 @@ class JewelryController extends Controller
         $data_type = Typejewelry::where('id', $datajewelry->type_jewelry_id)->first();
         $dataimage = Jewelryimage::where('jewelry_id', $id)->first();
         $jew_in_set = Jewelrysetitem::where('jewelry_id',$id)->get() ; 
+        $historyprice = JewelryHistory::where('jewelry_id',$id)->get() ; 
         $is_admin = Auth::user()->is_admin ; 
-        return view('adminjewelry.jewelrydetail', compact('datajewelry', 'dataimage', 'data_type','jew_in_set','is_admin'));
+        return view('adminjewelry.jewelrydetail', compact('datajewelry', 'dataimage', 'data_type','jew_in_set','is_admin','historyprice'));
     }
     
 
@@ -118,6 +121,13 @@ class JewelryController extends Controller
     public function updatejewelry(Request $request, $id)
     {
         $savedata = Jewelry::find($id);
+        if($savedata->jewelry_price != $request->input('update_price')){
+            $history = new JewelryHistory() ; 
+            $history->jewelry_id = $id ; 
+            $history->old_price = $savedata->jewelry_price ; 
+            $history->new_price = $request->input('update_price') ; 
+            $history->save() ; 
+        }
         $savedata->jewelry_price = $request->input('update_price') ; 
         $savedata->jewelry_deposit = $request->input('update_deposit') ; 
         $savedata->damage_insurance = $request->input('update_damage_insurance') ; 
@@ -125,6 +135,22 @@ class JewelryController extends Controller
         $savedata->save();
         return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
     }
+    public function updatejewelryset(Request $request , $id){
+        $jewelryset = Jewelryset::find($id) ;
+
+        if($jewelryset->set_price!=$request->input('update_price')){
+            $savee = new JewelrySetHistory() ; 
+            $savee->jewelry_set_id = $id; 
+            $savee->old_price = $jewelryset->set_price ; 
+            $savee->new_price = $request->input('update_price') ; 
+            $savee->save() ; 
+        }
+
+        $jewelryset->set_price = $request->input('update_price'); 
+        $jewelryset->save() ; 
+        return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
+    }
+
     
 
     // หน้าสำหรับแสดงจัดเซต
@@ -177,8 +203,30 @@ class JewelryController extends Controller
     public function setjewelrydetail($id){
         $jewelryset = Jewelryset::find($id) ; 
         $Jewelrysetitem = Jewelrysetitem::where('jewelry_set_id',$id)->get() ;
-        $is_admin = Auth::user()->is_admin ; 
-        return view('adminjewelry.setjewelrydetail',compact('jewelryset','Jewelrysetitem','is_admin')) ; 
+        $is_admin = Auth::user()->is_admin ;
+
+
+        $historyprice = JewelrySetHistory::where('jewelry_set_id',$id)->get() ; 
+
+        $check_not_ready = false ; 
+        foreach($Jewelrysetitem as $item){
+            $jewelry = Jewelry::find($item->jewelry_id) ; 
+            if($jewelry->jewelry_status == 'สูญหาย' || $jewelry->jewelry_status == 'ยุติการให้เช่า'){
+                $check_not_ready = true ; 
+                break ; 
+            }
+        }
+
+        
+
+
+
+
+
+
+
+
+        return view('adminjewelry.setjewelrydetail',compact('historyprice','jewelryset','Jewelrysetitem','is_admin','check_not_ready')) ; 
     }
 
 

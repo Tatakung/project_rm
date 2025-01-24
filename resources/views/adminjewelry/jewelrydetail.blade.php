@@ -28,7 +28,8 @@
             <a href="" style="color: black ; ">จัดการเครื่องประดับ</a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{{route('admin.typejewelry',['id' => $datajewelry->type_jewelry_id])}}" style="color: black ;">ประเภท{{ $data_type->type_jewelry_name }}</a>
+            <a href="{{ route('admin.typejewelry', ['id' => $datajewelry->type_jewelry_id]) }}"
+                style="color: black ;">ประเภท{{ $data_type->type_jewelry_name }}</a>
         </li>
         <li class="breadcrumb-item active">
             รายละเอียดของหมายเลขเครื่องประดับ {{ $data_type->specific_letter }}{{ $datajewelry->jewelry_code }}
@@ -159,44 +160,113 @@
 
 
 
+                        @if ($datajewelry->jewelry_status == 'สูญหาย' || $datajewelry->jewelry_status == 'ยุติการให้เช่า')
+                            <p><strong>สถานะของเครื่องประดับ: </strong><span
+                                    style="color: red ; ">{{ $datajewelry->jewelry_status }}</span></p>
+                        @else
+                            <p><strong>สถานะของเครื่องประดับ: </strong>{{ $datajewelry->jewelry_status }}</p>
+                        @endif
 
 
                     </div>
 
 
-                    
+
 
 
 
 
                 </div>
 
-<div class="ml-2"
-                        @if ($is_admin == 1) style="display: block;  "
+                <div class="ml-2"
+                    @if ($is_admin == 1) style="display: block;  "
                     @elseif($is_admin == 0)
                         style="display: none ; " @endif>
-                        <a href="{{ route('showrentedhistory', ['id' => $datajewelry->id]) }}"
-                            class="btn btn-outline-primary mr-2">
-                            <i class="bi bi-clock-history"></i> ประวัติการเช่า
-                        </a>
-                        <a href="{{ route('showrepairjewelryhistory', ['id' => $datajewelry->id]) }}"
-                            class="btn btn-outline-secondary">
-                            <i class="bi bi-tools"></i> ประวัติการซ่อม
-                        </a>
+                    <a href="{{ route('showrentedhistory', ['id' => $datajewelry->id]) }}"
+                        class="btn btn-outline-primary mr-2">
+                        <i class="bi bi-clock-history"></i> ประวัติการเช่า
+                    </a>
+                    <a href="{{ route('showrepairjewelryhistory', ['id' => $datajewelry->id]) }}"
+                        class="btn btn-outline-secondary">
+                        <i class="bi bi-tools"></i> ประวัติการซ่อม
+                    </a>
+
+                    <button class="btn btn-outline-secondary" type="button" data-toggle="modal"
+                        data-target="#priceHistoryModal">
+                        <i class="bi bi-clock-history"></i>ประวัติการปรับแก้ไขราคาเช่า
+                    </button>
+                </div>
+
+
+
+
+
+
+
+
+                <!-- Modal แสดงประวัติการแก้ไขราคา -->
+                <div class="modal fade" id="priceHistoryModal" tabindex="-1" aria-labelledby="priceHistoryModalLabel"
+                    aria-hidden="true" data-backdrop="static">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="priceHistoryModalLabel">ประวัติการปรับแก้ไขราคาเช่า -
+                                </h5>
+                            </div>
+
+                            <div class="modal-body">
+                                @if ($historyprice->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>วันที่แก้ไข</th>
+                                                    <th>ราคาเดิม</th>
+                                                    <th>ราคาใหม่</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($historyprice as $item)
+                                                    <tr>
+                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                            {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                                        </td>
+                                                        <td>{{ number_format($item->old_price, 2) }} บาท</td>
+                                                        <td>{{ number_format($item->new_price, 2) }} บาท</td>
+
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้ไขราคาเช่า</p>
+                                @endif
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+                            </div>
+                        </div>
                     </div>
+                </div>
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+                
 
             </div>
-
-
-
-
-
 
 
 
@@ -222,11 +292,14 @@
 
                             <div class="d-flex justify-content-between align-items-center p-3 mb-2 border rounded">
                                 <div>
-                                    <div style="color:#000"><strong>{{ $item->jewitem_m_to_o_jewset->set_name }}</strong></div>
+                                    <div style="color:#000"><strong>{{ $item->jewitem_m_to_o_jewset->set_name }}</strong>
+                                    </div>
                                     <div class="text-muted">รหัสเซต: SET{{ $item->jewitem_m_to_o_jewset->id }}</div>
                                 </div>
                                 <div>
-                                    <strong style="color:#000">{{ number_format($item->jewitem_m_to_o_jewset->set_price, 2) }} บาท</strong>
+                                    <strong
+                                        style="color:#000">{{ number_format($item->jewitem_m_to_o_jewset->set_price, 2) }}
+                                        บาท</strong>
                                 </div>
                             </div>
                         </a>

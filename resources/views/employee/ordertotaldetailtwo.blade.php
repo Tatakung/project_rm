@@ -163,7 +163,7 @@
                     <th>รายการ</th>
                     <th>วันนัดรับ</th>
                     <th>วันนัดคืน</th>
-                    <th>สถานะออเดอร์</th>
+                    <th>สถานะ</th>
                     <th>การดำเนินการ</th>
                 </tr>
             </thead>
@@ -266,20 +266,21 @@
 
 
                         @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
-                            <td style="text-decoration: line-through;color: red;">{{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                            <td style="text-decoration: line-through;color: red;">
+                                {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
                                 {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
                             </td>
-                            <td style="text-decoration: line-through;color: red;">{{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                            <td style="text-decoration: line-through;color: red;">
+                                {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
                                 {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
                             </td>
                         @else
-                        <td>{{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
-                        </td>
-                        <td>{{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
-                        </td>
-
+                            <td>{{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
+                            </td>
+                            <td>{{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
+                            </td>
                         @endif
 
 
@@ -297,12 +298,13 @@
                                 {{ $item->status_detail }}
                             @elseif($item->type_order == 3)
                                 @if ($item->detail_many_one_re->jewelry_id)
+                                    {{-- เช่าเป็นชิ้น --}}
                                     @if ($item->status_detail == 'ถูกจอง')
                                         @if (
                                             $item->detail_many_one_re->resermanytoonejew->jewelry_status == 'สูญหาย' ||
                                                 $item->detail_many_one_re->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า')
                                             <button class="btn btn-sm btn-danger"><i
-                                                    class="fas fa-exclamation-triangle me-2"></i>{{ $item->detail_many_one_re->resermanytoonejew->jewelry_status }}</button>
+                                                    class="fas fa-exclamation-triangle me-2"></i>เครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejew->jewelry_status }}</button>
                                         @else
                                             {{ $item->status_detail }}
                                         @endif
@@ -312,7 +314,37 @@
                                         {{ $item->status_detail }}
                                     @endif
                                 @elseif($item->detail_many_one_re->jewelry_set_id)
-                                    {{ $item->status_detail }}
+                                    {{-- เช่าเป็นเซต --}}
+                                    @if ($item->status_detail == 'ถูกจอง')
+                                        @php
+                                            // เช็คว่าเซตนี้ เครื่องประดับทุกชิ้น มันสูญหายไหม
+                                            $check_not_ready = false;
+                                            $jewelry_item = App\Models\Jewelrysetitem::where(
+                                                'jewelry_set_id',
+                                                $item->detail_many_one_re->jewelry_set_id,
+                                            )->get();
+                                            foreach ($jewelry_item as $itemm) {
+                                                $jewel = App\Models\Jewelry::find($itemm->jewelry_id);
+                                                if (
+                                                    $jewel->jewelry_status == 'สูญหาย' ||
+                                                    $jewel->jewelry_status == 'ยุติการให้เช่า'
+                                                ) {
+                                                    $check_not_ready = true;
+                                                    break;
+                                                }
+                                            }
+                                        @endphp
+                                        @if ($check_not_ready == true)
+                                            <button class="btn btn-sm btn-danger"><i
+                                                    class="fas fa-exclamation-triangle me-2"></i>เครื่องประดับไม่ครบเซต</button>
+                                        @elseif($check_not_ready == false)
+                                            {{ $item->status_detail }}
+                                        @endif
+                                    @elseif($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
+                                        <span style="color: red ; ">{{ $item->status_detail }}</span>
+                                    @else
+                                        {{ $item->status_detail }}
+                                    @endif
                                 @endif
                             @endif
 
@@ -341,10 +373,13 @@
                                             </a>
                                         @endif
                                     @elseif($item->detail_many_one_re->jewelry_set_id)
-                                        <a href="{{ route('postponeroutejewelry', ['id' => $item->reservation_id]) }}"
-                                            class="btn btn-postpone btn-sm" style="background-color:#BACEE6 ;">
-                                            เลื่อนวัน
-                                        </a>
+                                        @if ($check_not_ready == true)
+                                        @elseif($check_not_ready == false)
+                                            <a href="{{ route('postponeroutejewelry', ['id' => $item->reservation_id]) }}"
+                                                class="btn btn-postpone btn-sm" style="background-color:#BACEE6 ;">
+                                                เลื่อนวัน
+                                            </a>
+                                        @endif
                                     @endif
                                 @endif
                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"

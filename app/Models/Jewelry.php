@@ -49,5 +49,7 @@ class Jewelry extends Model
     public function jewonetomanychargejewelrys(){
         return $this->hasMany(ChargeJewelry::class,'additional_charge_id') ; 
     }
-
+    public function jew_one_to_many_jewelryhistory(){
+        return $this->hasMany(JewelryHistory::class,'jewelry_id') ; 
+    }
 }

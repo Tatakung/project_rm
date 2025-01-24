@@ -61,7 +61,9 @@
                         <h5 class="modal-title" id="priceHistoryModalLabel">ประวัติการปรับแก้ไขราคาเช่า -
                             {{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h5>
                     </div>
+                    
                     <div class="modal-body">
+                        @if($historydress->count() > 0 )
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
@@ -86,6 +88,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        @else
+                        <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้ไขราคาเช่า</p>
+                        @endif
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>

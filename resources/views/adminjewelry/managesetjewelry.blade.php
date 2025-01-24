@@ -24,6 +24,11 @@
                                             @foreach ($type->jewelrys as $jew)
                                                 <tr style="text-align: center ; ">
 
+                                                    @if($jew->jewelry_status == 'สูญหาย' || $jew->jewelry_status == 'ยุติการให้เช่า')
+                                                    
+                                                    @else
+                                                    
+
                                                     <td>
                                                         <input type="checkbox" name="jew_id" id="{{ $jew->id }}"
                                                             data-typename="-{{ $type->type_jewelry_name }} {{ $type->specific_letter }}{{ $jew->jewelry_code }} ราคา {{ $jew->jewelry_price }} บาท"
@@ -46,6 +51,7 @@
                                                         {{ $type->type_jewelry_name }}
                                                     </td>
                                                     <td>{{ number_format($jew->jewelry_price, 2) }} บาท</td>
+                                                    @endif
                                                 </tr>
                                             @endforeach
                                         @endforeach

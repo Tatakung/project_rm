@@ -23,6 +23,8 @@
 
 
                 <h6 class="mb-3">รายการจองที่ได้รับผลกระทบ:</h6>
+                
+                @if($orderdetail->count() > 0 )
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -115,6 +117,9 @@
                         </tbody>
                     </table>
                 </div>
+                @else
+                <p style="text-align: center ; ">ไม่มีรายการที่ได้รับผลกระทบ</p>
+                @endif
             </div>
         </div>
 

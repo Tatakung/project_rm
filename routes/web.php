@@ -86,6 +86,16 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::post('/admin/addjewelry-form/save', [JewelryController::class, 'savejewelry'])->name('admin.savejewelry'); //บันทึกข้อมูล 
     Route::post('/admin/typejewelry/jewelrydetail/updatejewelry/{id}', [JewelryController::class, 'updatejewelry'])->name('admin.updatejewelry'); //อัปเดตเครื่องประดับ
 
+
+    Route::post('/admin/setjewelrydetail/updatejewelryset/{id}', [JewelryController::class, 'updatejewelryset'])->name('admin.updatejewelryset'); //อัปเดตเครื่องประดับ
+
+
+
+
+
+
+
+    
     Route::get('/admin/managesetjewelry', [JewelryController::class, 'managesetjewelry'])->name('admin.managesetjewelry'); //หน้าจัดเซตเครื่องประดับ
     Route::get('/admin/managesetjewelryfilter', [JewelryController::class, 'managesetjewelryfilter'])->name('admin.managesetjewelryfilter'); //หน้าหลังจากฟิเลเตอร์ 
 

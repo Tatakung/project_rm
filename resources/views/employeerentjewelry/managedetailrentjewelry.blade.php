@@ -110,7 +110,7 @@
 
                 $sort_queue = App\Models\Reservation::whereIn('id', $list_check)
                     ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
-                    ->first(); 
+                    ->first();
                 $check_bunton_pass = true; //ตัวเช็คในการกดปุ่มอัพเดตสถานะ
 
                 if ($sort_queue) {
@@ -126,15 +126,12 @@
                     } else {
                         $check_bunton_pass = false;
                     }
-                }
-                else{
+                } else {
                     $check_bunton_pass = true;
                 }
-                
 
                 // dd($check_bunton_pass) ;
-            }
-            elseif ($reservation->jewelry_set_id) {
+            } elseif ($reservation->jewelry_set_id) {
                 $list_set = [];
                 // แค่jewelry_set_idในตาราง reservation
                 $jewwelry_set_id_in_reservation = App\Models\Reservation::where('status_completed', 0)
@@ -186,8 +183,7 @@
                     } else {
                         $check_bunton_pass = false;
                     }
-                }
-                else{
+                } else {
                     $check_bunton_pass = true;
                 }
             }
@@ -197,11 +193,12 @@
         <p>คิวแรก : {{ $sort_queue->id }}</p> --}}
 
         @if ($check_bunton_pass == false)
+
             @if ($reservation->jewelry_id && $reservation->re_one_many_details->first()->status_detail != 'คืนเครื่องประดับแล้ว')
+                {{-- เช่าเป็นชิ้น --}}
                 @if ($reservation->id != $sort_queue->id)
                     {{-- ไม่ใช่คิวแรก --}}
 
-                    
                     @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
                         @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
                             @if (
@@ -308,7 +305,6 @@
                     @endif
                 @elseif($reservation->id == $sort_queue->id)
                     {{-- คิวแรก --}}
-                    
                     @if ($reservation->resermanytoonejew->jewelry_status != 'พร้อมให้เช่า')
                         <div class="row mt-2">
                             <div class="col-md-12">
@@ -337,7 +333,7 @@
                                                     <div>
                                                         {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
                                                         <p class="mb-0">
-                                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
                                                             </strong>
                                                         </p>
                                                     </div>
@@ -391,62 +387,41 @@
                     @endif
                 @endif
             @elseif($reservation->jewelry_set_id && $reservation->re_one_many_details->first()->status_detail != 'คืนเครื่องประดับแล้ว')
+                {{-- เช่าเป็นเซต --}}
                 @if ($reservation->id != $sort_queue->id)
                     {{-- ไม่ใช่คิวแรก --}}
-                    <div class="row mt-2">
-                        <div class="col-md-12">
-                            <div class="alert alert-danger" role="alert">
-                                <strong>แจ้งเตือน:</strong> กรุณารอคิวจนกว่าจะถึงคิว<span>
-
-
-                            </div>
-                        </div>
-                    </div>
-                @elseif($reservation->id == $sort_queue->id)
-                    <div class="row mt-2">
-                        <div class="col-md-12">
-                            <div class="alert alert-danger" role="alert">
-                                <strong>แจ้งเตือน:</strong> ถึงคิวแล้ว : สถานะรายการเครื่องประดับในเซตนี้<span>
-                                    @foreach ($setjewelryitem as $item)
-                                        <p> {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
-                                            {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
-                                            : {{ $item->jewitem_m_to_o_jew->jewelry_status }}</p>
-                                    @endforeach
-
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
-        @else
-
-
-
-        @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                    @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
                         @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
-                            @if (
-                                $reservation->resermanytoonejew->jewelry_status == 'สูญหาย' ||
-                                    $reservation->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า')
+                            @if ($check_not_ready == true)
                                 <div class="alert alert-danger" role="alert">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-exclamation-triangle me-2"></i>
                                         <div>
                                             {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
                                             <p class="mb-0">
-                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ
+                                                    @foreach ($setjewelryitem as $itemmmm)
+                                                        @if (
+                                                            $itemmmm->jewitem_m_to_o_jew->jewelry_status == 'สูญหาย' ||
+                                                                $itemmmm->jewitem_m_to_o_jew->jewelry_status == 'ยุติการให้เช่า')
+                                                            {{ $itemmmm->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                            {{ $itemmmm->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $itemmmm->jewitem_m_to_o_jew->jewelry_code }}
+                                                            : {{ $itemmmm->jewitem_m_to_o_jew->jewelry_status }}
+                                                        @endif
+                                                    @endforeach
                                                 </strong>
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                            @else
+                            @elseif($check_not_ready == false)
                                 <div class="alert alert-danger" role="alert">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-exclamation-triangle me-2"></i>
                                         <div>
                                             {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
                                             <p class="mb-0">
-                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
                                                 </strong>
                                             </p>
                                         </div>
@@ -467,8 +442,247 @@
                                 </div>
                             </div>
                         @endif
+                    @elseif($check_not_ready == true)
+                        <div class="alert alert-danger" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                    <p class="mb-0">
+                                        <strong>รายการนี้
+                                            @foreach ($setjewelryitem as $itemmmm)
+                                                @if (
+                                                    $itemmmm->jewitem_m_to_o_jew->jewelry_status == 'สูญหาย' ||
+                                                        $itemmmm->jewitem_m_to_o_jew->jewelry_status == 'ยุติการให้เช่า')
+                                                    {{ $itemmmm->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                    {{ $itemmmm->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $itemmmm->jewitem_m_to_o_jew->jewelry_code }}
+                                                    : {{ $itemmmm->jewitem_m_to_o_jew->jewelry_status }}
+                                                @endif
+                                            @endforeach
+                                            ทำให้เครื่องประดับไม่ครบเซต
+                                            กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                            {{ $customer->customer_phone }}
+                                        </strong>
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                    <div class="row mt-2">
+                        <div class="col-md-12">
+                            <div class="alert alert-danger" role="alert">
+                                <strong>แจ้งเตือน:</strong> กรุณารอคิวจนกว่าจะถึงคิว<span>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+
+
+
+                @elseif($reservation->id == $sort_queue->id)
+                    {{-- คิวแรก --}}
+                    @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                        @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                            @if ($check_not_ready == true)
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ
+                                                    @foreach ($setjewelryitem as $itemmmm)
+                                                        @if (
+                                                            $itemmmm->jewitem_m_to_o_jew->jewelry_status == 'สูญหาย' ||
+                                                                $itemmmm->jewitem_m_to_o_jew->jewelry_status == 'ยุติการให้เช่า')
+                                                            {{ $itemmmm->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                            {{ $itemmmm->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $itemmmm->jewitem_m_to_o_jew->jewelry_code }}
+                                                            : {{ $itemmmm->jewitem_m_to_o_jew->jewelry_status }}
+                                                        @endif
+                                                    @endforeach
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif($check_not_ready == false)
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
-        
+                    @elseif($check_not_ready == true)
+                        <div class="alert alert-danger" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                    <p class="mb-0">
+                                        <strong>รายการนี้
+                                            @foreach ($setjewelryitem as $itemmmm)
+                                                @if (
+                                                    $itemmmm->jewitem_m_to_o_jew->jewelry_status == 'สูญหาย' ||
+                                                        $itemmmm->jewitem_m_to_o_jew->jewelry_status == 'ยุติการให้เช่า')
+                                                    {{ $itemmmm->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                    {{ $itemmmm->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $itemmmm->jewitem_m_to_o_jew->jewelry_code }}
+                                                    : {{ $itemmmm->jewitem_m_to_o_jew->jewelry_status }}
+                                                @endif
+                                            @endforeach
+                                            ทำให้เครื่องประดับไม่ครบเซต
+                                            กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                            {{ $customer->customer_phone }}
+                                        </strong>
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="alert alert-danger" role="alert">
+                                    <strong>แจ้งเตือน:</strong> ถึงคิวแล้ว : สถานะรายการเครื่องประดับในเซตนี้<span>
+                                        @foreach ($setjewelryitem as $item)
+                                            <p> {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
+                                                : {{ $item->jewitem_m_to_o_jew->jewelry_status }}</p>
+                                        @endforeach
+
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+
+                @endif
+
+
+
+            @endif
+        @else
+            @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+
+
+                @if ($reservation->jewelry_id)
+                    @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                        @if (
+                            $reservation->resermanytoonejew->jewelry_status == 'สูญหาย' ||
+                                $reservation->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                        <div class="alert alert-danger" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                    <p class="mb-0">
+                                        <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @elseif($reservation->jewelry_set_id)
+                    @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                        @if ($check_not_ready == true)
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับบางส่วนไม่ครบเซต
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @elseif($check_not_ready == false)
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                        <div class="alert alert-danger" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                    <p class="mb-0">
+                                        <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
+
+
+            @endif
+
+
+
 
 
 
@@ -477,7 +691,7 @@
         @endif
 
 
-        
+
 
         <h4 class="mt-2"><strong>รายการ :
                 @if ($reservation->jewelry_id)
@@ -513,8 +727,8 @@
                                 @else
                                     style="display: none ;" @endif>
 
-                                    <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
-                                        data-target="#updatestatus">อัปเดตสถานะการเช่า</button>
+                                    <button class="btn" style="background: #C28041; color: #ffffff;"
+                                        data-toggle="modal" data-target="#updatestatus">อัปเดตสถานะการเช่า</button>
                                 </div>
                             @endif
 

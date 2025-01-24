@@ -24,4 +24,11 @@ class Jewelryset extends Model
     {
         return $this->hasMany(Reservation::class, 'jewelry_set_id');
     }
+
+    
+    public function jewelryset_one_to_many_jewsethistory(){
+        return $this->hasMany(JewelrySetHistory::class,'jewelry_set_id') ; 
+    }
+
+
 }

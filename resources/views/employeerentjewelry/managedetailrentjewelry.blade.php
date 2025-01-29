@@ -565,11 +565,12 @@
                         <div class="row mt-2">
                             <div class="col-md-12">
                                 <div class="alert alert-danger" role="alert">
-                                    <strong>แจ้งเตือน:</strong> ถึงคิวแล้ว : สถานะรายการเครื่องประดับในเซตนี้<span>
+
+                                    <p><strong>แจ้งเตือน:</strong> ถึงคิวแล้ว : กรุณารอจนกว่าเครื่องประดับทุกชิ้นในเซตจะพร้อมให้เช่า</p>
                                         @foreach ($setjewelryitem as $item)
-                                            <p> {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                            <li> {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
                                                 {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
-                                                : {{ $item->jewitem_m_to_o_jew->jewelry_status }}</p>
+                                                : {{ $item->jewitem_m_to_o_jew->jewelry_status }}</li>
                                         @endforeach
 
                                 </div>

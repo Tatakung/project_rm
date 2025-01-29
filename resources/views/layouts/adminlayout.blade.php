@@ -531,7 +531,7 @@
                             </span>
                         @endif
                     </a>
-                    <a href="{{ route('employee.clean') }}"
+                    {{-- <a href="{{ route('employee.clean') }}"
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                         รายการซักชุด
                         @php
@@ -545,8 +545,26 @@
                                 {{ $cleancountdress }}
                             </span>
                         @endif
+                    </a> --}}
+
+                    <a href="{{ route('cleanningdress') }}"
+                        class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        รายการซักชุด
+                        
+                        
+                            {{-- <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
+                               
+                            </span> --}}
+                        
                     </a>
-                    <a href="{{ route('employee.repair') }}"
+
+
+
+
+
+
+
+                    {{-- <a href="{{ route('employee.repair') }}"
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                         รายการซ่อมชุด
                         @php
@@ -562,7 +580,20 @@
                                 {{ $repaircountdress }}
                             </span>
                         @endif
-                    </a>
+                    </a> --}}
+
+                    <a href="{{ route('dressrepair') }}"
+                    class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                    รายการซ่อมชุด
+                    
+                    
+                        {{-- <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
+                            
+                        </span> --}}
+                    
+                </a>
+
+
                 </div>
             </div>
 

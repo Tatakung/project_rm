@@ -34,6 +34,7 @@ use App\Models\Jewelrysetitem;
 use App\Models\User;
 use App\Models\Reservationfilters;
 use App\Models\Reservation;
+use App\Models\Reservationfilterdress;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -69,11 +70,11 @@ class EmployeeController extends Controller
         $return_dress_today = Reservation::where('status_completed', 0)
             ->orderByRaw("STR_TO_DATE(end_date,'%Y-%m-%d') asc")
             ->where('status', 'กำลังเช่า')
-            
+
             ->get();
 
 
-            
+
         // ชุดที่รอการตัด
         $work_waiting_to_cut = Orderdetail::whereIn('type_order', [1, 4])
             ->where('status_detail', 'รอดำเนินการตัด')
@@ -96,7 +97,7 @@ class EmployeeController extends Controller
 
         $employee = Auth::user();
         $time = now();
-        return view('employee.employeehome', compact('employee', 'time', 'return_jewelry_today', 'return_dress_today', 'work_waiting_to_cut', 'clean_pending', 'repair', 'clean_pending_jewelry','repair_jewelry'));
+        return view('employee.employeehome', compact('employee', 'time', 'return_jewelry_today', 'return_dress_today', 'work_waiting_to_cut', 'clean_pending', 'repair', 'clean_pending_jewelry', 'repair_jewelry'));
     }
 
 
@@ -106,6 +107,23 @@ class EmployeeController extends Controller
 
         return view('Employee.addorder');
     }
+
+    public function cleanningdress()
+    {
+        $clean_pending = Reservationfilterdress::where('status_completed', 0)
+            ->where('status', 'รอทำความสะอาด')
+            ->get();
+        $clean_doing_wash = Reservationfilterdress::where('status_completed', 0)
+            ->where('status', 'กำลังส่งซัก')
+            ->get();
+        return view('employee.cleandress', compact('clean_pending', 'clean_doing_wash'));
+    }
+
+
+
+
+
+
 
     public function selectdate()
     {
@@ -247,41 +265,65 @@ class EmployeeController extends Controller
     }
 
 
-    public function buttoncleanrowpageone($id)
+    public function buttoncleanrowpageone(Request $request, $id)
     {
-        $clean = clean::find($id);
-        //ตารางclean
-        $clean->clean_status = "กำลังส่งซัก";
-        $clean->save();
-        //ตารางstatus
-        // $create_status = new Orderdetailstatus();
-        // $create_status->status = "กำลังส่งซัก";
-        // $create_status->clean_id = $clean->id;
-        // $create_status->save();
+        $filterdress = Reservationfilterdress::find($id);
+        $filterdress->status = 'กำลังส่งซัก';
+        $filterdress->save();
 
+        if ($filterdress->filterdress_many_to_one_dress->separable == 1) {
+            $dress = Dress::find($filterdress->dress_id);
+            $dress->dress_status = 'กำลังส่งซัก';
+            $dress->save();
+        } elseif ($filterdress->filterdress_many_to_one_dress->separable == 2) {
 
+            $filterdress_shirt = $request->input('filterdress_shirt');
+            $filterdress_skirt = $request->input('filterdress_skirt');
 
-        $reservation = Reservation::find($clean->reservation_id);
-        $reservation->status = "กำลังส่งซัก";
-        $reservation->save();
+            if ($filterdress_shirt != null) {
+                $shirt = Shirtitem::find($filterdress_shirt);
+                $shirt->shirtitem_status = 'กำลังส่งซัก';
+                $shirt->save();
+            }
+            if ($filterdress_skirt != null) {
+                $skirt = Skirtitem::find($filterdress_skirt);
+                $skirt->skirtitem_status = 'กำลังส่งซัก';
+                $skirt->save();
+            }
+        }
+
         return redirect()->back()->with('success', "อัพเดตสำเร็จ");
     }
-    public function buttoncleanrowpagetwo($id)
+    public function buttoncleanrowpagetwo(Request $request, $id)
     {
-        $clean = Clean::find($id);
-        //ตาราclean
-        $clean->clean_status = "ซักเสร็จแล้ว";
-        $clean->save();
-        //ตารางstatus
-        // $create_status = new Orderdetailstatus();
-        // $create_status->status = "ซักเสร็จแล้ว";
-        // $create_status->clean_id = $clean->id;
-        // $create_status->save();
-        //ตารางreservation 
-        $reservation = Reservation::find($clean->reservation_id);
-        $reservation->status = "ซักเสร็จแล้ว";
-        $reservation->status_completed = 1; //เสร็จสมบูรณ์
-        $reservation->save();
+        $filterdress = Reservationfilterdress::find($id);
+        $filterdress->status = 'ซักเสร็จแล้ว';
+        $filterdress->status_completed = 1;
+        $filterdress->save();
+
+        if ($filterdress->filterdress_many_to_one_dress->separable == 1) {
+            $dress = Dress::find($filterdress->dress_id);
+            $dress->dress_status = 'พร้อมให้เช่า';
+            $dress->save();
+        } elseif ($filterdress->filterdress_many_to_one_dress->separable == 2) {
+
+            $filterdress_shirt_two = $request->input('filterdress_shirt_two');
+            $filterdress_skirt_two = $request->input('filterdress_skirt_two');
+
+            if ($filterdress_shirt_two != null) {
+                $shirt = Shirtitem::find($filterdress_shirt_two);
+                $shirt->shirtitem_status = 'พร้อมให้เช่า';
+                $shirt->save();
+            }
+            if ($filterdress_skirt_two != null) {
+                $skirt = Skirtitem::find($filterdress_skirt_two);
+                $skirt->skirtitem_status = 'พร้อมให้เช่า';
+                $skirt->save();
+            }
+        }
+
+
+
         return redirect()->back()->with('success', "อัพเดตสำเร็จ");
     }
 
@@ -372,59 +414,84 @@ class EmployeeController extends Controller
     }
 
     //ซักเสร็จแล้ว แต่มันต้องซ่อมอะ 
-    public function afterwashtorepair(Request $request)
+    public function afterwashtorepair(Request $request, $id)
     {
-        $repair_detail = $request->input('repair_detail');
-        $clean_id = $request->input('clean_id');
 
-        //ตาราclean
-        $clean = Clean::find($clean_id);
-        $clean->clean_status = "ซักเสร็จแล้ว";
-        $clean->save();
-        //ตารางstatus
-        // $order_status = new Orderdetailstatus();
-        // $order_status->clean_id = $clean->id;
-        // $order_status->status = "ซักเสร็จแล้ว";
-        // $order_status->save();
+        $filterdress = Reservationfilterdress::find($id);
+        $filterdress->status = 'รอดำเนินการซ่อม';
+        $filterdress->save();
+
+        if ($filterdress->filterdress_many_to_one_dress->separable == 1) {
+            $dress = Dress::find($filterdress->dress_id);
+            $dress->dress_status = 'รอดำเนินการซ่อม';
+            $dress->save();
+        } elseif ($filterdress->filterdress_many_to_one_dress->separable == 2) {
+
+            $filterdress_shirt_two_repair = $request->input('filterdress_shirt_two_repair');
+            $filterdress_skirt_two_repair = $request->input('filterdress_skirt_two_repair');
+
+            if ($filterdress_shirt_two_repair != null) {
+                $shirt = Shirtitem::find($filterdress_shirt_two_repair);
+                $shirt->shirtitem_status = 'รอดำเนินการซ่อม';
+                $shirt->save();
+            }
+            if ($filterdress_skirt_two_repair != null) {
+                $skirt = Skirtitem::find($filterdress_skirt_two_repair);
+                $skirt->skirtitem_status = 'รอดำเนินการซ่อม';
+                $skirt->save();
+            }
+        }
+
 
         //เพิ่มข้อมูลในตาราง repair 
         $create_repair = new Repair();
-        $create_repair->clean_id = $clean->id;
         $create_repair->repair_status = 'รอดำเนินการ';
-        $create_repair->repair_type = $request->input('typerepair');   //10ทั้งชุด 20เสื้อ 30ผ้าถุง
+        $create_repair->repair_type = 2; //1.ยังไม่ได้ทำความสะอาด 2.ทำความสะอาดแล้ว
+        $create_repair->reservationfilterdress_id = $id;
         $create_repair->repair_description = $request->input('repair_detail');
-        $create_repair->reservation_id =  $clean->reservation_id;
         $create_repair->save();
-        //ตารางstatus
-        // $order_status = new Orderdetailstatus();
-        // $order_status->repair_id = $create_repair->id;
-        // $order_status->status = "รอดำเนินการ";
-        // $order_status->save();
-        //ตารางreservation 
-        $reservation = Reservation::find($clean->reservation_id);
-        $reservation->status = "รอดำเนินการซ่อม";
-        $reservation->save();
+
         return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
     }
 
 
-    public function buttonrepairrowpageone($id)
+    public function buttonrepairrowpageone(Request $request, $id)
     {
+
+
+
         $repair = Repair::find($id);
-        if ($repair->repair_status == "รอดำเนินการ") {
-            //ตารางrepair
-            $repair->repair_status = "กำลังซ่อม";
-            $repair->save();
-            // ตารางstatus
-            // $create_status = new Orderdetailstatus();
-            // $create_status->repair_id = $repair->id;
-            // $create_status->status = 'กำลังซ่อม';
-            // $create_status->save();
-            // ตารางreservation
-            $reservation = Reservation::find($repair->reservation_id);
-            $reservation->status = "กำลังซ่อม";
-            $reservation->save();
+        $repair->repair_status = "กำลังซ่อม";
+        $repair->save();
+
+
+        $filterdress = Reservationfilterdress::find($repair->reservationfilterdress_id);
+        $filterdress->status = 'กำลังซ่อม';
+        $filterdress->save();
+
+        if ($filterdress->filterdress_many_to_one_dress->separable == 1) {
+            $dress = Dress::find($filterdress->dress_id);
+            $dress->dress_status = 'กำลังซ่อม';
+            $dress->save();
+        } elseif ($filterdress->filterdress_many_to_one_dress->separable == 2) {
+            $filter_shirtitems_id = $request->input('filter_shirtitems_id');
+            $filter_skirtitems_id = $request->input('filter_skirtitems_id');
+
+            if ($filter_shirtitems_id != null) {
+                $shirt = Shirtitem::find($filter_shirtitems_id);
+                $shirt->shirtitem_status = 'กำลังซ่อม';
+                $shirt->save();
+            }
+            if ($filter_skirtitems_id != null) {
+                $skirt = Skirtitem::find($filter_skirtitems_id);
+                $skirt->skirtitem_status = 'กำลังซ่อม';
+                $skirt->save();
+            }
         }
+
+
+
+
         return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
     }
 
@@ -517,125 +584,171 @@ class EmployeeController extends Controller
     public function repairupdatestatustocleanorreadybutton(Request $request, $id)
     {
 
-        $repairs = Repair::find($id);
-        if ($repairs->clean_id == null) {
-
-            $repair = Repair::find($id);
-            $repair->repair_status = "ซ่อมเสร็จแล้ว";
-            $repair->save();
-            // ตารางreservation
-            $reservation = Reservation::find($repair->reservation_id);
-            $reservation->status = "รอดำเนินการส่งซัก";
-            $reservation->save();
-            // ตารางclean
-            $create_clean = new Clean();
-            $create_clean->clean_status = "รอดำเนินการ";
-            $create_clean->reservation_id = $repair->reservation_id;
-            $create_clean->save();
-        } elseif ($repairs->clean_id != null) {
-
+        $repair = Repair::find($id);
+        if ($repair->repair_type == '1') {
             $status_next = $request->input('status_next');
-            // พร้อมให้เช่าต่อ
-            if ($status_next == 1) {
-                // ตารางrepair
+            if ($status_next == '1') {
+
+                $reser_fildress = Reservationfilterdress::find($repair->reservationfilterdress_id);
+                $reser_fildress->status = 'รอทำความสะอาด';
+                $reser_fildress->save();
+
                 $repair = Repair::find($id);
-                $repair->repair_status = "ซ่อมเสร็จแล้ว";
+                $repair->repair_status = 'ซ่อมเสร็จแล้ว';
                 $repair->save();
 
-                $reservation = Reservation::find($repair->reservation_id);
-                $reservation->status = "ซ่อมเสร็จแล้ว";
-                $reservation->status_completed = 1;
-                $reservation->save();
-                // เพิ่มจำนวนครั้งในการแก้ไข  ทั้งชุด / เสื้อ /ผ้าถุง      
-                if ($reservation->shirtitems_id != null) {
-                    $shirt = Shirtitem::find($reservation->shirtitems_id);
-                    $shirt->repair_count = $shirt->repair_count + 1;
-                    $shirt->save();
-                } elseif ($reservation->skirtitems_id != null) {
-                    $skirt = Skirtitem::find($reservation->skirtitems_id);
-                    $skirt->repair_count = $skirt->repair_count + 1;
-                    $skirt->save();
-                } else {
-                    $dress = Dress::find($reservation->dress_id);
-                    if ($dress->separable == 1) {
-                        $dress->repair_count = $dress->repair_count + 1;
-                        $dress->save();
-                    } elseif ($dress->separable == 2) {
-                        // ซ่อมทั้งชุด
-                        if ($repair->repair_type == 10) {
-                            // อัปเดตตาราง dress
-                            $dress->repair_count = $dress->repair_count + 1;
-                            $dress->save();
-                            // อัปเดตตารางshirt
-                            $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
-                            $shirt = Shirtitem::find($shirt_id);
-                            $shirt->repair_count = $shirt->repair_count + 1;
-                            $shirt->save();
-                            // อัปเดตตาราง skirt 
-                            $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
-                            $skirt = Skirtitem::find($skirt_id);
-                            $skirt->repair_count = $skirt->repair_count + 1;
-                            $skirt->save();
-                        }
-                        // ซ่อมแค่เสื้อ
-                        elseif ($repair->repair_type == 20) {
-                            // อัปเดตตารางshirt
-                            $shirt_id = Shirtitem::where('dress_id', $dress->id)->value('id');
-                            $shirt = Shirtitem::find($shirt_id);
-                            $shirt->repair_count = $shirt->repair_count + 1;
-                            $shirt->save();
-                        }
-                        // ซ่อมแค่ผ้าถุง
-                        elseif ($repair->repair_type == 30) {
-                            // อัปเดตตาราง skirt 
-                            $skirt_id = Skirtitem::where('dress_id', $dress->id)->value('id');
-                            $skirt = Skirtitem::find($skirt_id);
-                            $skirt->repair_count = $skirt->repair_count + 1;
-                            $skirt->save();
-                        }
+                
+                //รออัพเดตสถานะเครื่องประดับนะ
+                if ($reser_fildress->filterdress_many_to_one_dress->separable == 1) {
+                    $dress = Dress::find($reser_fildress->dress_id);
+                    $dress->dress_status = 'รอทำความสะอาด';
+                    $dress->save();
+                } elseif ($reser_fildress->filterdress_many_to_one_dress->separable == 2) {
+                    $repair_for_shirt_id = $request->input('repair_for_shirt_id');
+                    $repair_for_skirt_id = $request->input('repair_for_skirt_id');
+
+                    if ($repair_for_shirt_id != null) {
+                        $shirt = Shirtitem::find($repair_for_shirt_id);
+                        $shirt->shirtitem_status = 'รอทำความสะอาด';
+                        $shirt->save();
+                    }
+                    if ($repair_for_skirt_id != null) {
+                        $skirt = Skirtitem::find($repair_for_skirt_id);
+                        $skirt->skirtitem_status = 'รอทำความสะอาด';
+                        $skirt->save();
                     }
                 }
             }
-            // ส่งไปซักอีกครั้ง
-            elseif ($status_next == 2) {
-                // ตารางrepair
+            elseif ($status_next == '2') {
+                $reser_fildress = Reservationfilterdress::find($repair->reservationfilterdress_id);
+                $reser_fildress->status = 'ซ่อมไม่ได้';
+                $reser_fildress->status_completed = 1;
+                $reser_fildress->save();
+
                 $repair = Repair::find($id);
-                $repair->repair_status = "ซ่อมเสร็จแล้ว";
+                $repair->repair_status = 'ซ่อมไม่ได้';
                 $repair->save();
-                // ตารางstatus
-                // $create_status = new Orderdetailstatus();
-                // $create_status->repair_id = $repair->id;
-                // $create_status->status = "ซ่อมเสร็จแล้ว";
-                // $create_status->save();
-                // ตารางreservation
-                $reservation = Reservation::find($repair->reservation_id);
-                $reservation->status = 'รอดำเนินการส่งซัก';
-                $reservation->save();
-                // ตารางclean
-                $create_clean = new Clean();
-                $create_clean->reservation_id = $repair->reservation_id;
-                $create_clean->clean_status = "รอดำเนินการ";
-                $create_clean->save();
-                // ตารางstatus
-                // $create_status = new Orderdetailstatus();
-                // $create_status->clean_id = $create_clean->id;
-                // $create_status->status = "รอดำเนินการ";
-                // $create_status->save();
+
+                //รออัพเดตสถานะเครื่องประดับนะ
+                if ($reser_fildress->filterdress_many_to_one_dress->separable == 1) {
+                    $dress = Dress::find($reser_fildress->dress_id);
+                    $dress->dress_status = 'ยุติการให้เช่า';
+                    $dress->save();
+                } elseif ($reser_fildress->filterdress_many_to_one_dress->separable == 2) {
+                    $repair_for_shirt_id = $request->input('repair_for_shirt_id');
+                    $repair_for_skirt_id = $request->input('repair_for_skirt_id');
+
+                    if ($repair_for_shirt_id != null) {
+                        $shirt = Shirtitem::find($repair_for_shirt_id);
+                        $shirt->shirtitem_status = 'ยุติการให้เช่า';
+                        $shirt->save();
+                    }
+                    if ($repair_for_skirt_id != null) {
+                        $skirt = Skirtitem::find($repair_for_skirt_id);
+                        $skirt->skirtitem_status = 'ยุติการให้เช่า';
+                        $skirt->save();
+                    }
+                }
+            }
+
+        }
+        elseif ($repair->repair_type == '2') {
+            $status_next = $request->input('status_next');
+            if ($status_next == '1') {
+
+                $reser_fildress = Reservationfilterdress::find($repair->reservationfilterdress_id);
+                $reser_fildress->status = 'ซ่อมเสร็จแล้ว';
+                $reser_fildress->status_completed = 1;
+                $reser_fildress->save();
+
+                $repair = Repair::find($id);
+                $repair->repair_status = 'ซ่อมเสร็จแล้ว';
+                $repair->save();
+
+                //รออัพเดตสถานะเครื่องประดับนะ
+                if ($reser_fildress->filterdress_many_to_one_dress->separable == 1) {
+                    $dress = Dress::find($reser_fildress->dress_id);
+                    $dress->dress_status = 'พร้อมให้เช่า';
+                    $dress->save();
+                } elseif ($reser_fildress->filterdress_many_to_one_dress->separable == 2) {
+                    $repair_for_shirt_id = $request->input('repair_for_shirt_id');
+                    $repair_for_skirt_id = $request->input('repair_for_skirt_id');
+
+                    if ($repair_for_shirt_id != null) {
+                        $shirt = Shirtitem::find($repair_for_shirt_id);
+                        $shirt->shirtitem_status = 'พร้อมให้เช่า';
+                        $shirt->save();
+                    }
+                    if ($repair_for_skirt_id != null) {
+                        $skirt = Skirtitem::find($repair_for_skirt_id);
+                        $skirt->skirtitem_status = 'พร้อมให้เช่า';
+                        $skirt->save();
+                    }
+                }
+            } elseif ($status_next == '2') {
+
+                $reser_fildress = Reservationfilterdress::find($repair->reservationfilterdress_id);
+                $reser_fildress->status = 'รอทำความสะอาด';
+                $reser_fildress->save();
+
+                $repair = Repair::find($id);
+                $repair->repair_status = 'ซ่อมเสร็จแล้ว';
+                $repair->save();
+
+                //รออัพเดตสถานะเครื่องประดับนะ
+                if ($reser_fildress->filterdress_many_to_one_dress->separable == 1) {
+                    $dress = Dress::find($reser_fildress->dress_id);
+                    $dress->dress_status = 'รอทำความสะอาด';
+                    $dress->save();
+                } elseif ($reser_fildress->filterdress_many_to_one_dress->separable == 2) {
+                    $repair_for_shirt_id = $request->input('repair_for_shirt_id');
+                    $repair_for_skirt_id = $request->input('repair_for_skirt_id');
+
+                    if ($repair_for_shirt_id != null) {
+                        $shirt = Shirtitem::find($repair_for_shirt_id);
+                        $shirt->shirtitem_status = 'รอทำความสะอาด';
+                        $shirt->save();
+                    }
+                    if ($repair_for_skirt_id != null) {
+                        $skirt = Skirtitem::find($repair_for_skirt_id);
+                        $skirt->skirtitem_status = 'รอทำความสะอาด';
+                        $skirt->save();
+                    }
+                }
+            } elseif ($status_next == '3') {
+                $reser_fildress = Reservationfilterdress::find($repair->reservationfilterdress_id);
+                $reser_fildress->status = 'ซ่อมไม่ได้';
+                $reser_fildress->status_completed = 1;
+                $reser_fildress->save();
+
+                $repair = Repair::find($id);
+                $repair->repair_status = 'ซ่อมไม่ได้';
+                $repair->save();
+
+                //รออัพเดตสถานะเครื่องประดับนะ
+                if ($reser_fildress->filterdress_many_to_one_dress->separable == 1) {
+                    $dress = Dress::find($reser_fildress->dress_id);
+                    $dress->dress_status = 'ยุติการให้เช่า';
+                    $dress->save();
+                } elseif ($reser_fildress->filterdress_many_to_one_dress->separable == 2) {
+                    $repair_for_shirt_id = $request->input('repair_for_shirt_id');
+                    $repair_for_skirt_id = $request->input('repair_for_skirt_id');
+
+                    if ($repair_for_shirt_id != null) {
+                        $shirt = Shirtitem::find($repair_for_shirt_id);
+                        $shirt->shirtitem_status = 'ยุติการให้เช่า';
+                        $shirt->save();
+                    }
+                    if ($repair_for_skirt_id != null) {
+                        $skirt = Skirtitem::find($repair_for_skirt_id);
+                        $skirt->skirtitem_status = 'ยุติการให้เช่า';
+                        $skirt->save();
+                    }
+                }
             }
         }
         return redirect()->back()->with('success', 'สถานะถูกอัพเดตเรียบร้อยแล้ว');
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     public function repairupdatestatustocleanorready(Request $request)
@@ -775,6 +888,25 @@ class EmployeeController extends Controller
 
         return view('employee.repair', compact('repair', 'repairs', 'repair_pending'));
     }
+
+    public function dressrepair()
+    {
+        $repair_pending = Repair::whereNotNull('reservationfilterdress_id')
+            ->where('repair_status', 'รอดำเนินการ')
+            ->get();
+
+        $repairs = Repair::whereNotNull('reservationfilterdress_id')
+            ->where('repair_status', 'กำลังซ่อม')
+            ->get();
+
+        return view('employee.repairdress', compact('repair_pending', 'repairs'));
+    }
+
+
+
+
+
+
     public function reservedress()
     {
         return view('employee.reserve-dress');
@@ -1152,6 +1284,11 @@ class EmployeeController extends Controller
             $delete_reservation = Reservation::find($delete_orderdetail->reservation_id);
             $delete_reservation->delete();
 
+
+            $delete_filterdress = Reservationfilterdress::where('reservation_id', $delete_orderdetail->reservation_id)->delete();
+
+
+
             //ลบตารางdress_mea_adjust
             Dressmeaadjustment::where('order_detail_id', $id)->delete();
 
@@ -1468,6 +1605,36 @@ class EmployeeController extends Controller
                     $update_reservation = Reservation::find($orderdetail->reservation_id);
                     $update_reservation->status = 'กำลังเช่า';
                     $update_reservation->save();
+
+                    $Dress_data = Dress::find($update_reservation->dress_id);
+
+                    if ($Dress_data->separable == 1) {
+                        $filterdress = Reservationfilterdress::where('reservation_id', $orderdetail->reservation_id)->get();
+                        foreach ($filterdress as $item) {
+                            $update_filterdress = Reservationfilterdress::find($item->id);
+                            $update_filterdress->status = 'กำลังเช่า';
+                            $update_filterdress->save();
+                        }
+                        $update_dress = Dress::find($orderdetail->dress_id);
+                        $update_dress->dress_status = 'กำลังถูกเช่า';
+                        $update_dress->save();
+                    } elseif ($Dress_data->separable == 2) {
+                        $filterdress = Reservationfilterdress::where('reservation_id', $orderdetail->reservation_id)->get();
+                        foreach ($filterdress as $item) {
+                            $update_filterdress = Reservationfilterdress::find($item->id);
+                            $update_filterdress->status = 'กำลังเช่า';
+                            $update_filterdress->save();
+                        }
+                        $shirt_ID = Shirtitem::where('dress_id', $orderdetail->dress_id)->value('id');
+                        $skirt_ID = Skirtitem::where('dress_id', $orderdetail->dress_id)->value('id');
+
+                        $update_SHIRT = Shirtitem::find($shirt_ID);
+                        $update_SHIRT->shirtitem_status = 'กำลังถูกเช่า';
+                        $update_SHIRT->save();
+                        $update_SKIRT = Skirtitem::find($skirt_ID);
+                        $update_SKIRT->skirtitem_status = 'กำลังถูกเช่า';
+                        $update_SKIRT->save();
+                    }
                 } else {
                     //ตารางorderdetailstatus 
                     $create_status = new Orderdetailstatus();
@@ -1487,6 +1654,24 @@ class EmployeeController extends Controller
                     $update_reservation = Reservation::find($orderdetail->reservation_id);
                     $update_reservation->status = 'ถูกจอง';
                     $update_reservation->save();
+
+                    $Dress_data = Dress::find($update_reservation->dress_id);
+
+                    if ($Dress_data->separable == 1) {
+                        $filterdress = Reservationfilterdress::where('reservation_id', $orderdetail->reservation_id)->get();
+                        foreach ($filterdress as $item) {
+                            $update_filterdress = Reservationfilterdress::find($item->id);
+                            $update_filterdress->status = 'ถูกจอง';
+                            $update_filterdress->save();
+                        }
+                    } elseif ($Dress_data->separable == 2) {
+                        $filterdress = Reservationfilterdress::where('reservation_id', $orderdetail->reservation_id)->get();
+                        foreach ($filterdress as $item) {
+                            $update_filterdress = Reservationfilterdress::find($item->id);
+                            $update_filterdress->status = 'ถูกจอง';
+                            $update_filterdress->save();
+                        }
+                    }
                 }
             } elseif ($orderdetail->type_order == 3) {
                 //เช่าเครื่องประดับ
@@ -1641,7 +1826,7 @@ class EmployeeController extends Controller
             $create_receipt->order_id = $order_id;
             $create_receipt->total_price = $total_price_receipt;
             $create_receipt->receipt_type = 2; //1ตอนที่จอง 2ตอนที่มารับชุด 3ตอนที่มาคืน
-            $create_receipt->employee_id = Auth::user()->id ; 
+            $create_receipt->employee_id = Auth::user()->id;
             $create_receipt->save();
         } else {
             // สร้างใบเสร็จรับเงิน
@@ -1649,7 +1834,7 @@ class EmployeeController extends Controller
             $create_receipt->order_id = $order_id;
             $create_receipt->total_price = $total_price_receipt;
             $create_receipt->receipt_type = 1; //1ตอนที่จอง 2ตอนที่มารับชุด 3ตอนที่มาคืน
-            $create_receipt->employee_id = Auth::user()->id ; 
+            $create_receipt->employee_id = Auth::user()->id;
             $create_receipt->save();
         }
 

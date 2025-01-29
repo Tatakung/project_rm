@@ -29,4 +29,11 @@ class Shirtitem extends Model
         return $this->hasMany(PriceHistory_Shirt::class,'shirtitems_id') ; 
     }
 
+    public function shirt_one_to_many_filterdress(){
+        return $this->hasMany(Reservationfilterdress::class,'shirtitems_id') ; 
+    }
+
+
+
+
 }

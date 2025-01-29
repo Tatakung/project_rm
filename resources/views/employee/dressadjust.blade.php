@@ -103,15 +103,14 @@
                                 )->get();
 
                                 $validate = false;
-                                foreach ($dress_mea_adjust as $index => $dressmeaadjust) { 
-                                    $dressmea = App\Models\Dressmea::where('id', $dressmeaadjust->dressmea_id)->value('current_mea');
+                                foreach ($dress_mea_adjust as $index => $dressmeaadjust) {
+                                    $dressmea = App\Models\Dressmea::where('id', $dressmeaadjust->dressmea_id)->value(
+                                        'current_mea',
+                                    );
 
                                     if ($dressmea != $dressmeaadjust->new_size) {
                                         $validate = true;
                                     }
-
-
-                                    
                                 }
                                 if ($validate) {
                                     $edit_message_mea = 'รอการปรับแก้ขนาด';
@@ -181,13 +180,13 @@
                                 @endphp
 
                                 <td style="padding: 16px;">
-                                    เช่า {{ $type_dress->type_dress_name }}
+                                    เช่า{{ $type_dress->type_dress_name }}
                                     {{ $dress->dress_code_new }}{{ $dress->dress_code }}
                                     <span>
                                         @if ($reservation->shirtitems_id)
                                             <span>(เสื้อ)</span>
                                         @elseif($reservation->skirtitems_id)
-                                            <span>(กระโปรง/ผ้าถุง)</span>
+                                            <span>(ผ้าถุง)</span>
                                         @else
                                             <span>(ทั้งชุด)</span>
                                         @endif
@@ -253,11 +252,15 @@
                                         @endphp
                                         @if ($reservation->id == $final_queue->id)
                                             @if ($final->status == 'ถูกจอง')
-                                                อยู่ที่ร้าน
+                                                @if ($final->reservation_many_to_one_dress->shirtitems->first()->shirtitem_status != 'พร้อมให้เช่า')
+                                                    {{ $final->reservation_many_to_one_dress->shirtitems->first()->shirtitem_status }}
+                                                @else
+                                                    อยู่ที่ร้าน
+                                                @endif
                                             @elseif($final->status == 'กำลังเช่า')
                                                 ถูกเช่าโดยลูกค้าท่านก่อนหน้า
                                             @else
-                                                {{ $final->status }}
+                                                {{ $final->reservation_many_to_one_dress->shirtitems->first()->shirtitem_status }}
                                             @endif
                                         @else
                                             รอคิว
@@ -297,7 +300,11 @@
                                         @endphp
                                         @if ($reservation->id == $final_queue->id)
                                             @if ($final->status == 'ถูกจอง')
-                                                อยู่ที่ร้าน
+                                                @if ($final->reservation_many_to_one_dress->skirtitems->first()->skirtitem_status != 'พร้อมให้เช่า')
+                                                    {{ $final->reservation_many_to_one_dress->skirtitems->first()->skirtitem_status }}
+                                                @else
+                                                    อยู่ที่ร้าน
+                                                @endif
                                             @elseif($final->status == 'กำลังเช่า')
                                                 ถูกเช่าโดยลูกค้าท่านก่อนหน้า
                                             @else
@@ -332,7 +339,24 @@
 
                                         @if ($reservation->id == $final_queue->id)
                                             @if ($final->status == 'ถูกจอง')
-                                                อยู่ที่ร้าน
+                                                @if ($reservation->reservation_many_to_one_dress->separable == 1)
+                                                    @if ($final->reservation_many_to_one_dress->dress_status != 'พร้อมให้เช่า')
+                                                        {{ $final->reservation_many_to_one_dress->dress_status }}
+                                                    @else
+                                                        อยู่ที่ร้าน
+                                                    @endif
+
+                                                @elseif($reservation->reservation_many_to_one_dress->separable == 2)
+                                                    @if ( $final->reservation_many_to_one_dress->shirtitems->first()->shirtitem_status != 'พร้อมให้เช่า' || $final->reservation_many_to_one_dress->skirtitems->first()->skirtitem_status != 'พร้อมให้เช่า' )
+                                                    
+                                                    เสื้อ : {{$final->reservation_many_to_one_dress->shirtitems->first()->shirtitem_status}} <br>
+                                                    ผ้าถุง : {{$final->reservation_many_to_one_dress->skirtitems->first()->skirtitem_status}}
+                                                    @else
+                                                    อยู่ที่ร้าน
+                                                    @endif
+
+
+                                                @endif
                                             @elseif($final->status == 'กำลังเช่า')
                                                 ถูกเช่าโดยลูกค้าท่านก่อนหน้า
                                             @else
@@ -346,10 +370,18 @@
                                 </td>
 
                                 <td style="padding: 16px;">
-                                    <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
+                                    {{-- <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
                                         class="btn btn-s" style="background-color:#DADAE3;">
                                         ดูรายละเอียด
+                                        
+                                    </a> --}}
+                                    
+                                    <a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}"
+                                        class="btn btn-sm" style="background-color:#DADAE3;">
+                                        ดูรายละเอียด
                                     </a>
+
+                                    
                                     <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $orderdetail->id]) }}"
                                         class="btn btn-m" style="background-color:#BACEE6 ;">
                                         เลื่อนวัน

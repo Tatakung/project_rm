@@ -164,6 +164,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/addorder', [EmployeeController::class, 'addorder'])->name('employee.addorder');
     Route::get('/employee/selectdate', [EmployeeController::class, 'selectdate'])->name('employee.selectdate');
     Route::get('/employee/clean', [EmployeeController::class, 'clean'])->name('employee.clean');
+
+
+
+
     Route::get('/employee/dressadjust', [EmployeeController::class, 'dressadjust'])->name('employee.dressadjust');
 
 
@@ -181,9 +185,15 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/admin/typejewelry/{id}', [JewelryController::class, 'typejewelry'])->name('admin.typejewelry'); //หลังจากแยกประเภทเครื่องประดับ
     Route::get('/admin/typejewelry/jewelrydetail/{id}', [JewelryController::class, 'jewelrydetail'])->name('admin.jewelrydetail'); //รายะลเอียดย่อย
 
+    Route::get('/cleanning-dress', [EmployeeController::class, 'cleanningdress'])->name('cleanningdress');
 
 
     Route::get('/employee/repair', [EmployeeController::class, 'repair'])->name('employee.repair');
+
+    Route::get('/dress-repairing', [EmployeeController::class, 'dressrepair'])->name('dressrepair');
+
+
+
     Route::get('/employee/calendar', [EmployeeController::class, 'calendar'])->name('employee.calendar');
 
 
@@ -213,7 +223,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
 
-    Route::post('/employee/clean/afterwashtorepair', [EmployeeController::class, 'afterwashtorepair'])->name('employee.afterwashtorepair');
+    Route::post('/employee/clean/afterwashtorepair/{id}', [EmployeeController::class, 'afterwashtorepair'])->name('employee.afterwashtorepair');
 
     Route::post('/employee/repair/update-statusrepairupdatestatustocleanbutton/{id}', [EmployeeController::class, 'repairupdatestatustocleanbutton'])->name('employee.repairupdatestatustocleanbutton');
 

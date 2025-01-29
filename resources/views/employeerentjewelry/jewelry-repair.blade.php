@@ -43,12 +43,12 @@
     <div class="container">
         <!-- Header -->
 
-                <h1 class="my-4 text-start">จัดการการซ่อมเครื่องประดับ</h1>
- <p>การทำความสะอาด/ซ่อมเครื่องประดับทุกชิ้นควรเสร็จภายใน 7 วันหลังจากลูกค้านำเครื่องประดับมาคืน
+        <h1 class="my-4 text-start">จัดการการซ่อมเครื่องประดับ</h1>
+        <p>การทำความสะอาด/ซ่อมเครื่องประดับทุกชิ้นควรเสร็จภายใน 7 วันหลังจากลูกค้านำเครื่องประดับมาคืน
             เพื่อให้สามารถตรวจสอบและซ่อมแซมเครื่องประดับได้ทันท่วงที
             รวมถึงเตรียมพร้อมสำหรับการให้เช่าครั้งต่อไป</p>
 
-            
+
 
 
         <!-- Laundry List -->
@@ -246,7 +246,7 @@
                                 <tbody>
                                     @foreach ($repairs as $repair)
                                         <tr>
-                                            
+
 
                                             <td>
 
@@ -327,37 +327,32 @@
 
 
                                                                 @if ($repair->repair_type == 1)
-                                                                <p class="fw-bold mb-3">กระบวนการต่อไปคือ:</p>
-                                                                        <div class="form-check mb-1">
-                                                                            <input class="form-check-input" type="radio"
-                                                                                name="status_next" id="toclean"
-                                                                                value="1" style="accent-color: #0d6efd;" checked>
-                                                                            <label class="form-check-label" for="toclean">
-                                                                                ทำความสะอาด
-                                                                            </label>
-                                                                        </div>
-    
-                                                                        <div class="form-check mb-1">
-                                                                            <input class="form-check-input" type="radio"
-                                                                                name="status_next" 
-                                                                                value="2" style="accent-color: #0d6efd;">
-                                                                            <label class="form-check-label">
-                                                                                ซ่อมไม่ได้ ไม่สามารถให้เช่าต่อได้
-                                                                            </label>
-                                                                        </div>
+                                                                    <p class="fw-bold mb-3">กระบวนการต่อไปคือ:</p>
+                                                                    <div class="form-check mb-1">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="status_next" id="toclean"
+                                                                            value="1" style="accent-color: #0d6efd;"
+                                                                            checked>
+                                                                        <label class="form-check-label" for="toclean">
+                                                                            ทำความสะอาด
+                                                                        </label>
+                                                                    </div>
 
-
-
-
-
+                                                                    <div class="form-check mb-1">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="status_next" value="2"
+                                                                            style="accent-color: #0d6efd;">
+                                                                        <label class="form-check-label">
+                                                                            ซ่อมไม่ได้ ไม่สามารถให้เช่าต่อได้
+                                                                        </label>
+                                                                    </div>
                                                                 @elseif($repair->repair_type == 2)
                                                                     <p class="fw-bold mb-3">กระบวนการต่อไปคือ:</p>
                                                                     <div class="form-check mb-1">
                                                                         <input class="form-check-input" type="radio"
-                                                                            name="status_next" 
-                                                                            value="1" style="accent-color: #0d6efd;"
-                                                                            checked>
-                                                                        <label class="form-check-label" >
+                                                                            name="status_next" value="1"
+                                                                            style="accent-color: #0d6efd;" checked>
+                                                                        <label class="form-check-label">
                                                                             พร้อมให้เช่าต่อ
                                                                         </label>
                                                                     </div>
@@ -372,16 +367,12 @@
 
                                                                     <div class="form-check mb-1">
                                                                         <input class="form-check-input" type="radio"
-                                                                            name="status_next" 
-                                                                            value="3" style="accent-color: #0d6efd;">
+                                                                            name="status_next" value="3"
+                                                                            style="accent-color: #0d6efd;">
                                                                         <label class="form-check-label">
                                                                             ซ่อมไม่ได้ ไม่สามารถให้เช่าต่อได้
                                                                         </label>
                                                                     </div>
-
-
-
-
                                                                 @endif
 
 

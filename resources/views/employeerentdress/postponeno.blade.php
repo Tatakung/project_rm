@@ -101,7 +101,10 @@
                 </script>
             </div>
             <div class="col-md-5">
-                <h2 class="card-title">ลำดับคิว</h2>
+                <h2 class="card-title">ลำดับคิวเช่าของ{{$typedress->type_dress_name}} {{$typedress->specific_letter}}{{$dress->dress_code}} (ทั้งชุด)</h2>
+                <ul>
+                    <li>สถานะ {{$typedress->type_dress_name}} {{$typedress->specific_letter}}{{$dress->dress_code}} (ทั้งชุด) ปัจุจุบัน : {{$dress->dress_status}}</li>
+                </ul>
                 คิวการเช่าเรียงตามวันที่นัดรับ
                 <table class="table table-striped">
                     <thead>
@@ -110,24 +113,16 @@
                             <th scope="col">ชื่อลูกค้า</th>
                             <th scope="col">วันนัดรับ</th>
                             <th scope="col">วันนัดคืน</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($reservation_dress_total as $index => $item)
-                            <tr>
+                            <tr style="text-align: center;">
 
                                 <td>{{ $index + 1 }}</td>
                                 <td>
-                                    @php
-                                        $order_id_s = App\Models\Orderdetail::where('reservation_id', $item->id)->value(
-                                            'order_id',
-                                        );
-                                        $customer_id_s = App\Models\Order::where('id', $order_id_s)->value(
-                                            'customer_id',
-                                        );
-                                        $customer_s = App\Models\Customer::find($customer_id_s);
-                                    @endphp
-                                    <span>คุณ{{ $customer_s->customer_fname }} {{ $customer_s->customer_lname }}</span>
+                                    <span>คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }} {{ $item->re_one_many_details->first()->order->customer->customer_lname }}</span>
                                 </td>
                                 <td>
                                     {{ \carbon\Carbon::parse($item->start_date)->locale('th')->isoFormat('D MMM') }}

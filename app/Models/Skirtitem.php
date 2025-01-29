@@ -30,6 +30,13 @@ class Skirtitem extends Model
         return $this->hasMany(PriceHistory_Skirt::class,'skirtitems_id') ; 
     }
 
+    public function skirt_one_to_many_filterdress(){
+        return $this->hasMany(Reservationfilterdress::class,'skirtitems_id') ; 
+    }
+
+
+
+
 
 
 }

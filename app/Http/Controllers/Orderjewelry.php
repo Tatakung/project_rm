@@ -798,7 +798,7 @@ class Orderjewelry extends Controller
                     // ตารางหลอก
                     $update_re_filter = Reservationfilters::find($refil_id[$index]);
                     $update_re_filter->status = 'สูญหาย';
-                    $update_re_filter->status_completed = 1 ; 
+                    $update_re_filter->status_completed = 1;
                     $update_re_filter->save();
                     // อัปเดตสถานะเครื่องประดับ
                     $update_status_jewelry = Jewelry::find($refil_jewelry_id[$index]);
@@ -816,8 +816,6 @@ class Orderjewelry extends Controller
                             $set_jewelry->save();
                         }
                     }
-
-
                 }
             }
         }
@@ -973,7 +971,6 @@ class Orderjewelry extends Controller
 
     public function showrepairjewelry()
     {
-
         $repair_pending = Repair::whereNotNull('reservationfilter_id')
             ->where('repair_status', 'รอดำเนินการ')
             ->get();
@@ -1018,17 +1015,16 @@ class Orderjewelry extends Controller
                 $reser_fil = Reservationfilters::find($reservationfilter_id);
                 $reser_fil->status = 'รอทำความสะอาด';
                 $reser_fil->save();
-    
+
                 $repair = Repair::find($id);
                 $repair->repair_status = 'ซ่อมเสร็จแล้ว';
                 $repair->save();
-    
+
                 $jew = Jewelry::find($jewelry_id);
                 $jew->jewelry_status = 'รอทำความสะอาด';
                 $jew->repair_count = $jew->repair_count + 1;
                 $jew->save();
-            }
-            elseif ($status_next == '2') {
+            } elseif ($status_next == '2') {
                 $reser_fil = Reservationfilters::find($reservationfilter_id);
                 $reser_fil->status = 'ซ่อมไม่ได้';
                 $reser_fil->status_completed = 1;
@@ -1044,10 +1040,16 @@ class Orderjewelry extends Controller
                 $jew->save();
 
 
+                // ตรวจหาว่าเครื่องประดับชิ้นนี้อยู่ในเซตไหนไหม
+                $jewelry_item = Jewelrysetitem::where('jewelry_id', $jewelry_id)->get();
+                if ($jewelry_item->isNotEmpty()) {
+                    foreach ($jewelry_item as $valuee) {
+                        $set_jewelry = Jewelryset::find($valuee->jewelry_set_id);
+                        $set_jewelry->set_status = 'ยุติการให้เช่า';
+                        $set_jewelry->save();
+                    }
+                }
             }
-
-            
-
         } elseif ($repair_type == "2") {
             $status_next = $request->input('status_next');
             if ($status_next == '1') {
@@ -1077,8 +1079,7 @@ class Orderjewelry extends Controller
                 $jew->jewelry_status = 'รอทำความสะอาด';
                 $jew->repair_count = $jew->repair_count + 1;
                 $jew->save();
-            }
-            elseif($status_next == '3'){
+            } elseif ($status_next == '3') {
                 $reser_fil = Reservationfilters::find($reservationfilter_id);
                 $reser_fil->status = 'ซ่อมไม่ได้';
                 $reser_fil->status_completed = 1;
@@ -1092,15 +1093,20 @@ class Orderjewelry extends Controller
                 $jew->jewelry_status = 'ยุติการให้เช่า';
                 $jew->repair_count = $jew->repair_count + 1;
                 $jew->save();
-  
+
+
+                // ตรวจหาว่าเครื่องประดับชิ้นนี้อยู่ในเซตไหนไหม
+                $jewelry_item = Jewelrysetitem::where('jewelry_id', $jewelry_id)->get();
+                if ($jewelry_item->isNotEmpty()) {
+                    foreach ($jewelry_item as $valuee) {
+                        $set_jewelry = Jewelryset::find($valuee->jewelry_set_id);
+                        $set_jewelry->set_status = 'ยุติการให้เช่า';
+                        $set_jewelry->save();
+                    }
+                }
+
+                
             }
-            
-
-
-
-
-
-
         }
         return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ');
     }

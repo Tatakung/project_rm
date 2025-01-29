@@ -154,7 +154,12 @@
                 </p>
             </div>
             <div class="col-md-5">
-                <h2 class="card-title">ลำดับคิว</h2>
+                <h5 class="card-title">ลำดับคิวเช่า{{$typedress->type_dress_name}} {{$typedress->specific_letter}}{{$dress->dress_code}}</h5>
+                <ul>
+                    <li>สถานะ {{$typedress->type_dress_name}} {{$typedress->specific_letter}}{{$dress->dress_code}} (เสื้อ) ปัจจุบัน : {{$dress->shirtitems->first()->shirtitem_status}}</li>
+                    <li>สถานะ {{$typedress->type_dress_name}} {{$typedress->specific_letter}}{{$dress->dress_code}} (ผ้าถุง) ปัจจุบัน : {{$dress->skirtitems->first()->skirtitem_status}}</li>
+
+                </ul>
                 คิวการเช่าเรียงตามวันที่นัดรับ
                 <table class="table table-striped">
                     <thead>
@@ -163,6 +168,7 @@
                             <th scope="col">ชื่อลูกค้า</th>
                             <th scope="col">วันนัดรับ</th>
                             <th scope="col">วันนัดคืน</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -171,16 +177,7 @@
 
                                 <td>{{ $index + 1 }}</td>
                                 <td>
-                                    @php
-                                        $order_id_s = App\Models\Orderdetail::where('reservation_id', $item->id)->value(
-                                            'order_id',
-                                        );
-                                        $customer_id_s = App\Models\Order::where('id', $order_id_s)->value(
-                                            'customer_id',
-                                        );
-                                        $customer_s = App\Models\Customer::find($customer_id_s);
-                                    @endphp
-                                    <span>คุณ{{ $customer_s->customer_fname }} {{ $customer_s->customer_lname }}</span>
+                                    <span>คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }} {{ $item->re_one_many_details->first()->order->customer->customer_lname }}</span>
                                 </td>
                                 <td>
                                     {{ \carbon\Carbon::parse($item->start_date)->locale('th')->isoFormat('D MMM') }}
@@ -190,6 +187,9 @@
                                     {{ \carbon\Carbon::parse($item->end_date)->locale('th')->isoFormat('D MMM') }}
                                     {{ \Carbon\Carbon::parse($item->end_date)->year + 543 }}
                                 </td>
+                                <td>
+                                    <a href="{{ route('employee.ordertotaldetailshow', ['id' => $item->re_one_many_details->first()->id]) }}"
+                                        class="btn btn-c btn-sm"style="background-color:#ffffff;">ดูรายละเอียด</a>                                </td>
                             </tr>
                         @endforeach
                     </tbody>

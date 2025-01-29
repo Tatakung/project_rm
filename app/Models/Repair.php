@@ -19,7 +19,8 @@ class Repair extends Model
         'repair_type' , 
         'reservation_id' ,
         'clean_id' , 
-        'reservationfilter_id'
+        'reservationfilter_id',
+        'reservationfilterdress_id' , 
     ];
 
     public function repair_many_to_one_reservationfilter()
@@ -30,8 +31,8 @@ class Repair extends Model
     public function repair_many_to_one_reser(){
         return $this->belongsTo(Reservation::class , 'reservation_id') ; 
     }
-
-
-
+    public function repair_many_to_one_filerdress(){
+        return $this->belongsTo(Reservationfilterdress::class,'reservationfilterdress_id') ; 
+    }
 
 }

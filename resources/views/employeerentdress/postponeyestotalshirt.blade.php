@@ -107,14 +107,7 @@
                                 @endforeach
 
 
-                                // เพิ่ม event สำหรับวันที่ปัจจุบัน
-                                @if ($text_status != 'อยู่ในร้าน')
-                                    {
-                                        title: 'ชุด:{{ $text_status }}',
-                                        start: new Date().toISOString().split('T')[0], // ใช้วันที่ปัจจุบัน
-                                        color: '#8A2BE2' // สีแดง
-                                    }
-                                @endif
+                               
                             ],
                             locale: 'th'
                         });
@@ -135,6 +128,10 @@
             </div>
             <div class="col-md-5">
                 <h2 class="card-title">ลำดับคิว</h2>
+                <ul>
+                    <li>สถานะ {{$typedress->type_dress_name}} {{$typedress->specific_letter}}{{$dress->dress_code}} (เสื้อ) ปัจจุบัน : {{$dress->shirtitems->first()->shirtitem_status}}</li>
+
+                </ul>
                 คิวการเช่าเรียงตามวันที่นัดรับ
                 <table class="table table-striped">
                     <thead>
@@ -169,6 +166,10 @@
                                 <td>
                                     {{ \carbon\Carbon::parse($item->end_date)->locale('th')->isoFormat('D MMM') }}
                                     {{ \Carbon\Carbon::parse($item->end_date)->year + 543 }}
+                                </td>
+                                <td>
+                                    <a href="{{ route('employee.ordertotaldetailshow', ['id' => $item->re_one_many_details->first()->id]) }}"
+                                        class="btn btn-c btn-sm"style="background-color:#ffffff;">ดูรายละเอียด</a>
                                 </td>
                             </tr>
                         @endforeach

@@ -43,12 +43,9 @@
     <div class="container">
         <!-- Header -->
 
-            <h1 class="text-start my-4">จัดการการซ่อมชุด</h1>
-                <p >การซักชุด/ซ่อมชุดทุกชุดควรเสร็จภายใน 7 วันหลังจากลูกค้านำชุดมาคืน เพื่อให้สามารถตรวจสอบและซ่อมแซมชุดได้ทันท่วงที
+        <h1 class="text-start my-4">จัดการการซ่อมชุด</h1>
+        <p>การซ่อมชุดทุกชุดควรเสร็จภายใน 7 วันหลังจากลูกค้านำชุดมาคืน เพื่อให้สามารถตรวจสอบและซ่อมแซมชุดได้ทันท่วงที
             รวมถึงเตรียมพร้อมสำหรับการให้เช่าครั้งต่อไป</p>
-
-        
-            
 
 
         <!-- Laundry List -->
@@ -68,7 +65,6 @@
         <div class="tab-content">
             {{-- หน้าแรก --}}
             <div class="tab-pane active" id="one">
-
                 <div class="table-responsive">
                     @if ($repair_pending->count() > 0)
                         <table class="table table-striped">
@@ -85,7 +81,7 @@
                             <tbody>
                                 @foreach ($repair_pending as $item)
                                     <tr>
-         
+
                                         <td>
                                             @if ($item->repair_many_to_one_filerdress->shirtitems_id)
                                                 {{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->typedress->type_dress_name }}
@@ -110,7 +106,7 @@
                                         </td>
 
                                         <td>
-                                            {{$item->repair_description}}
+                                            {{ $item->repair_description }}
                                         </td>
 
                                         {{-- <td style="color: #a22222 ; ">{{ $item->repair_status }}</td> --}}
@@ -147,7 +143,6 @@
                                                 @endif
                                             @elseif($item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->separable == 2)
                                                 @if ($item->repair_many_to_one_filerdress->shirtitems_id)
-                                                
                                                     @php
                                                         $near_separable_yes_shirt_one = App\Models\Reservationfilterdress::where(
                                                             'shirtitems_id',
@@ -155,9 +150,7 @@
                                                         )
                                                             ->whereNot('id', $item->repair_many_to_one_filerdress->id)
                                                             ->where('status_completed', 0)
-                                                            ->orderByRaw(
-                                                                "STR_TO_DATE(start_date, '%Y-%m-%d') asc",
-                                                            )
+                                                            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
                                                             ->where('status', 'ถูกจอง')
                                                             ->first();
                                                     @endphp
@@ -173,21 +166,15 @@
                                                     @else
                                                         ไม่มีคิวจองต่อ
                                                     @endif
-
-
                                                 @elseif($item->repair_many_to_one_filerdress->skirtitems_id)
-
-
-                                                @php
+                                                    @php
                                                         $near_separable_yes_skirt_one = App\Models\Reservationfilterdress::where(
                                                             'skirtitems_id',
                                                             $item->repair_many_to_one_filerdress->skirtitems_id,
                                                         )
                                                             ->whereNot('id', $item->repair_many_to_one_filerdress->id)
                                                             ->where('status_completed', 0)
-                                                            ->orderByRaw(
-                                                                "STR_TO_DATE(start_date, '%Y-%m-%d') asc",
-                                                            )
+                                                            ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
                                                             ->where('status', 'ถูกจอง')
                                                             ->first();
                                                     @endphp
@@ -203,9 +190,6 @@
                                                     @else
                                                         ไม่มีคิวจองต่อ
                                                     @endif
-
-
-
                                                 @endif
                                             @endif
 
@@ -218,10 +202,10 @@
                                         </td>
 
 
-                                        
-                                        
 
-                                        
+
+
+
                                         <td>
                                             <button class="btn btn-secondary" type="button" data-toggle="modal"
                                                 data-target="#modalbuttonrepairrowpageone{{ $item->id }}">อัพเดตสถานะ</button>
@@ -235,8 +219,12 @@
                                                             action="{{ route('employee.buttonrepairrowpageone', ['id' => $item->id]) }}"
                                                             method="POST">
                                                             @csrf
-                                                            <input type="hidden" value="{{$item->repair_many_to_one_filerdress->shirtitems_id}}" name="filter_shirtitems_id">
-                                                            <input type="hidden" value="{{$item->repair_many_to_one_filerdress->skirtitems_id}}" name="filter_skirtitems_id">
+                                                            <input type="hidden"
+                                                                value="{{ $item->repair_many_to_one_filerdress->shirtitems_id }}"
+                                                                name="filter_shirtitems_id">
+                                                            <input type="hidden"
+                                                                value="{{ $item->repair_many_to_one_filerdress->skirtitems_id }}"
+                                                                name="filter_skirtitems_id">
 
                                                             <div class="modal-header"style="background-color:#EAD8C0 ;">
                                                                 <h5 class="modal-title">อัพเดตสถานะ</h5>
@@ -325,7 +313,7 @@
                                         {{-- <th>เลือก</th> --}}
                                         <th>รายการซ่อม</th>
                                         <th>รายละเอียดของการซ่อม</th>
-                                        
+
                                         <th>คิวเช่าต่อไป </th>
                                         <th>จัดการ</th>
                                     </tr>
@@ -335,7 +323,7 @@
                                         <tr>
 
                                             <td>
-                                                {{$item->reservationfilterdress_id}}
+                                                {{ $item->reservationfilterdress_id }}
 
                                             </td>
 
@@ -354,16 +342,17 @@
                                                     (ทั้งชุด)
                                                 @endif
                                                 @if ($item->repair_type == 1)
-                                                <p style="font-size: 14px; margin-left: 10px; color: #b11515 ; ">
-                                                    -ยังไม่ได้ซัก</p>
-                                            @else
-                                                <p style="font-size: 14px; margin-left: 10px; color: rgb(62, 160, 40) ; ">
-                                                    -ซักแล้ว</p>
-                                            @endif
+                                                    <p style="font-size: 14px; margin-left: 10px; color: #b11515 ; ">
+                                                        -ยังไม่ได้ซัก</p>
+                                                @else
+                                                    <p
+                                                        style="font-size: 14px; margin-left: 10px; color: rgb(62, 160, 40) ; ">
+                                                        -ซักแล้ว</p>
+                                                @endif
                                             </td>
 
                                             <td style="color: #a22222 ; ">{{ $item->repair_description }}</td>
-                                            
+
                                             <td>
 
 
@@ -401,7 +390,10 @@
                                                                 'shirtitems_id',
                                                                 $item->repair_many_to_one_filerdress->shirtitems_id,
                                                             )
-                                                                ->whereNot('id', $item->repair_many_to_one_filerdress->id)
+                                                                ->whereNot(
+                                                                    'id',
+                                                                    $item->repair_many_to_one_filerdress->id,
+                                                                )
                                                                 ->where('status_completed', 0)
                                                                 ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
                                                                 ->where('status', 'ถูกจอง')
@@ -425,7 +417,10 @@
                                                                 'skirtitems_id',
                                                                 $item->repair_many_to_one_filerdress->skirtitems_id,
                                                             )
-                                                                ->whereNot('id', $item->repair_many_to_one_filerdress->id)
+                                                                ->whereNot(
+                                                                    'id',
+                                                                    $item->repair_many_to_one_filerdress->id,
+                                                                )
                                                                 ->where('status_completed', 0)
                                                                 ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
                                                                 ->where('status', 'ถูกจอง')
@@ -446,7 +441,7 @@
                                                     @endif
                                                 @endif
                                             </td>
-                                            
+
 
                                             <td>
                                                 <button type="button" class="btn btn-secondary" data-toggle="modal"
@@ -462,20 +457,24 @@
                                                             method="POST">
                                                             @csrf
 
-                                                            <input type="hidden" value="{{$item->repair_many_to_one_filerdress->shirtitems_id}}" name="repair_for_shirt_id">
-                                                            <input type="hidden" value="{{$item->repair_many_to_one_filerdress->skirtitems_id}}" name="repair_for_skirt_id">
+                                                            <input type="hidden"
+                                                                value="{{ $item->repair_many_to_one_filerdress->shirtitems_id }}"
+                                                                name="repair_for_shirt_id">
+                                                            <input type="hidden"
+                                                                value="{{ $item->repair_many_to_one_filerdress->skirtitems_id }}"
+                                                                name="repair_for_skirt_id">
 
 
                                                             <div class="modal-header"style="background-color:#EAD8C0 ;">
                                                                 <h5 class="modal-title">การอัพเดตสถานะ</h5>
 
-                                                                
+
                                                             </div>
                                                             <div class="modal-body">
 
 
-                                                                @if($item->repair_type == 1 )
-                                                                <p class="fw-bold mb-3">กระบวนการต่อไปคือ:</p>
+                                                                @if ($item->repair_type == 1)
+                                                                    <p class="fw-bold mb-3">กระบวนการต่อไปคือ:</p>
                                                                     <div class="form-check mb-1">
                                                                         <input class="form-check-input" type="radio"
                                                                             name="status_next" id="toclean"
@@ -494,9 +493,8 @@
                                                                             ซ่อมไม่ได้ ไม่สามารถให้เช่าต่อได้
                                                                         </label>
                                                                     </div>
-                                                                @elseif($item->repair_type == 2 )
-                                                                 
-                                                                <p class="fw-bold mb-3">กระบวนการต่อไปคือ:</p>
+                                                                @elseif($item->repair_type == 2)
+                                                                    <p class="fw-bold mb-3">กระบวนการต่อไปคือ:</p>
                                                                     <div class="form-check mb-1">
                                                                         <input class="form-check-input" type="radio"
                                                                             name="status_next" value="1"
@@ -598,7 +596,8 @@
 
 
                         </div>
-                        {{-- </form> --}}
+                    @else
+                        <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
                     @endif
 
                 </div>

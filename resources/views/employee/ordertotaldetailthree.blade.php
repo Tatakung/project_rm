@@ -90,10 +90,11 @@
             vertical-align: middle;
             text-align: center;
         }
-        .list-group-item.active{
+
+        .list-group-item.active {
             background-color: #F7F9FA !important;
             color: black !important;
-            border-color:#DADAE3;
+            border-color: #DADAE3;
         }
     </style>
 
@@ -131,16 +132,12 @@
             }
         </script>
 
-                <button type="button"class="btn btn-c "  data-toggle="modal" data-target="#show_modal_pickup_total"
-            @if ($pass_one == true) 
-                @if ($pass_two == true) 
+        <button type="button"class="btn btn-c " data-toggle="modal" data-target="#show_modal_pickup_total"
+            @if ($pass_one == true) @if ($pass_two == true) 
                     style="display: block ; background-color:#DADAE3;"
                 @else
-                    style="display: none ; background-color:#DADAE3;"
-                @endif 
-            @else
-                style="display: none ; background-color:#DADAE3;"
-            @endif
+                    style="display: none ; background-color:#DADAE3;" @endif
+        @else style="display: none ; background-color:#DADAE3;" @endif
             >
             รับชุด (ทั้งหมด)
         </button>
@@ -168,14 +165,49 @@
 
 
                         <td>
+                            @php
+                                // เอาไว้ใช้ตอนที่ยกเลิกorder แล้วบอกว่า มันยกเลิหกวันไหน
+                                $status_orderdetail = App\Models\Orderdetailstatus::where('order_detail_id', $item->id)
+                                    ->orderBy('created_at', 'desc')
+                                    ->first();
+                            @endphp
                             เช่าตัด{{ $item->type_dress }}
+                            <br>
+                            @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
+                                <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
+                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
+                                </span>
+                            @endif
                         </td>
-                        <td>{{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
-                        </td>
-                        <td>{{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
-                        </td>
+
+
+
+
+
+                        @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
+                            <td style="text-decoration: line-through;color: red;">
+                                {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
+                            </td>
+                            <td style="text-decoration: line-through;color: red;">
+                                {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
+                            </td>
+                        @else
+                            <td>{{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
+                            </td>
+                            <td>{{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                                {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
+                            </td>
+                        @endif
+
+
+
+
+
+
                         <td>{{ $item->status_detail }}</td>
 
 
@@ -186,24 +218,183 @@
                                 $check_route_pass = App\Models\Orderdetailstatus::where('order_detail_id', $item->id)
                                     ->where('status', 'ตัดชุดเสร็จสิ้น')
                                     ->exists();
+                                $check_reservation = App\Models\Orderdetailstatus::where('order_detail_id', $item->id)
+                                    ->where('status', 'ถูกจอง')
+                                    ->exists();
                             @endphp
 
                             @if (!$check_route_pass)
                                 <a href="{{ route('detaildoingrentcut', ['id' => $item->id]) }}"
                                     class="btn btn-c btn-sm">จัดการ</a>
                             @else
-                                <a href="{{ route('employee.ordertotaldetailshow', ['id' => $item->id]) }}"
-                                    class="btn btn-c btn-sm">จัดการ</a>
+                                @if ($check_reservation == true)
+                                    <a href="{{ route('employee.ordertotaldetailshow', ['id' => $item->id]) }}"
+                                        class="btn btn-c btn-sm">จัดการ</a>
+                                @elseif($check_reservation == false)
+                                    <a href="{{ route('detaildoingrentcut', ['id' => $item->id]) }}"
+                                        class="btn btn-c btn-sm">จัดการ</a>
+                                @endif
+                            @endif
+
+                           
+
+
+                            @if ($item->status_detail == 'ยกเลิกโดยลูกค้า' || $item->status_detail == 'ยกเลิกโดยทางร้าน')
+                                {{-- style="display: none;" --}}
+                            @else
+                                @if ($item->status_detail == 'กำลังเช่า' || $item->status_detail == 'คืนชุดแล้ว')
+                                    {{-- style="display: none;" --}}
+                                @else
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                                data-target="#cancelModal{{ $item->id }}">ยกเลิก
+                            </button>
+                                @endif
                             @endif
 
 
-                            {{-- @if ($item->status_detail == 'ถูกจอง')
-                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->id]) }}"
-                                    class="btn btn-postpone btn-sm">เลื่อนวัน</a>
-                            @endif --}}
+
+
+
+
+
 
 
                         </td>
+
+
+
+
+                        <div class="modal fade" id="cancelModal{{ $item->id }}" tabindex="-1"
+                            aria-labelledby="cancelModal{{ $item->id }}" aria-hidden="true" data-backdrop="static">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title d-flex align-items-center gap-2"
+                                            id="cancelModal{{ $item->id }}">
+                                            <i class="fas fa-exclamation-triangle text-red-500"></i>
+                                            ยกเลิกการจอง:
+                                            เช่าตัด{{ $item->type_dress }}
+                                        </h5>
+
+                                    </div>
+
+                                    <form action="{{ route('cancelorderrent', ['id' => $item->id]) }}" method="POST">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <p class="text-muted">กรุณาเลือกสาเหตุการยกเลิกการจอง</p>
+                                            <!-- ยกเลิกโดยทางร้าน -->
+                                            <div class="form-check border rounded-lg p-4 mb-3">
+                                                <input class="form-check-input" type="radio" name="cancelType"
+                                                    id="store" value="store">
+                                                <label class="form-check-label d-flex align-items-center gap-2"
+                                                    for="store">
+                                                    <i class="fas fa-store"></i>
+                                                    ยกเลิกโดยทางร้าน
+                                                </label>
+                                                <div class="mt-2 text-muted">
+                                                    <ul class="mb-2">
+                                                        <li>ไม่สามารถเช่าตัดได้</li>
+                                                        <li>ต้องแจ้งลูกค้าและคืนเงินมัดจำ 100% แก่ลูกค้า <span
+                                                                style="font-size: 14px;">({{ number_format($item->price, 2) }}
+                                                                บาท)</span></li>
+                                                    </ul>
+                                                    {{-- <textarea class="form-control" placeholder="ระบุรายละเอียดการยกเลิก..." rows="3"></textarea> --}}
+                                                </div>
+
+                                                <div class="mt-3 bg-yellow-50 border border-yellow-200 rounded p-3 d-none"
+                                                    id="storeActions">
+                                                    <div class="fw-bold text-yellow-800">รายการที่ต้องดำเนินการ:</div>
+                                                    <ul class="mt-1 text-yellow-700">
+                                                        <li>แจ้งลูกค้าเรื่องการยกเลิก</li>
+                                                        <li>คืนเงินมัดจำให้ลูกค้า</li>
+                                                        <li>ทำรายการยกเลิกในระบบ</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                            <!-- ยกเลิกโดยลูกค้า -->
+                                            <div class="form-check border rounded-lg p-4">
+                                                <input class="form-check-input" type="radio" name="cancelType"
+                                                    id="customer" value="customer">
+                                                <label class="form-check-label d-flex align-items-center gap-2"
+                                                    for="customer">
+                                                    <i class="fas fa-user"></i>
+                                                    ยกเลิกโดยลูกค้า
+                                                </label>
+                                                <div class="mt-2 text-muted">
+                                                    <ul class="mb-2">
+                                                        <li>ลูกค้าต้องการยกเลิกการจอง</li>
+                                                        @if ($item->status_detail == 'รอดำเนินการตัด')
+                                                            <li>ขณะนี้สถานะของรายการคือ {{ $item->status_detail }}
+                                                                หากยกเลิกรายการจะไม่ริบเงินมัดจำลูกค้า <br>
+                                                                เนื่องจากชุดยังไม่ได้เริ่มดำเนินการตัด</li>
+                                                        @elseif($item->status_detail == 'เริ่มดำเนินการตัด')
+                                                            <li>ขณะนี้สถานะของรายการคือ {{ $item->status_detail }} <br>
+                                                                หากยกเลิกรายการจำเป็นต้องริบเงินมัดจำตามเงื่อนไข <span
+                                                                    style="font-size: 14px;">({{ number_format($item->deposit, 2) }}
+                                                                    บาท)</span></li>
+                                                        @elseif($item->status_detail == 'ถูกจอง')
+                                                            ขณะนี้สถานะของรายการคือ {{ $item->status_detail }}
+                                                            ซึ่งรอลูกค้ามารับชุดเช่า <br>
+                                                            หากยกเลิกรายการจำเป็นต้องริบเงินมัดจำตามเงื่อนไข <span
+                                                                style="font-size: 14px;">({{ number_format($item->deposit, 2) }}
+                                                                บาท)</span></li>
+                                                        @endif
+
+
+
+                                                    </ul>
+                                                    {{-- <textarea class="form-control" placeholder="ระบุรายละเอียดการยกเลิก..." rows="3"></textarea> --}}
+                                                </div>
+
+                                                <div class="mt-3 bg-yellow-50 border border-yellow-200 rounded p-3 d-none"
+                                                    id="customerActions">
+                                                    <div class="fw-bold text-yellow-800">การจัดการเงินมัดจำ:</div>
+                                                    <ul class="mt-1 text-yellow-700">
+                                                        <li>ริบเงินมัดจำตามเงื่อนไขการจอง</li>
+                                                        <li>บันทึกการยกเลิกในระบบ</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">ยกเลิก</button>
+                                            <button type="submit" class="btn btn-danger">ยืนยันการยกเลิก</button>
+                                        </div>
+                                    </form>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                     </tr>
@@ -247,8 +438,8 @@
 
                     </p>
                 </div>
-                <a href="{{ route('receiptpickuprent', ['id' => $order_id]) }}" target="_blank"
-                    class="btn btn-sm " style="background-color:#DADAE3;" tabindex="-1">พิมพ์ใบเสร็จ</a>
+                <a href="{{ route('receiptpickuprent', ['id' => $order_id]) }}" target="_blank" class="btn btn-sm "
+                    style="background-color:#DADAE3;" tabindex="-1">พิมพ์ใบเสร็จ</a>
             </div>
         @endif
 
@@ -262,8 +453,8 @@
 
                     </p>
                 </div>
-                <a href="{{ route('receiptreturnrent', ['id' => $order_id]) }}" target="_blank" class="btn btn-sm " style="background-color:#DADAE3;"
-                    tabindex="-1">พิมพ์ใบเสร็จ</a>
+                <a href="{{ route('receiptreturnrent', ['id' => $order_id]) }}" target="_blank" class="btn btn-sm "
+                    style="background-color:#DADAE3;" tabindex="-1">พิมพ์ใบเสร็จ</a>
             </div>
         @endif
     </div>
@@ -272,8 +463,8 @@
 
 
 
-    <div class="modal fade" id="show_modal_pickup_total" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true" data-backdrop="static">
+    <div class="modal fade" id="show_modal_pickup_total" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -362,7 +553,8 @@
                 <form action="{{ route('updatestatuspickuptotalrent', ['id' => $order_id]) }}" method="POST">
                     @csrf
                     <div class="modal-footer">
-                        <button type="button" class="btn " style="background-color:#DADAE3;" data-dismiss="modal">ปิด</button>
+                        <button type="button" class="btn " style="background-color:#DADAE3;"
+                            data-dismiss="modal">ปิด</button>
                         <button type="submit" class="btn " style="background-color:#ACE6B7">ยืนยัน</button>
                     </div>
                 </form>

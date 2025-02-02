@@ -27,18 +27,14 @@ class Reservationfilterdress extends Model
     }
 
     
+    public function filterdress_many_to_one_reservation(){
+        return $this->belongsTo(Reservation::class,'reservation_id') ; 
+    }
 
-
-    
-
-    
 
     public function filterdress_many_to_one_shirt(){
         return $this->belongsTo(Shirtitem::class,'shirtitems_id') ; 
     }
-
-    
-
 
     
 

@@ -116,59 +116,59 @@
                             <h5 class="card-title mb-0"> รายการชุด/เครื่องประดับที่รอรับคืน</h5>
                         </div>
                         <div class="scrollable-content ps-4">
-                        @if ($return_jewelry_today->count() > 0 || $return_dress_today->count() > 0)
-                            @foreach ($return_jewelry_today as $item)
-                                @if ($item->jewelry_id)
-                                    <p class="text-muted ms-2">
-                                        -{{ $item->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
-                                        {{ $item->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->resermanytoonejew->jewelry_code }}
-                                    </p>
-                                @elseif($item->jewelry_set_id)
-                                    @php
-                                        if ($item->jewelry_set_id) {
-                                            $set_jew_item = App\Models\Jewelrysetitem::where(
-                                                'jewelry_set_id',
-                                                $item->jewelry_set_id,
-                                            )->get();
-                                        }
-                                    @endphp
+                            @if ($return_jewelry_today->count() > 0 || $return_dress_today->count() > 0)
+                                @foreach ($return_jewelry_today as $item)
+                                    @if ($item->jewelry_id)
+                                        <p class="text-muted ms-2">
+                                            -{{ $item->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                            {{ $item->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->resermanytoonejew->jewelry_code }}
+                                        </p>
+                                    @elseif($item->jewelry_set_id)
+                                        @php
+                                            if ($item->jewelry_set_id) {
+                                                $set_jew_item = App\Models\Jewelrysetitem::where(
+                                                    'jewelry_set_id',
+                                                    $item->jewelry_set_id,
+                                                )->get();
+                                            }
+                                        @endphp
 
-                                    @foreach ($set_jew_item as $item)
-                                        <p class="text-muted ms-2">
-                                            -{{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
-                                            {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
-                                        </p>
-                                    @endforeach
-                                @endif
-                            @endforeach
-                            @foreach ($return_dress_today as $item)
-                                @if ($item->re_one_many_details->first() && in_array($item->re_one_many_details->first()->type_order, [2, 4]))
-                                    @if ($item->shirtitems_id)
-                                        <p class="text-muted ms-2">
-                                            -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                            {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
-                                            (ผ้าถุง)
-                                        </p>
-                                    @elseif($item->skirtitems_id)
-                                        <p class="text-muted ms-2">
-                                            -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                            {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
-                                            (เสื้อ)
-                                        </p>
-                                    @else
-                                        <p class="text-muted ms-2">
-                                            -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                            {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
-                                            (ทั้งชุด)
-                                        </p>
+                                        @foreach ($set_jew_item as $item)
+                                            <p class="text-muted ms-2">
+                                                -{{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
+                                            </p>
+                                        @endforeach
                                     @endif
-                                @endif
-                            @endforeach
-                        @else
-                            <p class="text-muted ms-2">ไม่มีรายการที่รอดำเนินงาน</p>
-                        @endif
+                                @endforeach
+                                @foreach ($return_dress_today as $item)
+                                    @if ($item->re_one_many_details->first() && in_array($item->re_one_many_details->first()->type_order, [2, 4]))
+                                        @if ($item->shirtitems_id)
+                                            <p class="text-muted ms-2">
+                                                -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                                {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
+                                                (ผ้าถุง)
+                                            </p>
+                                        @elseif($item->skirtitems_id)
+                                            <p class="text-muted ms-2">
+                                                -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                                {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
+                                                (เสื้อ)
+                                            </p>
+                                        @else
+                                            <p class="text-muted ms-2">
+                                                -{{ $item->reservation_many_to_one_dress->typedress->type_dress_name }}
+                                                {{ $item->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->reservation_many_to_one_dress->dress_code }}
+                                                (ทั้งชุด)
+                                            </p>
+                                        @endif
+                                    @endif
+                                @endforeach
+                            @else
+                                <p class="text-muted ms-2">ไม่มีรายการที่รอดำเนินงาน</p>
+                            @endif
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
         </div>
@@ -193,69 +193,106 @@
                         <div class="scrollable-content ps-4">
 
 
-                            @if ($clean_pending->count() > 0 || $clean_pending_jewelry->count() > 0)
-                                @foreach ($clean_pending as $item)
-                                    @php
+                            @if ($clean_pending_dress->count() > 0 || $clean_pending_jewelry->count() > 0)
+                                @foreach ($clean_pending_dress as $item)
+                                    {{-- @php
                                         $near_dress = App\Models\Reservation::whereNot('id', $item->reservation_id)
                                             ->where('dress_id', $item->clean_one_to_one_reser->dress_id)
                                             ->where('status', 'ถูกจอง')
                                             ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
                                             ->first();
-                                    @endphp
+                                    @endphp --}}
 
 
-                                    @if ($item->clean_one_to_one_reser->shirtitems_id)
+                                    @if ($item->shirtitems_id)
                                         <p class="text-muted ms-2">
-                                            -{{ $item->clean_one_to_one_reser->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                            {{ $item->clean_one_to_one_reser->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->clean_one_to_one_reser->reservation_many_to_one_dress->dress_code }}
+                                            -{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}
+                                            {{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}
                                             (เสื้อ)
                                             <span style="font-size: 13px; color: red ;"
                                                 id="clean_next_dress_shirt{{ $item->id }}"></span>
-                                            @if ($near_dress != null)
+
+                                            @php
+                                                $near_separable_yes_shirt_one = App\Models\Reservationfilterdress::where(
+                                                    'shirtitems_id',
+                                                    $item->shirtitems_id,
+                                                )
+                                                    ->whereNot('id', $item->id)
+                                                    ->where('status_completed', 0)
+                                                    ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                    ->where('status', 'ถูกจอง')
+                                                    ->first();
+                                            @endphp
+                                            @if ($near_separable_yes_shirt_one)
                                                 <script>
-                                                    var start_date = new Date("{{ $near_dress->start_date }}");
-                                                    var now = new Date();
-                                                    var day = start_date - now;
-                                                    var total = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                                    document.getElementById('clean_next_dress_shirt{{ $item->id }}').innerHTML =
-                                                        'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                    var now_separable_yes_shirt_one = new Date();
+                                                    var start_date_separable_yes_shirt_one = new Date('{{ $near_separable_yes_shirt_one->start_date }}');
+                                                    var day_separable_yes_shirt_one = start_date_separable_yes_shirt_one - now_separable_yes_shirt_one;
+                                                    var total_separable_yes_shirt_one = Math.ceil(day_separable_yes_shirt_one / (1000 * 60 * 60 * 24));
+                                                    document.getElementById('clean_next_dress_shirt{{ $item->id }}').innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' +
+                                                        total_separable_yes_shirt_one + ' วัน';
                                                 </script>
                                             @endif
+
                                         </p>
-                                    @elseif($item->clean_one_to_one_reser->skirtitems_id)
+                                    @elseif($item->skirtitems_id)
                                         <p class="text-muted ms-2">
-                                            -{{ $item->clean_one_to_one_reser->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                            {{ $item->clean_one_to_one_reser->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->clean_one_to_one_reser->reservation_many_to_one_dress->dress_code }}
+                                            -{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}
+                                            {{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}
                                             (ผ้าถุง)
                                             <span style="font-size: 13px; color: red ;"
                                                 id="clean_next_dress_skirt{{ $item->id }}"></span>
-                                            @if ($near_dress != null)
+
+                                            @php
+                                                $near_separable_yes_skirt_one = App\Models\Reservationfilterdress::where(
+                                                    'skirtitems_id',
+                                                    $item->skirtitems_id,
+                                                )
+                                                    ->whereNot('id', $item->id)
+                                                    ->where('status_completed', 0)
+                                                    ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                    ->where('status', 'ถูกจอง')
+                                                    ->first();
+                                            @endphp
+                                            @if ($near_separable_yes_skirt_one)
                                                 <script>
-                                                    var start_date = new Date("{{ $near_dress->start_date }}");
-                                                    var now = new Date();
-                                                    var day = start_date - now;
-                                                    var total = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                                    document.getElementById('clean_next_dress_skirt{{ $item->id }}').innerHTML =
-                                                        'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                    var now_separable_yes_skirt_one = new Date();
+                                                    var start_date_separable_yes_skirt_one = new Date('{{ $near_separable_yes_skirt_one->start_date }}');
+                                                    var day_separable_yes_skirt_one = start_date_separable_yes_skirt_one - now_separable_yes_skirt_one;
+                                                    var total_separable_yes_skirt_one = Math.ceil(day_separable_yes_skirt_one / (1000 * 60 * 60 * 24));
+                                                    document.getElementById('clean_next_dress_skirt{{ $item->id }}').innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' +
+                                                        total_separable_yes_skirt_one + ' วัน';
                                                 </script>
                                             @endif
                                         </p>
                                     @else
                                         <p class="text-muted ms-2">
-                                            -{{ $item->clean_one_to_one_reser->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                            {{ $item->clean_one_to_one_reser->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->clean_one_to_one_reser->reservation_many_to_one_dress->dress_code }}
+                                            -{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}
+                                            {{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}
                                             (ทั้งชุด)
                                             <span style="font-size: 14px; color: red ;"
                                                 id="clean_next_dress{{ $item->id }}"></span>
                                         </p>
-                                        @if ($near_dress != null)
+
+                                        @php
+                                            $near_separable_no_one = App\Models\Reservationfilterdress::where(
+                                                'dress_id',
+                                                $item->dress_id,
+                                            )
+                                                ->whereNot('id', $item->id)
+                                                ->where('status_completed', 0)
+                                                ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                ->where('status', 'ถูกจอง')
+                                                ->first();
+                                        @endphp
+                                        @if ($near_separable_no_one)
                                             <script>
-                                                var start_date = new Date("{{ $near_dress->start_date }}");
-                                                var now = new Date();
-                                                var day = start_date - now;
-                                                var total = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                                document.getElementById('clean_next_dress{{ $item->id }}').innerHTML =
-                                                    'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                var now_separable_no_one = new Date();
+                                                var start_date_separable_no_one = new Date('{{ $near_separable_no_one->start_date }}');
+                                                var day_separable_no_one = start_date_separable_no_one - now_separable_no_one;
+                                                var total_separable_no_one = Math.ceil(day_separable_no_one / (1000 * 60 * 60 * 24));
+                                                document.getElementById('clean_next_dress{{ $item->id }}').innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' +
+                                                    total_separable_no_one + ' วัน';
                                             </script>
                                         @endif
                                     @endif
@@ -314,72 +351,115 @@
 
                         </div>
                         <div class="scrollable-content ps-4">
-                            @if ($repair->count() > 0 || $repair_jewelry->count() > 0)
-                                @foreach ($repair as $item)
-                                    @php
-                                        $near_dress_repair = App\Models\Reservation::whereNot(
-                                            'id',
-                                            $item->reservation_id,
-                                        )
-                                            ->where('dress_id', $item->repair_many_to_one_reser->dress_id)
-                                            ->where('status', 'ถูกจอง')
-                                            ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
-                                            ->first();
-
-                                    @endphp
-                                    @if ($item->repair_many_to_one_reser->shirtitems_id)
+                            @if ($repair_dress->count() > 0 || $repair_jewelry->count() > 0)
+                                @foreach ($repair_dress as $item)
+                                    @if ($item->repair_many_to_one_filerdress->shirtitems_id)
                                         <p class="text-muted ms-2">
-                                            -{{ $item->repair_many_to_one_reser->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                            {{ $item->repair_many_to_one_reser->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->repair_many_to_one_reser->reservation_many_to_one_dress->dress_code }}
+                                            -{{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->typedress->type_dress_name }}
+                                            {{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->dress_code }}
                                             (เสื้อ)
                                             <span style="font-size: 13px; color: red ;"
                                                 id="repair_next_dress_shirt{{ $item->id }}"></span>
-                                            @if ($near_dress_repair != null)
+
+                                            @php
+                                                $near_separable_yes_shirt_one = App\Models\Reservationfilterdress::where(
+                                                    'shirtitems_id',
+                                                    $item->repair_many_to_one_filerdress->shirtitems_id,
+                                                )
+                                                    ->whereNot('id', $item->repair_many_to_one_filerdress->id)
+                                                    ->where('status_completed', 0)
+                                                    ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                    ->where('status', 'ถูกจอง')
+                                                    ->first();
+                                            @endphp
+                                            @if ($near_separable_yes_shirt_one)
                                                 <script>
-                                                    var start_date = new Date("{{ $near_dress_repair->start_date }}");
-                                                    var now = new Date();
-                                                    var day = start_date - now;
-                                                    var total = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                                    document.getElementById('repair_next_dress_shirt{{ $item->id }}').innerHTML =
-                                                        'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                    var now_separable_yes_shirt_one = new Date();
+                                                    var start_date_separable_yes_shirt_one = new Date('{{ $near_separable_yes_shirt_one->start_date }}');
+                                                    var day_separable_yes_shirt_one = start_date_separable_yes_shirt_one - now_separable_yes_shirt_one;
+                                                    var total_separable_yes_shirt_one = Math.ceil(day_separable_yes_shirt_one / (1000 * 60 * 60 * 24));
+                                                    document.getElementById('repair_next_dress_shirt{{ $item->id }}').innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' +
+                                                        total_separable_yes_shirt_one + ' วัน';
                                                 </script>
                                             @endif
+
+
+
                                         </p>
-                                    @elseif($item->repair_many_to_one_reser->skirtitems_id)
+                                    @elseif($item->repair_many_to_one_filerdress->skirtitems_id)
                                         <p class="text-muted ms-2">
-                                            -{{ $item->repair_many_to_one_reser->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                            {{ $item->repair_many_to_one_reser->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->repair_many_to_one_reser->reservation_many_to_one_dress->dress_code }}
+                                            -{{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->typedress->type_dress_name }}
+                                            {{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->dress_code }}
                                             (ผ้าถุง)
                                             <span style="font-size: 13px; color: red ;"
                                                 id="repair_next_dress_skirt{{ $item->id }}"></span>
-                                            @if ($near_dress_repair != null)
+                                            @php
+                                                $near_separable_yes_skirt_one = App\Models\Reservationfilterdress::where(
+                                                    'skirtitems_id',
+                                                    $item->repair_many_to_one_filerdress->skirtitems_id,
+                                                )
+                                                    ->whereNot('id', $item->repair_many_to_one_filerdress->id)
+                                                    ->where('status_completed', 0)
+                                                    ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                    ->where('status', 'ถูกจอง')
+                                                    ->first();
+                                            @endphp
+                                            @if ($near_separable_yes_skirt_one)
                                                 <script>
-                                                    var start_date = new Date("{{ $near_dress_repair->start_date }}");
-                                                    var now = new Date();
-                                                    var day = start_date - now;
-                                                    var total = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                                    document.getElementById('repair_next_dress_skirt{{ $item->id }}').innerHTML =
-                                                        'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                    var now_separable_yes_skirt_one = new Date();
+                                                    var start_date_separable_yes_skirt_one = new Date('{{ $near_separable_yes_skirt_one->start_date }}');
+                                                    var day_separable_yes_skirt_one = start_date_separable_yes_skirt_one - now_separable_yes_skirt_one;
+                                                    var total_separable_yes_skirt_one = Math.ceil(day_separable_yes_skirt_one / (1000 * 60 * 60 * 24));
+                                                    document.getElementById('repair_next_dress_skirt{{ $item->id }}').innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' +
+                                                        total_separable_yes_skirt_one + ' วัน';
                                                 </script>
                                             @endif
+
+
+
+
+
+
                                         </p>
                                     @else
                                         <p class="text-muted ms-2">
-                                            -{{ $item->repair_many_to_one_reser->reservation_many_to_one_dress->typedress->type_dress_name }}
-                                            {{ $item->repair_many_to_one_reser->reservation_many_to_one_dress->typedress->specific_letter }}{{ $item->repair_many_to_one_reser->reservation_many_to_one_dress->dress_code }}
+                                            -{{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->typedress->type_dress_name }}
+                                            {{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->dress_code }}
                                             (ทั้งชุด)
                                             <span style="font-size: 13px; color: red ;"
                                                 id="repair_next_dress{{ $item->id }}"></span>
-                                            @if ($near_dress_repair != null)
+                                            @php
+                                                $near_separable_no_one = App\Models\Reservationfilterdress::where(
+                                                    'dress_id',
+                                                    $item->repair_many_to_one_filerdress->dress_id,
+                                                )
+                                                    ->whereNot('id', $item->repair_many_to_one_filerdress->id)
+                                                    ->where('status_completed', 0)
+                                                    ->orderByRaw("STR_TO_DATE(start_date, '%Y-%m-%d') asc")
+                                                    ->where('status', 'ถูกจอง')
+                                                    ->first();
+                                            @endphp
+                                            @if ($near_separable_no_one)
                                                 <script>
-                                                    var start_date = new Date("{{ $near_dress_repair->start_date }}");
-                                                    var now = new Date();
-                                                    var day = start_date - now;
-                                                    var total = Math.ceil(day / (1000 * 60 * 60 * 24));
-                                                    document.getElementById('repair_next_dress{{ $item->id }}').innerHTML =
-                                                        'ลูกค้าคนถัดไปจะมารับชุดในอีก ' + total + ' วัน';
+                                                    var now_separable_no_one = new Date();
+                                                    var start_date_separable_no_one = new Date('{{ $near_separable_no_one->start_date }}');
+                                                    var day_separable_no_one = start_date_separable_no_one - now_separable_no_one;
+                                                    var total_separable_no_one = Math.ceil(day_separable_no_one / (1000 * 60 * 60 * 24));
+                                                    document.getElementById('repair_next_dress{{ $item->id }}').innerHTML = 'ลูกค้าคนถัดไปจะมารับในอีก ' +
+                                                        total_separable_no_one + ' วัน';
                                                 </script>
+                                            
                                             @endif
+
+
+
+
+
+
+
+
+
+
                                         </p>
                                     @endif
                                 @endforeach
@@ -442,7 +522,7 @@
             </div> --}}
 
 
-            
+
 
 
 

@@ -151,7 +151,7 @@
                         @endphp
                         @if ($item->type_order == 1)
                             @if ($check_payment)
-                                มัดจำ{{ $item->type_dress }}<br>
+                                มัดจำตัด{{ $item->type_dress }}<br>
                             @else
                                 ค่าตัด{{ $item->type_dress }}<br>
                             @endif
@@ -350,6 +350,12 @@
 
 
         @if ($order->type_order == 1)
+        <span class="sub-item" style="margin-left: 20px;">-
+            นัดรับวันที่
+            {{ \Carbon\Carbon::parse($pickup_return_only->pickup_date)->locale('th')->isoFormat('D MMM') }}
+            {{ \Carbon\Carbon::parse($pickup_return_only->pickup_date)->year + 543 }}
+            
+        </span>
         @elseif($order->type_order == 2)
             <span class="sub-item" style="margin-left: 20px;">-
                 นัดรับวันที่

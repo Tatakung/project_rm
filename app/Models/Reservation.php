@@ -34,6 +34,13 @@ class Reservation extends Model
         return $this->hasMany(Reservationfilters::class, 'reservation_id');
     }
 
+    public function re_one_many_refildress()
+    {
+        return $this->hasMany(Reservationfilterdress::class, 'reservation_id');
+    }
+
+
+
 
     public function resermanytoonejew()
     {

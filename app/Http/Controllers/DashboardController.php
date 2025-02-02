@@ -32,12 +32,9 @@ class DashboardController extends Controller
     {
         $orderdetail = Orderdetail::find($id);
         $type_cancel = $request->input('cancelType');
+        // ยกเลิกโดยร้าน
         if ($type_cancel == 'store') {
-
-
             if ($orderdetail->type_order == 2) {
-
-
                 $update_orderdetail = Orderdetail::find($id);
                 $update_orderdetail->status_detail = 'ยกเลิกโดยทางร้าน';
                 $update_orderdetail->save();
@@ -77,8 +74,41 @@ class DashboardController extends Controller
                     $update_filter->status_completed = 1;
                     $update_filter->save();
                 }
+            } elseif ($orderdetail->type_order == 4) {
+                if ($orderdetail->status_detail == 'รอดำเนินการตัด' || $orderdetail->status_detail == 'เริ่มดำเนินการตัด') {
+                    $update_orderdetail = Orderdetail::find($id);
+                    $update_orderdetail->status_detail = 'ยกเลิกโดยทางร้าน';
+                    $update_orderdetail->save();
+                    $status = new Orderdetailstatus();
+                    $status->order_detail_id = $id;
+                    $status->status = 'ยกเลิกโดยทางร้าน';
+                    $status->save();
+                } elseif ($orderdetail->status_detail == 'ถูกจอง') {
+
+                    $update_orderdetail = Orderdetail::find($id);
+                    $update_orderdetail->status_detail = 'ยกเลิกโดยทางร้าน';
+                    $update_orderdetail->save();
+                    $status = new Orderdetailstatus();
+                    $status->order_detail_id = $id;
+                    $status->status = 'ยกเลิกโดยทางร้าน';
+                    $status->save();
+                    $reservation = Reservation::find($update_orderdetail->reservation_id);
+                    $reservation->status = 'ยกเลิกโดยทางร้าน';
+                    $reservation->status_completed = 1;
+                    $reservation->save();
+
+                    $reservation_filterdress = Reservationfilterdress::where('reservation_id', $reservation->id)->get();
+                    foreach ($reservation_filterdress as $item) {
+                        $update_filter = Reservationfilterdress::find($item->id);
+                        $update_filter->status = 'ยกเลิกโดยทางร้าน';
+                        $update_filter->status_completed = 1;
+                        $update_filter->save();
+                    }
+                }
             }
-        } elseif ($type_cancel == 'customer') {
+        }
+        // ยกเลิกโดยลูกค้า
+        elseif ($type_cancel == 'customer') {
 
             if ($orderdetail->type_order == 2) {
                 $update_orderdetail = Orderdetail::find($id);
@@ -100,8 +130,7 @@ class DashboardController extends Controller
                     $update_filter->status_completed = 1;
                     $update_filter->save();
                 }
-            }
-            elseif ($orderdetail->type_order == 3) {
+            } elseif ($orderdetail->type_order == 3) {
                 $update_orderdetail = Orderdetail::find($id);
                 $update_orderdetail->status_detail = 'ยกเลิกโดยลูกค้า';
                 $update_orderdetail->save();
@@ -121,8 +150,46 @@ class DashboardController extends Controller
                     $update_filter->status_completed = 1;
                     $update_filter->save();
                 }
-            }
-            elseif ($orderdetail->type_order == 4) {
+            } elseif ($orderdetail->type_order == 4) {
+                
+
+                if ($orderdetail->status_detail == 'รอดำเนินการตัด' || $orderdetail->status_detail == 'เริ่มดำเนินการตัด') {
+                    
+                    $update_orderdetail = Orderdetail::find($id);
+                    $update_orderdetail->status_detail = 'ยกเลิกโดยลูกค้า';
+                    $update_orderdetail->save();
+                    $status = new Orderdetailstatus();
+                    $status->order_detail_id = $id;
+                    $status->status = 'ยกเลิกโดยลูกค้า';
+                    $status->save();
+                }
+                elseif ($orderdetail->status_detail == 'ถูกจอง') {
+                    
+                    // จะต้องลบ reser filterdress ด้วยนะ 
+                    $update_orderdetail = Orderdetail::find($id);
+                    $update_orderdetail->status_detail = 'ยกเลิกโดยลูกค้า';
+                    $update_orderdetail->save();
+                    $status = new Orderdetailstatus();
+                    $status->order_detail_id = $id;
+                    $status->status = 'ยกเลิกโดยลูกค้า';
+                    $status->save();
+                    $reservation = Reservation::find($update_orderdetail->reservation_id);
+                    $reservation->status = 'ยกเลิกโดยลูกค้า';
+                    $reservation->status_completed = 1;
+                    $reservation->save();
+
+                    $reservation_filter = Reservationfilterdress::where('reservation_id', $reservation->id)->get();
+                    foreach ($reservation_filter as $item) {
+                        $update_filter = Reservationfilterdress::find($item->id);
+                        $update_filter->status = 'ยกเลิกโดยลูกค้า';
+                        $update_filter->status_completed = 1;
+                        $update_filter->save();
+                    }
+                }
+                
+
+
+
             }
         }
         return redirect()->back()->with('success', 'ยกเลิกรายการสำเร็จ');

@@ -246,10 +246,18 @@
                                 </td>
 
                                 <td style="padding: 16px;">
-                                    <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
+                                    {{-- <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
                                         class="btn btn-s" style="background-color:#DADAE3;">
                                         ดูรายละเอียด
-                                    </a>
+                                    </a> --}}
+
+                                    <a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}"
+                                        class="btn btn-sm" style="background-color:#DADAE3;">
+                                        ดูรายละเอียด
+                                    </a> 
+
+
+
 
                                     <a href="{{route('postponeroutejewelry',['id' => $reservation->id])}}" class="btn btn-m" style="background-color:#BACEE6 ;">
                                         เลื่อนวัน

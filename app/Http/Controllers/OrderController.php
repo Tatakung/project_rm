@@ -106,7 +106,10 @@ class OrderController extends Controller
         $employee = User::find($order->user_id);
         $order_id = $id;
         $orderdetail = Orderdetail::where('order_id', $id)->get();
-        return view('employee.ordertotaldetailone', compact('order', 'order_id', 'orderdetail', 'customer', 'employee'));
+        $receipt_one = Receipt::where('order_id', $id)
+            ->where('receipt_type', 1)
+            ->first();
+        return view('employee.ordertotaldetailone', compact('order', 'order_id', 'orderdetail', 'customer', 'employee','receipt_one'));
     }
     private function ordertotaldetailtwo($id)
     {
@@ -791,6 +794,7 @@ class OrderController extends Controller
     private function managedetailrentcut($id)
     {
         $orderdetail = Orderdetail::find($id);
+        $datadress = Dress::find($orderdetail->dress_id);
         $dress = Dress::where('id', $orderdetail->dress_id)->select('dress_code_new', 'dress_code')->first();
         $customer_id = Order::where('id', $orderdetail->order_id)->value('customer_id');
         $customer = Customer::find($customer_id);
@@ -806,6 +810,16 @@ class OrderController extends Controller
         $sum_dec = Decoration::where('order_detail_id', $orderdetail->id)->sum(
             'decoration_price',
         );
+        $filtershirt_id = Reservationfilterdress::where('reservation_id', $orderdetail->reservation_id)
+            ->whereNotNull('shirtitems_id')
+            ->value('id');
+        $filterskirt_id = Reservationfilterdress::where('reservation_id', $orderdetail->reservation_id)
+            ->whereNotNull('skirtitems_id')
+            ->value('id');
+
+
+
+
         $imagerent = Imagerent::where('order_detail_id', $id)->get();
         $mea_dress = Dressmeasurement::where('dress_id', $orderdetail->dress_id)->get();
         $mea_orderdetail = Measurementorderdetail::where('order_detail_id', $id)->get();
@@ -818,7 +832,15 @@ class OrderController extends Controller
         $dress_mea_adjust_modal_show = Dressmeaadjustment::where('order_detail_id', $id)->get();
 
 
+
+        
+
         $additional = AdditionalChange::where('order_detail_id', $id)->get();
+
+
+        
+
+
 
 
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
@@ -849,7 +871,7 @@ class OrderController extends Controller
             ->exists();
 
 
-        return view('employeerentcut.managedetailrentcut', compact('additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup', 'receipt_bill_return',  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'decoration_sum', 'sum_additional'));
+        return view('employeerentcut.managedetailrentcut', compact('datadress','additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup', 'receipt_bill_return',  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'decoration_sum', 'sum_additional','filtershirt_id','filterskirt_id'));
     }
     //จัดการตัดชุด
     private function managedetailcutdress($id)
@@ -1827,7 +1849,8 @@ class OrderController extends Controller
                 $ceate_receipt->employee_id = Auth::user()->id;
                 $ceate_receipt->save();
             }
-        } elseif ($status == "กำลังเช่า") {
+        }
+        elseif ($status == "กำลังเช่า") {
             $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
             $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
             $late_chart = $request->input('late_chart'); //3.ค่าธรรมเนียมขยายระยะเวลาเช่า:
@@ -2988,7 +3011,9 @@ class OrderController extends Controller
                 $filter->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
                 $filter->reservation_id = $reservation->id;
                 $filter->save();
-            } elseif ($data_dress->separable == 2) {
+
+            }
+            elseif ($data_dress->separable == 2) {
 
                 $shirt_ID = Shirtitem::where('dress_id', $dress_id)->value('id');
                 $skirt_ID = Skirtitem::where('dress_id', $dress_id)->value('id');
@@ -3110,7 +3135,8 @@ class OrderController extends Controller
                     $create_dress_mea_adjust->save();
                 }
             }
-        } elseif ($textcharacter === "เสื้อ") {
+        }
+        elseif ($textcharacter === "เสื้อ") {
             $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
             $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
             $data_shirt = Shirtitem::where('dress_id', $dress_id)->first();
@@ -3232,7 +3258,8 @@ class OrderController extends Controller
                     $create_dress_mea_adjust->save();
                 }
             }
-        } elseif ($textcharacter === "กระโปรง/ผ้าถุง") {
+        }
+        elseif ($textcharacter === "กระโปรง/ผ้าถุง") {
             $data_dress = Dress::find($dress_id);  //สำหรับใช้ดึงข้อมูลต่างๆของชุด
             $type_dress_name = Typedress::where('id', $data_dress->type_dress_id)->value('type_dress_name');
             $data_skirt = Skirtitem::where('dress_id', $dress_id)->first();

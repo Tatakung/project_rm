@@ -104,7 +104,7 @@
     </ol>
 
     <div class="container mt-4">
-        <h3>รายละเอียดออเดอร์ตัดชุด {{ $order_id }}</h3>
+        <h3>รายละเอียดออเดอร์ตัดชุด เลขออเดอร์ที่{{ $order_id }}</h3>
         <div class="row mb-4">
             <div class="col-md-6">
                 <p><strong>ชื่อลูกค้า:</strong> คุณ{{$customer->customer_fname}} {{$customer->customer_lname}}</p>
@@ -168,4 +168,47 @@
             </tbody>
         </table>
     </div>
+
+    <div class="container mt-4 mb-4">
+
+        <h3>ประวัติใบเสร็จ</h3>
+
+
+        @if ($receipt_one)
+            <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-1">ใบเสร็จรับเงิน</p>
+                    <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
+                        {{ Carbon\Carbon::parse($receipt_one->created_at)->locale('th')->isoFormat('D MMM') }}
+                        {{ Carbon\Carbon::parse($receipt_one->created_at)->year + 543 }}
+
+                    </p>
+                </div>
+                <a href="{{ route('receiptreservation', ['id' => $order_id]) }}" target="_blank" class="btn btn-sm"
+                    style="background-color:#DADAE3;" tabindex="-1">พิมพ์ใบเสร็จ</a>
+
+
+
+
+            </div>
+        @endif
+
+        
+
+        
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @endsection

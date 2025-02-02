@@ -15,6 +15,8 @@ use App\Models\Repair;
 use App\Models\Reservation;
 use App\Models\ChargeJewelry;
 use App\Models\Reservationfilters;
+use App\Models\Reservationfilterdress;
+use App\Models\Dress;
 use App\Models\Typejewelry;
 use App\Models\Receipt;
 use App\Models\ReceiptReturn;
@@ -1104,8 +1106,6 @@ class Orderjewelry extends Controller
                         $set_jewelry->save();
                     }
                 }
-
-                
             }
         }
         return redirect()->back()->with('success', 'อัพเดตสถานะสำเร็จ');
@@ -1221,6 +1221,7 @@ class Orderjewelry extends Controller
 
     public function jewelryproblemcancel()
     {
+        // เครื่องประดับ
         $jewelry = Jewelry::whereIn('jewelry_status', ['สูญหาย', 'ยุติการให้เช่า'])->get();
         $list = [];
         foreach ($jewelry as $item) {
@@ -1229,7 +1230,52 @@ class Orderjewelry extends Controller
                 $list[] = $index->reservationtorefil->re_one_many_details->first()->id;
             }
         }
+
+
+        // ชุด เสื้อ ผ้าถุง
+        $datadress = Dress::all();
+        foreach ($datadress as $value) {
+            if ($value->separable == 1) {
+
+                $dress = Dress::find($value->id);
+                if ($dress->dress_status == 'ยุติการให้เช่า' || $dress->dress_status == 'สูญหาย') {
+                    $reservation_dress = Reservationfilterdress::where('status_completed', 0)->where('dress_id', $value->id)->get();
+                    if ($reservation_dress->isNotEmpty()) {
+                        foreach ($reservation_dress as $itemer) {
+                            $list[] = $itemer->filterdress_many_to_one_reservation->re_one_many_details->first()->id;
+                        }
+                    }
+                }
+            }
+            elseif ($value->separable == 2) {
+
+                // เสื้อ
+                if ($value->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า' || $value->shirtitems->first()->shirtitem_status == 'สูญหาย') {
+                    $reservation_shirt = Reservationfilterdress::where('status_completed', 0)->where('shirtitems_id', $value->shirtitems->first()->id)->get();
+
+                    if ($reservation_shirt->isNotEmpty()) {
+                        foreach ($reservation_shirt as $itemer_sh) {
+                            $list[] = $itemer_sh->filterdress_many_to_one_reservation->re_one_many_details->first()->id;
+                        }
+                    }
+                }
+
+
+                // ผ้าถุง
+                if ($value->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า' || $value->skirtitems->first()->skirtitem_status == 'สูญหาย') {
+                    $reservation_skirt = Reservationfilterdress::where('status_completed', 0)->where('skirtitems_id', $value->skirtitems->first()->id)->get();
+                    if ($reservation_skirt->isNotEmpty()) {
+                        foreach ($reservation_skirt as $itemer_sk) {
+                            $list[] = $itemer_sk->filterdress_many_to_one_reservation->re_one_many_details->first()->id;
+                        }
+                    }
+                }
+            }
+        }
+        
         $orderdetail = Orderdetail::whereIn('id', $list)->get();
+
+
         return view('employeerentjewelry.jewelry-problem', compact('orderdetail'));
     }
 }

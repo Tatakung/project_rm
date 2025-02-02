@@ -34,9 +34,9 @@
 <div class="container">
 
     <h1 class="text-start my-4" style="color: #3d3d3d;">
-        คิวการตัดชุด
+        รายการตัดชุดทั้งหมด
     </h1>
-    <p>รายการนี้แสดงลำดับการตัดชุดสำหรับลูกค้า โดยเรียงตามวันที่ลูกค้าจะมารับเร็วที่สุด</p>
+    <p>รายการนี้แสดงลำดับการตัดชุดสำหรับลูกค้าทั้งหมด</p>
 
 
 
@@ -151,10 +151,18 @@
                             @endif
                         </td>
                         <td style="padding: 16px;">
-                            <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
+                            {{-- <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
                             class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
                                 ดูรายละเอียด
+                            </a> --}}
+
+                            <a href="{{ route('employee.ordertotaldetail', ['id' => $cutdress->order_id]) }}"
+                                class="btn btn-sm" style="background-color:#DADAE3;">
+                                ดูรายละเอียด
                             </a>
+
+
+
                         </td>
                     </tr>
                     @endforeach
@@ -232,10 +240,18 @@
                             @endif
                         </td>
                         <td style="padding: 16px;">
-                            <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
+                            {{-- <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
                             class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
                                 ดูรายละเอียด
+                            </a> --}}
+
+                            <a href="{{ route('employee.ordertotaldetail', ['id' => $cutdress->order_id]) }}"
+                                class="btn btn-sm" style="background-color:#DADAE3;">
+                                ดูรายละเอียด
                             </a>
+
+
+
                         </td>
                     </tr>
                     @endforeach
@@ -312,10 +328,18 @@
                             @endif
                         </td>
                         <td style="padding: 16px;">
-                            <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
+                            {{-- <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
                                 class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
                                 ดูรายละเอียด
+                            </a> --}}
+
+                            <a href="{{ route('employee.ordertotaldetail', ['id' => $cutdress->order_id]) }}"
+                                class="btn btn-sm" style="background-color:#DADAE3;">
+                                ดูรายละเอียด
                             </a>
+
+
+
                         </td>
                     </tr>
                     @endforeach
@@ -393,10 +417,17 @@
                             @endif
                         </td>
                         <td style="padding: 16px;">
-                            <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
+                            {{-- <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
                             class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
                                 ดูรายละเอียด
+                            </a> --}}
+                            <a href="{{ route('employee.ordertotaldetail', ['id' => $cutdress->order_id]) }}"
+                                class="btn btn-sm" style="background-color:#DADAE3;">
+                                ดูรายละเอียด
                             </a>
+
+
+
                         </td>
                     </tr>
                     @endforeach
@@ -474,10 +505,20 @@
                             @endif
                         </td>
                         <td style="padding: 16px;">
-                            <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
+                            {{-- <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
                             class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
                                 ดูรายละเอียด
+                            </a> --}}
+
+
+                            <a href="{{ route('employee.ordertotaldetail', ['id' => $cutdress->order_id]) }}"
+                                class="btn btn-sm" style="background-color:#DADAE3;">
+                                ดูรายละเอียด
                             </a>
+
+
+
+
                         </td>
                     </tr>
                     @endforeach

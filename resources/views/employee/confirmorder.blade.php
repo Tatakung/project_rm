@@ -86,11 +86,11 @@
                 <div class="col-md-7">
                     <h5 style="margin-top: 10px;">
                         @if ($order->type_order == 1)
-                            สรุปรายการตัดชุด{{ $order->total_quantity }}
+                            สรุปรายการตัดชุด ({{ $order->total_quantity }})
                         @elseif($order->type_order == 2)
                             สรุปรายการเช่า ({{ $order->total_quantity }})
                         @elseif($order->type_order == 3)
-                            สรุปรายการเช่าตัดชุด{{ $order->total_quantity }}
+                            สรุปรายการเช่าตัดชุด ({{ $order->total_quantity }})
                         @endif
                     </h5>
                     <hr>
@@ -174,7 +174,7 @@
                                             เช่าเซตเครื่องประดับ{{ $setjewelry->set_name }}
                                         @endif
                                     @elseif($detail->type_order == 4)
-                                        เช่าตัด
+                                        เช่าตัด{{$detail->type_dress}}
                                     @endif
 
                                 </strong>

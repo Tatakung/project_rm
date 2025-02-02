@@ -115,6 +115,8 @@
 
                 if ($sort_queue) {
                     if ($reservation->id == $sort_queue->id) {
+                        // คิวแรก
+                        // เป็นคิวแรกก็จริง แต่ว่าก็ต้องไปเช็คว่ามันพร้อมให้เช่าหรือยัง นึกออกไหม
                         if ($reservation->status == 'ถูกจอง') {
                             if ($reservation->resermanytoonejew->jewelry_status != 'พร้อมให้เช่า') {
                                 $check_bunton_pass = false;
@@ -123,10 +125,14 @@
                         if ($reservation->status == 'กำลังเช่า') {
                             $check_bunton_pass = true;
                         }
-                    } else {
+                    }
+                    else {
+                        // ไม่ใช่คิวแรก
                         $check_bunton_pass = false;
                     }
-                } else {
+                }
+                else {
+                    // แปลว่ามันไปเช็คแล้วใน การจอง แปลวว่ามันไม่คิว ก็หมายถึงว่า มันก็ไม่นับคิวกะคนอื่ไง
                     $check_bunton_pass = true;
                 }
 
@@ -164,6 +170,8 @@
                 $check_bunton_pass = true; //ตัวเช็คในการกดปุ่มอัพเดตสถานะ
                 if ($sort_queue) {
                     if ($reservation->id == $sort_queue->id) {
+                        // คิวแรก
+                        // คิวแรกก็จริงแต่มันก็ต้องไปเช้คว่า ในเซ้ตทั้งหมดอะ มันพร้อมที่จะให้เช่าทั้งหมดไหม นึกออกไหม
                         if ($reservation->status == 'ถูกจอง') {
                             $jew_set_id_for = App\Models\Jewelrysetitem::where(
                                 'jewelry_set_id',
@@ -181,6 +189,7 @@
                             $check_bunton_pass = true;
                         }
                     } else {
+                        // ไม่ใช่คิวแรก
                         $check_bunton_pass = false;
                     }
                 } else {
@@ -469,18 +478,14 @@
                             </div>
                         </div>
                     @else
-                    <div class="row mt-2">
-                        <div class="col-md-12">
-                            <div class="alert alert-danger" role="alert">
-                                <strong>แจ้งเตือน:</strong> กรุณารอคิวจนกว่าจะถึงคิว<span>
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="alert alert-danger" role="alert">
+                                    <strong>แจ้งเตือน:</strong> กรุณารอคิวจนกว่าจะถึงคิว<span>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     @endif
-
-
-
-
                 @elseif($reservation->id == $sort_queue->id)
                     {{-- คิวแรก --}}
                     @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
@@ -566,12 +571,13 @@
                             <div class="col-md-12">
                                 <div class="alert alert-danger" role="alert">
 
-                                    <p><strong>แจ้งเตือน:</strong> ถึงคิวแล้ว : กรุณารอจนกว่าเครื่องประดับทุกชิ้นในเซตจะพร้อมให้เช่า</p>
-                                        @foreach ($setjewelryitem as $item)
-                                            <li> {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
-                                                {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
-                                                : {{ $item->jewitem_m_to_o_jew->jewelry_status }}</li>
-                                        @endforeach
+                                    <p><strong>แจ้งเตือน:</strong> ถึงคิวแล้ว :
+                                        กรุณารอจนกว่าเครื่องประดับทุกชิ้นในเซตจะพร้อมให้เช่า</p>
+                                    @foreach ($setjewelryitem as $item)
+                                        <li> {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                            {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
+                                            : {{ $item->jewitem_m_to_o_jew->jewelry_status }}</li>
+                                    @endforeach
 
                                 </div>
                             </div>

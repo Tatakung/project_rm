@@ -105,7 +105,7 @@
         <li class="breadcrumb-item active">รายละเอียดออเดอร์ที่ {{ $order_id }}</li>
     </ol>
     <div class="container mt-4">
-        <h3>รายละเอียดออเดอร์เช่า {{ $order_id }}</h3>
+        <h3>รายละเอียดออเดอร์เช่า เลขออเดอร์ที่{{ $order_id }}</h3>
         <div class="row mb-4">
             <div class="col-md-6">
                 <p><strong>ชื่อลูกค้า:</strong> คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</p>
@@ -191,7 +191,7 @@
                         </td>
                         <td>
                             @php
-                                // เอาไว้ใช้ตอนที่ยกเลิกorder แล้วบอกว่า มันยกเลิหกมันไหน
+                                // เอาไว้ใช้ตอนที่ยกเลิกorder แล้วบอกว่า มันยกเลิหกวันไหน
                                 $status_orderdetail = App\Models\Orderdetailstatus::where('order_detail_id', $item->id)
                                     ->orderBy('created_at', 'desc')
                                     ->first();
@@ -234,7 +234,7 @@
                                     <span style="font-size: 13px; color: red ; ">-รอปรับแก้ขนาด</span> <br>
                                 @endif
                                 @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
-                                    <span style="color: red ; font-size: 12px;">ยกเลิกมื่อ:
+                                    <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
                                         {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
                                     </span>
@@ -245,7 +245,7 @@
                                     {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
                                     <br>
                                     @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
-                                        <span style="color: red ; font-size: 12px;">ยกเลิกมื่อ:
+                                        <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
                                             {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
                                             {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
                                         </span>
@@ -254,7 +254,7 @@
                                     เช่าเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
                                     <br>
                                     @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
-                                        <span style="color: red ; font-size: 12px;">ยกเลิกมื่อ:
+                                        <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
                                             {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
                                             {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
                                         </span>
@@ -295,7 +295,90 @@
                             {{-- {{ $item->status_detail }} --}}
 
                             @if ($item->type_order == 2)
-                                {{ $item->status_detail }}
+                                {{-- {{ $item->status_detail }} --}}
+
+                                @if ($item->orderdetailmanytoonedress->separable == 1)
+                                    @if ($item->status_detail == 'ถูกจอง')
+                                        @if (
+                                            $item->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
+                                                $item->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
+                                            <button class="btn btn-sm btn-danger"><i
+                                                    class="fas fa-exclamation-triangle me-2"></i>ชุด{{ $item->orderdetailmanytoonedress->dress_status }}</button>
+                                        @else
+                                            {{ $item->status_detail }}
+                                        @endif
+                                    @elseif($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
+                                        <span style="color: red ; ">{{ $item->status_detail }}</span>
+                                    @else
+                                        {{ $item->status_detail }}
+                                    @endif
+                                @elseif($item->orderdetailmanytoonedress->separable == 2)
+                                    @if ($item->shirtitems_id)
+                                        @if ($item->status_detail == 'ถูกจอง')
+                                            @if (
+                                                $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                    $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                                <button class="btn btn-sm btn-danger"><i
+                                                        class="fas fa-exclamation-triangle me-2"></i>เสื้อ{{ $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}</button>
+                                            @else
+                                                {{ $item->status_detail }}
+                                            @endif
+                                        @elseif($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
+                                            <span style="color: red ; ">{{ $item->status_detail }}</span>
+                                        @else
+                                            {{ $item->status_detail }}
+                                        @endif
+                                    @elseif($item->skirtitems_id)
+                                        @if ($item->status_detail == 'ถูกจอง')
+                                            @if (
+                                                $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                    $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                                <button class="btn btn-sm btn-danger"><i
+                                                        class="fas fa-exclamation-triangle me-2"></i>ผ้าถุง{{ $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}</button>
+                                            @else
+                                                {{ $item->status_detail }}
+                                            @endif
+                                        @elseif($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
+                                            <span style="color: red ; ">{{ $item->status_detail }}</span>
+                                        @else
+                                            {{ $item->status_detail }}
+                                        @endif
+                                    @else
+                                        @if ($item->status_detail == 'ถูกจอง')
+                                            @if (
+                                                $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                    $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า' ||
+                                                    $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                    $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                                <button class="btn btn-sm btn-danger">
+
+                                                    @if (
+                                                        $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                            $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                                        เสื้อ :
+                                                        {{ $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                        <br>
+                                                    @endif
+
+
+                                                    @if (
+                                                        $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                            $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                                        ผ้าถุง :
+                                                        {{ $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                    @endif
+
+                                                </button>
+                                            @else
+                                                {{ $item->status_detail }}
+                                            @endif
+                                        @elseif($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
+                                            <span style="color: red ; ">{{ $item->status_detail }}</span>
+                                        @else
+                                            {{ $item->status_detail }}
+                                        @endif
+                                    @endif
+                                @endif
                             @elseif($item->type_order == 3)
                                 @if ($item->detail_many_one_re->jewelry_id)
                                     {{-- เช่าเป็นชิ้น --}}
@@ -359,8 +442,47 @@
 
                             @if ($item->status_detail == 'ถูกจอง')
                                 @if ($item->type_order == 2)
-                                    <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
-                                        class="btn btn-postpone btn-sm">เลื่อนวัน</a>
+                                    {{-- <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
+                                        class="btn btn-postpone btn-sm">เลื่อนวัน</a> --}}
+
+
+                                    @if ($item->orderdetailmanytoonedress->separable == 1)
+                                        @if (
+                                            $item->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
+                                                $item->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
+                                        @else
+                                            <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
+                                                class="btn btn-postpone btn-sm">เลื่อนวัน</a>
+                                        @endif
+                                    @elseif($item->orderdetailmanytoonedress->separable == 2)
+                                        @if ($item->shirtitems_id)
+                                            @if (
+                                                $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                    $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                            @else
+                                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
+                                                    class="btn btn-postpone btn-sm">เลื่อนวัน</a>
+                                            @endif
+                                        @elseif($item->skirtitems_id)
+                                            @if (
+                                                $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                    $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                            @else
+                                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
+                                                    class="btn btn-postpone btn-sm">เลื่อนวัน</a>
+                                            @endif
+                                        @else
+                                            @if (
+                                                $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                    $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า' ||
+                                                    $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                    $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                            @else
+                                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
+                                                    class="btn btn-postpone btn-sm">เลื่อนวัน</a>
+                                            @endif
+                                        @endif
+                                    @endif
                                 @elseif($item->type_order == 3)
                                     @if ($item->detail_many_one_re->jewelry_id)
                                         @if (
@@ -382,6 +504,8 @@
                                         @endif
                                     @endif
                                 @endif
+
+
                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
                                     data-target="#cancelModal{{ $item->id }}">
                                     ยกเลิกการจอง
@@ -537,7 +661,7 @@
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
                 <div>
                     <p class="mb-1">ใบเสร็จรับเงิน(จอง)</p>
-                    <p class="mb-1">วันที่:
+                    <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
                         {{ Carbon\Carbon::parse($receipt_one->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_one->created_at)->year + 543 }}
 
@@ -556,7 +680,7 @@
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
                 <div>
                     <p class="mb-1">ใบเสร็จรับเงิน(วันที่มารับชุด/เครื่องประดับ)</p>
-                    <p class="mb-1">วันที่:
+                    <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
                         {{ Carbon\Carbon::parse($receipt_two->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_two->created_at)->year + 543 }}
 
@@ -571,7 +695,7 @@
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
                 <div>
                     <p class="mb-1">ใบเสร็จคืนเงินประกัน</p>
-                    <p class="mb-1">วันที่:
+                    <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
                         {{ Carbon\Carbon::parse($receipt_three->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_three->created_at)->year + 543 }}
 
@@ -583,6 +707,9 @@
         @endif
     </div>
 
+
+
+    
     <div class="modal fade" id="show_modal_pickup_total" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg" role="document">
@@ -595,7 +722,8 @@
                 </div>
                 <div class="modal-body">
 
-                    <p><strong>ชื่อลูกค้า:</strong> คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</p>
+                    <p><strong>ชื่อลูกค้า:</strong> คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                    </p>
                     <p><strong>วันที่นัดรับ:</strong>
                         {{ Carbon\Carbon::parse($date_only->pickup_date)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($date_only->pickup_date)->year + 543 }}

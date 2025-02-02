@@ -58,7 +58,6 @@
         .status-step small {
             color: #6c757d;
         }
-        
     </style>
 
 
@@ -117,16 +116,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
@@ -140,6 +130,52 @@
     </ol>
 
     <div class="container mt-4">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+        @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+            <div class="alert alert-danger" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>
+                        <p class="mb-0">
+                            <strong>รายการนี้ถูกยกเลิกรายการเช่าตัด{{ $orderdetail->type_dress }}โดยทางร้าน
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+            <div class="alert alert-danger" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>
+                        <p class="mb-0">
+                            <strong>รายการนี้ถูกยกเลิกรายการเช่าตัด{{ $orderdetail->type_dress }}โดยลูกค้า
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endif
+
+
+
+
         @php
             $dress = App\Models\Dress::find($orderdetail->dress_id);
             $typename = App\Models\Typedress::where('id', $dress->type_dress_id)->value('type_dress_name');
@@ -436,7 +472,7 @@
                             @if (in_array('ตัดชุดเสร็จสิ้น', $list_status))
                                 <div class="status-step text-center">
                                     <div class="status-icon @if (in_array('ตัดชุดเสร็จสิ้น', $list_status)) active @endif">
-                                        <i class="fas fa-check"></i>
+                                        {{-- <i class="fas fa-check"></i> --}}
                                     </div>
                                     <p>ตัดชุดเสร็จสิ้น</p>
                                     <small>
@@ -455,7 +491,7 @@
 
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
+                                    {{-- <i class="fas fa-check"></i> --}}
                                 </div>
                                 <p>ถูกจอง</p>
                                 <small>
@@ -469,7 +505,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    // ->addHours(7)
+                                                    ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -483,9 +519,46 @@
 
 
 
+                            @if (in_array('ยกเลิกโดยทางร้าน', $list_status) || in_array('ยกเลิกโดยลูกค้า', $list_status))
+                                <div class="status-step text-center">
+                                    <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif"
+                                        style="background: rgb(166, 32, 32) ; ">
+                                        {{-- <i class="fas fa-check"></i> --}}
+                                    </div>
+                                    <p class="text-danger">ยกเลิกรายการ</p>
+                                    <small>
+                                        <p>
+                                            @php
+                                                $created_at = App\Models\Orderdetailstatus::where(
+                                                    'order_detail_id',
+                                                    $orderdetail->id,
+                                                )
+                                                    ->whereIn('status', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+                                                    ->first();
+                                                if ($created_at) {
+                                                    $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                        ->addHours(7)
+                                                        ->format('d/m/Y H:i');
+                                                } else {
+                                                    $text_date = 'รอดำเนินการ';
+                                                }
+                                            @endphp
+                                        <p class="text-danger">{{ $text_date }}</p>
+                                        </p>
+                                    </small>
+                                </div>
+                                <div class="status-line "></div>
+                            @endif
+
+
+
+
+
+
+
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('กำลังเช่า', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
+                                    {{-- <i class="fas fa-check"></i> --}}
                                 </div>
                                 <p>กำลังเช่า</p>
                                 <small>
@@ -499,7 +572,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    // ->addHours(7)
+                                                    ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -517,7 +590,7 @@
 
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('คืนชุดแล้ว', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
+                                    {{-- <i class="fas fa-check"></i> --}}
                                 </div>
                                 <p>คืนชุดแล้ว</p>
                                 <small>
@@ -531,7 +604,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    // ->addHours(7)
+                                                    ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -723,7 +796,7 @@
                             <!-- ข้อมูลระยะเวลา -->
                             <div class="col-md-6 mb-4">
                                 <div class="d-flex align-items-center text-secondary mb-3">
-                                    
+
                                     <span class="fw-medium">ข้อมูลระยะเวลา</span>
                                 </div>
                                 <div class="ms-4">
@@ -762,7 +835,7 @@
                             <!-- ข้อมูลการเงิน -->
                             <div class="col-md-6">
                                 <div class="d-flex align-items-center text-secondary mb-3">
-                                    
+
                                     <span class="fw-medium">ข้อมูลการเงิน</span>
                                 </div>
                                 <div class="ms-4">
@@ -957,9 +1030,10 @@
 
                             <div class="p-3 bg-light rounded mb-3">
                                 <div class="d-flex justify-content-between">
-                                    <span>เงินมัดจำ: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
-                                        )</span></span>
+                                    <span>เงินมัดจำ: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                            )</span></span>
                                     <span>
                                         {{ number_format($orderdetail->deposit, 2) }} บาท
                                     </span>
@@ -970,7 +1044,7 @@
                                 <div class="d-flex justify-content-between fw-bold text-info">
                                     <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
                                     <span class="fs-5"
-                                        style="color:#0000CD ; ">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance + $decoration_sum , 2) }}
+                                        style="color:#0000CD ; ">{{ number_format($orderdetail->price - $orderdetail->deposit + $orderdetail->damage_insurance + $decoration_sum, 2) }}
                                         บาท</span>
                                 </div>
                                 <small class="text-muted" style="color:#0000CD ; ">
@@ -981,9 +1055,10 @@
                         @elseif($orderdetail->status_payment == 2)
                             <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
-                                    <span>ค่าเช่าชุด: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
-                                        )</span></span>
+                                    <span>ค่าเช่าชุด: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                            )</span></span>
                                     <span>
                                         {{ number_format($orderdetail->price, 2) }} บาท
                                     </span>
@@ -1004,37 +1079,38 @@
 
                             <div class="p-3 bg-light rounded">
                                 <div class="d-flex justify-content-between">
-                                    <span>เงินประกัน: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
-                                        )</span></span>
+                                    <span>เงินประกัน: <span style="font-size: 14px; color: rgb(133, 126, 126) ;">(ชำระเมื่อ
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($orderdetail->created_at)->year + 543 }}
+                                            )</span></span>
                                     <span>
                                         {{ number_format($orderdetail->damage_insurance, 2) }} บาท
                                     </span>
                                 </div>
                             </div>
 
-                            @if($decoration_sum == 0 )
-                            <div class="p-4 bg-opacity-10 rounded mt-4" style="background-color: #F0FFFF	 ; ">
-                                <div class="d-flex justify-content-between fw-bold text-info">
-                                    <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
-                                    <span class="fs-5" style="color:#0000CD ; ">0.00
-                                        บาท</span>
+                            @if ($decoration_sum == 0)
+                                <div class="p-4 bg-opacity-10 rounded mt-4" style="background-color: #F0FFFF	 ; ">
+                                    <div class="d-flex justify-content-between fw-bold text-info">
+                                        <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
+                                        <span class="fs-5" style="color:#0000CD ; ">0.00
+                                            บาท</span>
+                                    </div>
+                                    <small class="text-muted" style="color:#0000CD ; ">
+                                        ชำระเงินครบเรียบร้อยแล้ว
+                                        <i class="text-success bi bi-check-circle ms-2"></i>
+                                    </small>
                                 </div>
-                                <small class="text-muted" style="color:#0000CD ; ">
-                                    ชำระเงินครบเรียบร้อยแล้ว
-                                    <i class="text-success bi bi-check-circle ms-2"></i>
-                                </small>
-                            </div>
                             @elseif($decoration_sum > 0)
-                            <div class="p-4 bg-opacity-10 rounded mt-4" style="background-color: #F0FFFF	 ; ">
-                                <div class="d-flex justify-content-between fw-bold text-info">
-                                    <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
-                                    <span class="fs-5"
-                                        style="color:#0000CD ; ">{{ number_format($decoration_sum , 2) }}
-                                        บาท</span>
-                                </div>
+                                <div class="p-4 bg-opacity-10 rounded mt-4" style="background-color: #F0FFFF	 ; ">
+                                    <div class="d-flex justify-content-between fw-bold text-info">
+                                        <span style="color:#0000CD ; ">ยอดคงเหลือที่ต้องชำระ:</span>
+                                        <span class="fs-5"
+                                            style="color:#0000CD ; ">{{ number_format($decoration_sum, 2) }}
+                                            บาท</span>
+                                    </div>
 
-                            </div>
+                                </div>
                             @endif
 
 
@@ -1061,6 +1137,8 @@
     </div>
 
 
+
+    
     <div class="modal fade" id="updatestatus_return" tabindex="-1" role="dialog"
         aria-labelledby="updatestatus_returnLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg" role="document">
@@ -1195,79 +1273,245 @@
 
 
                         <!-- ฟิลด์สำหรับเลือกสถานะการดำเนินการหลังคืนชุด -->
+                        @if ($orderdetail->shirtitems_id)
+                            <div class="form-group">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-gray-100">รายการ</th>
+                                            <th class="bg-gray-100">การดำเนินการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
-                        <div class="form-group">
-                            <label for="return_status">เลือกการดำเนินการ:</label>
-                            <select class="form-control" id="return_status" name="return_status" required>
-                                <option value="ส่งซัก" selected>ส่งซัก</option>
-                                <option value="ต้องซ่อมแซม">ส่งซ่อม</option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="repair_details_group" style="display: none;">
-                            <label for="repair_details">รายละเอียดการซ่อม:
-                            </label>
-                            <select id="repair_type" name="repair_type">
-                                <option value="10" id="type_total_dress">ทั้งชุด</option>
-                                <option value="20" id="type_shirt">เฉพาะเสื้อ</option>
-                                <option value="30" id="type_skirt">เฉพาะผ้าถุง</option>
-                            </select>
-                            <textarea class="form-control" id="repair_details" name="repair_details" rows="3"
-                                placeholder="รายละเอียดการซ่อม"></textarea>
-                        </div>
+                                        <tr>
+                                            <td class="px-4 py-2">
+                                                {{ $typename }}
+                                                {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <select name="actionreturnitemshirt" id="actionreturnitemshirt"
+                                                    class="form-control">
+                                                    <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                    <option value="repairitem">ต้องซ่อม</option>
+                                                    <option value="lost">สูญหาย</option>
+                                                </select>
 
-                        @php
-                            $dress_separable = App\Models\Dress::where('id', $orderdetail->dress_id)->value(
-                                'separable',
-                            ); //เช็คว่าชุดแยกได้ไหม
-                        @endphp
+                                                <div id="showrepair_detail_itemshirt" class="mt-2"
+                                                    style="display: none;">
+                                                    <textarea name="repair_detail_for_itemshirt" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
+                                                        rows="3"></textarea>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                var actionreturnitemshirt = document.getElementById('actionreturnitemshirt');
+                                                var showrepair_detail_itemshirt = document.getElementById('showrepair_detail_itemshirt');
+                                                actionreturnitemshirt.addEventListener('change', function() {
+                                                    if (actionreturnitemshirt.value == "repairitem") {
+                                                        showrepair_detail_itemshirt.style.display = 'block';
+                                                    } else {
+                                                        showrepair_detail_itemshirt.style.display = 'none';
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    </tbody>
+                                </table>
+                            </div>
+                        @elseif($orderdetail->skirtitems_id)
+                            <div class="form-group">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-gray-100">รายการ</th>
+                                            <th class="bg-gray-100">การดำเนินการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
-                        <script>
-                            var dress_separable = '{{ $dress_separable }}';
-                            var return_status = document.getElementById('return_status');
-                            var type_total_dress = document.getElementById('type_total_dress');
-                            var type_shirt = document.getElementById('type_shirt');
-                            var type_skirt = document.getElementById('type_skirt');
-                            var repair_details_group = document.getElementById('repair_details_group');
-                            var have_shirt = '{{ $orderdetail->shirtitems_id }}';
-                            var have_skirt = '{{ $orderdetail->skirtitems_id }}';
+                                        <tr>
+                                            <td class="px-4 py-2">
+                                                {{ $typename }}
+                                                {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ผ้าถุง)
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <select name="actionreturnitemskirt" id="actionreturnitemskirt"
+                                                    class="form-control">
+                                                    <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                    <option value="repairitem">ต้องซ่อม</option>
+                                                    <option value="lost">สูญหาย</option>
+                                                </select>
 
-                            return_status.addEventListener('change', function() {
+                                                <div id="showrepair_detail_itemskirt" class="mt-2"
+                                                    style="display: none;">
+                                                    <textarea name="repair_detail_for_itemskirt" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
+                                                        rows="3"></textarea>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                var actionreturnitemskirt = document.getElementById('actionreturnitemskirt');
+                                                var showrepair_detail_itemskirt = document.getElementById('showrepair_detail_itemskirt');
+                                                actionreturnitemskirt.addEventListener('change', function() {
+                                                    if (actionreturnitemskirt.value == "repairitem") {
+                                                        showrepair_detail_itemskirt.style.display = 'block';
+                                                    } else {
+                                                        showrepair_detail_itemskirt.style.display = 'none';
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            @if ($datadress->separable == 1)
+                                <div class="form-group">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="bg-gray-100">รายการ</th>
+                                                <th class="bg-gray-100">การดำเนินการ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
-                                if (return_status.value === "ต้องซ่อมแซม") {
-                                    repair_details_group.style.display = 'block';
-                                    document.getElementById('repair_details').setAttribute('required', 'required');
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    {{ $typename }}
+                                                    {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ทั้งชุด)
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <select name="actionreturnitemtotaldress"
+                                                        id="actionreturnitemtotaldress" class="form-control">
+                                                        <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                        <option value="repairitem">ต้องซ่อม</option>
+                                                        <option value="lost">สูญหาย</option>
+                                                    </select>
 
-                                    if (dress_separable == '1') {
-                                        type_shirt.style.display = 'none';
-                                        type_skirt.style.display = 'none';
-                                        type_total_dress.style.display = 'block';
-                                        type_total_dress.selected = true;
-                                    } else if (dress_separable == '2') {
-                                        if (have_shirt) {
-                                            type_shirt.style.display = 'block';
-                                            type_skirt.style.display = 'none';
-                                            type_total_dress.style.display = 'none';
-                                            type_shirt.selected = true;
-                                        } else if (have_skirt) {
-                                            type_shirt.style.display = 'none';
-                                            type_skirt.style.display = 'block';
-                                            type_total_dress.style.display = 'none';
-                                            type_skirt.selected = true;
-                                        } else {
-                                            type_shirt.style.display = 'block';
-                                            type_skirt.style.display = 'block';
-                                            type_total_dress.style.display = 'block';
-                                            type_total_dress.selected = true;
-                                        }
-                                    }
+                                                    <div id="showrepair_detail_itemtotaldress" class="mt-2"
+                                                        style="display: none;">
+                                                        <textarea name="repair_detail_for_itemtotaldress" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
+                                                            rows="3"></textarea>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    var actionreturnitemtotaldress = document.getElementById('actionreturnitemtotaldress');
+                                                    var showrepair_detail_itemtotaldress = document.getElementById('showrepair_detail_itemtotaldress');
+                                                    actionreturnitemtotaldress.addEventListener('change', function() {
+                                                        if (actionreturnitemtotaldress.value == "repairitem") {
+                                                            showrepair_detail_itemtotaldress.style.display = 'block';
+                                                        } else {
+                                                            showrepair_detail_itemtotaldress.style.display = 'none';
+                                                        }
+                                                    });
+                                                });
+                                            </script>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @elseif($datadress->separable == 2)
+                                <div class="form-group">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="bg-gray-100">รายการ</th>
+                                                <th class="bg-gray-100">การดำเนินการ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
-                                } else {
-                                    repair_details_group.style.display = 'none';
-                                    document.getElementById('repair_details').value = '';
-                                    document.getElementById('repair_details').removeAttribute('required');
-                                }
-                            });
-                        </script>
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    {{ $typename }}
+                                                    {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <select name="actionreturnitemtotal1" id="actionreturnitemtotal1"
+                                                        class="form-control">
+                                                        <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                        <option value="repairitem">ต้องซ่อม</option>
+                                                        <option value="lost">สูญหาย</option>
+                                                    </select>
+                                                    <input type="hidden" name="filtershirt_id"
+                                                        value="{{ $filtershirt_id }}">
+
+                                                    <div id="showrepair_detail_itemtotal1" class="mt-2"
+                                                        style="display: none;">
+                                                        <textarea name="repair_detail_for_item1" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
+                                                            rows="3"></textarea>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    {{ $typename }}
+                                                    {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ผ้าถุง)
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <select name="actionreturnitemtotal2" id="actionreturnitemtotal2"
+                                                        class="form-control">
+                                                        <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                        <option value="repairitem">ต้องซ่อม</option>
+                                                        <option value="lost">สูญหาย</option>
+                                                    </select>
+                                                    <input type="hidden" name="filterskirt_id"
+                                                        value="{{ $filterskirt_id }}">
+
+                                                    <div id="showrepair_detail_itemtotal2" class="mt-2"
+                                                        style="display: none;">
+                                                        <textarea name="repair_detail_for_item2" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
+                                                            rows="3"></textarea>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    var actionreturnitemtotal1 = document.getElementById('actionreturnitemtotal1');
+                                                    var showrepair_detail_itemtotal1 = document.getElementById('showrepair_detail_itemtotal1');
+                                                    actionreturnitemtotal1.addEventListener('change', function() {
+                                                        if (actionreturnitemtotal1.value == "repairitem") {
+                                                            showrepair_detail_itemtotal1.style.display = 'block';
+                                                        } else {
+                                                            showrepair_detail_itemtotal1.style.display = 'none';
+                                                        }
+                                                    });
+
+                                                    var actionreturnitemtotal2 = document.getElementById('actionreturnitemtotal2');
+                                                    var showrepair_detail_itemtotal2 = document.getElementById('showrepair_detail_itemtotal2');
+                                                    actionreturnitemtotal2.addEventListener('change', function() {
+                                                        if (actionreturnitemtotal2.value == "repairitem") {
+                                                            showrepair_detail_itemtotal2.style.display = 'block';
+                                                        } else {
+                                                            showrepair_detail_itemtotal2.style.display = 'none';
+                                                        }
+                                                    });
+                                                });
+                                            </script>
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            @endif
+
+
+
+                        @endif
+
+
+
+
+
+
 
 
                     </div>
@@ -1281,4 +1525,13 @@
             </form>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
 @endsection

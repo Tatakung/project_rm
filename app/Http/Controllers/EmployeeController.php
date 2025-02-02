@@ -83,21 +83,29 @@ class EmployeeController extends Controller
 
 
 
-        $clean_pending = Clean::where('clean_status', "รอดำเนินการ")->get();  //ชุดที่รอทำความสะอาด
+        $clean_pending_dress = Reservationfilterdress::where('status', 'รอทำความสะอาด')->get();  //ชุดที่รอทำความสะอาด
         $clean_pending_jewelry = Reservationfilters::where('status', 'รอทำความสะอาด')->get();
 
 
-        $repair = Repair::where('repair_status', 'รอดำเนินการ')
-            ->whereNotNull('reservation_id')
+        $repair_dress = Repair::where('repair_status', 'รอดำเนินการ')
+            ->whereNotNull('reservationfilterdress_id')
             ->get();
 
         $repair_jewelry = Repair::where('repair_status', 'รอดำเนินการ')
             ->whereNotNull('reservationfilter_id')
             ->get();
 
+        
+
+
+
+
+
+
+
         $employee = Auth::user();
         $time = now();
-        return view('employee.employeehome', compact('employee', 'time', 'return_jewelry_today', 'return_dress_today', 'work_waiting_to_cut', 'clean_pending', 'repair', 'clean_pending_jewelry', 'repair_jewelry'));
+        return view('employee.employeehome', compact('employee', 'time', 'return_jewelry_today', 'return_dress_today', 'work_waiting_to_cut', 'clean_pending_dress', 'repair_dress', 'clean_pending_jewelry', 'repair_jewelry'));
     }
 
 
@@ -232,7 +240,9 @@ class EmployeeController extends Controller
 
 
     public function queuerentcuttotal()
+
     {
+        
         $cutdresss_page_one = Orderdetail::where('type_order', 4)
             ->where('status_detail', 'รอดำเนินการตัด')
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
@@ -241,10 +251,26 @@ class EmployeeController extends Controller
             ->where('status_detail', 'เริ่มดำเนินการตัด')
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
             ->get();
+
+
+
         $cutdresss_page_three = Orderdetail::where('type_order', 4)
-            ->where('status_detail', 'ตัดชุดเสร็จสิ้น')
+            ->where('status_detail', 'ถูกจอง')
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
             ->get();
+
+        
+        // 1.รอดำเนินการตัด
+        // 2.เริ่มดำเนินการตัด
+        // 3.ตัดชุดเสร็จสิ้น
+        // 4.ถูกจอง
+        // 5.กำลังเช่า
+        // 6.คืนชุดแล้ว
+
+
+
+
+
 
         return view('employeerentcut.queue-rentcut-total', compact('cutdresss_page_one', 'cutdresss_page_two', 'cutdresss_page_three'));
     }
@@ -1673,7 +1699,8 @@ class EmployeeController extends Controller
                         }
                     }
                 }
-            } elseif ($orderdetail->type_order == 3) {
+            }
+            elseif ($orderdetail->type_order == 3) {
                 //เช่าเครื่องประดับ
                 $date = Date::where('order_detail_id', $orderdetail->id)
                     ->orderBy('created_at', 'desc')

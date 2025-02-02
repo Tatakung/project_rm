@@ -550,11 +550,20 @@
                     <a href="{{ route('cleanningdress') }}"
                         class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                         รายการซักชุด
+
+                        {{-- @php
+                            $cleancountdress = App\Models\Clean::whereIn('clean_status', [
+                                'รอดำเนินการ',
+                                'กำลังส่งซัก',
+                            ])->count();
+                        @endphp
+                        @if ($cleancountdress != 0)
+                            <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
+                                {{ $cleancountdress }}
+                            </span>
+                        @endif --}}
                         
-                        
-                            {{-- <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
-                               
-                            </span> --}}
+                            
                         
                     </a>
 

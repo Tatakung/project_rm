@@ -28,6 +28,7 @@ use App\Models\Skirtitem;
 use App\Models\AdditionalChange;
 use App\Models\Typedress;
 use App\Models\User;
+use App\Models\Reservationfilterdress;
 use App\Models\ReceiptReturn;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -378,11 +379,18 @@ class ManageRentcutController extends Controller
         $who_login = Auth::user()->id; //คนที่กำลังlogin
         $person_order = Order::where('id', $orderdetail->order_id)->value('user_id');  //คนที่รับ order
 
+        $check_cancel = Orderdetailstatus::where('order_detail_id', $id)
+            ->where('status', 'เริ่มดำเนินการตัด')
+            ->exists();
+        $check_cut_dress_success = Orderdetailstatus::where('order_detail_id', $id)
+        ->where('status', 'ตัดชุดเสร็จสิ้น')
+        ->exists();
+        
 
         $check_button_add_fitting_image = Orderdetailstatus::where('order_detail_id', $id)
             ->where('status', 'ถูกจอง')
             ->exists();
-        return view('employeerentcut.managedetailrentcut-for-doing-cut', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'employee', 'fitting', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal', 'check_button_add_fitting_image'));
+        return view('employeerentcut.managedetailrentcut-for-doing-cut', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'employee', 'fitting', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal', 'check_button_add_fitting_image', 'check_cancel','check_cut_dress_success'));
     }
     public function storeTailoredDress($id)
     {
@@ -413,9 +421,9 @@ class ManageRentcutController extends Controller
         $dress = Dress::where('type_dress_id', $typedress->id)->max('dress_code');
         $next_code = $dress + 1;
 
-        $show_price_input = $request->input('show_price_input') ?? 0 ;
-        $show_price_shirt_input = $request->input('show_price_shirt_input') ?? 0 ;
-        $show_price_skirt_input = $request->input('show_price_skirt_input') ?? 0 ;
+        $show_price_input = $request->input('show_price_input') ?? 0;
+        $show_price_shirt_input = $request->input('show_price_shirt_input') ?? 0;
+        $show_price_skirt_input = $request->input('show_price_skirt_input') ?? 0;
 
 
 
@@ -440,6 +448,9 @@ class ManageRentcutController extends Controller
             $add_image->dress_image = $request->file('dress_image')->store('dress_images', 'public');
             $add_image->save();
         }
+
+
+
 
 
         if ($separate_rentable == 1) {
@@ -480,22 +491,7 @@ class ManageRentcutController extends Controller
             $add_skirtitem->skirtitem_rental = 0;
             $add_skirtitem->save();
 
-            //เสื้อตารางdressmeasurement
-            // $name_shirt = $request->input('name_shirt_');
-            // $number_shirt = $request->input('number_shirt_');
-            // $number_shirt_min = $request->input('number_shirt_min_');
-            // $number_shirt_max = $request->input('number_shirt_max_');
-            // foreach ($name_shirt as $index => $name_sh) {
-            //     $add_item_shiry = new Dressmea();
-            //     $add_item_shiry->dress_id = $dress->id;
-            //     $add_item_shiry->shirtitems_id  = $add_shirtitem->id;
-            //     $add_item_shiry->mea_dress_name = $name_sh;
-            //     $add_item_shiry->initial_mea = $number_shirt[$index];
-            //     $add_item_shiry->initial_min = $number_shirt_min[$index];
-            //     $add_item_shiry->initial_max = $number_shirt_max[$index];
-            //     $add_item_shiry->current_mea = $number_shirt[$index];
-            //     $add_item_shiry->save();
-            // }
+
 
 
             // ขนาดเสื้อเสื้อตารางdressmeasurement
@@ -541,61 +537,90 @@ class ManageRentcutController extends Controller
                     }
                 }
             }
-            // $name_skirt = $request->input('name_skirt_');
-            // $number_skirt = $request->input('number_skirt_');
-            // $number_skirt_min = $request->input('number_skirt_min_');
-            // $number_skirt_max = $request->input('number_skirt_max_');
-            // foreach ($name_skirt as $index => $name_sk) {
-            //     $add_item_skiry = new Dressmea();
-            //     $add_item_skiry->dress_id = $dress->id;
-            //     $add_item_skiry->skirtitems_id  = $add_skirtitem->id;
-            //     $add_item_skiry->mea_dress_name = $name_sk;
-            //     $add_item_skiry->initial_mea = $number_skirt[$index];
-            //     $add_item_skiry->initial_min = $number_skirt_min[$index];
-            //     $add_item_skiry->initial_max = $number_skirt_max[$index];
-            //     $add_item_skiry->current_mea = $number_skirt[$index];
-            //     $add_item_skiry->save();
-            // }
+        }
 
+
+        $cancel = Orderdetailstatus::where('order_detail_id', $id)
+            ->whereIn('status', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+            ->exists();
+
+        if ($cancel == true) {
+            $create_status = new Orderdetailstatus();
+            $create_status->order_detail_id = $id;
+            $create_status->status = "ตัดชุดเสร็จสิ้น";
+            $create_status->save();
+        } elseif ($cancel == false) {
+
+            $Date = Date::where('order_detail_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            //ตารางreservation 
+            $reservation = new Reservation();
+            $reservation->dress_id = $dress->id;
+            $reservation->start_date = $Date->pickup_date;
+            $reservation->end_date = $Date->return_date;
+            $reservation->status = 'ถูกจอง';
+            $reservation->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+            $reservation->save();
+
+            if ($separate_rentable == 1) {
+
+
+                $filter = new Reservationfilterdress();
+                $filter->dress_id = $dress->id;
+                $filter->start_date = $Date->pickup_date;
+                $filter->end_date = $Date->return_date;
+                $filter->status = 'ถูกจอง';
+                $filter->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+                $filter->reservation_id = $reservation->id;
+                $filter->save();
+            } elseif ($separate_rentable == 2) {
+
+                $filter = new Reservationfilterdress();
+                $filter->dress_id = $dress->id;
+                $filter->shirtitems_id = $add_shirtitem->id;
+                $filter->start_date = $Date->pickup_date;
+                $filter->end_date = $Date->return_date;
+                $filter->status = 'ถูกจอง';
+                $filter->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+                $filter->reservation_id = $reservation->id;
+                $filter->save();
+
+                $filter = new Reservationfilterdress();
+                $filter->dress_id = $dress->id;
+                $filter->skirtitems_id = $add_skirtitem->id;
+                $filter->start_date = $Date->pickup_date;
+                $filter->end_date = $Date->return_date;
+                $filter->status = 'ถูกจอง';
+                $filter->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
+                $filter->reservation_id = $reservation->id;
+                $filter->save();
+            }
+
+
+            $update_orderdetail = Orderdetail::find($id);
+            $update_orderdetail->status_detail = "ตัดชุดเสร็จสิ้น";
+            $update_orderdetail->reservation_id = $reservation->id;
+            $update_orderdetail->dress_id = $dress->id;
+            $update_orderdetail->save();
+            $create_status = new Orderdetailstatus();
+            $create_status->order_detail_id = $id;
+            $create_status->status = "ตัดชุดเสร็จสิ้น";
+            $create_status->save();
+
+            $update_orderdetail = Orderdetail::find($id);
+            $update_orderdetail->status_detail = "ถูกจอง";
+            $update_orderdetail->save();
+            $create_status = new Orderdetailstatus();
+            $create_status->order_detail_id = $id;
+            $create_status->status = "ถูกจอง";
+            $create_status->save();
         }
 
 
 
 
-
-
-        $Date = Date::where('order_detail_id', $id)
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        //ตารางreservation 
-        $reservation = new Reservation();
-        $reservation->dress_id = $dress->id;
-        $reservation->start_date = $Date->pickup_date;
-        $reservation->end_date = $Date->return_date;
-        $reservation->status = 'ถูกจอง';
-        $reservation->status_completed = 0; //0 คือ ยังไม่เสด 1 คือเสร็จแล้ว
-        $reservation->save();
-
-
-        $update_orderdetail = Orderdetail::find($id);
-        $update_orderdetail->status_detail = "ตัดชุดเสร็จสิ้น";
-        $update_orderdetail->reservation_id = $reservation->id;
-        $update_orderdetail->dress_id = $dress->id;
-        $update_orderdetail->save();
-        $create_status = new Orderdetailstatus();
-        $create_status->order_detail_id = $id;
-        $create_status->status = "ตัดชุดเสร็จสิ้น";
-        $create_status->save();
-
-        $update_orderdetail = Orderdetail::find($id);
-        $update_orderdetail->status_detail = "ถูกจอง";
-        $update_orderdetail->save();
-        $create_status = new Orderdetailstatus();
-        $create_status->order_detail_id = $id;
-        $create_status->status = "ถูกจอง";
-
-        $create_status->save();
         return redirect()->route('detaildoingrentcut', ['id' => $orderdetail->id])->with('success', 'บันทึกสำเร็จ');
     }
 
@@ -609,13 +634,13 @@ class ManageRentcutController extends Controller
         $orderdetail = Orderdetail::where('order_id', $order->id)->get();
         $customer = Customer::find($order->customer_id);
 
-        $employee = User::find($order->user_id) ; 
+        $employee = User::find($order->user_id);
 
         $pickup_return_only = Date::where('order_detail_id', Orderdetail::where('order_id', $order->id)->value('id'))->first();
 
 
 
-        $pdf = PDF::loadView('receipt.receipt-reservation-dress-or-jewelry', compact('receipt', 'order', 'orderdetail', 'customer', 'pickup_return_only','employee'));
+        $pdf = PDF::loadView('receipt.receipt-reservation-dress-or-jewelry', compact('receipt', 'order', 'orderdetail', 'customer', 'pickup_return_only', 'employee'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
     }
@@ -624,8 +649,8 @@ class ManageRentcutController extends Controller
     {
         $order = Order::find($id);
         $orderdetails = Orderdetail::where('order_id', $order->id)
-        ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
-        ->get();
+            ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+            ->get();
         // $date = Date::where('order_detail_id', $orderdetail->id)
         //     ->orderBy('created_at', 'desc')
         //     ->first();
@@ -633,7 +658,7 @@ class ManageRentcutController extends Controller
             ->where('receipt_type', 2)
             ->first();
         $customer = Customer::find($order->customer_id);
-        $employee = User::find($order->user_id) ; 
+        $employee = User::find($order->user_id);
         $transaction_date = $order->created_at->format('Y-m-d');
         $only_rent = Date::where('order_detail_id', $orderdetails->first()->id)->first(); //วันนัดรับ - นัดคืน 
         $only_payment = Paymentstatus::where('order_detail_id', $orderdetails->first()->id)
@@ -643,7 +668,7 @@ class ManageRentcutController extends Controller
 
 
 
-        $pdf = PDF::loadView('receipt.receipt_pickup_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'transaction_date', 'only_rent', 'only_payment','employee'));
+        $pdf = PDF::loadView('receipt.receipt_pickup_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'transaction_date', 'only_rent', 'only_payment', 'employee'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
         return $pdfs->stream();
@@ -655,8 +680,8 @@ class ManageRentcutController extends Controller
     {
         $order = Order::find($id);
         $orderdetails = Orderdetail::where('order_id', $order->id)
-        ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
-        ->get();
+            ->whereNotIn('status_detail', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+            ->get();
 
         // $date = Date::where('order_detail_id', $orderdetail->id)
         //     ->orderBy('created_at', 'desc')
@@ -666,7 +691,7 @@ class ManageRentcutController extends Controller
             ->where('receipt_type', 3)
             ->first();
         $customer = Customer::find($order->customer_id);
-        $employee = User::find($order->user_id) ; 
+        $employee = User::find($order->user_id);
         $price_damage_insurance = 0;
         $price_return_late = 0;
         $price_extend_time = 0;
@@ -691,7 +716,7 @@ class ManageRentcutController extends Controller
                 $price_extend_time += $extend_time->amount;
             }
         }
-        $pdf = PDF::loadView('receipt.receipt_return_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'price_damage_insurance','price_return_late','price_extend_time','employee'));
+        $pdf = PDF::loadView('receipt.receipt_return_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'price_damage_insurance', 'price_return_late', 'price_extend_time', 'employee'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
         return $pdfs->stream();

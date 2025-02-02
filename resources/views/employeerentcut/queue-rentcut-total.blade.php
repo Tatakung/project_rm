@@ -34,9 +34,9 @@
     <div class="container">
 
         <h1 class="text-start my-4" style="color: #3d3d3d;">
-            คิวการเช่าตัดชุด
+            รายการเช่าตัดชุด
         </h1>
-        <p>รายการนี้แสดงลำดับการเช่าตัดชุดสำหรับลูกค้า โดยเรียงตามวันที่ลูกค้าจะมารับเร็วที่สุด</p>
+        <p>รายการนี้แสดงลำดับการเช่าตัดชุดสำหรับลูกค้าทั้งหมด</p>
 
 
 
@@ -60,15 +60,15 @@
                 </a>
             </li>
 
-            {{-- <li class="nav-item">
-                <a href="#paged" class="nav-link" data-toggle="tab">ตัดเสร็จแล้ว
+            <li class="nav-item">
+                <a href="#paged" class="nav-link" data-toggle="tab">ตัดเสร็จแล้ว (รอรับชุดเช่า)
                     @if ($cutdresss_page_three->count() > 0)
                         <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
                             {{ $cutdresss_page_three->count() }}
                         </span>
                     @endif
                 </a>
-            </li> --}}
+            </li>
 
         </ul>
 
@@ -83,7 +83,7 @@
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชื่อลูกค้า</th>
 
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">วันที่รับออเดอร์</th>
-                                <th style="width: 150px;">วันที่นัดส่งมอบชุด</th>
+                                <th style="width: 150px;">วันที่นัดรับชุดเช่า</th>
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">สถานะงาน</th>
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">รายละเอียดงาน</th>
                             </tr>
@@ -134,10 +134,17 @@
                                         @endif
                                     </td>
                                     <td style="padding: 16px;">
-                                        <a href="{{ route('detaildoingrentcut', ['id' => $cutdress->id]) }}"
+                                        {{-- <a href="{{ route('detaildoingrentcut', ['id' => $cutdress->id]) }}"
+                                            class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
+                                            ดูรายละเอียด
+                                        </a> --}}
+                                        <a href="{{ route('employee.ordertotaldetail', ['id' => $cutdress->order_id]) }}"
                                             class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
                                             ดูรายละเอียด
                                         </a>
+
+
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -163,7 +170,7 @@
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชื่อลูกค้า</th>
 
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">วันที่รับออเดอร์</th>
-                                <th style="width: 150px;">วันที่นัดส่งมอบชุด</th>
+                                <th style="width: 150px;">วันที่นัดรับชุดเช่า</th>
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">สถานะงาน</th>
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">รายละเอียดงาน</th>
                             </tr>
@@ -214,10 +221,16 @@
                                         @endif
                                     </td>
                                     <td style="padding: 16px;">
-                                        <a href="{{ route('detaildoingrentcut', ['id' => $cutdress->id]) }}"
+                                        {{-- <a href="{{ route('detaildoingrentcut', ['id' => $cutdress->id]) }}"
+                                            class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
+                                            ดูรายละเอียด
+                                        </a> --}}
+                                        <a href="{{ route('employee.ordertotaldetail', ['id' => $cutdress->order_id]) }}"
                                             class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
                                             ดูรายละเอียด
                                         </a>
+
+                                        
                                     </td>
                                 </tr>
                             @endforeach
@@ -245,7 +258,7 @@
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">ชื่อลูกค้า</th>
 
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">วันที่รับออเดอร์</th>
-                                <th style="width: 150px;">วันที่นัดส่งมอบชุด</th>
+                                <th style="width: 150px;">วันที่นัดรับชุดเช่า</th>
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">สถานะงาน</th>
                                 <th style="padding: 12px; border-bottom: 2px solid #e6e6e6;">รายละเอียดงาน</th>
                             </tr>
@@ -296,10 +309,21 @@
                                         @endif
                                     </td>
                                     <td style="padding: 16px;">
-                                        <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
+                                        {{-- <a href="{{ route('employee.ordertotaldetailshow', ['id' => $cutdress->id]) }}"
+                                            class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
+                                            ดูรายละเอียด
+                                        </a> --}}
+
+
+
+
+                                        <a href="{{ route('employee.ordertotaldetail', ['id' => $cutdress->order_id]) }}"
                                             class="btn btn-s" style="padding: 6px 12px; background-color:#DADAE3; ">
                                             ดูรายละเอียด
                                         </a>
+
+
+
                                     </td>
                                 </tr>
                             @endforeach

@@ -193,15 +193,25 @@
                 $reservation_now = App\Models\reservation::whereIn('id', $list__for__one)
                     ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
                     ->first();
+
+                $check_open_button = true;
                 if ($reservation_now) {
                     if ($reservation_now->id == $orderdetail->reservation_id) {
-                        $check_open_button = true;
+                        // คิวแรก
+                        // คิวแรกก็จริงแต่มันก็ต้องไปเช็คว่าพร้อมให้เช่าไหม
+                        if (
+                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status ==
+                            'พร้อมให้เช่า'
+                        ) {
+                            $check_open_button = true;
+                        } else {
+                            $check_open_button = false;
+                        }
                     } elseif ($reservation_now->id != $orderdetail->reservation_id) {
+                        // ไม่ใช่คิวแรก
                         $check_open_button = false;
                     }
-                }
-                // เพื่อที่เข้ามาดูประวะัติการเช่าได้
-                else {
+                } else {
                     $check_open_button = true;
                 }
             } elseif ($orderdetail->shirtitems_id) {
@@ -231,15 +241,24 @@
                     ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
                     ->first();
 
+                $check_open_button = true;
                 if ($reservation_now) {
                     if ($reservation_now->id == $orderdetail->reservation_id) {
-                        $check_open_button = true;
+                        // คิวแรก
+                        // คิวแรกก็จริงแต่มันก็ต้องไปเช็คว่าพร้อมให้เช่าไหม
+                        if (
+                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status ==
+                            'พร้อมให้เช่า'
+                        ) {
+                            $check_open_button = true;
+                        } else {
+                            $check_open_button = false;
+                        }
                     } elseif ($reservation_now->id != $orderdetail->reservation_id) {
+                        // ไม่ใช่คิวแรก
                         $check_open_button = false;
                     }
-                }
-                // เพื่อที่เข้ามาดูประวะัติการเช่าได้
-                else {
+                } else {
                     $check_open_button = true;
                 }
             } else {
@@ -247,43 +266,40 @@
                     ->where('dress_id', $orderdetail->dress_id)
                     ->orderByRaw(" STR_TO_DATE(start_date,'%Y-%m-%d') asc ")
                     ->first();
+                $check_open_button = true;
                 if ($reservation_now) {
                     if ($reservation_now->id == $orderdetail->reservation_id) {
-                        $check_open_button = true;
+                        // คิวแรก
+                        if ($orderdetail->orderdetailmanytoonedress->separable == 1) {
+                            if ($orderdetail->orderdetailmanytoonedress->dress_status == 'พร้อมให้เช่า') {
+                                $check_open_button = true;
+                            } else {
+                                $check_open_button = false;
+                            }
+                        } elseif ($orderdetail->orderdetailmanytoonedress->separable == 2) {
+                            if (
+                                $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status ==
+                                    'พร้อมให้เช่า' &&
+                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status ==
+                                    'พร้อมให้เช่า'
+                            ) {
+                                $check_open_button = true;
+                            } else {
+                                $check_open_button = false;
+                            }
+                        }
                     } elseif ($reservation_now->id != $orderdetail->reservation_id) {
+                        // ไม่ใช่คิวแรก
                         $check_open_button = false;
                     }
-                }
-                // เพื่อที่เข้ามาดูประวะัติการเช่าได้
-                else {
+                } else {
                     $check_open_button = true;
                 }
             }
 
         @endphp
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {{-- @php
-            $check_open_button = true ; 
-        @endphp --}}
-
-        {{-- <p>คิวแรก : {{$reservation_now->id}}</p>
-        <p>reservation_id : {{$orderdetail->reservation_id}}</p> --}}
+        {{-- <p>คิวแรก {{ $reservation_now->id }}</p> --}}
 
 
         {{-- เอาไว้เช็คว่่าถ้า reservation_id มีคอลัมน์ status_completed เป็น 1 อะ ไอ้พวกแจ้งเตือนต่างๆไม่ต้องให้มันแสดงผลขึ้นมา เพราะมันเป็นประวัติไปแล้ว ไม่จำเป็นต้องแจ้งเตือน --}}
@@ -295,58 +311,1197 @@
 
         @if ($check_reser_status_for_his != 1)
             @if ($check_open_button == false)
-                <div class="row mt-2">
-                    <div class="col-md-12">
-                        <div class="alert alert-danger" role="alert">
-                            @if ($reservation_now->status == 'ถูกจอง' || $reservation_now->status == 'กำลังเช่า')
-                                <strong>แจ้งเตือน:</strong> ชุดนี้<span> {{ $reservation_now->status }} </span>
-                                โดยลูกค้าท่านอื่น ไม่สามารถดำเนินการในรายการนี้ได้
+                @if ($reservation_now->id == $orderdetail->reservation_id)
+
+                    {{-- คิวแรก --}}
+                    @if ($orderdetail->shirtitems_id)
+
+                        @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if (
+                                    $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                        $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก{{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif(
+                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>{{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                (เสื้อ)
+                                                {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                                {{ $customer->customer_phone }}</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            @if ($orderdetail->status_detail == 'ถูกจอง')
+                                <div class="row mt-2">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-danger" role="alert">
+                                            <strong>แจ้งเตือน:</strong>
+                                            {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                            (เสื้อ)<span>
+                                                {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                            </span>
+                                            กรุณารอจนกว่าจะพร้อมใช้งาน
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endif
+                    @elseif($orderdetail->skirtitems_id)
+                        @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if (
+                                    $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                        $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก{{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif(
+                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0"><strong>{{ $typename }}
+                                                {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ผ้าถุง)
+                                                {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                                {{ $customer->customer_phone }}</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            @if ($orderdetail->status_detail == 'ถูกจอง')
+                                <div class="row mt-2">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-danger" role="alert">
+                                            <strong>แจ้งเตือน:</strong>
+                                            {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                            (ผ้าถุง)<span>
+                                                {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                            </span>
+                                            กรุณารอจนกว่าจะพร้อมใช้งาน
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+
+
+                        @endif
+                    @else
+                        {{-- ส่วนนี้ --}}
+                        @if ($orderdetail->orderdetailmanytoonedress->separable == 1)
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                    @if (
+                                        $orderdetail->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
+                                            $orderdetail->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
+                                        <div class="alert alert-danger" role="alert">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                    <p class="mb-0">
+                                                        <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก{{ $orderdetail->orderdetailmanytoonedress->dress_status }}
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-danger" role="alert">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                    <p class="mb-0">
+                                                        <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif(
+                                $orderdetail->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
+                                    $orderdetail->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0"><strong>{{ $typename }}
+                                                    {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ทั้งชุด)
+                                                    {{ $orderdetail->orderdetailmanytoonedress->dress_status }}
+                                                    กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า
+                                                    :
+                                                    {{ $customer->customer_phone }}</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
                             @else
-                                <strong>แจ้งเตือน:</strong> ชุดนี้<span> {{ $reservation_now->status }} </span>
-                                กรุณารอจนกว่าจะพร้อมใช้งาน
+                                @if ($orderdetail->status_detail == 'ถูกจอง')
+                                    <div class="row mt-2">
+                                        <div class="col-md-12">
+                                            <div class="alert alert-danger" role="alert">
+                                                <strong>แจ้งเตือน:</strong>
+                                                {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                (ทั้งชุด)<span>
+                                                    {{ $orderdetail->orderdetailmanytoonedress->dress_status }}
+                                                </span>
+                                                กรุณารอจนกว่าจะพร้อมใช้งาน
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
                             @endif
+                        @elseif($orderdetail->orderdetailmanytoonedress->separable == 2)
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                    @if (
+                                        $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า' ||
+                                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                        <div class="alert alert-danger" role="alert">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                    <p class="mb-0">
+                                                        <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก
+                                                            @if (
+                                                                $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                                    $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                                                {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                                (เสื้อ) :
+                                                                {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                            @endif
 
-                            @if ($reservation_now->status == 'ถูกจอง' || $reservation_now->status == 'กำลังเช่า')
-                                <hr>
-                                <p class="mb-0">
-                                    @php
-                                        $find_order_detail_now = App\Models\Orderdetail::where(
-                                            'reservation_id',
-                                            $reservation_now->id,
-                                        )->first();
-                                        $find_order_detail_id = App\Models\Orderdetail::find(
-                                            $find_order_detail_now->id,
-                                        );
-                                        $customer_id_re = App\Models\order::where(
-                                            'id',
-                                            $find_order_detail_id->order_id,
-                                        )->value('customer_id');
-                                        $customer_fname_re = App\Models\Customer::where('id', $customer_id_re)->value(
-                                            'customer_fname',
-                                        );
-                                        $customer_lname_re = App\Models\Customer::where('id', $customer_id_re)->value(
-                                            'customer_lname',
-                                        );
+                                                            @if (
+                                                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                                    $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                                                {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                                (ผ้าถุง) :
+                                                                {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                            @endif
 
-                                    @endphp
-                                    <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
-                                        href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
-                                    &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
-                                    &bull; วันที่เช่า:
-                                    {{ \Carbon\carbon::parse($reservation_now->start_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\carbon::parse($reservation_now->start_date)->year + 543 }}
-                                    <br>
-                                    &bull; กำหนดคืน:
-                                    {{ \Carbon\carbon::parse($reservation_now->end_date)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\carbon::parse($reservation_now->end_date)->year + 543 }}
-                                </p>
+
+
+
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-danger" role="alert">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                    <p class="mb-0">
+                                                        <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif(
+                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                    $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า' ||
+                                    $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                    $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0"><strong>
+
+                                                    @if (
+                                                        $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                                        {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                        (เสื้อ) :
+                                                        {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                    @endif
+
+                                                    @if (
+                                                        $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                                        {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                        (ผ้าถุง) :
+                                                        {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                    @endif
+                                                    ส่งผลให้ไม่ครบชุด
+                                                    กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า
+                                                    :
+                                                    {{ $customer->customer_phone }}
+                                                </strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                {{-- ... --}}
+                                @if ($orderdetail->status_detail == 'ถูกจอง')
+                                    <div class="row mt-2">
+                                        <div class="col-md-12">
+                                            <div class="alert alert-danger" role="alert">
+                                                <strong>แจ้งเตือน:</strong>
+
+
+
+                                                @if ($orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status != 'พร้อมให้เช่า')
+                                                    {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                    (เสื้อ)<span>
+                                                        :
+                                                        {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                    </span>
+                                                @endif
+
+                                                @if ($orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status != 'พร้อมให้เช่า')
+                                                    {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                    (ผ้าถุง)<span>
+                                                        :
+                                                        {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                    </span>
+                                                @endif
+                                                กรุณารอจนกว่าจะพร้อมใช้งาน
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             @endif
+                        @endif
 
-                        </div>
-                    </div>
-                </div>
+
+
+                    @endif
+                @elseif($reservation_now->id != $orderdetail->reservation_id)
+                    {{-- ไม่ใช่คิวแรก --}}
+                    @if ($orderdetail->shirtitems_id)
+                        @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if (
+                                    $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                        $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก{{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif(
+                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>{{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                (เสื้อ)
+                                                {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                                {{ $customer->customer_phone }}</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <div class="alert alert-danger" role="alert">
+
+
+                                        <p class="mb-0">
+                                            @php
+                                                $find_order_detail_now = App\Models\Orderdetail::where(
+                                                    'reservation_id',
+                                                    $reservation_now->id,
+                                                )->first();
+                                                $find_order_detail_id = App\Models\Orderdetail::find(
+                                                    $find_order_detail_now->id,
+                                                );
+                                                $customer_id_re = App\Models\order::where(
+                                                    'id',
+                                                    $find_order_detail_id->order_id,
+                                                )->value('customer_id');
+                                                $customer_fname_re = App\Models\Customer::where(
+                                                    'id',
+                                                    $customer_id_re,
+                                                )->value('customer_fname');
+                                                $customer_lname_re = App\Models\Customer::where(
+                                                    'id',
+                                                    $customer_id_re,
+                                                )->value('customer_lname');
+
+                                            @endphp
+                                            <strong>แจ้งเตือน:</strong>
+                                            {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                            (เสื้อ) นี้{{ $reservation_now->status }}โดยลูกค้าท่านอื่น
+                                            ไม่สามารถดำเนินการในรายการนี้ได้<br>
+
+                                            <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
+                                                href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
+                                            &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
+                                            &bull; วันที่เช่า:
+                                            {{ \Carbon\carbon::parse($reservation_now->start_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\carbon::parse($reservation_now->start_date)->year + 543 }}
+                                            <br>
+                                            &bull; กำหนดคืน:
+                                            {{ \Carbon\carbon::parse($reservation_now->end_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\carbon::parse($reservation_now->end_date)->year + 543 }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @elseif($orderdetail->skirtitems_id)
+                        @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if (
+                                    $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                        $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก{{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif(
+                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0"><strong>{{ $typename }}
+                                                {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ผ้าถุง)
+                                                {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                                {{ $customer->customer_phone }}</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <div class="alert alert-danger" role="alert">
+                                        <p class="mb-0">
+                                            @php
+                                                $find_order_detail_now = App\Models\Orderdetail::where(
+                                                    'reservation_id',
+                                                    $reservation_now->id,
+                                                )->first();
+                                                $find_order_detail_id = App\Models\Orderdetail::find(
+                                                    $find_order_detail_now->id,
+                                                );
+                                                $customer_id_re = App\Models\order::where(
+                                                    'id',
+                                                    $find_order_detail_id->order_id,
+                                                )->value('customer_id');
+                                                $customer_fname_re = App\Models\Customer::where(
+                                                    'id',
+                                                    $customer_id_re,
+                                                )->value('customer_fname');
+                                                $customer_lname_re = App\Models\Customer::where(
+                                                    'id',
+                                                    $customer_id_re,
+                                                )->value('customer_lname');
+
+                                            @endphp
+                                            <strong>แจ้งเตือน:</strong>
+                                            {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                            (ผ้าถุง) นี้{{ $reservation_now->status }}โดยลูกค้าท่านอื่น
+                                            ไม่สามารถดำเนินการในรายการนี้ได้<br>
+                                            <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
+                                                href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
+                                            &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
+                                            &bull; วันที่เช่า:
+                                            {{ \Carbon\carbon::parse($reservation_now->start_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\carbon::parse($reservation_now->start_date)->year + 543 }}
+                                            <br>
+                                            &bull; กำหนดคืน:
+                                            {{ \Carbon\carbon::parse($reservation_now->end_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\carbon::parse($reservation_now->end_date)->year + 543 }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @else
+                        @if ($orderdetail->orderdetailmanytoonedress->separable == 1)
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                    @if (
+                                        $orderdetail->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
+                                            $orderdetail->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
+                                        <div class="alert alert-danger" role="alert">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                    <p class="mb-0">
+                                                        <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก{{ $orderdetail->orderdetailmanytoonedress->dress_status }}
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-danger" role="alert">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                    <p class="mb-0">
+                                                        <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif(
+                                $orderdetail->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
+                                    $orderdetail->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0"><strong>{{ $typename }}
+                                                    {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ทั้งชุด)
+                                                    {{ $orderdetail->orderdetailmanytoonedress->dress_status }}
+                                                    กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า
+                                                    :
+                                                    {{ $customer->customer_phone }}</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="row mt-2">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-danger" role="alert">
+                                            <p class="mb-0">
+                                                @php
+                                                    $find_order_detail_now = App\Models\Orderdetail::where(
+                                                        'reservation_id',
+                                                        $reservation_now->id,
+                                                    )->first();
+                                                    $find_order_detail_id = App\Models\Orderdetail::find(
+                                                        $find_order_detail_now->id,
+                                                    );
+                                                    $customer_id_re = App\Models\order::where(
+                                                        'id',
+                                                        $find_order_detail_id->order_id,
+                                                    )->value('customer_id');
+                                                    $customer_fname_re = App\Models\Customer::where(
+                                                        'id',
+                                                        $customer_id_re,
+                                                    )->value('customer_fname');
+                                                    $customer_lname_re = App\Models\Customer::where(
+                                                        'id',
+                                                        $customer_id_re,
+                                                    )->value('customer_lname');
+
+                                                @endphp
+                                                <strong>แจ้งเตือน:</strong>
+                                                {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                (ทั้งชุด) นี้{{ $reservation_now->status }}โดยลูกค้าท่านอื่น
+                                                ไม่สามารถดำเนินการในรายการนี้ได้<br>
+                                                <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
+                                                    href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
+                                                &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
+                                                &bull; วันที่เช่า:
+                                                {{ \Carbon\carbon::parse($reservation_now->start_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\carbon::parse($reservation_now->start_date)->year + 543 }}
+                                                <br>
+                                                &bull; กำหนดคืน:
+                                                {{ \Carbon\carbon::parse($reservation_now->end_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\carbon::parse($reservation_now->end_date)->year + 543 }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif($orderdetail->orderdetailmanytoonedress->separable == 2)
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                    @if (
+                                        $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า' ||
+                                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                        <div class="alert alert-danger" role="alert">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                    <p class="mb-0">
+                                                        <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก
+                                                            @if (
+                                                                $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                                    $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                                                {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                                (เสื้อ) :
+                                                                {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                            @endif
+
+                                                            @if (
+                                                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                                    $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                                                {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                                (ผ้าถุง) :
+                                                                {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                            @endif
+
+
+
+
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-danger" role="alert">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                    <p class="mb-0">
+                                                        <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif(
+                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                    $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า' ||
+                                    $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                    $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0"><strong>
+
+                                                    @if (
+                                                        $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                                        {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                        (เสื้อ) :
+                                                        {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                    @endif
+
+                                                    @if (
+                                                        $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                                        {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                        (ผ้าถุง) :
+                                                        {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                    @endif
+                                                    ส่งผลให้ไม่ครบชุด
+                                                    กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า
+                                                    :
+                                                    {{ $customer->customer_phone }}
+                                                </strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="row mt-2">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-danger" role="alert">
+                                            <p class="mb-0">
+                                                @php
+                                                    $find_order_detail_now = App\Models\Orderdetail::where(
+                                                        'reservation_id',
+                                                        $reservation_now->id,
+                                                    )->first();
+                                                    $find_order_detail_id = App\Models\Orderdetail::find(
+                                                        $find_order_detail_now->id,
+                                                    );
+                                                    $customer_id_re = App\Models\order::where(
+                                                        'id',
+                                                        $find_order_detail_id->order_id,
+                                                    )->value('customer_id');
+                                                    $customer_fname_re = App\Models\Customer::where(
+                                                        'id',
+                                                        $customer_id_re,
+                                                    )->value('customer_fname');
+                                                    $customer_lname_re = App\Models\Customer::where(
+                                                        'id',
+                                                        $customer_id_re,
+                                                    )->value('customer_lname');
+
+                                                @endphp
+                                                <strong>แจ้งเตือน:</strong>
+                                                {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                (ทั้งชุด) นี้{{ $reservation_now->status }}โดยลูกค้าท่านอื่น
+                                                ไม่สามารถดำเนินการในรายการนี้ได้<br>
+                                                <strong>รายละเอียดการเช่าปัจจุบัน:</strong> <a
+                                                    href="{{ route('employee.ordertotaldetailshow', ['id' => $find_order_detail_now->id]) }}">ดูรายละเอียด</a><br>
+                                                &bull; ลูกค้า: คุณ{{ $customer_fname_re }} {{ $customer_lname_re }}<br>
+                                                &bull; วันที่เช่า:
+                                                {{ \Carbon\carbon::parse($reservation_now->start_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\carbon::parse($reservation_now->start_date)->year + 543 }}
+                                                <br>
+                                                &bull; กำหนดคืน:
+                                                {{ \Carbon\carbon::parse($reservation_now->end_date)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\carbon::parse($reservation_now->end_date)->year + 543 }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endif
+                        {{-- ทำไร --}}
+                    @endif
+                @endif
             @endif
+        @elseif ($check_reser_status_for_his == 1)
+            {{-- ถ้าเงื่อนไขนี้ จะมีอยู่ 1.คืนชุดแล้ว 2.ยกเลิกออเดอร์ --}}
+            @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                @if ($orderdetail->shirtitems_id)
+                    @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                        @if (
+                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก{{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                        <div class="alert alert-danger" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                    <p class="mb-0">
+                                        <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @elseif ($orderdetail->skirtitems_id)
+                    @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                        @if (
+                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก{{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0">
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                        <div class="alert alert-danger" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                    <p class="mb-0">
+                                        <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @else
+                    @if ($orderdetail->orderdetailmanytoonedress->separable == 1)
+                        @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if (
+                                    $orderdetail->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
+                                        $orderdetail->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก{{ $orderdetail->orderdetailmanytoonedress->dress_status }}
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif(
+                            $orderdetail->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
+                                $orderdetail->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0"><strong>{{ $typename }}
+                                                {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ทั้งชุด)
+                                                {{ $orderdetail->orderdetailmanytoonedress->dress_status }}
+                                                กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า
+                                                :
+                                                {{ $customer->customer_phone }}</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            @if ($orderdetail->status_detail == 'ถูกจอง')
+                                <div class="row mt-2">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-danger" role="alert">
+                                            <strong>แจ้งเตือน:</strong>
+                                            {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                            (ทั้งชุด)<span>
+                                                {{ $orderdetail->orderdetailmanytoonedress->dress_status }}
+                                            </span>
+                                            กรุณารอจนกว่าจะพร้อมใช้งาน
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                        @endif
+                    @elseif($orderdetail->orderdetailmanytoonedress->separable == 2)
+                        @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                            @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
+                                @if (
+                                    $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                        $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า' ||
+                                        $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                        $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจาก
+                                                        @if (
+                                                            $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                                $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                                            {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                            (เสื้อ) :
+                                                            {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                        @endif
+
+                                                        @if (
+                                                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                                            {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                            (ผ้าถุง) :
+                                                            {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                        @endif
+
+
+
+
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>
+                                                {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                                <p class="mb-0">
+                                                    <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @elseif($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
+                                <div class="alert alert-danger" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <div>
+                                            {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                            <p class="mb-0">
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยลูกค้า
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif(
+                            $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า' ||
+                                $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                        <p class="mb-0"><strong>
+
+                                                @if (
+                                                    $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                        $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                                    {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                    (เสื้อ) :
+                                                    {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                @endif
+
+                                                @if (
+                                                    $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                        $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
+                                                    {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                    (ผ้าถุง) :
+                                                    {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                @endif
+                                                ส่งผลให้ไม่ครบชุด
+                                                กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกการจองและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า
+                                                :
+                                                {{ $customer->customer_phone }}
+                                            </strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            {{-- ... --}}
+                            @if ($orderdetail->status_detail == 'ถูกจอง')
+                                <div class="row mt-2">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-danger" role="alert">
+                                            <strong>แจ้งเตือน:</strong>
+
+
+
+                                            @if ($orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status != 'พร้อมให้เช่า')
+                                                {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                (เสื้อ)<span>
+                                                    :
+                                                    {{ $orderdetail->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status }}
+                                                </span>
+                                            @endif
+
+                                            @if ($orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status != 'พร้อมให้เช่า')
+                                                {{ $typename }}{{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                                (ผ้าถุง)<span>
+                                                    :
+                                                    {{ $orderdetail->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status }}
+                                                </span>
+                                            @endif
+                                            กรุณารอจนกว่าจะพร้อมใช้งาน
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endif
+                    @endif
+
+
+
+
+
+                @endif
+            @endif
+
         @endif
+
+
+
 
 
 
@@ -440,7 +1595,7 @@
 
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
+                                    {{-- <i class="fas fa-check"></i> --}}
                                 </div>
                                 <p>ถูกจอง</p>
                                 <small>
@@ -470,9 +1625,52 @@
 
 
 
+                            @if (in_array('ยกเลิกโดยทางร้าน', $list_status) || in_array('ยกเลิกโดยลูกค้า', $list_status))
+                                <div class="status-step text-center">
+                                    <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif"
+                                        style="background: rgb(166, 32, 32) ; ">
+                                        {{-- <i class="fas fa-check"></i> --}}
+                                    </div>
+                                    <p class="text-danger">ยกเลิกการจอง</p>
+                                    <small>
+                                        <p>
+                                            @php
+                                                $created_at = App\Models\Orderdetailstatus::where(
+                                                    'order_detail_id',
+                                                    $orderdetail->id,
+                                                )
+                                                    ->whereIn('status', ['ยกเลิกโดยทางร้าน', 'ยกเลิกโดยลูกค้า'])
+                                                    ->first();
+                                                if ($created_at) {
+                                                    $text_date = Carbon\Carbon::parse($created_at->created_at)
+                                                        ->addHours(7)
+                                                        ->format('d/m/Y H:i');
+                                                } else {
+                                                    $text_date = 'รอดำเนินการ';
+                                                }
+                                            @endphp
+                                        <p class="text-danger">{{ $text_date }}</p>
+                                        </p>
+                                    </small>
+                                </div>
+                                <div class="status-line "></div>
+                            @endif
+
+
+
+
+
+
+
+
+
+
+
+
+
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('กำลังเช่า', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
+                                    {{-- <i class="fas fa-check"></i> --}}
                                 </div>
                                 <p>กำลังเช่า</p>
                                 <small>
@@ -509,7 +1707,7 @@
 
                             <div class="status-step text-center">
                                 <div class="status-icon @if (in_array('คืนชุดแล้ว', $list_status)) active @endif">
-                                    <i class="fas fa-check"></i>
+                                    {{-- <i class="fas fa-check"></i> --}}
                                 </div>
                                 <p>คืนชุดแล้ว</p>
                                 <small>
@@ -577,8 +1775,8 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <img src="{{ asset('storage/' . $dressimage->dress_image) }}" alt="" width="154px;"
-                                    height="auto">
+                                <img src="{{ asset('storage/' . $dressimage->dress_image) }}" alt=""
+                                    width="154px;" height="auto">
                             </div>
                             <div class="col-md-8">
                                 <h5>ข้อมุลชุด</h5>
@@ -799,7 +1997,8 @@
                                 <div class="ms-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <span class="text-secondary">รายได้ค่าเช่าชุด</span>
-                                        <span class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
+                                        <span
+                                            class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
                                             บาท</span>
                                     </div>
 
@@ -1399,7 +2598,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
+
                                             <tr>
                                                 <td class="px-4 py-2">
                                                     {{ $typename }}
@@ -1412,7 +2611,8 @@
                                                         <option value="repairitem">ต้องซ่อม</option>
                                                         <option value="lost">สูญหาย</option>
                                                     </select>
-                                                    <input type="hidden" name="filtershirt_id" value="{{$filtershirt_id}}">
+                                                    <input type="hidden" name="filtershirt_id"
+                                                        value="{{ $filtershirt_id }}">
 
                                                     <div id="showrepair_detail_itemtotal1" class="mt-2"
                                                         style="display: none;">
@@ -1433,7 +2633,8 @@
                                                         <option value="repairitem">ต้องซ่อม</option>
                                                         <option value="lost">สูญหาย</option>
                                                     </select>
-                                                    <input type="hidden" name="filterskirt_id" value="{{$filterskirt_id}}" >
+                                                    <input type="hidden" name="filterskirt_id"
+                                                        value="{{ $filterskirt_id }}">
 
                                                     <div id="showrepair_detail_itemtotal2" class="mt-2"
                                                         style="display: none;">

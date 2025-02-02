@@ -302,9 +302,9 @@
                         <span><strong>จำนวนคืนเงินประกันทั้งสิ้น (บาท)</strong></span>
                     </td>
                     <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
-                        <span>{{ $receipt->total_price }}</span><br>
+                        <span>{{ number_format($receipt->total_price , 2 ) }}</span><br>
                         <span>0.00</span><br>
-                        <span><strong>{{ $receipt->total_price }}</strong></span>
+                        <span><strong>{{ number_format($receipt->total_price , 2 ) }}</strong></span>
     
                     </td>
                 </tr>

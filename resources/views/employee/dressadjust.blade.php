@@ -180,6 +180,9 @@
                                 @endphp
 
                                 <td style="padding: 16px;">
+
+
+                                    @if($reservation->re_one_many_details->first()->type_order == 2)
                                     เช่า{{ $type_dress->type_dress_name }}
                                     {{ $dress->dress_code_new }}{{ $dress->dress_code }}
                                     <span>
@@ -191,6 +194,23 @@
                                             <span>(ทั้งชุด)</span>
                                         @endif
                                     </span>
+                                    @elseif($reservation->re_one_many_details->first()->type_order == 4)
+
+                                    เช่าตัด{{ $type_dress->type_dress_name }}
+                                    {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                    <span>
+                                        @if ($reservation->shirtitems_id)
+                                            <span>(เสื้อ)</span>
+                                        @elseif($reservation->skirtitems_id)
+                                            <span>(ผ้าถุง)</span>
+                                        @else
+                                            <span>(ทั้งชุด)</span>
+                                        @endif
+                                    </span>
+                                    @endif
+
+
+
                                     <span class="d-block mt-2" style="font-size: 14px;">
                                         @if ($orderdetail->type_order == 2)
                                             @if ($validate)

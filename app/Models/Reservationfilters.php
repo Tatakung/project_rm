@@ -36,5 +36,9 @@ class Reservationfilters extends Model
         return $this->hasMany(Repair::class, 'reservationfilter_id');
     }
 
+    public function re_one_to_one_after_return_jew(){
+        return $this->hasOne(Afterreturnjew::class,'reservationfilter_id') ; 
+    }
+
 
 }

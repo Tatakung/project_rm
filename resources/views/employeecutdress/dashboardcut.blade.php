@@ -1,49 +1,99 @@
 @extends('layouts.adminlayout')
+
 @section('content')
+    <!-- โหลด Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-12">
-                <p>Pie Charts</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div style="width: 100%; margin: auto;">
-                    <canvas id="pieChart"></canvas>
-                </div>
-
-            </div>
-        </div>
-    </div>
+    {{-- <canvas id="myChart" width="400" height="200"></canvas>
 
     <script>
-        var ctx = document.getElementById('pieChart').getContext('2d');
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var list_type = @json($list_type);
+        var list_count_type = @json($list_count_type_values);
         var myChart = new Chart(ctx, {
+            // type: 'bar',
+            // type: 'doughnut',
             type: 'pie',
+
+
             data: {
-                labels: @json($labels),
+                labels: list_type,
+
+
+                // datasets: [{
+                //     label: 'จำนวนครั้ง (ครั้ง)',
+                //     data: list_count_type,
+                //     backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                //     borderColor: 'rgba(54, 162, 235, 1)',
+                //     borderWidth: 1
+                // }]
+
                 datasets: [{
-                    data: @json($data),
+                    label: 'My First Dataset',
+                    data: list_count_type,
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.7)',
-                        'rgba(54, 162, 235, 0.7)',
-                        'rgba(255, 206, 86, 0.7)',
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(153, 102, 255, 0.7)',
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
                     ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                    ],
-                    borderWidth: 1
+                    hoverOffset: 4
                 }]
-            },
+
+            }
+
+
+        });
+    </script> --}}
+
+    <div class="container">
+        <h2>รายรับ - รายจ่าย รายเดือน</h2>
+        <canvas id="barChart"></canvas>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('barChart').getContext('2d');
+
+            const labels = @json($list_one) ; 
+            const list_two = @json($list_two) ; 
+            const list_three = @json($list_three) ; 
+
+
+
+
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'รายรับ',
+                            data: list_two,
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'รายจ่าย',
+                            data: list_three,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         });
     </script>
+
+
+    
 @endsection

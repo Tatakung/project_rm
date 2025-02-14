@@ -233,32 +233,14 @@
                                 @if ($is_adjust)
                                     <span style="font-size: 13px; color: red ; ">-รอปรับแก้ขนาด</span> <br>
                                 @endif
-                                @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
-                                    <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
-                                        {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
-                                    </span>
-                                @endif
                             @elseif($item->type_order == 3)
                                 @if ($item->detail_many_one_re->jewelry_id)
                                     เช่า{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
                                     {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
                                     <br>
-                                    @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
-                                        <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
-                                            {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                            {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
-                                        </span>
-                                    @endif
                                 @elseif($item->detail_many_one_re->jewelry_set_id)
                                     เช่าเซตเครื่องประดับ{{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
                                     <br>
-                                    @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
-                                        <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
-                                            {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                            {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
-                                        </span>
-                                    @endif
                                 @endif
                             @endif
                         </td>
@@ -430,12 +412,19 @@
                                     @endif
                                 @endif
                             @endif
-
-
-
+                            <br>
+                            @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
+                                <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
+                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
+                                </span>
+                            @endif
 
 
                         </td>
+
+
+
                         <td>
                             <a href="{{ route('employee.ordertotaldetailshow', ['id' => $item->id]) }}"
                                 class="btn btn-c btn-sm"style="background-color:#ffffff;">ดูรายละเอียด</a>
@@ -709,7 +698,7 @@
 
 
 
-    
+
     <div class="modal fade" id="show_modal_pickup_total" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg" role="document">

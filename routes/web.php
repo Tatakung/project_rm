@@ -81,6 +81,8 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
+
+
     //กลุ่มเครื่องประดับ
     Route::get('/admin/addjewelry-form', [JewelryController::class, 'formaddjewelry'])->name('admin.formaddjewelry'); //แบบฟอร์มเพิ่มเครื่องประดับ
     Route::post('/admin/addjewelry-form/save', [JewelryController::class, 'savejewelry'])->name('admin.savejewelry'); //บันทึกข้อมูล 
@@ -131,6 +133,8 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     Route::get('/admin/dashboardcutdress', [DashboardController::class, 'dashboardcutdress'])->name('admin.dashboardcutdress');
 
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard/filter-shop', [DashboardController::class, 'dashboardfiltershop'])->name('dashboardfilter');
 
 
 
@@ -144,7 +148,21 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     Route::get('/jewelry-set-rented-history/{id}', [Orderjewelry::class, 'showjewsetrentedhistory'])->name('showjewsetrentedhistory');
 
+   
     Route::get('/jewelry-set-rented-history/filter/{id}', [Orderjewelry::class, 'showjewsetrentedhistoryfilter'])->name('showjewsetrentedhistoryfilter');
+
+
+
+    Route::get('/testdashboard', [DashboardController::class, 'testdashboard'])->name('testdashboard');
+
+
+    Route::get('/jewelrydashboard', [DashboardController::class, 'jewelrydashboard'])->name('jewelrydashboard');
+
+
+
+
+
+
 });
 
 

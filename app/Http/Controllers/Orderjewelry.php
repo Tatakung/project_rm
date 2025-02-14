@@ -17,6 +17,7 @@ use App\Models\ChargeJewelry;
 use App\Models\Reservationfilters;
 use App\Models\Reservationfilterdress;
 use App\Models\Dress;
+use App\Models\Afterreturnjew;
 use App\Models\Typejewelry;
 use App\Models\Receipt;
 use App\Models\ReceiptReturn;
@@ -486,57 +487,85 @@ class Orderjewelry extends Controller
         $datareservation = Reservation::find($orderdetail->reservation_id);
         $check_for_set_or_item = $request->input('check_for_set_or_item');
 
+        $damage_insurance_no_set = $request->input('damage_insurance_no_set');
+
+
+
         $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
         $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
         $late_chart = $request->input('late_chart'); //3.ค่าธรรมเนียมขยายระยะเวลาเช่า:
-        if ($total_damage_insurance > 0) {
-            $create_additional = new AdditionalChange();
-            $create_additional->order_detail_id = $id;
-            $create_additional->charge_type = 1;
-            $create_additional->amount = $total_damage_insurance;
-            $create_additional->save();
 
-            if ($check_for_set_or_item == 'item') {
-                $add_char_jew = new ChargeJewelry();
-                $add_char_jew->additional_charge_id = $create_additional->id;
-                $add_char_jew->jewelrys_id = $datareservation->jewelry_id;
-                $add_char_jew->save();
-            } elseif ($check_for_set_or_item == 'set') {
-                $refil_id = $request->input('refil_id_');
-                $action_set = $request->input('action_set_');
-                $refil_jewelry_id = $request->input('refil_jewelry_id_');
-                foreach ($refil_id as $index => $re) {
 
-                    if ($action_set[$index] == 'repair') {
-                        $add_char_jew = new ChargeJewelry();
-                        $add_char_jew->additional_charge_id = $create_additional->id;
-                        $add_char_jew->jewelry_id = $refil_jewelry_id[$index];
-                        $add_char_jew->save();
-                    }
+        // เช่าเป็นชิ้น
+        if ($check_for_set_or_item == 'item') {
+            $actionreturnitem = $request->input('actionreturnitem');
+            if ($actionreturnitem == 'lost_unreported') {
+                // สูญหาย ลูกค้าไม่แจ้ง
+                if ($damage_insurance_no_set > 0) {
+                    $create_additional = new AdditionalChange();
+                    $create_additional->order_detail_id = $id;
+                    $create_additional->charge_type = 1;
+                    $create_additional->amount = $damage_insurance_no_set;
+                    $create_additional->save();
+                }
+            } else {
+                // ลูกค้าแจ้ง
+                if ($damage_insurance_no_set > 0) {
+                    $create_additional = new AdditionalChange();
+                    $create_additional->order_detail_id = $id;
+                    $create_additional->charge_type = 1;
+                    $create_additional->amount = $damage_insurance_no_set;
+                    $create_additional->save();
+                }
+                if ($late_return_fee > 0) {
+                    $create_additionals = new AdditionalChange();
+                    $create_additionals->order_detail_id = $id;
+                    $create_additionals->charge_type = 2;
+                    $create_additionals->amount = $late_return_fee;
+                    $create_additionals->save();
+                }
+                if ($late_chart) {
+                    $create_additionalw = new AdditionalChange();
+                    $create_additionalw->order_detail_id = $id;
+                    $create_additionalw->charge_type = 3;
+                    $create_additionalw->amount = $late_chart;
+                    $create_additionalw->save();
                 }
             }
         }
-        if ($late_return_fee > 0) {
-            $create_additionals = new AdditionalChange();
-            $create_additionals->order_detail_id = $id;
-            $create_additionals->charge_type = 2;
-            $create_additionals->amount = $late_return_fee;
-            $create_additionals->save();
-        }
-        if ($late_chart) {
-            $create_additionalw = new AdditionalChange();
-            $create_additionalw->order_detail_id = $id;
-            $create_additionalw->charge_type = 3;
-            $create_additionalw->amount = $late_chart;
-            $create_additionalw->save();
-        }
+
+
+
+
+
+        // if ($total_damage_insurance > 0) {
+        //     $create_additional = new AdditionalChange();
+        //     $create_additional->order_detail_id = $id;
+        //     $create_additional->charge_type = 1;
+        //     $create_additional->amount = $total_damage_insurance;
+        //     $create_additional->save();
+        // }
+        // if ($late_return_fee > 0) {
+        //     $create_additionals = new AdditionalChange();
+        //     $create_additionals->order_detail_id = $id;
+        //     $create_additionals->charge_type = 2;
+        //     $create_additionals->amount = $late_return_fee;
+        //     $create_additionals->save();
+        // }
+        // if ($late_chart) {
+        //     $create_additionalw = new AdditionalChange();
+        //     $create_additionalw->order_detail_id = $id;
+        //     $create_additionalw->charge_type = 3;
+        //     $create_additionalw->amount = $late_chart;
+        //     $create_additionalw->save();
+        // }
 
         // เช่าเป็นชิ้น
         if ($check_for_set_or_item == 'item') {
             $actionreturnitem = $request->input('actionreturnitem');
 
             if ($actionreturnitem == 'cleanitem') {
-                // dd('ส่งทำความสะอาด');
+                // ส่งทำความสะอาด;
 
                 //ตารางorderdetail
                 $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
@@ -573,8 +602,14 @@ class Orderjewelry extends Controller
                 $update_status_jewelry->jewelry_status = 'รอทำความสะอาด';
                 $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
                 $update_status_jewelry->save();
+
+                $after_return_jew = new Afterreturnjew();
+                $after_return_jew->reservationfilter_id = $find_re_filter->id;
+                $after_return_jew->type = 1;
+                $after_return_jew->price = $damage_insurance_no_set;
+                $after_return_jew->save();
             } elseif ($actionreturnitem == 'repairitem') {
-                // dd('ส่งซ่อม') ; 
+                // ส่งซ่อม 
                 $repair_detail_for_item = $request->input('repair_detail_for_item');
                 //ตารางorderdetail
                 $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
@@ -619,8 +654,76 @@ class Orderjewelry extends Controller
                 $create_repair->repair_status = 'รอดำเนินการ';
                 $create_repair->repair_type = 1;  //1.ยังไม่ทำความสะอาด 2.ทำความสะอาดแล้ว 
                 $create_repair->save();
+
+                $after_return_jew = new Afterreturnjew();
+                $after_return_jew->reservationfilter_id = $find_re_filter->id;
+                $after_return_jew->type = 2;
+                $after_return_jew->price = $damage_insurance_no_set;
+                $after_return_jew->save();
             } elseif ($actionreturnitem == 'lost') {
-                // สูญหาย
+                // สูญหาย (ลูกค้าแจ้ง) 
+
+                //ตารางorderdetail
+                $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                $orderdetail->save();
+
+                // อัปเดตตารางdate
+                $date_id = Date::where('order_detail_id', $id)
+                    ->orderBy('created_at', 'desc')
+                    ->value('id');
+                $update_real = Date::find($date_id);
+                $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                $update_real->save();
+
+
+                //ตารางorderdetailstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $id;
+                $create_status->status = "คืนเครื่องประดับแล้ว";
+                $create_status->save();
+                //ตารางorderdetailstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $id;
+                $create_status->status = "แจ้งสูญหาย";
+                $create_status->save();
+
+
+                //ตารางreservation
+                $reservation = Reservation::find($orderdetail->reservation_id);
+                $reservation->status = 'คืนเครื่องประดับแล้ว';
+                $reservation->status_completed = 1; //เสร็จแล้ว
+                $reservation->save();
+
+                // ตารางหลอก
+                $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->first();
+                $update_re_filter = Reservationfilters::find($find_re_filter->id);
+                $update_re_filter->status = 'สูญหาย';
+                $update_re_filter->status_completed = 1; //เสร็จแล้ว
+                $update_re_filter->save();
+
+                // อัปเดตสถานะเครื่องประดับ
+                $update_status_jewelry = Jewelry::find($reservation->jewelry_id);
+                $update_status_jewelry->jewelry_status = 'สูญหาย';
+                $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                $update_status_jewelry->save();
+
+                // ตรวจหาว่าเครื่องประดับชิ้นนี้อยู่ในเซตไหนไหม
+                $jewelry_item = Jewelrysetitem::where('jewelry_id', $reservation->jewelry_id)->get();
+                if ($jewelry_item->isNotEmpty()) {
+                    foreach ($jewelry_item as $valuee) {
+                        $set_jewelry = Jewelryset::find($valuee->jewelry_set_id);
+                        $set_jewelry->set_status = 'ยุติการให้เช่า';
+                        $set_jewelry->save();
+                    }
+                }
+                $after_return_jew = new Afterreturnjew();
+                $after_return_jew->reservationfilter_id = $find_re_filter->id;
+                $after_return_jew->type = 3;
+                $after_return_jew->price = $damage_insurance_no_set;
+                $after_return_jew->save();
+            } elseif ($actionreturnitem == 'lost_unreported') {
+                // สูญหาย (ลูกค้าไม่แจ้ง คาดว่าไม่น่าจะคืน)
+
                 //ตารางorderdetail
                 $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
                 $orderdetail->save();
@@ -674,6 +777,67 @@ class Orderjewelry extends Controller
                         $set_jewelry->save();
                     }
                 }
+                $after_return_jew = new Afterreturnjew();
+                $after_return_jew->reservationfilter_id = $find_re_filter->id;
+                $after_return_jew->type = 4;
+                $after_return_jew->price = $damage_insurance_no_set;
+                $after_return_jew->save();
+            } elseif ($actionreturnitem == 'damaged_beyond_repair') {
+                // เสียหายหนัก (ให้เช่าต่อไม่ได้)
+                //ตารางorderdetail
+                $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                $orderdetail->save();
+
+                // อัปเดตตารางdate
+                $date_id = Date::where('order_detail_id', $id)
+                    ->orderBy('created_at', 'desc')
+                    ->value('id');
+                $update_real = Date::find($date_id);
+                $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                $update_real->save();
+
+
+                //ตารางorderdetailstatus
+                $create_status = new Orderdetailstatus();
+                $create_status->order_detail_id = $id;
+                $create_status->status = "คืนเครื่องประดับแล้ว";
+                $create_status->save();
+                //ตารางorderdetailstatus
+
+
+                //ตารางreservation
+                $reservation = Reservation::find($orderdetail->reservation_id);
+                $reservation->status = 'คืนเครื่องประดับแล้ว';
+                $reservation->status_completed = 1; //เสร็จแล้ว
+                $reservation->save();
+
+                // ตารางหลอก
+                $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->first();
+                $update_re_filter = Reservationfilters::find($find_re_filter->id);
+                $update_re_filter->status = 'คืนเครื่องประดับแล้ว';
+                $update_re_filter->status_completed = 1; //เสร็จแล้ว
+                $update_re_filter->save();
+
+                // อัปเดตสถานะเครื่องประดับ
+                $update_status_jewelry = Jewelry::find($reservation->jewelry_id);
+                $update_status_jewelry->jewelry_status = 'ยุติการให้เช่า';
+                $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                $update_status_jewelry->save();
+
+                // ตรวจหาว่าเครื่องประดับชิ้นนี้อยู่ในเซตไหนไหม
+                $jewelry_item = Jewelrysetitem::where('jewelry_id', $reservation->jewelry_id)->get();
+                if ($jewelry_item->isNotEmpty()) {
+                    foreach ($jewelry_item as $valuee) {
+                        $set_jewelry = Jewelryset::find($valuee->jewelry_set_id);
+                        $set_jewelry->set_status = 'ยุติการให้เช่า';
+                        $set_jewelry->save();
+                    }
+                }
+                $after_return_jew = new Afterreturnjew();
+                $after_return_jew->reservationfilter_id = $find_re_filter->id;
+                $after_return_jew->type = 5;
+                $after_return_jew->price = $damage_insurance_no_set;
+                $after_return_jew->save();
             }
         }
         // เช่าเป็นเซต
@@ -683,10 +847,13 @@ class Orderjewelry extends Controller
             $refil_id = $request->input('refil_id_');
             $action_set = $request->input('action_set_');
             $repair_details_set = $request->input('repair_details_set_');
+            $damage_insurance_set = $request->input('damage_insurance_set_');
             $refil_jewelry_id = $request->input('refil_jewelry_id_');
+
+            $total_damage_insurance_set = 0;
             foreach ($refil_id as $index =>  $item) {
                 if ($action_set[$index] == 'clean') {
-
+                    // สภาพปกติ
                     //ตารางorderdetail
                     $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
                     $orderdetail->save();
@@ -722,8 +889,15 @@ class Orderjewelry extends Controller
                     $update_status_jewelry->jewelry_status = 'รอทำความสะอาด';
                     $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
                     $update_status_jewelry->save();
-                } elseif ($action_set[$index] == 'repair') {
 
+                    $after_return_jew = new Afterreturnjew();
+                    $after_return_jew->reservationfilter_id = $update_re_filter->id;
+                    $after_return_jew->type = 1;
+                    $after_return_jew->price = $damage_insurance_set[$index];
+                    $after_return_jew->save();
+                    $total_damage_insurance_set += $damage_insurance_set[$index];
+                } elseif ($action_set[$index] == 'repair') {
+                    // ต้องซ่อม
                     //ตารางorderdetail
                     $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
                     $orderdetail->save();
@@ -766,8 +940,73 @@ class Orderjewelry extends Controller
                     $create_repair->repair_status = 'รอดำเนินการ';
                     $create_repair->repair_type = 1;  //1.ยังไม่ทำความสะอาด 2.ทำความสะอาดแล้ว 
                     $create_repair->save();
-                } elseif ($action_set[$index] == 'lost') {
 
+                    $after_return_jew = new Afterreturnjew();
+                    $after_return_jew->reservationfilter_id = $update_re_filter->id;
+                    $after_return_jew->type = 2;
+                    $after_return_jew->price = $damage_insurance_set[$index];
+                    $after_return_jew->save();
+                    $total_damage_insurance_set += $damage_insurance_set[$index];
+                } elseif ($action_set[$index] == 'lost') {
+                    // สูญหาย (ลูกค้าแจ้ง)
+                    //ตารางorderdetail
+                    $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                    $orderdetail->save();
+
+                    // อัปเดตตารางdate
+                    $date_id = Date::where('order_detail_id', $id)
+                        ->orderBy('created_at', 'desc')
+                        ->value('id');
+                    $update_real = Date::find($date_id);
+                    $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                    $update_real->save();
+
+                    //ตารางorderdetailstatus
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $id;
+                    $create_status->status = "คืนเครื่องประดับแล้ว";
+                    $create_status->save();
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $id;
+                    $create_status->status = "แจ้งสูญหาย";
+                    $create_status->save();
+
+                    //ตารางreservation
+                    $reservation = Reservation::find($orderdetail->reservation_id);
+                    $reservation->status = 'คืนเครื่องประดับแล้ว';
+                    $reservation->status_completed = 1; //เสร็จแล้ว
+                    $reservation->save();
+
+
+                    // ตารางหลอก
+                    $update_re_filter = Reservationfilters::find($refil_id[$index]);
+                    $update_re_filter->status = 'สูญหาย';
+                    $update_re_filter->status_completed = 1;
+                    $update_re_filter->save();
+                    // อัปเดตสถานะเครื่องประดับ
+                    $update_status_jewelry = Jewelry::find($refil_jewelry_id[$index]);
+                    $update_status_jewelry->jewelry_status = 'สูญหาย';
+                    $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                    $update_status_jewelry->save();
+
+
+                    // ตรวจหาว่าเครื่องประดับชิ้นนี้อยู่ในเซตไหนไหม
+                    $jewelry_item = Jewelrysetitem::where('jewelry_id', $refil_jewelry_id[$index])->get();
+                    if ($jewelry_item->isNotEmpty()) {
+                        foreach ($jewelry_item as $valuee) {
+                            $set_jewelry = Jewelryset::find($valuee->jewelry_set_id);
+                            $set_jewelry->set_status = 'ยุติการให้เช่า';
+                            $set_jewelry->save();
+                        }
+                    }
+                    $after_return_jew = new Afterreturnjew();
+                    $after_return_jew->reservationfilter_id = $update_re_filter->id;
+                    $after_return_jew->type = 3;
+                    $after_return_jew->price = $damage_insurance_set[$index];
+                    $after_return_jew->save();
+                    $total_damage_insurance_set += $damage_insurance_set[$index];
+                } elseif ($action_set[$index] == 'lost_unreported') {
+                    // สูญหายไม่แจ้ง
                     //ตารางorderdetail
                     $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
                     $orderdetail->save();
@@ -818,8 +1057,100 @@ class Orderjewelry extends Controller
                             $set_jewelry->save();
                         }
                     }
+                    $after_return_jew = new Afterreturnjew();
+                    $after_return_jew->reservationfilter_id = $update_re_filter->id;
+                    $after_return_jew->type = 4;
+                    $after_return_jew->price = $damage_insurance_set[$index];
+                    $after_return_jew->save();
+                    $total_damage_insurance_set += $damage_insurance_set[$index];
+                } elseif ($action_set[$index] == 'damaged_beyond_repair') {
+                    // เสียหายหนัก
+                    //ตารางorderdetail
+                    $orderdetail->status_detail = "คืนเครื่องประดับแล้ว";
+                    $orderdetail->save();
+
+                    // อัปเดตตารางdate
+                    $date_id = Date::where('order_detail_id', $id)
+                        ->orderBy('created_at', 'desc')
+                        ->value('id');
+                    $update_real = Date::find($date_id);
+                    $update_real->actua_return_date = now(); //วันที่คืนจริงๆ
+                    $update_real->save();
+
+                    //ตารางorderdetailstatus
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $id;
+                    $create_status->status = "คืนเครื่องประดับแล้ว";
+                    $create_status->save();
+                    $create_status = new Orderdetailstatus();
+                    $create_status->order_detail_id = $id;
+                    $create_status->status = "สูญหาย";
+                    $create_status->save();
+
+                    //ตารางreservation
+                    $reservation = Reservation::find($orderdetail->reservation_id);
+                    $reservation->status = 'คืนเครื่องประดับแล้ว';
+                    $reservation->status_completed = 1; //เสร็จแล้ว
+                    $reservation->save();
+
+
+                    // ตารางหลอก
+                    $update_re_filter = Reservationfilters::find($refil_id[$index]);
+                    $update_re_filter->status = 'คืนเครื่องประดับแล้ว';
+                    $update_re_filter->status_completed = 1;
+                    $update_re_filter->save();
+                    // อัปเดตสถานะเครื่องประดับ
+                    $update_status_jewelry = Jewelry::find($refil_jewelry_id[$index]);
+                    $update_status_jewelry->jewelry_status = 'ยุติการให้เช่า';
+                    $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
+                    $update_status_jewelry->save();
+
+
+                    // ตรวจหาว่าเครื่องประดับชิ้นนี้อยู่ในเซตไหนไหม
+                    $jewelry_item = Jewelrysetitem::where('jewelry_id', $refil_jewelry_id[$index])->get();
+                    if ($jewelry_item->isNotEmpty()) {
+                        foreach ($jewelry_item as $valuee) {
+                            $set_jewelry = Jewelryset::find($valuee->jewelry_set_id);
+                            $set_jewelry->set_status = 'ยุติการให้เช่า';
+                            $set_jewelry->save();
+                        }
+                    }
+                    $after_return_jew = new Afterreturnjew();
+                    $after_return_jew->reservationfilter_id = $update_re_filter->id;
+                    $after_return_jew->type = 5;
+                    $after_return_jew->price = $damage_insurance_set[$index];
+                    $after_return_jew->save();
+                    $total_damage_insurance_set += $damage_insurance_set[$index];
                 }
             }
+
+            if ($total_damage_insurance_set > 0) {
+            $create_additional = new AdditionalChange();
+            $create_additional->order_detail_id = $id;
+            $create_additional->charge_type = 1;
+            $create_additional->amount = $total_damage_insurance_set;
+            $create_additional->save();
+        }
+        if ($late_return_fee > 0) {
+            $create_additionals = new AdditionalChange();
+            $create_additionals->order_detail_id = $id;
+            $create_additionals->charge_type = 2;
+            $create_additionals->amount = $late_return_fee;
+            $create_additionals->save();
+        }
+        if ($late_chart) {
+            $create_additionalw = new AdditionalChange();
+            $create_additionalw->order_detail_id = $id;
+            $create_additionalw->charge_type = 3;
+            $create_additionalw->amount = $late_chart;
+            $create_additionalw->save();
+        }
+            
+
+
+
+
+
         }
 
         // ถ้ามันตรวจสอบแล้วพบว่าทุกรายการ มันเป็น คืนชุด/คืนเครื่องประดับครบยัง ทั้งหมดแล้ว แปลว่า จะต้องทำการสร้างใบเสร็จอัตโนมัติเลย
@@ -1246,8 +1577,7 @@ class Orderjewelry extends Controller
                         }
                     }
                 }
-            }
-            elseif ($value->separable == 2) {
+            } elseif ($value->separable == 2) {
 
                 // เสื้อ
                 if ($value->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า' || $value->shirtitems->first()->shirtitem_status == 'สูญหาย') {
@@ -1272,7 +1602,7 @@ class Orderjewelry extends Controller
                 }
             }
         }
-        
+
         $orderdetail = Orderdetail::whereIn('id', $list)->get();
 
 

@@ -1609,7 +1609,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    // ->addHours(7)
+                                                    ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -1684,7 +1684,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    // ->addHours(7)
+                                                    ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -1721,7 +1721,7 @@
                                                 ->first();
                                             if ($created_at) {
                                                 $text_date = Carbon\Carbon::parse($created_at->created_at)
-                                                    // ->addHours(7)
+                                                    ->addHours(7)
                                                     ->format('d/m/Y H:i');
                                             } else {
                                                 $text_date = 'รอดำเนินการ';
@@ -1793,6 +1793,8 @@
                 <div class="card shadow">
                     <div class="card-body">
                         <h5 class="card-title">ข้อมูลการเช่า</h5>
+                        {{ $orderdetail->reservation_id }}
+
                         @php
                             $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
                             $customer = App\Models\Customer::find($customer_id);
@@ -1968,9 +1970,10 @@
                                             class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
                                             {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}</span>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                                        <span class="text-secondary">จำนวนวันที่เช่าทั้งหมด</span>
-                                        <span class="fw-medium" id="total_day_reall">10 วัน</span>
+
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary"><strong>จำนวนวันที่เช่าทั้งหมด</strong></span>
+                                        <strong><span class="fw-medium" id="total_day_reall"></span></strong>
                                         <script>
                                             var total_day_real = document.getElementById('total_day_reall');
                                             var day_actua_pickup_date = new Date('{{ $Date->actua_pickup_date }}');
@@ -1983,9 +1986,314 @@
                                                 60 * 24));
                                             total_day_real.innerHTML = ' ' + total_actua_pickup_date_return_date + ' วัน';
                                         </script>
-
                                     </div>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top"></div>
                                 </div>
+
+                                <div class="d-flex align-items-center text-secondary mb-3">
+                                    <i class="bi bi-calendar3 me-2"></i>
+                                    <span class="fw-medium">สภาพชุดหลังคืน</span>
+                                </div>
+
+
+
+                                <div class="ms-4">
+                                    @if ($orderdetail->status_detail == 'คืนชุดแล้ว')
+                                        @if ($orderdetail->shirtitems_id)
+                                            @foreach ($reservationfilterdress as $item)
+                                                @if ($item->filterdress_one_to_one_afterreturndress->type == 1)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                        : สภาพปกติ
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @elseif($item->filterdress_one_to_one_afterreturndress->type == 2)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                        : ต้องซ่อม
+                                                        เนื่องจาก{{ $item->filterdress_one_to_many_repair->first()->repair_description }}
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @elseif($item->filterdress_one_to_one_afterreturndress->type == 3)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                        : ลูกค้าแจ้งสูญหาย
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @elseif($item->filterdress_one_to_one_afterreturndress->type == 4)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                        : สูญหาย ลูกค้าไม่ส่งคืน
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @elseif($item->filterdress_one_to_one_afterreturndress->type == 5)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                        : สภาพเสียหายหนัก ให้เช่าต่อไม่ได้
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @endif
+                                            @endforeach
+                                        @elseif($orderdetail->skirtitems_id)
+                                            @foreach ($reservationfilterdress as $item)
+                                                @if ($item->filterdress_one_to_one_afterreturndress->type == 1)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                        : สภาพปกติ
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @elseif($item->filterdress_one_to_one_afterreturndress->type == 2)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                        : ต้องซ่อม
+                                                        เนื่องจาก{{ $item->filterdress_one_to_many_repair->first()->repair_description }}
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @elseif($item->filterdress_one_to_one_afterreturndress->type == 3)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                        : ลูกค้าแจ้งสูญหาย
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @elseif($item->filterdress_one_to_one_afterreturndress->type == 4)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                        : สูญหาย ลูกค้าไม่ส่งคืน
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @elseif($item->filterdress_one_to_one_afterreturndress->type == 5)
+                                                    <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                        : สภาพเสียหายหนัก ให้เช่าต่อไม่ได้
+                                                        @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                            <span
+                                                                style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                บาท)</span>
+                                                        @endif
+                                                    </p>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            @if ($datadress->separable == 1)
+                                                @foreach ($reservationfilterdress as $item)
+                                                    @if ($item->filterdress_one_to_one_afterreturndress->type == 1)
+                                                        <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ทั้งชุด)
+                                                            : สภาพปกติ
+                                                            @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                <span
+                                                                    style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                    {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                    บาท)</span>
+                                                            @endif
+                                                        </p>
+                                                    @elseif($item->filterdress_one_to_one_afterreturndress->type == 2)
+                                                        <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ทั้งชุด)
+                                                            : ต้องซ่อม
+                                                            เนื่องจาก{{ $item->filterdress_one_to_many_repair->first()->repair_description }}
+                                                            @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                <span
+                                                                    style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                    {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                    บาท)</span>
+                                                            @endif
+                                                        </p>
+                                                    @elseif($item->filterdress_one_to_one_afterreturndress->type == 3)
+                                                        <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ทั้งชุด)
+                                                            : ลูกค้าแจ้งสูญหาย
+                                                            @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                <span
+                                                                    style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                    {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                    บาท)</span>
+                                                            @endif
+                                                        </p>
+                                                    @elseif($item->filterdress_one_to_one_afterreturndress->type == 4)
+                                                        <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ทั้งชุด)
+                                                            : สูญหาย ลูกค้าไม่ส่งคืน
+                                                            @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                <span
+                                                                    style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                    {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                    บาท)</span>
+                                                            @endif
+                                                        </p>
+                                                    @elseif($item->filterdress_one_to_one_afterreturndress->type == 5)
+                                                        <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ทั้งชุด)
+                                                            : สภาพเสียหายหนัก ให้เช่าต่อไม่ได้
+                                                            @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                <span
+                                                                    style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                    {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                    บาท)</span>
+                                                            @endif
+                                                        </p>
+                                                    @endif
+                                                @endforeach
+                                            @elseif ($datadress->separable == 2)
+                                                @foreach ($reservationfilterdress as $item)
+                                                    @if ($item->filterdress_one_to_one_afterreturndress->type == 1)
+                                                        @if ($item->shirtitems_id)
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                                : สภาพปกติ
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
+                                                        @elseif($item->skirtitems_id)
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                                : สภาพปกติ
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
+                                                        @endif
+                                                    @elseif($item->filterdress_one_to_one_afterreturndress->type == 2)
+                                                        @if ($item->shirtitems_id)
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                                : ต้องซ่อม
+                                                                เนื่องจาก{{ $item->filterdress_one_to_many_repair->first()->repair_description }}
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
+                                                        @elseif ($item->skirtitems_id)
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                                : ต้องซ่อม
+                                                                เนื่องจาก{{ $item->filterdress_one_to_many_repair->first()->repair_description }}
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
+                                                        @endif
+                                                    @elseif($item->filterdress_one_to_one_afterreturndress->type == 3)
+                                                        @if ($item->shirtitems_id)
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                                : ลูกค้าแจ้งสูญหาย
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
+                                                        @elseif ($item->skirtitems_id)
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                                : ลูกค้าแจ้งสูญหาย
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
+                                                        @endif
+                                                    @elseif($item->filterdress_one_to_one_afterreturndress->type == 4)
+                                                        @if ($item->shirtitems_id)
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                                : สูญหาย ลูกค้าไม่ส่งคืน
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
+                                                        @elseif ($item->skirtitems_id)
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                                : สูญหาย ลูกค้าไม่ส่งคืน
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
+                                                        @endif
+                                                    @elseif($item->filterdress_one_to_one_afterreturndress->type == 5)
+                                                        @if ($item->shirtitems_id)
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(เสื้อ)
+                                                                : สภาพเสียหายหนัก ให้เช่าต่อไม่ได้
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
+                                                        @elseif ($item->skirtitems_id)
+                                                        <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                            : สภาพเสียหายหนัก ให้เช่าต่อไม่ได้
+                                                            @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                <span
+                                                                    style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                    {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                    บาท)</span>
+                                                            @endif
+                                                        </p>
+                                                        @endif
+                                                    @endif
+                                                @endforeach
+
+
+
+
+
+                                            @endif
+                                        @endif
+                                    @endif
+                                </div>
+
+
+
+
                             </div>
 
                             <!-- ข้อมูลการเงิน -->
@@ -2093,6 +2401,8 @@
 
 
     </div>
+
+
 
 
 
@@ -2312,6 +2622,7 @@
     </div>
 
 
+
     <div class="modal fade" id="updatestatus_return" tabindex="-1" role="dialog"
         aria-labelledby="updatestatus_returnLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg" role="document">
@@ -2453,6 +2764,7 @@
                                         <tr>
                                             <th class="bg-gray-100">รายการ</th>
                                             <th class="bg-gray-100">การดำเนินการ</th>
+                                            <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -2465,9 +2777,13 @@
                                             <td class="px-4 py-2">
                                                 <select name="actionreturnitemshirt" id="actionreturnitemshirt"
                                                     class="form-control">
-                                                    <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                    <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                     <option value="repairitem">ต้องซ่อม</option>
-                                                    <option value="lost">สูญหาย</option>
+                                                    <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
+                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                        คาดว่าไม่น่าจะคืน)</option>
+                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)
+                                                    </option>
                                                 </select>
 
                                                 <div id="showrepair_detail_itemshirt" class="mt-2"
@@ -2475,6 +2791,10 @@
                                                     <textarea name="repair_detail_for_itemshirt" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
                                                         rows="3"></textarea>
                                                 </div>
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <input type="number" value="0" class="form-control" min="0"
+                                                    name="damage_insurance_shirt" required>
                                             </td>
                                         </tr>
                                         <script>
@@ -2500,6 +2820,7 @@
                                         <tr>
                                             <th class="bg-gray-100">รายการ</th>
                                             <th class="bg-gray-100">การดำเนินการ</th>
+                                            <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -2512,9 +2833,13 @@
                                             <td class="px-4 py-2">
                                                 <select name="actionreturnitemskirt" id="actionreturnitemskirt"
                                                     class="form-control">
-                                                    <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                    <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                     <option value="repairitem">ต้องซ่อม</option>
-                                                    <option value="lost">สูญหาย</option>
+                                                    <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
+                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                        คาดว่าไม่น่าจะคืน)</option>
+                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)
+                                                    </option>
                                                 </select>
 
                                                 <div id="showrepair_detail_itemskirt" class="mt-2"
@@ -2522,6 +2847,10 @@
                                                     <textarea name="repair_detail_for_itemskirt" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
                                                         rows="3"></textarea>
                                                 </div>
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <input type="number" value="0" class="form-control" min="0"
+                                                    name="damage_insurance_skirt" required>
                                             </td>
                                         </tr>
                                         <script>
@@ -2548,6 +2877,7 @@
                                             <tr>
                                                 <th class="bg-gray-100">รายการ</th>
                                                 <th class="bg-gray-100">การดำเนินการ</th>
+                                                <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -2562,7 +2892,12 @@
                                                         id="actionreturnitemtotaldress" class="form-control">
                                                         <option value="cleanitem" selected>ส่งทำความสะอาด</option>
                                                         <option value="repairitem">ต้องซ่อม</option>
-                                                        <option value="lost">สูญหาย</option>
+                                                        <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="damaged_beyond_repair">*เสียหายหนัก
+                                                            (ให้เช่าต่อไม่ได้)
+                                                        </option>
                                                     </select>
 
                                                     <div id="showrepair_detail_itemtotaldress" class="mt-2"
@@ -2570,6 +2905,10 @@
                                                         <textarea name="repair_detail_for_itemtotaldress" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
                                                             rows="3"></textarea>
                                                     </div>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <input type="number" value="0" class="form-control"
+                                                        min="0" name="damage_insurance_separable_one" required>
                                                 </td>
                                             </tr>
                                             <script>
@@ -2595,6 +2934,7 @@
                                             <tr>
                                                 <th class="bg-gray-100">รายการ</th>
                                                 <th class="bg-gray-100">การดำเนินการ</th>
+                                                <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -2607,9 +2947,14 @@
                                                 <td class="px-4 py-2">
                                                     <select name="actionreturnitemtotal1" id="actionreturnitemtotal1"
                                                         class="form-control">
-                                                        <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                        <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                         <option value="repairitem">ต้องซ่อม</option>
-                                                        <option value="lost">สูญหาย</option>
+                                                        <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="damaged_beyond_repair">*เสียหายหนัก
+                                                            (ให้เช่าต่อไม่ได้)
+                                                        </option>
                                                     </select>
                                                     <input type="hidden" name="filtershirt_id"
                                                         value="{{ $filtershirt_id }}">
@@ -2620,6 +2965,10 @@
                                                             rows="3"></textarea>
                                                     </div>
                                                 </td>
+                                                <td class="px-4 py-2">
+                                                    <input type="number" value="0" class="form-control"
+                                                        min="0" name="damage_insurance_shirt_two" required>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td class="px-4 py-2">
@@ -2629,9 +2978,13 @@
                                                 <td class="px-4 py-2">
                                                     <select name="actionreturnitemtotal2" id="actionreturnitemtotal2"
                                                         class="form-control">
-                                                        <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                        <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                         <option value="repairitem">ต้องซ่อม</option>
-                                                        <option value="lost">สูญหาย</option>
+                                                        <option value="lost">*สูญหาย (ลูกค้าแจ้ง)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="damaged_beyond_repair">*เสียหายหนัก
+                                                            (ให้เช่าต่อไม่ได้)</option>
                                                     </select>
                                                     <input type="hidden" name="filterskirt_id"
                                                         value="{{ $filterskirt_id }}">
@@ -2641,6 +2994,10 @@
                                                         <textarea name="repair_detail_for_item2" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
                                                             rows="3"></textarea>
                                                     </div>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <input type="number" value="0" class="form-control"
+                                                        min="0" name="damage_insurance_skirt_two" required>
                                                 </td>
                                             </tr>
 

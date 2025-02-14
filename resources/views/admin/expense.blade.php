@@ -39,7 +39,7 @@
                                 <option value="ค่าไฟ">ค่าไฟ</option>
                                 <option value="ค่าซ่อมบำรุง">ค่าซ่อมบำรุง</option>
                                 <option value="ค่าซักรีด">ค่าซักรีด</option>
-                                <option value="ค่าวัสดุสิ้นเปลือง">ค่าวัสดุสิ้นเปลือง</option>
+                                {{-- <option value="ค่าวัสดุสิ้นเปลือง">ค่าวัสดุสิ้นเปลือง</option> --}}
                                 <option value="other_expense">อื่นๆ</option>
                             </select>
                         </div>

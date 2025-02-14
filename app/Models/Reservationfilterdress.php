@@ -48,6 +48,11 @@ class Reservationfilterdress extends Model
     public function filterdress_one_to_many_repair(){
         return $this->hasMany(Repair::class,'reservationfilterdress_id') ; 
     }
+    public function filterdress_one_to_one_afterreturndress(){
+        return $this->hasOne(Afterreturndress::class,'reservationfilterdress_id') ; 
+    }
+
+   
 
 
 

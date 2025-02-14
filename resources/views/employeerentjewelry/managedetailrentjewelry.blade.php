@@ -125,13 +125,11 @@
                         if ($reservation->status == 'กำลังเช่า') {
                             $check_bunton_pass = true;
                         }
-                    }
-                    else {
+                    } else {
                         // ไม่ใช่คิวแรก
                         $check_bunton_pass = false;
                     }
-                }
-                else {
+                } else {
                     // แปลว่ามันไปเช็คแล้วใน การจอง แปลวว่ามันไม่คิว ก็หมายถึงว่า มันก็ไม่นับคิวกะคนอื่ไง
                     $check_bunton_pass = true;
                 }
@@ -1051,9 +1049,10 @@
                                             class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
                                             {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}</span>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                                        <span class="text-secondary">จำนวนวันที่เช่าทั้งหมด</span>
-                                        <span class="fw-medium" id="total_day_reall">10 วัน</span>
+
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary"><strong>จำนวนวันที่เช่าทั้งหมด</strong></span>
+                                        <strong><span class="fw-medium" id="total_day_reall"></span></strong>
                                         <script>
                                             var total_day_real = document.getElementById('total_day_reall');
                                             var day_actua_pickup_date = new Date('{{ $Date->actua_pickup_date }}');
@@ -1066,10 +1065,83 @@
                                                 60 * 24));
                                             total_day_real.innerHTML = ' ' + total_actua_pickup_date_return_date + ' วัน';
                                         </script>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top"></div>
+                                </div>
 
+                                <div class="d-flex align-items-center text-secondary mb-3">
+                                    <i class="bi bi-calendar3 me-2"></i>
+                                    <span class="fw-medium">สภาพเครื่องประดับหลังคืน</span>
+                                </div>
+
+                                <div class="ms-4">
+                                    {{-- <p>สร้อยA1 : สภาพปกติ</p>
+                                    <p>สร้อยA2 : ต้องซ่อม -เนื่องจากขาดบริเวณเส้นทองคำเปลว <span
+                                            style="color: red ; ">(หักเงินประกันลูกค้า 500.00 บาท)</span></p>
+                                    <p>สร้อยA3 : เสียหายหนัก (ให้เช่าต่อไม่ได้) <span
+                                            style="color: red ; ">(หักเงินประกันลูกค้า 600.00 บาท)</span></p>
+                                    <p>สร้อยA3 : สูญหาย (ลูกค้าแจ้ง)</p> --}}
+                                    @if ($orderdetail->status_detail == 'คืนเครื่องประดับแล้ว')
+                                        @foreach ($reservationfilter as $show)
+                                            @if ($show->re_one_to_one_after_return_jew->type == 1)
+                                                <p> {{ $show->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}{{ $show->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $show->jewvationtorefil->jewelry_code }}
+                                                    : สภาพปกติ
+                                                    @if ($show->re_one_to_one_after_return_jew->price != 0)
+                                                        <span style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                    @endif
+                                                </p>
+                                            @elseif($show->re_one_to_one_after_return_jew->type == 2)
+                                                <p> {{ $show->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}{{ $show->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $show->jewvationtorefil->jewelry_code }}
+                                                    : ต้องซ่อม
+                                                    เนื่องจาก{{ $show->re_one_many_repair->first()->repair_description }}
+                                                    @if ($show->re_one_to_one_after_return_jew->price != 0)
+                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                    @endif
+                                                </p>
+                                            @elseif($show->re_one_to_one_after_return_jew->type == 3)
+                                                <p> {{ $show->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}{{ $show->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $show->jewvationtorefil->jewelry_code }}
+                                                    : ลูกค้าแจ้งสูญหาย
+                                                    @if ($show->re_one_to_one_after_return_jew->price != 0)
+                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                    @endif
+                                                </p>
+                                            @elseif($show->re_one_to_one_after_return_jew->type == 4)
+                                                <p> {{ $show->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}{{ $show->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $show->jewvationtorefil->jewelry_code }}
+                                                    : สูญหาย ลูกค้าไม่ส่งคืน
+                                                    @if ($show->re_one_to_one_after_return_jew->price != 0)
+                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                    @endif
+                                                </p>
+                                            @elseif($show->re_one_to_one_after_return_jew->type == 5)
+                                                <p> {{ $show->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}{{ $show->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $show->jewvationtorefil->jewelry_code }}
+                                                    : สภาพเสียหายหนัก ให้เช่าต่อไม่ได้
+                                                    @if ($show->re_one_to_one_after_return_jew->price != 0)
+                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                    @endif
+                                                </p>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                     </div>
                                 </div>
+
+
+
+
+
+
+
+
+
                             </div>
+
+
+
+
+
+
+
 
                             <!-- ข้อมูลการเงิน -->
                             <div class="col-md-6">
@@ -1174,6 +1246,14 @@
 
 
     </div>
+
+
+
+
+
+
+
+
 
 
     <div class="modal fade" id="updatestatus" tabindex="-1" role="dialog" aria-labelledby="updatestatusLabel"
@@ -1456,10 +1536,9 @@
                         </table>
 
                         <!-- ฟิลด์สำหรับพนักงานกรอกค่าธรรมเนียมการเสียหาย -->
-                        <strong class="mb-3">กรอกข้อมูลค่าธรรมเนียม:</strong>
                         <div class="form-group">
                             <p>เก็บประกันจากลูกค้า : <span>{{ $orderdetail->damage_insurance }} บาท</span></p>
-                            <strong for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</strong>
+                            {{-- <strong for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</strong> --}}
                             <input type="number" class="form-control" name="total_damage_insurance"
                                 id="total_damage_insurance" placeholder="กรอกจำนวนเงิน" min="0" step="0.01"
                                 required value="0">
@@ -1478,6 +1557,7 @@
                                         <tr>
                                             <th class="bg-gray-100">รายการ</th>
                                             <th class="bg-gray-100">การดำเนินการ</th>
+                                            <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1491,15 +1571,22 @@
                                             <td class="px-4 py-2">
                                                 <select name="actionreturnitem" id="actionreturnitem"
                                                     class="form-control">
-                                                    <option value="cleanitem" selected>ส่งทำความสะอาด</option>
-                                                    <option value="repairitem">ต้องซ่อม</option>
-                                                    <option value="lost">สูญหาย</option>
+                                                    <option value="cleanitem" selected>*สภาพปกติ ส่งทำความสะอาด</option>
+                                                    <option value="repairitem">*ต้องซ่อม</option>
+                                                    <option value="lost">*สูญหาย (ลูกค้าแจ้ง)</option>
+                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง คาดว่าไม่น่าจะคืน)</option>
+                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)</option>
                                                 </select>
 
                                                 <div id="showrepair_detail_item" class="mt-2" style="display: none;">
                                                     <textarea name="repair_detail_for_item" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
                                                         rows="3"></textarea>
                                                 </div>
+
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <input type="number" value="0" class="form-control" min="0"
+                                                    name="damage_insurance_no_set" required>
                                             </td>
                                         </tr>
                                         <script>
@@ -1525,6 +1612,7 @@
                                         <tr>
                                             <th class="bg-gray-100">รายการ</th>
                                             <th class="bg-gray-100">การดำเนินการ</th>
+                                            <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1542,10 +1630,15 @@
                                                 <td class="px-4 py-2">
                                                     <select name="action_set_[]" id="actionreturn{{ $item->id }}"
                                                         class="form-control">
-                                                        <option value="clean" selected>ส่งทำความสะอาด</option>
-                                                        <option value="repair">ต้องซ่อม</option>
-                                                        <option value="lost">สูญหาย</option>
+                                                        <option value="clean" selected>*สภาพปกติ ส่งทำความสะอาด</option>
+                                                        <option value="repair">*ต้องซ่อม</option>
 
+                                                        <option value="lost">*สูญหาย (ลูกค้าแจ้ง)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="damaged_beyond_repair">*เสียหายหนัก
+                                                            (ให้เช่าต่อไม่ได้)
+                                                        </option>
                                                     </select>
 
                                                     <div id="repair_details{{ $item->id }}" class="mt-2"
@@ -1554,6 +1647,14 @@
                                                             rows="3"></textarea>
                                                     </div>
                                                 </td>
+
+                                                <td class="px-4 py-2">
+                                                    <input type="number" class="form-control" value="0"
+                                                        min="0" name="damage_insurance_set_[]">
+                                                </td>
+
+
+
                                             </tr>
                                             <script>
                                                 document.addEventListener('DOMContentLoaded', function() {

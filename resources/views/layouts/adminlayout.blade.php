@@ -162,7 +162,16 @@
                     <span class="bi bi-list-ul"></span>
                     <span class="ml-2">รายการออเดอร์ทั้งหมด</span>
                 </a>
-                <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
+                <a href="{{ route('dashboard') }}"
+                class="list-group-item @if (Route::currentRouteName() == 'dashboard') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
+                <span class="bi bi-list-ul"></span>
+                <span class="ml-2">แดชบอร์ด</span>
+            </a>
+
+
+
+                {{-- <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
                     data-toggle="collapse" data-target="#sale-collapse" id="d1">
                     <div>
                         <span class="bi bi-bar-chart-line"></span>
@@ -175,14 +184,20 @@
                         <a href="{{ route('admin.dashboardcutdress') }}"
                             class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             สำหรับตัดชุด</a>
-                        <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        <a href="{{ route('testdashboard') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             สำหรับเช่าชุด</a>
-                        <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        <a href="{{ route('jewelrydashboard') }}"
+                            class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             สำหรับเช่าเครื่องประดับ</a>
                         <a href="#" class="list-group-item list-group-item-action border-0 pl-5" id="d">-
                             สำหรับเช่าตัดชุด</a>
                     </div>
-                </div>
+                </div> --}}
+
+
+
+
 
                 <button class="list-group-item list-group-item-action border-0 d-flex align-items-center"
                     data-toggle="collapse" data-target="#saleey-collapse" id="d1">
@@ -447,6 +462,14 @@
                 <span class="ml-2">บันทึกรายจ่าย</span>
             </a>
 
+            <a href="{{ route('jewelryproblemcancel') }}"
+                class="list-group-item @if (Route::currentRouteName() == 'jewelryproblemcancel') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
+                <span class="bi bi-plus-circle"></span>
+                <span class="ml-2">การจองที่ได้รับผลกระทบ</span>
+            </a>
+
+
 
 
 
@@ -562,9 +585,9 @@
                                 {{ $cleancountdress }}
                             </span>
                         @endif --}}
-                        
-                            
-                        
+
+
+
                     </a>
 
 
@@ -591,16 +614,16 @@
                         @endif
                     </a> --}}
 
-                    <a href="{{ route('dressrepair') }}"
-                    class="list-group-item list-group-item-action border-0 pl-5" id="d">-
-                    รายการซ่อมชุด
-                    
-                    
+                    <a href="{{ route('dressrepair') }}" class="list-group-item list-group-item-action border-0 pl-5"
+                        id="d">-
+                        รายการซ่อมชุด
+
+
                         {{-- <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
                             
                         </span> --}}
-                    
-                </a>
+
+                    </a>
 
 
                 </div>
@@ -690,12 +713,11 @@
                                 style="font-size: 0.8rem;">{{ $repair_jewelry }}</span>
                         @endif
                     </a>
-                    <a href="{{route('jewelryproblemcancel')}}"
-                    class="list-group-item list-group-item-action border-0 pl-5" id="d">-
-                    การจองที่ได้รับผลกระทบ
-                        <span class="badge custom-badge ml-1"
-                            style="font-size: 0.8rem;"></span>
-                </a>
+                    {{-- <a href="{{ route('jewelryproblemcancel') }}"
+                        class="list-group-item list-group-item-action border-0 pl-5" id="d">-
+                        การจองที่ได้รับผลกระทบ
+                        <span class="badge custom-badge ml-1" style="font-size: 0.8rem;"></span>
+                    </a> --}}
 
 
                 </div>

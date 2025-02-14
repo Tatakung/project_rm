@@ -24,7 +24,6 @@ class Jewelry extends Model
         'jewelry_rental', 
         'repair_count' ,        
     ];
-
     //ตาราง jew เป็น M ต่อ 1 ของตาราง typejew
     public function jewelry_m_o_typejew(){
         return $this->belongsTo(Typejewelry::class,'type_jewelry_id') ; 

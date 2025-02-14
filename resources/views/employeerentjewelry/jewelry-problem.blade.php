@@ -5,10 +5,10 @@
     <div class="container mt-4">
         <div class="alert alert-danger" role="alert">
             <div class="d-flex align-items-center">
-                <i class="fas fa-exclamation-triangle me-2"></i>
+                
                 <div>
-                    <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4>
-                    <p class="mb-0">พบรายการที่ได้รับผลกระทบจากสินค้าสูญหาย กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกและคืนเงินมัดจำ
+                    {{-- <h4 class="alert-heading">แจ้งเตือนชุดสูญหาย/ยุติการให้เช่า!</h4> --}}
+                    <p class="mb-0">รายการที่ได้รับผลกระทบจากสูญหาย/ยุติการให้เช่า กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกและคืนเงินมัดจำ
                     </p>
                 </div>
             </div>

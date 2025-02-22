@@ -14,7 +14,6 @@ class Dressimage extends Model
         'dress_id',
         'dress_image',
     ];
-
     // dressimage เป็น M - 1 ของ dress
     public function dress()
     {

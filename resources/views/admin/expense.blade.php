@@ -109,43 +109,43 @@
 
                     <div class="container">
 
-                        <form action="{{route('expensefilter')}}" method="GET">
+                        <form action="{{ route('expensefilter') }}" method="GET">
                             @csrf
-                        <div class="row">
-                            <div class="col-md-5 mb-3">
-                                <select class="form-control rounded-lg border" id="month" name="month" required>
-                                    <option value="0" {{ $month == 0 ? 'selected' : '' }}>ทุกเดือน</option>
-                                    <option value="1" {{ $month == 1 ? 'selected' : '' }}>มกราคม</option>
-                                    <option value="2" {{ $month == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
-                                    <option value="3" {{ $month == 3 ? 'selected' : '' }}>มีนาคม</option>
-                                    <option value="4" {{ $month == 4 ? 'selected' : '' }}>เมษายน</option>
-                                    <option value="5" {{ $month == 5 ? 'selected' : '' }}>พฤษภาคม</option>
-                                    <option value="6" {{ $month == 6 ? 'selected' : '' }}>มิถุนายน</option>
-                                    <option value="7" {{ $month == 7 ? 'selected' : '' }}>กรกฎาคม</option>
-                                    <option value="8" {{ $month == 8 ? 'selected' : '' }}>สิงหาคม</option>
-                                    <option value="9" {{ $month == 9 ? 'selected' : '' }}>กันยายน</option>
-                                    <option value="10" {{ $month == 10 ? 'selected' : '' }}>ตุลาคม</option>
-                                    <option value="11" {{ $month == 11 ? 'selected' : '' }}>พฤศจิกายน</option>
-                                    <option value="12" {{ $month == 12 ? 'selected' : '' }}>ธันวาคม</option>
-                                </select>
+                            <div class="row">
+                                <div class="col-md-5 mb-3">
+                                    <select class="form-control rounded-lg border" id="month" name="month" required>
+                                        <option value="0" {{ $month == 0 ? 'selected' : '' }}>ทุกเดือน</option>
+                                        <option value="1" {{ $month == 1 ? 'selected' : '' }}>มกราคม</option>
+                                        <option value="2" {{ $month == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
+                                        <option value="3" {{ $month == 3 ? 'selected' : '' }}>มีนาคม</option>
+                                        <option value="4" {{ $month == 4 ? 'selected' : '' }}>เมษายน</option>
+                                        <option value="5" {{ $month == 5 ? 'selected' : '' }}>พฤษภาคม</option>
+                                        <option value="6" {{ $month == 6 ? 'selected' : '' }}>มิถุนายน</option>
+                                        <option value="7" {{ $month == 7 ? 'selected' : '' }}>กรกฎาคม</option>
+                                        <option value="8" {{ $month == 8 ? 'selected' : '' }}>สิงหาคม</option>
+                                        <option value="9" {{ $month == 9 ? 'selected' : '' }}>กันยายน</option>
+                                        <option value="10" {{ $month == 10 ? 'selected' : '' }}>ตุลาคม</option>
+                                        <option value="11" {{ $month == 11 ? 'selected' : '' }}>พฤศจิกายน</option>
+                                        <option value="12" {{ $month == 12 ? 'selected' : '' }}>ธันวาคม</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-5 mb-3">
+                                    <select class="form-control rounded-lg border" id="year" name="year" required>
+                                        <option value="0" {{ $year == 0 ? 'selected' : '' }}>ทุกปี</option>
+                                        @for ($i = 2023; $i <= now()->year; $i++)
+                                            <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>
+                                                {{ $i + 543 }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <button type="submit" class="btn w-100 rounded-lg"
+                                        style="background-color: #EBF5FF; color: #1E40AF;">
+                                        <i class="bi bi-search"></i> ค้นหา
+                                    </button>
+                                </div>
                             </div>
-                            <div class="col-md-5 mb-3">
-                                <select class="form-control rounded-lg border" id="year" name="year" required>
-                                    <option value="0" {{ $year == 0 ? 'selected' : '' }}>ทุกปี</option>
-                                    @for ($i = 2023; $i <= now()->year; $i++)
-                                        <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>
-                                            {{ $i + 543 }}</option>
-                                    @endfor
-                                </select>
-                            </div>
-                            <div class="col-md-2 mb-3">
-                                <button type="submit" class="btn w-100 rounded-lg"
-                                    style="background-color: #EBF5FF; color: #1E40AF;">
-                                    <i class="bi bi-search"></i> ค้นหา
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
 
 
 
@@ -197,56 +197,128 @@
 
 
 
-                    @if($dataexpense->count() > 0 )
-                    <table class="table table-hover">
-                        <thead>
-                            <tr style="text-align: center ; ">
-                                <th>วันที่</th>
-                                <th>ประเภท</th>
-                                <th class="text-end">จำนวนเงิน</th>
-                                <th>ผู้บันทึก</th>
-                                <th>การจัดการ</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach ($dataexpense as $item)
+                    @if ($dataexpense->count() > 0)
+                        <table class="table table-hover">
+                            <thead>
                                 <tr style="text-align: center ; ">
-                                    <td>
-                                        {{ \Carbon\Carbon::parse($item->date)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($item->date)->year + 543 }}
-                                    </td>
-                                    <td>{{ $item->expense_type }}</td>
-                                    <td class="text-end">{{ number_format($item->expense_value, 2) }} บาท</td>
-                                    <td>
-                                        @if ($item->expense_many_to_one_user->is_admin == 1)
-                                            เจ้าของร้าน
-                                        @else
-                                            คุณ{{ $item->expense_many_to_one_user->name }}
-                                            {{ $item->expense_many_to_one_user->lname }}
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="" method="POST" class="d-inline"
-                                                onsubmit="return confirm('ต้องการลบรายการนี้ใช่หรือไม่?')">
-                                                @csrf
-
-                                                <button type="submit" class="btn btn-danger btn-sm">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
+                                    <th>วันที่</th>
+                                    <th>ประเภท</th>
+                                    <th class="text-end">จำนวนเงิน</th>
+                                    <th>ผู้บันทึก</th>
+                                    <th>การจัดการ</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                                @foreach ($dataexpense as $item)
+                                    <tr style="text-align: center ; ">
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($item->date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($item->date)->year + 543 }}
+                                        </td>
+                                        <td>{{ $item->expense_type }}</td>
+                                        <td class="text-end">{{ number_format($item->expense_value, 2) }} บาท</td>
+                                        <td>
+                                            @if ($item->expense_many_to_one_user->is_admin == 1)
+                                                เจ้าของร้าน
+                                            @else
+                                                คุณ{{ $item->expense_many_to_one_user->name }}
+                                                {{ $item->expense_many_to_one_user->lname }}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+
+
+                                                <button type="submit" class="btn btn-warning btn-sm" data-toggle="modal"
+                                                    data-target="#editExpenseModal{{ $item->id }}">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+
+
+                                                <form action="" method="POST" class="d-inline"
+                                                    onsubmit="return confirm('ต้องการลบรายการนี้ใช่หรือไม่?')">
+                                                    @csrf
+
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+
+
+
+                                        <div class="modal fade" id="editExpenseModal{{ $item->id }}" tabindex="-1"
+                                            aria-labelledby="editExpenseModalLabel" aria-hidden="true"
+                                            data-backdrop="static">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editExpenseModalLabel">แก้ไขรายจ่าย (ยังไม่ได้ทำ)
+                                                        </h5>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="editExpenseForm" method="POST" action="">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="mb-3">
+                                                                <label for="edit_date" class="form-label">วันที่</label>
+                                                                <input type="date" class="form-control" id="edit_date"
+                                                                    name="date" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="edit_type" class="form-label">ประเภท</label>
+                                                                <select class="form-control" id="edit_type"
+                                                                    name="type" required>
+                                                                    <option value="">เลือกประเภทรายจ่าย</option>
+                                                                    <option value="ค่าผ้า">ค่าผ้า</option>
+                                                                    <option value="ค่าน้ำ">ค่าน้ำ</option>
+                                                                    <option value="ค่าไฟ">ค่าไฟ</option>
+                                                                    <option value="ค่าซ่อมบำรุง">ค่าซ่อมบำรุง</option>
+                                                                    <option value="ค่าซักรีด">ค่าซักรีด</option>
+                                                                    {{-- <option value="ค่าวัสดุสิ้นเปลือง">ค่าวัสดุสิ้นเปลือง</option> --}}
+                                                                    <option value="other_expense">อื่นๆ</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="edit_amount"
+                                                                    class="form-label">จำนวนเงิน</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit_amount" name="amount" step="0.01"
+                                                                    required>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">ยกเลิก</button>
+                                                                <button type="submit"
+                                                                    class="btn btn-primary">บันทึก</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     @else
-                    <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
+                        <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
                     @endif
 
                     <!-- Pagination -->

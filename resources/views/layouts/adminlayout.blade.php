@@ -167,6 +167,14 @@
                 id="d1">
                 <span class="bi bi-list-ul"></span>
                 <span class="ml-2">แดชบอร์ด</span>
+                
+                <a href="{{ route('dashboardpopular') }}"
+                class="list-group-item @if (Route::currentRouteName() == 'dashboardpopular') active @endif list-group-item-action border-0 align-items-center"
+                id="d1">
+                <span class="bi bi-list-ul"></span>
+                <span class="ml-2">แดชบอร์ดที่นิยม</span>
+
+
             </a>
 
 

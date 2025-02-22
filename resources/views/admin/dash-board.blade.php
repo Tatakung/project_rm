@@ -64,7 +64,7 @@
 
                 <!-- Total Expenses Card -->
                 <div class="col-12 col-md-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100 hover-shadow transition-all">
+                    <div class="card border-0 shadow-sm h-40 hover-shadow transition-all">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 bg-opacity-10 me-3">
@@ -144,8 +144,8 @@
 
 
         <!-- Chart Section -->
-        <div class="row mb-4">
-            <div class="col-6">
+        <div class="row mb-1">
+            {{-- <div class="col-6">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title mb-4">สัดส่วนรายได้แต่ละบริการ</h5>
@@ -190,27 +190,78 @@
                     </div>
                 </div>
 
-
-
-
-
-
-
-
-            </div>
+            </div> --}}
 
             <!-- Revenue & Expense Chart Section -->
             {{-- <div class="row mt-4"> --}}
-            <div class="col-6">
+            <div class="col-6 mt-3">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">รายได้ - รายจ่าย</h5>
+                        <h5 class="card-title">รายรับ - รายจ่าย(ทั้งหมด)ของร้าน</h5>
                         <div class="chart-container" style="position: relative; height:400px;">
                             <canvas id="revenueExpenseChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="col-6 mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">รายรับ-แยกตามประเภทชุดเช่า</h5>
+                        <div class="chart-container" style="position: relative; height:400px;">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">รายรับ-แยกตามประเภทเครื่องประดับ</h5>
+                        <div class="chart-container" style="position: relative; height:400px;">
+                            <canvas id="jewelryRevenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">รายรับ-แยกตามประเภทเซตเครื่องประดับ</h5>
+                        <div class="chart-container" style="position: relative; height:400px;">
+                            <canvas id="jewelrySetRevenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">รายรับ-แยกตามประเภทชุดที่สั่งตัด</h5>
+                        <div class="chart-container" style="position: relative; height:400px;">
+                            <canvas id="tailoringRevenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">รายรับ-แยกตามประเภทชุดที่เช่าตัด</h5>
+                        <div class="chart-container" style="position: relative; height:400px;">
+                            <canvas id="rentalTailoringRevenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
             {{-- </div> --}}
 
         </div>
@@ -218,149 +269,303 @@
 
 
 
-        <h5 class="card-title mb-4">สถิติ4รายการแรกที่นิยมมากที่สุด</h5>
-        <div class="row g-1">
-            <!-- เครื่องประดับที่นิยมเช่า -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card border-0 shadow-sm h-100 hover-shadow transition-all">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="rounded-circle p-3 bg-opacity-10 me-3">
-                                <i class="bi bi-gem fs-3"></i>
-                            </div>
-                            <h6 class="card-title mb-0">เครื่องประดับที่นิยมเช่ามากที่สุด</h6>
-                        </div>
-                        @if (!empty($list_popular_jew))
-                            @foreach ($list_popular_jew as $index => $item)
-                                <div class="d-flex justify-content-between border-bottom py-2">
-                                    <span>
-                                        @php
-                                            $jewelry = App\Models\Jewelry::find($index);
-                                            $typejewelry = App\Models\Typejewelry::find($jewelry->type_jewelry_id);
-                                        @endphp
-                                        {{ $typejewelry->type_jewelry_name }}{{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
-                                    </span>
-                                    <span class="fw-bold">{{ $item }} ครั้ง</span>
-                                </div>
-                            @endforeach
-                        @else
-                            <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- เซตเครื่องประดับ -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card border-0 shadow-sm h-100 hover-shadow transition-all">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="rounded-circle p-3 bg-opacity-10 me-3">
-                                <i class="bi bi-stars fs-3"></i>
-                            </div>
-                            <h6 class="card-title mb-0">เซตเครื่องประดับที่นิยมเช่ามากที่สุด</h6>
-                        </div>
-                        @if (!empty($list_popular_jew_set))
-                            @foreach ($list_popular_jew_set as $index => $item)
-                                <div class="d-flex justify-content-between border-bottom py-2">
-                                    <span>
-                                        @php
-                                            $jewelryset = App\Models\Jewelryset::find($index);
-                                        @endphp
-                                        {{ $jewelryset->set_name }}
-                                    </span>
-                                    <span class="fw-bold">{{ $item }} ครั้ง</span>
-                                </div>
-                            @endforeach
-                        @else
-                            <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- ชุดที่นิยมเช่า -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card border-0 shadow-sm h-100 hover-shadow transition-all">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="rounded-circle p-3 bg-opacity-10 me-3">
-                                <i class="bi bi-bag-heart fs-3"></i>
-                            </div>
-                            <h6 class="card-title mb-0">ชุดที่นิยมเช่ามากที่สุด</h6>
-                        </div>
-                        @foreach ($list_popular_dress as $item)
-                            <div class="d-flex justify-content-between border-bottom py-2">
-                                <span>
-                                    @php
-                                        $dress = App\Models\Dress::find($item[0]) ; 
-                                        $typedress = App\Models\Typedress::find($dress->type_dress_id) ; 
-                                    @endphp
-                                    {{$typedress->type_dress_name}}{{$typedress->specific_letter}}{{$dress->dress_code}}
-                                    @if($item[2] == 30)
-                                    (ทั้งชุด)
-                                    @elseif($item[2] == 20)
-                                    (ผ้าถุง)
-                                    @elseif($item[2] == 10)
-                                    (เสื้อ)
-                                    @endif
-                                
-                                </span>
-                                <span class="fw-bold">{{$item[1]}} ครั้ง</span>
-                            </div>
-                        @endforeach
-
-
-                    </div>
-                </div>
-            </div>
-
-            <!-- ชุดที่นิยมตัด -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card border-0 shadow-sm h-100 hover-shadow transition-all">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="rounded-circle p-3 bg-opacity-10 me-3">
-                                <i class="bi bi-scissors fs-3"></i>
-                            </div>
-                            <h6 class="card-title mb-0">ประเภทชุดที่นิยมตัดมากที่สุด</h6>
-                        </div>
-                        @if (!empty($list_popular_cut_dress))
-                            @foreach ($list_popular_cut_dress as $index => $item)
-                                <div class="d-flex justify-content-between border-bottom py-2">
-                                    <span>
-
-                                        {{ $index }}
-                                    </span>
-                                    <span class="fw-bold">{{ $item }} ครั้ง</span>
-                                </div>
-                            @endforeach
-                        @else
-                            <p style="text-align: center ; ">ไม่มีรายการแสดงผล</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-
-
-
-
-
-
-
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // ดึงข้อมูลจาก Controller
+            const monthsData = @json($monthsData);
+            const revenueData = @json($revenueData);
+
+            // สร้าง datasets จาก Object revenueData
+            const datasets = Object.keys(revenueData).map(type => ({
+                label: type,
+                data: revenueData[type],
+                backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`
+            }));
+
+            // วาดกราฟ
+            new Chart(document.getElementById('revenueChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: monthsData,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'รายรับ (บาท)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                padding: {
+                                    bottom: 10
+                                },
+                                color: '#333'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'รายรับจากการเช่าชุด'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                            }
+                        }
+                    },
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
+                }
+            });
+        </script>
+
+
+        <script>
+            // ดึงข้อมูลจาก Controller
+            const monthsJewelry = @json($monthsDataJewelry);
+            const revenueJewelry = @json($revenueDataJewelry);
+
+            // สร้าง datasets จาก Object revenueJewelry
+            const jewelryDatasets = Object.keys(revenueJewelry).map(type => ({
+                label: type,
+                data: revenueJewelry[type],
+                backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`
+            }));
+
+            // วาดกราฟ
+            new Chart(document.getElementById('jewelryRevenueChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: monthsJewelry,
+                    datasets: jewelryDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'รายรับ (บาท)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                padding: {
+                                    bottom: 10
+                                },
+                                color: '#333'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'รายรับจากการเช่าเครื่องประดับ'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                            }
+                        }
+                    },
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
+                }
+            });
+        </script>
+
+
+        <script>
+            // ดึงข้อมูลจาก Controller
+            const monthsTailoring = @json($monthsDataTailoring);
+            const revenueTailoring = @json($revenueDataTailoring);
+
+            // สร้าง datasets จาก Object revenueTailoring
+            const tailoringDatasets = Object.keys(revenueTailoring).map(type => ({
+                label: type,
+                data: revenueTailoring[type],
+                backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`
+            }));
+
+            // วาดกราฟ
+            new Chart(document.getElementById('tailoringRevenueChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: monthsTailoring,
+                    datasets: tailoringDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'รายรับ (บาท)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                padding: {
+                                    bottom: 10
+                                },
+                                color: '#333'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'รายรับจากการตัดชุด'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                            }
+                        }
+                    },
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
+                }
+            });
+        </script>
+
+
+
+
+
+
+
+
+
+
+
+
+        <script>
+            // ดึงข้อมูลจาก Controller
+            const monthsJewelrySet = @json($monthsDataJewelrySet);
+            const revenueJewelrySet = @json($revenueDataJewelrySet);
+
+            // สร้าง datasets จาก Object revenueJewelrySet
+            const jewelrySetDatasets = Object.keys(revenueJewelrySet).map(type => ({
+                label: type,
+                data: revenueJewelrySet[type],
+                backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`
+            }));
+
+            // วาดกราฟ
+            new Chart(document.getElementById('jewelrySetRevenueChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: monthsJewelrySet,
+                    datasets: jewelrySetDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'รายรับ (บาท)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                padding: {
+                                    bottom: 10
+                                },
+                                color: '#333'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'รายรับจากการเช่าเซตเครื่องประดับ'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                            }
+                        }
+                    },
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
+                }
+            });
+        </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         <script>
             // โค้ด Chart กราฟวงกลมก่อนหน้า...
             // กราฟแท่งรายได้-รายจ่าย
             const revenueExpenseCtx = document.getElementById('revenueExpenseChart').getContext('2d');
-            const label_bar = @json($label_bar);
-            const income_bar = @json($income_bar);
-            const expense_bar = @json($expense_bar);
+            const label_bar = @json($label_bar); //เดือน
+            const income_bar = @json($income_bar); //รายรับ
+            const expense_bar = @json($expense_bar); //รายจ่าย
             new Chart(revenueExpenseCtx, {
                 type: 'bar',
                 data: {
@@ -493,6 +698,81 @@
                 });
             });
         </script>
+
+
+
+
+<script>
+    // ดึงข้อมูลจาก Controller
+    const monthsRentalTailoring = @json($monthsDataRentalTailoring);
+    const revenueRentalTailoring = @json($revenueDataRentalTailoring);
+
+    // สร้าง datasets จาก Object revenueRentalTailoring
+    const rentalTailoringDatasets = Object.keys(revenueRentalTailoring).map(type => ({
+        label: type,
+        data: revenueRentalTailoring[type],
+        backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`
+    }));
+
+    // วาดกราฟ
+    new Chart(document.getElementById('rentalTailoringRevenueChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: monthsRentalTailoring,
+            datasets: rentalTailoringDatasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'รายรับ (บาท)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            bottom: 10
+                        },
+                        color: '#333'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'รายรับจากการเช่าตัดชุด'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                    }
+                }
+            },
+            barPercentage: 0.8,
+            categoryPercentage: 0.9
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
 
 
 

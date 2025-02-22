@@ -1539,9 +1539,9 @@
                         <div class="form-group">
                             <p>เก็บประกันจากลูกค้า : <span>{{ $orderdetail->damage_insurance }} บาท</span></p>
                             {{-- <strong for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</strong> --}}
-                            <input type="number" class="form-control" name="total_damage_insurance"
+                            {{-- <input type="number" class="form-control" name="total_damage_insurance"
                                 id="total_damage_insurance" placeholder="กรอกจำนวนเงิน" min="0" step="0.01"
-                                required value="0">
+                                required value="0"> --}}
                         </div>
 
                         <!-- สรุปการชำระเงิน -->

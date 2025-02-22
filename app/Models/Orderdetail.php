@@ -110,6 +110,7 @@ class Orderdetail extends Model
 
     public function detail_many_one_re()
     {
+        
         return $this->belongsTo(Reservation::class, 'reservation_id');
     }
     public function orderdetailmanytoonedress()

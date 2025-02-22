@@ -137,6 +137,10 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/dashboard/filter-shop', [DashboardController::class, 'dashboardfiltershop'])->name('dashboardfilter');
 
 
+    Route::get('/dashboard-popular', [DashboardController::class, 'dashboardpopular'])->name('dashboardpopular');
+    Route::get('/dashboard-popular/filter-shop', [DashboardController::class, 'dashboardpopularfiltershop'])->name('dashboardpopularfiltershop');
+
+
 
     Route::get('/jewelry-rented-history/{id}', [Orderjewelry::class, 'showrentedhistory'])->name('showrentedhistory');
     Route::get('/jewelry-rented-historyfilter/{id}', [Orderjewelry::class, 'showrentedhistoryfilter'])->name('showrentedhistoryfilter');

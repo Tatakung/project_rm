@@ -1458,7 +1458,7 @@ class Orderjewelry extends Controller
             // ->whereYear('updated_at', now()->year)
             ->get();
 
-        return view('employeerentjewelry.jewelry-rented-history', compact('history', 'jewelry', 'typejewelry', 'value_month', 'value_year'));
+        return view('employeerentjewelry.jewelrydetail', compact('history', 'jewelry', 'typejewelry', 'value_month', 'value_year'));
     }
 
     public function showrentedhistoryfilter(Request $request, $id)

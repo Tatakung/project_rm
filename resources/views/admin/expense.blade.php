@@ -230,16 +230,16 @@
                                             <div class="btn-group" role="group">
 
 
-                                                <button type="submit" class="btn btn-warning btn-sm" data-toggle="modal"
+                                                {{-- <button type="submit" class="btn btn-warning btn-sm" data-toggle="modal"
                                                     data-target="#editExpenseModal{{ $item->id }}">
                                                     <i class="fas fa-edit"></i>
-                                                </button>
+                                                </button> --}}
 
 
-                                                <form action="" method="POST" class="d-inline"
+                                                
+                                                <form action="{{route('expensedelete',['id' => $item->id])}}" method="POST" class="d-inline"
                                                     onsubmit="return confirm('ต้องการลบรายการนี้ใช่หรือไม่?')">
                                                     @csrf
-
                                                     <button type="submit" class="btn btn-danger btn-sm">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
@@ -255,38 +255,71 @@
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="editExpenseModalLabel">แก้ไขรายจ่าย (ยังไม่ได้ทำ)
+                                                        <h5 class="modal-title" id="editExpenseModalLabel">แก้ไขรายจ่าย
+                                                            (ยังไม่ได้ทำ)
                                                         </h5>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <form id="editExpenseForm" method="POST" action="">
+                                                        <form id="editExpenseForm" method="POST"
+                                                            action="{{ route('expenseeditupdate') }}">
                                                             @csrf
-                                                            @method('PUT')
                                                             <div class="mb-3">
                                                                 <label for="edit_date" class="form-label">วันที่</label>
                                                                 <input type="date" class="form-control" id="edit_date"
-                                                                    name="date" required>
+                                                                    name="date" required value="{{ $item->date }}">
                                                             </div>
                                                             <div class="mb-3">
                                                                 <label for="edit_type" class="form-label">ประเภท</label>
                                                                 <select class="form-control" id="edit_type"
-                                                                    name="type" required>
-                                                                    <option value="">เลือกประเภทรายจ่าย</option>
-                                                                    <option value="ค่าผ้า">ค่าผ้า</option>
-                                                                    <option value="ค่าน้ำ">ค่าน้ำ</option>
-                                                                    <option value="ค่าไฟ">ค่าไฟ</option>
-                                                                    <option value="ค่าซ่อมบำรุง">ค่าซ่อมบำรุง</option>
-                                                                    <option value="ค่าซักรีด">ค่าซักรีด</option>
+                                                                    name="edit_type" required>
+                                                                    <option value="ค่าผ้า"
+                                                                        {{ $item->expense_type == 'ค่าผ้า' ? 'selected' : '' }}>
+                                                                        ค่าผ้า</option>
+                                                                    <option value="ค่าน้ำ"
+                                                                        {{ $item->expense_type == 'ค่าน้ำ' ? 'selected' : '' }}>
+                                                                        ค่าน้ำ</option>
+                                                                    <option value="ค่าไฟ"
+                                                                        {{ $item->expense_type == 'ค่าไฟ' ? 'selected' : '' }}>
+                                                                        ค่าไฟ</option>
+                                                                    <option value="ค่าซ่อมบำรุง"
+                                                                        {{ $item->expense_type == 'ค่าซ่อมบำรุง' ? 'selected' : '' }}>
+                                                                        ค่าซ่อมบำรุง</option>
+                                                                    <option value="ค่าซักรีด"
+                                                                        {{ $item->expense_type == 'ค่าซักรีด' ? 'selected' : '' }}>
+                                                                        ค่าซักรีด</option>
                                                                     {{-- <option value="ค่าวัสดุสิ้นเปลือง">ค่าวัสดุสิ้นเปลือง</option> --}}
-                                                                    <option value="other_expense">อื่นๆ</option>
+                                                                    <option value="other_expense"
+                                                                        @if (!in_array($item->expense_type, ['ค่าผ้า', 'ค่าน้ำ', 'ค่าไฟ', 'ค่าซ่อมบำรุง', 'ค่าซักรีด'])) selected @endif>
+                                                                        อื่นๆ</option>
                                                                 </select>
+                                                            </div>
+                                                            <div class="mb-3" id="div_show_type_other_two" style="display: none ; ">
+                                                                <label class="form-label">ระบุประเภทรายจ่ายอื่นๆ ใหม่ <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control" id=""
+                                                                    name="edit_type_other" id="edit_type_other"
+                                                                    value="">
+
+                                                            </div>
+                                                            <div class="mb-3" id="div_show_type_other"
+                                                                @if (!in_array($item->expense_type, ['ค่าผ้า', 'ค่าน้ำ', 'ค่าไฟ', 'ค่าซ่อมบำรุง', 'ค่าซักรีด'])) style="display: block ; "
+                                                                @else
+                                                                    style="display: none ; " @endif>
+                                                                <label class="form-label">ระบุประเภทรายจ่ายอื่นๆ <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control" id=""
+                                                                    name="edit_type_other" id="edit_type_other"
+                                                                    value="{{ $item->expense_type }}"
+                                                                    @if (!in_array($item->expense_type, ['ค่าผ้า', 'ค่าน้ำ', 'ค่าไฟ', 'ค่าซ่อมบำรุง', 'ค่าซักรีด'])) required @endif>
+
                                                             </div>
                                                             <div class="mb-3">
                                                                 <label for="edit_amount"
                                                                     class="form-label">จำนวนเงิน</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit_amount" name="amount" step="0.01"
-                                                                    required>
+                                                                    value="{{ $item->expense_value }}" required
+                                                                    min="0">
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary"
@@ -300,12 +333,27 @@
                                             </div>
                                         </div>
 
-
-
-
-
-
-
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                // ดึง select ทุกตัวที่มี id = edit_type
+                                                var editTypeElements = document.querySelectorAll('[id^="edit_type"]');
+                                        
+                                                editTypeElements.forEach(function(editType) {
+                                                    editType.addEventListener('change', function() {
+                                                        // หาว่า div_show_type_other และ div_show_type_other_two ที่อยู่ใน modal ของแถวนี้คืออะไร
+                                                        var row = editType.closest('.modal-body');
+                                                        var div_show_type_other_two = row.querySelector('[id^="div_show_type_other_two"]');
+                                        
+                                                        if (editType.value == 'other_expense') {
+                                                            div_show_type_other_two.style.display = 'block';
+                                                        } else {
+                                                            div_show_type_other_two.style.display = 'none';
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        </script>
+                                        
 
 
 

@@ -739,6 +739,21 @@ class DressController extends Controller
         $year = 0 ; 
         return view('admin.expense', compact('dataexpense','today','month','year','expense'));
     }
+    public function expenseeditupdate(Request $request){
+        dd('ไม่ทำ') ; 
+    }
+
+    public function expensedelete(Request $request ,$id){
+        $expense = Expense::find($id) ; 
+        $expense->delete() ; 
+        return redirect()->back()->with('success','ลบสำเร็จ') ; 
+    }
+
+
+
+
+
+
     public function expensefilter(Request $request){
         
         $month = $request->input('month') ; 

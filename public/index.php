@@ -16,9 +16,11 @@ define('LARAVEL_START', microtime(true));
 |
 */
 
+// ใส่ app
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,7 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 |
 */
 
+// ใส่ app
 require __DIR__.'/../vendor/autoload.php';
 
 /*
@@ -44,6 +47,7 @@ require __DIR__.'/../vendor/autoload.php';
 |
 */
 
+// ใส่ app
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
 $kernel = $app->make(Kernel::class);

@@ -55,15 +55,9 @@ class OrderController extends Controller
         // $customers = Customer::with('orders')
         //     ->orderBy('created_at', 'desc')
         //     ->get();
-
         $order = Order::where('order_status', 1)
             ->orderBy('created_at', 'desc')
-            ->whereNotNull('type_order')->get();
-
-
-
-
-
+            ->whereNotNull('type_order')->paginate(20);
         return view('employee.ordertotal', compact('name_search', 'order'));
     }
 

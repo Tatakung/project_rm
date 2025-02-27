@@ -178,10 +178,12 @@
 
                 </div>
 
-                <div class="ml-2"
-                    @if ($is_admin == 1) style="display: block;  "
-                    @elseif($is_admin == 0)
-                        style="display: none ; " @endif>
+                <div class="ml-2">
+
+                </div>
+
+
+                <div class="row">
                     <a href="{{ route('showrentedhistory', ['id' => $datajewelry->id]) }}"
                         class="btn btn-outline-primary mr-2">
                         <i class="bi bi-clock-history"></i> ประวัติการเช่า
@@ -192,10 +194,17 @@
                     </a>
 
                     <button class="btn btn-outline-secondary" type="button" data-toggle="modal"
+                        @if ($is_admin == 1) style="display: block;  "
+                @elseif($is_admin == 0)
+                    style="display: none ; " @endif
                         data-target="#priceHistoryModal">
                         <i class="bi bi-clock-history"></i>ประวัติการปรับแก้ไขราคาเช่า
                     </button>
                 </div>
+
+
+
+
 
 
 
@@ -264,7 +273,7 @@
 
 
 
-                
+
 
             </div>
 

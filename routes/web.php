@@ -47,13 +47,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/adddress-form', [DressController::class, 'formadddress'])->name('admin.formadddress'); //แบบฟอร์มเพิ่มชุด
     Route::get('/admin/dresslist', [DressController::class, 'dresslist'])->name('admin.dresslist');
     Route::get('/admin/historydressadjust/{id}', [DressController::class, 'historydressadjust'])->name('admin.historydressadjust');
-    Route::get('/admin/historydressrepair/{id}', [DressController::class, 'historydressrepair'])->name('admin.historydressrepair');
-    Route::get('/admin/typedress/dressdetail/historydressrent/{id}', [DressController::class, 'historydressrent'])->name('admin.historydressrent');
-    Route::get('/admin/typedress/dressdetail/historydressrent/filter/{id}', [DressController::class, 'historydressrentnofilter'])->name('admin.historydressrentnofilter');
 
-    Route::get('/admin/typedress/dressdetail/historydressrentyestotal/filter/{id}', [DressController::class, 'historydressrentyesfilter'])->name('admin.historydressrentyestotalfilter');
-    Route::get('/admin/typedress/dressdetail/historydressrentyesshirt/filter/{id}', [DressController::class, 'historydressrentyesshirtfilter'])->name('admin.historydressrentyesshirtfilter');
-    Route::get('/admin/typedress/dressdetail/historydressrentyesskirt/filter/{id}', [DressController::class, 'historydressrentyesskirtfilter'])->name('admin.historydressrentyesskirtfilter');
 
 
     Route::post('/admin/adddress-form/save', [DressController::class, 'savedress'])->name('admin.savedress'); //บันทึกข้อมูล 
@@ -142,19 +136,6 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
-    Route::get('/jewelry-rented-history/{id}', [Orderjewelry::class, 'showrentedhistory'])->name('showrentedhistory');
-    Route::get('/jewelry-rented-historyfilter/{id}', [Orderjewelry::class, 'showrentedhistoryfilter'])->name('showrentedhistoryfilter');
-
-
-    Route::get('/jewelry-repair-history/{id}', [Orderjewelry::class, 'showrepairjewelryhistory'])->name('showrepairjewelryhistory');
-
-
-
-    Route::get('/jewelry-set-rented-history/{id}', [Orderjewelry::class, 'showjewsetrentedhistory'])->name('showjewsetrentedhistory');
-
-   
-    Route::get('/jewelry-set-rented-history/filter/{id}', [Orderjewelry::class, 'showjewsetrentedhistoryfilter'])->name('showjewsetrentedhistoryfilter');
-
 
 
     Route::get('/testdashboard', [DashboardController::class, 'testdashboard'])->name('testdashboard');
@@ -187,6 +168,12 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/selectdate', [EmployeeController::class, 'selectdate'])->name('employee.selectdate');
     Route::get('/employee/clean', [EmployeeController::class, 'clean'])->name('employee.clean');
 
+    Route::get('/jewelry-rented-history/{id}', [Orderjewelry::class, 'showrentedhistory'])->name('showrentedhistory'); //1001
+    Route::get('/jewelry-rented-historyfilter/{id}', [Orderjewelry::class, 'showrentedhistoryfilter'])->name('showrentedhistoryfilter'); //1001
+    Route::get('/admin/typedress/dressdetail/historydressrentyestotal/filter/{id}', [DressController::class, 'historydressrentyesfilter'])->name('admin.historydressrentyestotalfilter'); //1001
+    Route::get('/admin/typedress/dressdetail/historydressrentyesshirt/filter/{id}', [DressController::class, 'historydressrentyesshirtfilter'])->name('admin.historydressrentyesshirtfilter'); //1001
+    Route::get('/admin/typedress/dressdetail/historydressrentyesskirt/filter/{id}', [DressController::class, 'historydressrentyesskirtfilter'])->name('admin.historydressrentyesskirtfilter'); //1001
+    Route::get('/jewelry-repair-history/{id}', [Orderjewelry::class, 'showrepairjewelryhistory'])->name('showrepairjewelryhistory'); //1001
 
 
 
@@ -238,6 +225,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/expenses', [DressController::class, 'expense'])->name('admin.expense'); //บันทึกค่าใช้จ่าย
 
+    Route::post('/expenses/edit-update', [DressController::class, 'expenseeditupdate'])->name('expenseeditupdate'); //บันทึกค่าใช้จ่าย
+    Route::post('/expenses/delete/{id}', [DressController::class, 'expensedelete'])->name('expensedelete'); //บันทึกค่าใช้จ่าย
+    
     Route::get('/expenses/filter', [DressController::class, 'expensefilter'])->name('expensefilter'); //บันทึกค่าใช้จ่าย
 
     
@@ -262,6 +252,8 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/admin/setjewelrydetail/{id}', [JewelryController::class, 'setjewelrydetail'])->name('admin.setjewelrydetail');
 
+    Route::get('/jewelry-set-rented-history/{id}', [Orderjewelry::class, 'showjewsetrentedhistory'])->name('showjewsetrentedhistory'); //1001
+    Route::get('/jewelry-set-rented-history/filter/{id}', [Orderjewelry::class, 'showjewsetrentedhistoryfilter'])->name('showjewsetrentedhistoryfilter'); //1001
 
 
     Route::get('/employee/cart', [EmployeeController::class, 'cart'])->name('employee.cart'); //ตะกร้าสินค้า
@@ -459,8 +451,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/ordertotal/detail/cancel-order-rent/{id}', [DashboardController::class, 'cancelorderrent'])->name('cancelorderrent');
 
 
+    Route::get('/admin/typedress/dressdetail/historydressrent/{id}', [DressController::class, 'historydressrent'])->name('admin.historydressrent'); //1001
+    Route::get('/admin/typedress/dressdetail/historydressrent/filter/{id}', [DressController::class, 'historydressrentnofilter'])->name('admin.historydressrentnofilter'); //1001
 
 
+    Route::get('/admin/historydressrepair/{id}', [DressController::class, 'historydressrepair'])->name('admin.historydressrepair'); //1001
 
 
 

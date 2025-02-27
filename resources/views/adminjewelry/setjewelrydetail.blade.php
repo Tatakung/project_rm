@@ -9,21 +9,20 @@
             </div>
 
             <a href="{{ route('showjewsetrentedhistory', ['id' => $jewelryset->id]) }}" class="btn btn-primary"
-                @if ($is_admin == 1) style="margin-right: 15px; display: block ; "
-@elseif($is_admin == 0)
-style="margin-right: 15px; display: none ; " @endif>
+                >
                 <i class="bi bi-clock-history"></i> ประวัติการเช่า
             </a>
-            <button class="btn btn-outline-secondary" type="button" data-toggle="modal" data-target="#priceHistoryModal">
+            <button class="btn btn-outline-secondary" type="button" data-toggle="modal" data-target="#priceHistoryModal"
+                @if ($is_admin == 1) style="margin-right: 15px; display: block ; "
+        @elseif($is_admin == 0)
+            style="margin-right: 15px; display: none ; " @endif>
                 <i class="bi bi-clock-history"></i>ประวัติการปรับแก้ไขราคาเช่า
             </button>
-            
+
 
         </div>
 
-        <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal">
-            <i class="bi bi-pencil-square text-dark"></i>
-        </button>
+
 
 
 
@@ -64,7 +63,13 @@ style="margin-right: 15px; display: none ; " @endif>
 
 
         {{-- ส่วนข้อมูลพื้นฐานของเซต --}}
-        <div class="card mb-4 shadow">
+        <div class="card mb-4 shadow position-relative">
+            <!-- ปุ่มแก้ไขให้อยู่มุมขวาบนสุด -->
+            <button class="btn btn-link p-0 position-absolute" style="top: 10px; right: 10px;" data-toggle="modal"
+                data-target="#edittotal">
+                <i class="bi bi-pencil-square text-dark"></i>
+            </button>
+
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4">
@@ -73,6 +78,7 @@ style="margin-right: 15px; display: none ; " @endif>
                             <p class="h6">{{ $jewelryset->set_name }}</p>
                         </div>
                     </div>
+
                     <div class="row col-4">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -101,9 +107,6 @@ style="margin-right: 15px; display: none ; " @endif>
                             </div>
                         </div>
                     @endif
-
-
-
                 </div>
             </div>
         </div>
@@ -173,50 +176,50 @@ style="margin-right: 15px; display: none ; " @endif>
 
 
     <div class="modal fade" id="priceHistoryModal" tabindex="-1" aria-labelledby="priceHistoryModalLabel"
-                    aria-hidden="true" data-backdrop="static">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="priceHistoryModalLabel">ประวัติการปรับแก้ไขราคาเช่า -
-                                </h5>
-                            </div>
-
-                            <div class="modal-body">
-                                @if ($historyprice->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>วันที่แก้ไข</th>
-                                                    <th>ราคาเดิม</th>
-                                                    <th>ราคาใหม่</th>
-
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($historyprice as $item)
-                                                    <tr>
-                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
-                                                            {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
-                                                        </td>
-                                                        <td>{{ number_format($item->old_price, 2) }} บาท</td>
-                                                        <td>{{ number_format($item->new_price, 2) }} บาท</td>
-
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้ไขราคาเช่า</p>
-                                @endif
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
-                            </div>
-                        </div>
-                    </div>
+        aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="priceHistoryModalLabel">ประวัติการปรับแก้ไขราคาเช่า -
+                    </h5>
                 </div>
+
+                <div class="modal-body">
+                    @if ($historyprice->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>วันที่แก้ไข</th>
+                                        <th>ราคาเดิม</th>
+                                        <th>ราคาใหม่</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($historyprice as $item)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                            </td>
+                                            <td>{{ number_format($item->old_price, 2) }} บาท</td>
+                                            <td>{{ number_format($item->new_price, 2) }} บาท</td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้ไขราคาเช่า</p>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -237,49 +240,48 @@ style="margin-right: 15px; display: none ; " @endif>
     style="display: none ; " @endif>
 
 
-    <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header text-dark"style="background-color: #BACEE6;">
-                    <h5 class="modal-title">แก้ไขข้อมูลเครื่องประดับ</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <!-- ข้อมูลชุด -->
-
-                        <form action="{{route('admin.updatejewelryset',['id'=>$jewelryset->id])}}"
-                            method="POST">
-                            @csrf
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <label for="update_price" style="font-weight:bold">ราคาเช่า</label>
-                                    <input type="number" class="form-control" name="update_price" id="update_price"
-                                        value="{{ $jewelryset->set_price }}" placeholder="กรุณากรอกราคา"
-                                        required min="1" required>
-                                </div>
-                            </div>
+        <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header text-dark"style="background-color: #BACEE6;">
+                        <h5 class="modal-title">แก้ไขข้อมูลเครื่องประดับ</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body">
+                        <div class="container">
+                            <!-- ข้อมูลชุด -->
+
+                            <form action="{{ route('admin.updatejewelryset', ['id' => $jewelryset->id]) }}" method="POST">
+                                @csrf
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="update_price" style="font-weight:bold">ราคาเช่า</label>
+                                        <input type="number" class="form-control" name="update_price" id="update_price"
+                                            value="{{ $jewelryset->set_price }}" placeholder="กรุณากรอกราคา" required
+                                            min="1" required>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" data-dismiss="modal"
+                            style="background-color:#DADAE3;">ยกเลิก</button>
+                        <button type="submit" class="btn" style="background-color:#ACE6B7;">บันทึก</button>
+                    </div>
+                    </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-dismiss="modal"
-                        style="background-color:#DADAE3;">ยกเลิก</button>
-                    <button type="submit" class="btn" style="background-color:#ACE6B7;">บันทึก</button>
-                </div>
-                </form>
             </div>
         </div>
-    </div>
 
 
 
 
-    
 
 
-    
+
+
 
 
 

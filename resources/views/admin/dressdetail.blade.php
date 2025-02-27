@@ -328,27 +328,37 @@
                         </table>
                     </div>
 
-
-                    <div class="ml-2"
-                        @if ($check_admin == 1) style="display: block ; "
-                        @elseif($check_admin == 0)
-                            style="display: none ; " @endif>
-                        <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}"
-                            class="btn btn-outline-primary mr-2">
-                            <i class="bi bi-clock-history"></i> ประวัติการเช่า
-                        </a>
-                        <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}"
-                            class="btn btn-outline-secondary">
-                            <i class="bi bi-tools"></i> ประวัติการซ่อม
-                        </a>
-
-
-                        <button type="button" class="btn btn-outline-dark" data-toggle="modal"
-                            data-target="#priceHistoryModal">
-                            <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
-                        </button>
-
+                    <div class="ml-4"
+                        >
+                        <div class="row">
+                            <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}"
+                                class="btn btn-outline-primary mr-2">
+                                <i class="bi bi-clock-history"></i> ประวัติการเช่า
+                            </a>
+                            <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}"
+                                class="btn btn-outline-secondary">
+                                <i class="bi bi-tools"></i> ประวัติการซ่อม
+                            </a>
+                            <button type="button" class="btn btn-outline-dark" data-toggle="modal"
+                                data-target="#priceHistoryModal"
+                                @if ($check_admin == 1)
+                                style="display: block ; "
+                            @elseif($check_admin == 0)
+                                style="display: none ; " 
+                            @endif
+                                >
+                                <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
+                            </button>
+    
+                        </div>
                     </div>
+
+
+                    
+
+
+
+
 
 
 

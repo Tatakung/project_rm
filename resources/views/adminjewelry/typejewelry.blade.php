@@ -81,7 +81,7 @@
                     @endphp
                     <img src="{{ asset('storage/' . $image) }}" alt="" class="card-img-top custom-img">
                     <div class="card-body text-center">
-                        
+                        <h6 style="color: black;">{{$item->jewelry_m_o_typejew->specific_letter}}{{$item->jewelry_code}}</h6>
                         <h6 style="color: black;">ราคาเช่า: {{ number_format($item->jewelry_price, 2) }} บาท</h6>
                     </div>
                 </a>

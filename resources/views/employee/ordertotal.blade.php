@@ -61,8 +61,6 @@
                     </thead>
                     <tbody>
                         @foreach ($order as $item)
-
-
                             <tr>
                                 <td>
                                     @if ($item->type_order == 1)
@@ -115,11 +113,13 @@
                                 </td>
 
                             </tr>
-
                         @endforeach
-                        
                     </tbody>
                 </table>
+                <!-- ปุ่มเปลี่ยนหน้า -->
+                <div class="d-flex justify-content-center">
+                    {!! $order->links() !!}
+                </div>
             </div>
         </div>
     </div>

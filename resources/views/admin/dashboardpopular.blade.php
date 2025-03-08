@@ -854,7 +854,7 @@
                     },
                     tooltip: {
                         callbacks: {
-                            label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                            label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} ครั้ง`
                         }
                     }
                 },
@@ -863,12 +863,10 @@
             }
         });
     </script>
-
-
-    {{-- <script>
+    <script>
         // ดึงข้อมูลจาก Controller
-        const monthsData = @json($monthsData);
-        const revenueData = @json($revenueData);
+        const monthsData = @json($monthsDatadress);
+        const revenueData = @json($revenueDatadress);
 
         // สร้าง datasets จาก Object revenueData
         const datasets = Object.keys(revenueData).map(type => ({
@@ -876,7 +874,6 @@
             data: revenueData[type],
             backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`
         }));
-
         // วาดกราฟ
         new Chart(document.getElementById('revenueChart').getContext('2d'), {
             type: 'bar',
@@ -892,7 +889,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'รายรับ (บาท)',
+                            text: 'จำนวนครั้งในการเช่า (ครั้ง)',
                             font: {
                                 size: 14,
                                 weight: 'bold'
@@ -915,11 +912,11 @@
                     },
                     title: {
                         display: true,
-                        text: 'รายรับจากการเช่าชุด'
+                        text: 'จำนวนครั้งจากการเช่าชุด'
                     },
                     tooltip: {
                         callbacks: {
-                            label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                            label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} ครั้ง`
                         }
                     }
                 },
@@ -927,8 +924,8 @@
                 categoryPercentage: 0.9
             }
         });
-    </script> --}}
-    {{-- <script>
+    </script>
+    <script>
         // ดึงข้อมูลจาก Controller
         const monthsTailoring = @json($monthsDataTailoring);
         const revenueTailoring = @json($revenueDataTailoring);
@@ -955,7 +952,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'รายรับ (บาท)',
+                            text: 'จำนวนครั้งในการเข่า่ (ครั้ง)',
                             font: {
                                 size: 14,
                                 weight: 'bold'
@@ -978,11 +975,11 @@
                     },
                     title: {
                         display: true,
-                        text: 'รายรับจากการตัดชุด'
+                        text: 'จำนวนครั้งในการตัดชุด'
                     },
                     tooltip: {
                         callbacks: {
-                            label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                            label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} ครั้ง`
                         }
                     }
                 },
@@ -990,7 +987,7 @@
                 categoryPercentage: 0.9
             }
         });
-    </script> --}}
+    </script>
 
 
 

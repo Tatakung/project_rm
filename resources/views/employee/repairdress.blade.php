@@ -306,7 +306,6 @@
                         {{-- <form action="{{ route('employee.repairupdatestatustocleanorready') }}" method="POST">
                                 @csrf --}}
                         <div class="table-responsive">
-                            <h5 style="text-align: center ; ">ซักแล้วเลย</h5>
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
@@ -322,11 +321,7 @@
                                     @foreach ($repairs as $item)
                                         <tr>
 
-                                            <td>
-                                                {{ $item->reservationfilterdress_id }}
-
-                                            </td>
-
+                                           
                                             <td>
                                                 @if ($item->repair_many_to_one_filerdress->shirtitems_id)
                                                     {{ $item->repair_many_to_one_filerdress->filterdress_many_to_one_dress->typedress->type_dress_name }}

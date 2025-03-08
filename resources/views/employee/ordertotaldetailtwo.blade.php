@@ -272,11 +272,11 @@
 
 
 
-
                         <td>
                             {{-- {{ $item->status_detail }} --}}
 
                             @if ($item->type_order == 2)
+
                                 {{-- {{ $item->status_detail }} --}}
 
                                 @if ($item->orderdetailmanytoonedress->separable == 1)
@@ -384,24 +384,43 @@
                                         @php
                                             // เช็คว่าเซตนี้ เครื่องประดับทุกชิ้น มันสูญหายไหม
                                             $check_not_ready = false;
-                                            $jewelry_item = App\Models\Jewelrysetitem::where(
-                                                'jewelry_set_id',
-                                                $item->detail_many_one_re->jewelry_set_id,
-                                            )->get();
-                                            foreach ($jewelry_item as $itemm) {
-                                                $jewel = App\Models\Jewelry::find($itemm->jewelry_id);
-                                                if (
-                                                    $jewel->jewelry_status == 'สูญหาย' ||
-                                                    $jewel->jewelry_status == 'ยุติการให้เช่า'
-                                                ) {
-                                                    $check_not_ready = true;
-                                                    break;
+
+                                            if (
+                                                $item->detail_many_one_re->resermanytoonejewset->set_status ==
+                                                'พร้อมให้เช่า'
+                                            ) {
+                                                $jewelry_item = App\Models\Jewelrysetitem::where(
+                                                    'jewelry_set_id',
+                                                    $item->detail_many_one_re->jewelry_set_id,
+                                                )->get();
+                                                foreach ($jewelry_item as $itemm) {
+                                                    $jewel = App\Models\Jewelry::find($itemm->jewelry_id);
+                                                    if (
+                                                        $jewel->jewelry_status == 'สูญหาย' ||
+                                                        $jewel->jewelry_status == 'ยุติการให้เช่า'
+                                                    ) {
+                                                        $check_not_ready = true;
+                                                        break;
+                                                    }
                                                 }
+                                            } elseif (
+                                                $item->detail_many_one_re->resermanytoonejewset->set_status ==
+                                                'ยุติการให้เช่า'
+                                            ) {
+                                                $check_not_ready = true;
                                             }
+
                                         @endphp
                                         @if ($check_not_ready == true)
-                                            <button class="btn btn-sm btn-danger"><i
-                                                    class="fas fa-exclamation-triangle me-2"></i>เครื่องประดับไม่ครบเซต</button>
+
+
+                                            @if ($item->detail_many_one_re->resermanytoonejewset->set_status == 'พร้อมให้เช่า')
+                                                <button class="btn btn-sm btn-danger"><i
+                                                        class="fas fa-exclamation-triangle me-2"></i>เครื่องประดับไม่ครบเซต</button>
+                                            @elseif($item->detail_many_one_re->resermanytoonejewset->set_status == 'ยุติการให้เช่า')
+                                                <button class="btn btn-sm btn-danger"><i
+                                                        class="fas fa-exclamation-triangle me-2"></i>เซตนี้ยุติการให้เช่า</button>
+                                            @endif
                                         @elseif($check_not_ready == false)
                                             {{ $item->status_detail }}
                                         @endif
@@ -548,7 +567,7 @@
                                             <!-- ยกเลิกโดยทางร้าน -->
                                             <div class="form-check border rounded-lg p-4 mb-3">
                                                 <input class="form-check-input" type="radio" name="cancelType"
-                                                    id="store" value="store">
+                                                    id="store" value="store" checked>
                                                 <label class="form-check-label d-flex align-items-center gap-2"
                                                     for="store">
                                                     <i class="fas fa-store"></i>
@@ -576,66 +595,130 @@
                                             </div>
 
                                             <!-- ยกเลิกโดยลูกค้า -->
-                                            <div class="form-check border rounded-lg p-4">
-                                                <input class="form-check-input" type="radio" name="cancelType"
-                                                    id="customer" value="customer">
-                                                <label class="form-check-label d-flex align-items-center gap-2"
-                                                    for="customer">
-                                                    <i class="fas fa-user"></i>
-                                                    ยกเลิกโดยลูกค้า
-                                                </label>
-                                                <div class="mt-2 text-muted">
-                                                    <ul class="mb-2">
-                                                        <li>ลูกค้าต้องการยกเลิกการจอง</li>
-                                                        <li>ริบเงินมัดจำตามเงื่อนไข <span
-                                                                style="font-size: 14px;">({{ number_format($item->deposit, 2) }}
-                                                                บาท)</span></li>
-                                                    </ul>
-                                                    {{-- <textarea class="form-control" placeholder="ระบุรายละเอียดการยกเลิก..." rows="3"></textarea> --}}
-                                                </div>
+                                            <div class="form-check border rounded-lg p-4"
+                                                @if ($item->type_order == 2) @if ($item->orderdetailmanytoonedress->separable == 1)
+                                                @if (
+                                                    $item->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
+                                                        $item->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
+                                                    style="display: none;"
+                                                @else
+                                                    style="display: block;" @endif
+                                            @elseif($item->orderdetailmanytoonedress->separable == 2)
+                                                @if ($item->shirtitems_id) @if (
+                                                    $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                        $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
+                                                        style="display: none;"
+                                                    @else
+                                                        style="display: block;" @endif
+                                            @elseif($item->skirtitems_id)
+                                                @if (
+                                                    $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                        $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า') style="display: none;"
+                                                    @else
+                                                        style="display: block;" @endif
+                                            @else
+                                                @if (
+                                                    $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
+                                                        $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า' ||
+                                                        $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
+                                                        $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า') style="display: none;"
+                                                    @else
+                                                        style="display: block;" @endif
+                                                @endif
 
-                                                <div class="mt-3 bg-yellow-50 border border-yellow-200 rounded p-3 d-none"
-                                                    id="customerActions">
-                                                    <div class="fw-bold text-yellow-800">การจัดการเงินมัดจำ:</div>
-                                                    <ul class="mt-1 text-yellow-700">
-                                                        <li>ริบเงินมัดจำตามเงื่อนไขการจอง</li>
-                                                        <li>บันทึกการยกเลิกในระบบ</li>
-                                                    </ul>
-                                                </div>
-                                            </div>
+                @endif
+            @elseif($item->type_order == 3)
+                @if ($item->detail_many_one_re->jewelry_id) @if (
+                    $item->detail_many_one_re->resermanytoonejew->jewelry_status == 'สูญหาย' ||
+                        $item->detail_many_one_re->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า')
+                                                    style="display: none;"
+                                                @else
+                                                    style="display: block;" @endif
+            @elseif($item->detail_many_one_re->jewelry_set_id)
+                @php
+// เช็คว่าเซตนี้ เครื่องประดับทุกชิ้น มันสูญหายไหม
+                                                                                    $check_not_ready = false;
 
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-dismiss="modal">ยกเลิก</button>
-                                            <button type="submit" class="btn btn-danger">ยืนยันการยกเลิก</button>
-                                        </div>
-                                    </form>
+                                                                                    
+                                                                                    if($item->detail_many_one_re->resermanytoonejewset->set_status == 'พร้อมให้เช่า'){
+                                                                                        $jewelry_item = App\Models\Jewelrysetitem::where('jewelry_set_id',$item->detail_many_one_re->jewelry_set_id,)->get();
+                                                                                    foreach ($jewelry_item as $itemm) {
+                                                                                        $jewel = App\Models\Jewelry::find($itemm->jewelry_id);
+                                                                                        if ($jewel->jewelry_status == 'สูญหาย' || $jewel->jewelry_status == 'ยุติการให้เช่า') {
+                                                                                            $check_not_ready = true;
+                                                                                            break;
+                                                                                        }
 
+                                                                                    } 
+                                                                                    }
+                                                                                    elseif($item->detail_many_one_re->resermanytoonejewset->set_status == 'ยุติการให้เช่า'){
+                                                                                        $check_not_ready = true;
+                                                                                    } @endphp
+                @if ($check_not_ready == true) style="display: none;"
+                                                    @elseif($check_not_ready == false)
+                                                        style="display: block;" @endif
 
-                                </div>
-                            </div>
-                        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                @endif
+                @endif
 
 
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+
+
+                >
+                <input class="form-check-input" type="radio" name="cancelType" id="customer" value="customer">
+                <label class="form-check-label d-flex align-items-center gap-2" for="customer">
+                    <i class="fas fa-user"></i>
+                    ยกเลิกโดยลูกค้า
+                </label>
+                <div class="mt-2 text-muted">
+                    <ul class="mb-2">
+                        <li>ลูกค้าต้องการยกเลิกการจอง</li>
+                        <li>ริบเงินมัดจำตามเงื่อนไข <span style="font-size: 14px;">({{ number_format($item->deposit, 2) }}
+                                บาท)</span></li>
+                    </ul>
+                    {{-- <textarea class="form-control" placeholder="ระบุรายละเอียดการยกเลิก..." rows="3"></textarea> --}}
+                </div>
+
+                <div class="mt-3 bg-yellow-50 border border-yellow-200 rounded p-3 d-none" id="customerActions">
+                    <div class="fw-bold text-yellow-800">การจัดการเงินมัดจำ:</div>
+                    <ul class="mt-1 text-yellow-700">
+                        <li>ริบเงินมัดจำตามเงื่อนไขการจอง</li>
+                        <li>บันทึกการยกเลิกในระบบ</li>
+                    </ul>
+                </div>
+    </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+        <button type="submit" class="btn btn-danger">ยืนยันการยกเลิก</button>
+    </div>
+    </form>
+
+
+    </div>
+    </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </tr>
+    @endforeach
+    </tbody>
+    </table>
 
 
 

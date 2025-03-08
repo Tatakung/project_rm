@@ -166,56 +166,41 @@
     </div>
 
 
-    @php
-        $mea = 10 ; 
-    @endphp
+    <div class="container">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#all"
+                    type="button" role="tab">ทั้งหมด</button>
+            </li>
+            @foreach ($categories as $key => $item)
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#content-{{ $key }}"
+                        type="button" role="tab">{{ $item }}</button>
+                </li>
+            @endforeach
 
-    <div class="container mt-2">
-        <div class="row">
-            <div class="col-md-6">
-                <input class="form-control" type="number" name="mea_number" id="mea_number" value="{{$mea}}">
+
+        </ul>
+
+        <div class="tab-content mt-3" id="myTabContent">
+            <div class="tab-pane fade show active" id="all" role="tabpanel">
+                <h4>รายการทั้งหมด</h4>
+                <!-- ใส่ข้อมูลทั้งหมดที่ต้องการแสดง -->
             </div>
-            <div class="col-md-6">
-                <span id="show_message"></span>
-            </div>
-
-            <script>
-                var mea_number = document.getElementById('mea_number') ; 
-                var show_message = document.getElementById('show_message') ; 
-                var local_number = '{{$mea}}' ; 
-                var convert_local_number = parseFloat(local_number) ; 
-
-                mea_number.addEventListener('input',function(){
-                    var convert_mea_number = parseFloat(mea_number.value) ; 
-
-                    if(convert_mea_number != convert_local_number ){
-                        show_message.innerHTML = 'ปรับแก้จาก ' + convert_local_number + ' เป็น ' + convert_mea_number + ' นิ้ว' ; 
-                    }
-                    else{
-                        show_message.innerHTML = 'ไม่ต้องปรับ' ; 
-                    }
-
-
-
-                }) ; 
-            </script>
-
-
-
-
-
-
-
-
-
-
-
-
+            @foreach ($categories as $key => $item)
+                <div class="tab-pane fade" id="content-{{ $key }}" role="tabpanel">
+                    <h4>{{ $item }}</h4>
+                    <!-- ใส่ข้อมูลของกำไล -->
+                </div>
+            @endforeach
+            {{-- <div class="tab-pane fade" id="necklace" role="tabpanel">
+                <h4>รายการสร้อย</h4>
+            </div> --}}
         </div>
+
+        <!-- Bootstrap 5 จำเป็นต้องมี JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
     </div>
-
-
-
-
-   
 @endsection

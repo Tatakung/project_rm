@@ -94,7 +94,7 @@
                                     <thead>
                                         <tr>
                                             {{-- <th>เลือก</th> --}}
-                                            <th>รายการซัก</th>
+                                            <th>รายการ</th>
                                             <th>สถานะ</th>
                                             <th>คิวเช่าต่อไป </th>
                                             <th>จัดการ</th>
@@ -248,8 +248,8 @@
                                 <thead>
                                     <tr>
                                         {{-- <th>เลือก</th> --}}
-                                        <th>รายการซัก</th>
-                                        <th>สถานะ</th>
+                                        <th>รายการ</th>
+                                       
                                         <th>คิวเช่าต่อไป </th>
                                         <th>จัดการ</th>
                                     </tr>
@@ -257,14 +257,11 @@
                                 <tbody>
                                     @foreach ($clean_doing_wash as $clean)
                                         <tr>
-
                                             <td>
                                                 {{ $clean->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}
                                                 {{ $clean->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $clean->jewvationtorefil->jewelry_code }}
                                             </td>
-
-
-                                            <td style="color: #a22222 ; ">{{ $clean->status }}</td>
+                                            
                                             <td>
                                                 <span id="days{{ $clean->id }}"></span>
                                                     @php

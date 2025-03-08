@@ -56,18 +56,18 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     // Route::get('/admin/typedress/{id}', [DressController::class, 'typedress'])->name('admin.typedress'); //หลังจากแยกประเภทชุด
     // Route::get('/admin/typedress/dressdetail/{id}', [DressController::class, 'dressdetail'])->name('admin.dressdetail'); //รายะลเอียดย่อย
     Route::post('/admin/typedress/dressdetail/updatedressnoyes/{id}', [DressController::class, 'updatedressnoyes'])->name('admin.updatedressnoyes'); //อัปเดตชุดnoyes
+    Route::post('/admin/typedress/dressdetail/updatedressnoyes-des/{id}', [DressController::class, 'updatedressnoyesdes'])->name('updatedressnoyesdes'); //อัปเดตชุดnoyes
+
     Route::post('/admin/typedress/dressdetail/updatedressyesshirt/{id}', [DressController::class, 'updatedressyesshirt'])->name('admin.updatedressyesshirt'); //อัปเดตชุดyesshirt
     Route::post('/admin/typedress/dressdetail/updatedressyesskirt/{id}', [DressController::class, 'updatedressyesskirt'])->name('admin.updatedressyesskirt'); //อัปเดตชุดyesskirt
 
     // Route::post('/admin/typedress/dressdetail/updateprice/{id}', [DressController::class, 'updateprice'])->name('admin.updateprice'); //อัปเดตราคา
-    Route::post('/admin/typedress/dressdetail/addmeasumentno/{id}', [DressController::class, 'addmeasumentno'])->name('admin.addmeasumentno'); //เพิ่มการวัดno
-    Route::post('/admin/typedress/dressdetail/addmeasumentyesshirt/{id}', [DressController::class, 'addmeasumentyesshirt'])->name('admin.addmeasumentyesshirt'); //เพิ่มการวัดyesshirt
-    Route::post('/admin/typedress/dressdetail/addmeasumentyesskirt/{id}', [DressController::class, 'addmeasumentyesskirt'])->name('admin.addmeasumentyesskirt'); //เพิ่มการวัดyesskirt
+    // Route::post('/admin/typedress/dressdetail/addmeasumentyesshirt/{id}', [DressController::class, 'addmeasumentyesshirt'])->name('admin.addmeasumentyesshirt'); //เพิ่มการวัดyesshirt
+    // Route::post('/admin/typedress/dressdetail/addmeasumentyesskirt/{id}', [DressController::class, 'addmeasumentyesskirt'])->name('admin.addmeasumentyesskirt'); //เพิ่มการวัดyesskirt
 
 
     Route::post('/admin/typedress/dressdetail/updatemeasument/{id}', [DressController::class, 'updatemeasument'])->name('admin.updatemeasument'); //อัปเดตข้อมูลการวัด
     Route::delete('/admin/typedress/dressdetail/deletemeasument/{id}', [DressController::class, 'deletemeasument'])->name('admin.deletemeasument'); //อัปเดตข้อมูลการวัด
-    Route::post('/admin/typedress/dressdetail/addimage/{id}', [DressController::class, 'addimage'])->name('admin.addimage'); //เพิ่มรูปภาพ
 
 
 
@@ -81,6 +81,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/addjewelry-form', [JewelryController::class, 'formaddjewelry'])->name('admin.formaddjewelry'); //แบบฟอร์มเพิ่มเครื่องประดับ
     Route::post('/admin/addjewelry-form/save', [JewelryController::class, 'savejewelry'])->name('admin.savejewelry'); //บันทึกข้อมูล 
     Route::post('/admin/typejewelry/jewelrydetail/updatejewelry/{id}', [JewelryController::class, 'updatejewelry'])->name('admin.updatejewelry'); //อัปเดตเครื่องประดับ
+    Route::post('/admin/typejewelry/jewelrydetail/updatejewelry-des/{id}', [JewelryController::class, 'updatejewelrydes'])->name('admin.updatejewelrydes'); //อัปเดตเครื่องประดับ
 
 
     Route::post('/admin/setjewelrydetail/updatejewelryset/{id}', [JewelryController::class, 'updatejewelryset'])->name('admin.updatejewelryset'); //อัปเดตเครื่องประดับ
@@ -135,6 +136,9 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/dashboard-popular/filter-shop', [DashboardController::class, 'dashboardpopularfiltershop'])->name('dashboardpopularfiltershop');
 
 
+    Route::post('/admin/setjewelrydetail/stoprent/{id}', [JewelryController::class, 'setjewelrystoprent'])->name('setjewelrystoprent');
+    Route::post('/admin/setjewelrydetail/reopen/{id}', [JewelryController::class, 'setjewelryreopen'])->name('setjewelryreopen');
+
 
 
 
@@ -144,8 +148,14 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/jewelrydashboard', [DashboardController::class, 'jewelrydashboard'])->name('jewelrydashboard');
 
 
+    Route::post('/admin/typedress/dressdetail/stopRentalnodress/{id}', [DressController::class, 'stopRentalnodress'])->name('stopRentalnodress'); //รายะลเอียดย่อย
+    Route::post('/admin/typedress/dressdetail/reopenRentalnodress/{id}', [DressController::class, 'reopenRentalnodress'])->name('reopenRentalnodress'); //รายะลเอียดย่อย
 
+    Route::post('/admin/typedress/dressdetail/stopRentalyesdress-shirt/{id}', [DressController::class, 'stopRentalyesdressshirt'])->name('stopRentalyesdressshirt'); //รายะลเอียดย่อย
+    Route::post('/admin/typedress/dressdetail/stopRentalyesdress-skirt/{id}', [DressController::class, 'stopRentalyesdressskirt'])->name('stopRentalyesdressskirt'); //รายะลเอียดย่อย
 
+    Route::post('/admin/typedress/dressdetail/reopenRentalyesdress-shirt/{id}', [DressController::class, 'reopenRentalyesdressshirt'])->name('reopenRentalyesdressshirt'); //รายะลเอียดย่อย
+    Route::post('/admin/typedress/dressdetail/reopenRentalyesdress-skirt/{id}', [DressController::class, 'reopenRentalyesdressskirt'])->name('reopenRentalyesdressskirt'); //รายะลเอียดย่อย
 
 
 });
@@ -193,6 +203,12 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/admin/jewelrytotal', [JewelryController::class, 'jewelrytotal'])->name('admin.jewelrytotal'); //เครื่องประดับทั้งหมด
     Route::get('/admin/typejewelry/{id}', [JewelryController::class, 'typejewelry'])->name('admin.typejewelry'); //หลังจากแยกประเภทเครื่องประดับ
     Route::get('/admin/typejewelry/jewelrydetail/{id}', [JewelryController::class, 'jewelrydetail'])->name('admin.jewelrydetail'); //รายะลเอียดย่อย
+
+    Route::post('/admin/typejewelry/jewelrydetail/stop-rent/{id}', [JewelryController::class, 'jewelrystoprent'])->name('jewelrystoprent'); //รายะลเอียดย่อย
+    Route::post('/admin/typejewelry/jewelrydetail/reopen-rent/{id}', [JewelryController::class, 'jewelryreopen'])->name('jewelryreopen'); //รายะลเอียดย่อย
+
+
+
 
     Route::get('/cleanning-dress', [EmployeeController::class, 'cleanningdress'])->name('cleanningdress');
 
@@ -251,6 +267,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/admin/setjewelry', [JewelryController::class, 'setjewelry'])->name('admin.setjewelry');
 
     Route::get('/admin/setjewelrydetail/{id}', [JewelryController::class, 'setjewelrydetail'])->name('admin.setjewelrydetail');
+
+
+
+
 
     Route::get('/jewelry-set-rented-history/{id}', [Orderjewelry::class, 'showjewsetrentedhistory'])->name('showjewsetrentedhistory'); //1001
     Route::get('/jewelry-set-rented-history/filter/{id}', [Orderjewelry::class, 'showjewsetrentedhistoryfilter'])->name('showjewsetrentedhistoryfilter'); //1001

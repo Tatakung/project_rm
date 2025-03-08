@@ -2738,17 +2738,9 @@
                         </table>
 
                         <!-- ฟิลด์สำหรับพนักงานกรอกค่าธรรมเนียมการเสียหาย -->
-                        <strong class="mb-3">กรอกข้อมูลค่าธรรมเนียม:</strong>
-                        <div class="form-group">
-                            <p>เก็บประกันจากลูกค้า : <span>{{ $orderdetail->damage_insurance }} บาท</span></p>
-                            <strong for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</strong>
-                            <input type="number" class="form-control" name="total_damage_insurance"
-                                id="total_damage_insurance" placeholder="กรอกจำนวนเงิน" min="0" step="0.01"
-                                required value="0">
-                        </div>
+                    
 
                         <!-- สรุปการชำระเงิน -->
-                        <strong class="mt-4 mb-3">สรุปการชำระเงิน:</strong>
                         {{-- <div class="alert alert-warning" style="font-size: 1.2rem; padding: 10px;">
                         <p>ยอดประกันชุดต้องคืนให้กับลูกค้า: <strong id="total_return_to_customer"></strong></p>
                         <p>ยอดเงินที่ลูกค้าต้องจ่ายเพิ่มเติม: <strong id="total_customer_to_pay_shop"></strong></p>

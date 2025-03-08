@@ -40,12 +40,12 @@
         <p>รายการนี้แสดงลำดับคิวการจัดเตรียมเครื่องประดับสำหรับลูกค้า โดยเรียงตามวันที่ลูกค้าจะมารับ</p>
         <div class="row ">
             <div class="col-md-12" style="text-align: right ; ">
-               
 
-                <form action="{{route('showpickupqueuejewelryfilter')}}" method="GET">
+
+                <form action="{{ route('showpickupqueuejewelryfilter') }}" method="GET">
                     @csrf
 
-                    
+
                     <div class="filter-buttons mb-3">
                         <button class="btn" type="submit" name="filter_click" value="today"
                             @if ($filer == 'today') style="border: 1px solid #ccc;background-color: rgb(238, 77, 45) ; color: #ffffff ;"
@@ -93,7 +93,10 @@
                             @endphp
 
                             <tr style="border-bottom: 1px solid #e6e6e6;">
-                               
+                                
+                                
+                                
+
                                 <td style="padding: 16px;">
                                     {{ \Carbon\Carbon::parse($reservation->start_date)->locale('th')->isoFormat('D MMM') }}
                                     {{ \Carbon\Carbon::parse($reservation->start_date)->year + 543 }}
@@ -168,20 +171,27 @@
                                                 ->first();
                                         @endphp
                                         @if ($sort_queue->id == $reservation->id)
-                                            
-                                            @if($reservation->resermanytoonejew->jewelry_status == 'กำลังถูกเช่า')
-                                            กำลังถูกเช่าโดยลูกค้าท่านอื่น
+                                            @if ($reservation->resermanytoonejew->jewelry_status == 'กำลังถูกเช่า')
+                                                กำลังถูกเช่าโดยลูกค้าท่านอื่น
                                             @else
-                                            {{ $reservation->resermanytoonejew->jewelry_status }}
+                                                {{ $reservation->resermanytoonejew->jewelry_status }}
                                             @endif
                                         @else
-                                            รอคิว
+                                            @if (
+                                                $reservation->resermanytoonejew->jewelry_status == 'ยุติการให้เช่า' ||
+                                                    $reservation->resermanytoonejew->jewelry_status == 'สูญหาย')
+                                                {{ $reservation->resermanytoonejew->jewelry_status }}
+                                            @else
+                                                รอคิว
+                                            @endif
                                         @endif
                                     @elseif($reservation->jewelry_set_id)
                                         @php
                                             $list_set = [];
                                             // แค่jewelry_set_idในตาราง reservation
-                                            $jewwelry_set_id_in_reservation = App\Models\Reservation::where('status_completed',0,
+                                            $jewwelry_set_id_in_reservation = App\Models\Reservation::where(
+                                                'status_completed',
+                                                0,
                                             )
                                                 ->where('status', 'ถูกจอง')
                                                 ->where('jewelry_set_id', $reservation->jewelry_set_id)
@@ -213,7 +223,7 @@
                                                 ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
                                                 ->first();
                                         @endphp
-                                        
+
                                         @if ($reservation->id == $sort_queue->id)
                                             @php
                                                 $item_for_set = App\Models\Jewelrysetitem::where(
@@ -221,22 +231,41 @@
                                                     $reservation->jewelry_set_id,
                                                 )->get();
                                                 $is_ready = true;
-                                                foreach ($item_for_set as $key => $value) {
-                                                    if ($value->jewitem_m_to_o_jew->jewelry_status != 'พร้อมให้เช่า') {
-                                                        $is_ready = false;
-                                                        break;
+
+                                                if ($reservation->resermanytoonejewset->set_status == 'พร้อมให้เช่า') {
+                                                    foreach ($item_for_set as $key => $value) {
+                                                        if (
+                                                            $value->jewitem_m_to_o_jew->jewelry_status != 'พร้อมให้เช่า'
+                                                        ) {
+                                                            $is_ready = false;
+                                                            break;
+                                                        }
                                                     }
+                                                } elseif (
+                                                    $reservation->resermanytoonejewset->set_status == 'ยุติการให้เช่า'
+                                                ) {
+                                                    $is_ready = false;
                                                 }
-                                                // dd($is_ready) ; 
+
+                                                // dd($is_ready) ;
+
                                             @endphp
 
-                                            @if($is_ready)
-                                            พร้อมให้เช่า
+                                            @if ($is_ready)
+                                                พร้อมให้เช่า
                                             @else
-                                            ยังไม่พร้อมให้เช่า
+                                                @if ($reservation->resermanytoonejewset->set_status == 'ยุติการให้เช่า')
+                                                    ยุติการให้เช่า
+                                                @else
+                                                    ยังไม่พร้อมให้เช่า
+                                                @endif
                                             @endif
                                         @else
-                                            รอคิว
+                                            @if ($reservation->resermanytoonejewset->set_status == 'ยุติการให้เช่า')
+                                                ยุติการให้เช่า
+                                            @else
+                                                รอคิว
+                                            @endif
                                         @endif
                                     @endif
 
@@ -254,12 +283,13 @@
                                     <a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}"
                                         class="btn btn-sm" style="background-color:#DADAE3;">
                                         ดูรายละเอียด
-                                    </a> 
+                                    </a>
 
 
 
 
-                                    <a href="{{route('postponeroutejewelry',['id' => $reservation->id])}}" class="btn btn-m" style="background-color:#BACEE6 ;">
+                                    <a href="{{ route('postponeroutejewelry', ['id' => $reservation->id]) }}"
+                                        class="btn btn-m" style="background-color:#BACEE6 ;">
                                         เลื่อนวัน
                                     </a>
 

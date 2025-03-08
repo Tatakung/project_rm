@@ -61,35 +61,35 @@
                         <h5 class="modal-title" id="priceHistoryModalLabel">ประวัติการปรับแก้ไขราคาเช่า -
                             {{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</h5>
                     </div>
-                    
+
                     <div class="modal-body">
-                        @if($historydress->count() > 0 )
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>วันที่แก้ไข</th>
-                                        <th>ราคาเดิม</th>
-                                        <th>ราคาใหม่</th>
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($historydress as $item)
+                        @if ($historydress->count() > 0)
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
-                                                {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
-                                            </td>
-                                            <td>{{number_format($item->old_price , 2 )}} บาท</td>
-                                            <td>{{number_format($item->new_price , 2 )}} บาท</td>
-                                            
+                                            <th>วันที่แก้ไข</th>
+                                            <th>ราคาเดิม</th>
+                                            <th>ราคาใหม่</th>
+
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($historydress as $item)
+                                            <tr>
+                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                                    {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                                </td>
+                                                <td>{{ number_format($item->old_price, 2) }} บาท</td>
+                                                <td>{{ number_format($item->new_price, 2) }} บาท</td>
+
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         @else
-                        <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้ไขราคาเช่า</p>
+                            <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้ไขราคาเช่า</p>
                         @endif
                     </div>
                     <div class="modal-footer">
@@ -98,39 +98,141 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         <div class="card mb-4 shadow">
-            <div class="card-header"><i class="bi bi-info-circle"></i> รายละเอียดชุด
-                <button class="btn btn-link p-0 ml-2 float-right" data-toggle="modal" data-target="#edittotal"
-                    @if ($check_admin == 1) style="display: block ; "
-                    @elseif($check_admin == 0)
-                        style="display: none ; " @endif>
-                    <i class="bi bi-pencil-square text-dark"></i>
-                </button>
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="bi bi-info-circle"></i>
+                    รายละเอียดชุด
+                </div>
+                <div>
+                    {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#edittotal"
+                        @if ($check_admin == 1) style="display: block ; "
+                        @elseif($check_admin == 0) style="display: none ; " @endif>
+                        <i class="bi bi-pencil-square text-dark"></i>
+                    </button> --}}
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#stopRentalModal"
+                        @if ($check_admin == 1) @if ($datadress->dress_status == 'ยุติการให้เช่า' || $datadress->dress_status == 'สูญหาย')
+                                style="display: none ; "
+                            @else
+                                style="display: block ; " @endif
+                    @elseif($check_admin == 0) style="display: none ; " @endif>
+                        <i class="fas fa-stop"></i> ยุติการให้เช่า
+                    </button>
+
+                    <button type="button" class="btn btn-sm btn-outline-success" data-toggle="modal"
+                        data-target="#reopenRentalModal"
+                        @if ($check_admin == 1) @if ($datadress->dress_status == 'ยุติการให้เช่า')
+                            style="display: block ; "
+                        @else
+                            style="display: none ; " @endif
+                    @elseif($check_admin == 0) style="display: none ; " @endif>
+                        <i class="fas fa-stop"></i> เปิดให้เช่าอีกครั้ง
+                    </button>
+
+                    
+                </div>
             </div>
+
+
+
+
+
+
+            <!-- Modal ยืนยันการเปิดให้เช่าอีกครั้ง -->
+            <div class="modal fade" id="reopenRentalModal" tabindex="-1" role="dialog"
+                aria-labelledby="reopenRentalModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content shadow-lg border-0 rounded-3">
+                        <div class="modal-header bg-success text-white d-flex align-items-center">
+                            <i class="fas fa-check-circle me-2 fa-lg"></i>
+                            <h5 class="modal-title" id="reopenRentalModalLabel">ยืนยันการเปิดให้เช่าอีกครั้ง</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <i class="fas fa-info-circle text-success fa-3x mb-3"></i>
+
+                            <p class="fs-5 mt-3">
+                                คุณต้องการเปิดให้เช่าชุดนี้อีกครั้งใช่หรือไม่?
+                                <span class="text-success fw-bold">หลังจากเปิดให้เช่าอีกครั้ง
+                                    ลูกค้าจะสามารถจองชุดนี้ได้ตามปกติ</span>
+                            </p>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-center">
+                            <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-dismiss="modal">
+                                <i class="fas fa-times"></i> ยกเลิก
+                            </button>
+                            <form action="{{ route('reopenRentalnodress', ['id' => $datadress->id]) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-success px-4 py-2 rounded-pill">
+                                    <i class="fas fa-check"></i> ยืนยัน
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Modal ยืนยันการยุติการให้เช่า -->
+            <div class="modal fade" id="stopRentalModal" tabindex="-1" role="dialog"
+                aria-labelledby="stopRentalModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content shadow-lg border-0 rounded-3">
+                        <div class="modal-header bg-danger text-white d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-2 fa-lg"></i>
+                            <h5 class="modal-title" id="stopRentalModalLabel">ยืนยันการยุติการให้เช่า</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <i class="fas fa-exclamation-circle text-danger fa-3x mb-3"></i>
+                            <p class="fs-5 mt-3">
+                                คุณแน่ใจหรือไม่ว่าต้องการยุติการให้เช่าชุดนี้?
+                                <span class="text-danger fw-bold">หากต้องการ สามารถเปิดให้เช่าอีกครั้งในภายหลังได้</span>
+                            </p>
+                        </div>
+                        @if ($reser_dress_stopRent->count() > 0)
+                            <div class="alert alert-warning text-start">
+                                <strong>มีลูกค้าที่จองชุดนี้ไว้ {{ $reser_dress_stopRent->count() }} คน</strong>
+                                <ul class="mt-2">
+                                    @foreach ($reser_dress_stopRent as $item)
+                                        <li style="font-size : 14px;">คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }}
+                                            {{ $item->re_one_many_details->first()->order->customer->customer_lname }}
+                                            <span style="font-size : 14px;">(นัดรับวันที่
+                                                {{ \Carbon\Carbon::parse($item->start_date)->isoFormat('D MMM') }}
+                                                {{ \Carbon\Carbon::parse($item->start_date)->year + 543 }})</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                <p class="text-danger fw-bold mt-2">**กรุณาติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
+                            </div>
+                        @endif
+                        <div class="modal-footer d-flex justify-content-center">
+                            <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-dismiss="modal">
+                                <i class="fas fa-times"></i> ยกเลิก
+                            </button>
+                            <form action="{{ route('stopRentalnodress', ['id' => $datadress->id]) }}" method="POST">
+                                <!-- ตัวอย่าง id -->
+                                @csrf
+                                <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill">
+                                    <i class="fas fa-check"></i> ยืนยัน
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             <div class="modal fade" id="edittotal" role="dialog" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header text-dark"style="background-color: #BACEE6;">
-                            <h5 class="modal-title">แก้ไขข้อมูลชุด</h5>
+                            <h5 class="modal-title">แก้ไขราคาเช่า</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -190,17 +292,7 @@
                                     </script>
 
 
-
-
-
-                                    <div class="row mb-4">
-                                        <div class="col-12">
-                                            <label for="dress_description"style="font-weight:bold">คำอธิบายชุด</label>
-                                            <textarea name="update_dress_description" id="update_dress_description" class="form-control" rows="3"
-                                                placeholder="กรุณากรอกคำอธิบาย">{{ $datadress->dress_description }}</textarea>
-                                        </div>
-                                    </div>
-
+                                    
 
 
                             </div>
@@ -214,6 +306,63 @@
                     </div>
                 </div>
             </div>
+
+
+            <div class="modal fade" id="editdes" role="dialog" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header text-dark"style="background-color: #BACEE6;">
+                            <h5 class="modal-title">แก้ไขคำอธิบายชุด</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container">
+                                <!-- ข้อมูลชุด -->
+
+                                <form action="{{ route('updatedressnoyesdes', ['id' => $datadress->id]) }}"
+                                    method="POST">
+                                    @csrf
+
+
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <label for="dress_description"style="font-weight:bold">คำอธิบายชุด</label>
+                                            <textarea name="update_dress_description" id="update_dress_description" class="form-control" rows="3"
+                                                placeholder="กรุณากรอกคำอธิบาย">{{ $datadress->dress_description }}</textarea>
+                                        </div>
+                                    </div>
+
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn" data-dismiss="modal"
+                                style="background-color:#DADAE3;">ยกเลิก</button>
+                            <button type="submit" class="btn" style="background-color:#ACE6B7;">บันทึก</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             <div class="card-body">
@@ -230,10 +379,30 @@
                         <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                         <!-- <p><strong>รหัสชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</p> -->
 
+
+
+
+
+
+
+
                         @if ($datadress->dress_price == 0)
                             <p><strong>ราคาเช่า:</strong><span class="text-danger"> ยังไม่ได้กำหนด</span></p>
                         @else
-                            <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท</p>
+                            <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท
+                                <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#edittotal"
+                                    @if ($check_admin == 1) 
+                                        @if($datadress->dress_status == 'ยุติการให้เช่า' || $datadress->dress_status == 'สูญหาย')
+                                        style="display: none ; " 
+                                        @else
+                                            style="display: inline-block ;"
+                                        @endif
+                                    @elseif($check_admin == 0) 
+                                        style="display: none ; " 
+                                    @endif>
+                                    <i class="bi bi-pencil-square" style="color: rgb(138, 136, 136);"></i>
+                                </button>
+                            </p>
                         @endif
 
 
@@ -252,46 +421,64 @@
                         @if ($datadress->source_type == 2)
                             <span style="color: rgb(132, 126, 126)">*ชุดนี้มาจากรายการเช่าตัด* </span>
                         @endif
-
-
-
-
-
-
-
+                        <p><strong>สถานะชุด:</strong>
+                            @if ($datadress->dress_status == 'พร้อมให้เช่า')
+                                <span class="badge bg-success rounded-pill px-3 py-2 ms-2">
+                                    {{ $datadress->dress_status }}
+                                </span>
+                            @elseif($datadress->dress_status == 'กำลังถูกเช่า')
+                                <span class="badge bg-primary rounded-pill px-3 py-2 ms-2">
+                                    {{ $datadress->dress_status }}
+                                </span>
+                            @elseif($datadress->dress_status == 'รอทำความสะอาด')
+                                <span class="badge bg-warning rounded-pill px-3 py-2 ms-2">
+                                    {{ $datadress->dress_status }}
+                                </span>
+                            @elseif($datadress->dress_status == 'กำลังส่งซัก')
+                                <span class="badge bg-info rounded-pill px-3 py-2 ms-2">
+                                    {{ $datadress->dress_status }}
+                                </span>
+                            @elseif($datadress->dress_status == 'รอดำเนินการซ่อม')
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2 ms-2">
+                                    {{ $datadress->dress_status }}
+                                </span>
+                            @elseif($datadress->dress_status == 'กำลังซ่อม')
+                                <span class="badge bg-danger rounded-pill px-3 py-2 ms-2">
+                                    {{ $datadress->dress_status }}
+                                </span>
+                            @elseif($datadress->dress_status == 'สูญหาย')
+                                <span class="badge bg-danger rounded-pill px-3 py-2 ms-2">
+                                    {{ $datadress->dress_status }}
+                                </span>
+                            @elseif($datadress->dress_status == 'ยุติการให้เช่า')
+                                <span class="badge bg-secondary rounded-pill px-3 py-2 ms-2">
+                                    {{ $datadress->dress_status }}
+                                </span>
+                            @else
+                                <span class="badge bg-secondary rounded-pill px-3 py-2 ms-2">
+                                    {{ $datadress->dress_status }}
+                                </span>
+                            @endif
                         </p>
 
+                        <p><strong>คำอธิบายชุด:</strong><span><button class="btn btn-link p-0 ml-2" data-toggle="modal"
+                                    data-target="#editdes"
+                                    @if ($check_admin == 1) 
+                                        @if($datadress->dress_status == 'ยุติการให้เช่า' || $datadress->dress_status == 'สูญหาย')
+                                 style="display: none ; " 
+                                        @else
+                                                           style="display: inline-block ;"
+                                        @endif
+                                    @elseif($check_admin == 0) 
+                                        style="display: none ; " 
+                                    @endif>
+                                    <i class="bi bi-pencil-square" style="color: rgb(138, 136, 136);"></i>
+                                </button>
+                                <br>
+                                {{ $datadress->dress_description }}</span></p>
 
-                        {{-- สำหรับแสดงประวัติการซ่อม --}}
-                        @php
-                            $reservation = App\Models\Reservation::where('dress_id', $datadress->id)->get();
-                            $list_one = [];
-                            $list_two = [];
-                            foreach ($reservation as $re) {
-                                $list_one[] = $re->id;
-                            }
-                            foreach ($list_one as $reservation_id) {
-                                $repair = App\Models\Repair::where('reservation_id', $reservation_id)
-                                    ->where('repair_status', 'ซ่อมเสร็จแล้ว')
-                                    ->get();
-                                if ($repair->isNotEmpty()) {
-                                    foreach ($repair as $index) {
-                                        $list_two[] = $index->id;
-                                    }
-                                }
-                            }
 
-                            $historyrepair = App\Models\Repair::whereIn('id', $list_two)->get();
-                        @endphp
-                        <!-- <p><strong>จำนวนครั้งที่ซ่อม</strong>
-                                                    {{ $historyrepair->count() }} ครั้ง
-                                                    {{-- <span
-                                @if ($check_admin == 1) style="display: block ; "
-                            @elseif($check_admin == 2)
-                            style="display: none ; " @endif><a
-                                    href="">ดูประวัติ</a></span> --}}
-                                                </p>
-                                                <p><strong>คำอธิบายชุด: </strong>{{ $datadress->dress_description }}</p> -->
+
 
                     </div>
 
@@ -301,9 +488,7 @@
                             <strong>ขนาดของชุด</strong> (ปรับแก้ ขยาย/ลด ได้):
 
 
-                            {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#add_mea">
-                                <i class="bi bi-plus-square text-dark"></i>
-                            </button> --}}
+
 
                             @php
                                 $list_check_mea = [];
@@ -328,49 +513,26 @@
                         </table>
                     </div>
 
-                    <div class="ml-4"
-                        >
-                        <div class="row">
-                            <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}"
-                                class="btn btn-outline-primary mr-2">
-                                <i class="bi bi-clock-history"></i> ประวัติการเช่า
-                            </a>
-                            <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}"
-                                class="btn btn-outline-secondary">
-                                <i class="bi bi-tools"></i> ประวัติการซ่อม
-                            </a>
-                            <button type="button" class="btn btn-outline-dark" data-toggle="modal"
-                                data-target="#priceHistoryModal"
-                                @if ($check_admin == 1)
-                                style="display: block ; "
-                            @elseif($check_admin == 0)
-                                style="display: none ; " 
-                            @endif
-                                >
-                                <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
-                            </button>
-    
-                        </div>
-                    </div>
-
-
-                    
-
-
-
-
-
-
-
-
                 </div>
 
-
-
-
-
-
-
+                <li>
+                <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}" class="text-dark">
+                    <i class="bi bi-clock-history"></i> ประวัติการเช่า
+                </a>
+                
+                </li>
+                <li>
+                <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}" class="text-dark">
+                    <i class="bi bi-tools"></i> ประวัติการซ่อม
+                </a>
+                </li>
+                
+                <li @if ($check_admin == 0) style="visibility: hidden;" @endif>
+                <a href="#" data-toggle="modal" data-target="#priceHistoryModal" class="text-dark">
+                    <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
+                </a>
+                {{-- check_admin --}}
+                </li>
 
 
             </div>
@@ -437,335 +599,60 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-    <!--modal เพิ่มรูปภาพ-->
-    <div class="modal fade" id="modaladdimage" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">เพิ่มรูปภาพ</div>
-                <form action="{{ route('admin.addimage', ['id' => $datadress->id]) }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="addimage">รูปภาพ:</label>
-                            <input type="file" class="form-control" name="addimage" id="addimage" required>
+             <!-- Modals for success and failure messages -->
+             <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg rounded-lg">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title"><i class="bi bi-check-circle-fill"></i> สำเร็จ</h5>
+        
+                        </div>
+                        <div class="modal-body text-center p-4">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                            <p class="mt-3 text-success fw-bold">{{ session('success') }}</p>
+                        </div>
+                        <div class="modal-footer border-0 justify-content-center">
+                            <button type="button" class="btn btn-success px-4" data-dismiss="modal">ตกลง</button>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                        <button type="submit" class="btn btn-secondary">ยืนยัน</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-
-
-
-
-
-
-    {{-- ประวัติการปรับแก้ --}}
-    <div class="modal fade" id="history_adjust" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">ประวัติการปรับแก้ชุด</div>
-                <form action="{{ route('admin.addimage', ['id' => $datadress->id]) }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body">
-                        @php
-                            $list_one = [];
-                            $list_two = [];
-                            $meadress = App\Models\Dressmea::where('dress_id', $datadress->id)->get();
-                            foreach ($meadress as $item) {
-                                $list_one[] = $item->id;
-                            }
-                            $dress_adjust = App\Models\Dressmeaadjustment::whereIn('dressmea_id', $list_one)
-                                ->where('status', 'แก้ไข')
-                                ->get();
-
-                            foreach ($dress_adjust as $item) {
-                                $list_two[] = $item->id;
-                            }
-                            $show_his = App\Models\Dressmeaadjustment::whereIn('id', $list_two)->get();
-                        @endphp
-                        @if ($show_his->count() > 0)
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr style="background-color: #f2f2f2;">
-                                    <th style="border: 1px solid #ddd; padding: 8px;">ส่วนที่ปรับ</th>
-                                    <th style="border: 1px solid #ddd; padding: 8px;">ขนาดเดิม</th>
-                                    <th style="border: 1px solid #ddd; padding: 8px;">ขนาดที่ปรับ</th>
-                                </tr>
-
-                                @foreach ($show_his as $item)
-                                    <tr>
-                                        @php
-                                            $dress_mea = App\Models\Dressmea::find($item->dressmea_id);
-                                        @endphp
-                                        <td style="border: 1px solid #ddd; padding: 8px;">
-                                            {{ $dress_mea->mea_dress_name }}
-                                        </td>
-                                        <td style="border: 1px solid #ddd; padding: 8px;">{{ $dress_mea->initial_mea }}
-                                        </td>
-                                        <td style="border: 1px solid #ddd; padding: 8px;">{{ $item->new_size }}</td>
-                                    </tr>
-                                @endforeach
-                            </table>
-                        @else
-                            <p style="text-align: center ; ">ไม่มีรายการประวัติการปรับแก้</p>
-                        @endif
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- modalเพิ่มข้อมูลการวัด -->
-    <div class="modal fade" id="add_mea" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form action="{{ route('admin.addmeasumentno', ['id' => $datadress->id]) }}" method="POST">
-                    @csrf
-                    <div class="modal-header text-dark" style="background-color:#EAD8C0 ;">
-                        <h5 class="modal-title">เพิ่มข้อมูลการวัด</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="container-fluid">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="mb-0"><i class="bi bi-pencil-square text-dark"></i>ข้อมูลการวัด</h5>
-                                <button class="btn btn-success" type="button" id="add_measurement">
-                                    <i class="bi bi-plus"></i> เพิ่มการวัด
-                                </button>
-                            </div>
-
-                            <div id="aria_show_add_mea_input">
-
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        {{-- <input type="text" class="form-control" name="add_mea_now_name_[1]" placeholder="ชื่อการวัด" required> --}}
-                                        <select class="form-control" name="add_mea_now_name_[1]" required>
-                                            <option value="" disabled selected>เลือกรายการ</option>
-                                            <option value="ยาวหน้า"
-                                                @if (in_array('ยาวหน้า', $list_check_mea)) style="display: none;" @endif>ยาวหน้า
-                                            </option>
-                                            <option value="ยาวหลัง"
-                                                @if (in_array('ยาวหลัง', $list_check_mea)) style="display: none;" @endif>ยาวหลัง
-                                            </option>
-                                            <option value="ไหล่กว้าง"
-                                                @if (in_array('ไหล่กว้าง', $list_check_mea)) style="display: none;" @endif>ไหล่กว้าง
-                                            </option>
-                                            <option value="บ่าหน้า"
-                                                @if (in_array('บ่าหน้า', $list_check_mea)) style="display: none;" @endif>บ่าหน้า
-                                            </option>
-                                            <option value="บ่าหลัง"
-                                                @if (in_array('บ่าหลัง', $list_check_mea)) style="display: none;" @endif>บ่าหลัง
-                                            </option>
-                                            <option value="รอบคอ"
-                                                @if (in_array('รอบคอ', $list_check_mea)) style="display: none;" @endif>รอบคอ
-                                            </option>
-                                            <option value="รักแท้"
-                                                @if (in_array('รักแท้', $list_check_mea)) style="display: none;" @endif>รักแท้
-                                            </option>
-                                            <option value="รอบอก"
-                                                @if (in_array('รอบอก', $list_check_mea)) style="display: none;" @endif>รอบอก
-                                            </option>
-                                            <option value="อกห่าง"
-                                                @if (in_array('อกห่าง', $list_check_mea)) style="display: none;" @endif>อกห่าง
-                                            </option>
-                                            <option value="อกสูง"
-                                                @if (in_array('อกสูง', $list_check_mea)) style="display: none;" @endif>อกสูง
-                                            </option>
-                                            <option value="รอบเอว"
-                                                @if (in_array('รอบเอว', $list_check_mea)) style="display: none;" @endif>รอบเอว
-                                            </option>
-                                            <option value="รอบสะโพก"
-                                                @if (in_array('รอบสะโพก', $list_check_mea)) style="display: none;" @endif>รอบสะโพก
-                                            </option>
-                                            <option value="กระโปรงยาว"
-                                                @if (in_array('กระโปรงยาว', $list_check_mea)) style="display: none;" @endif>กระโปรงยาว
-                                            </option>
-                                            <option value="แขนยาว"
-                                                @if (in_array('แขนยาว', $list_check_mea)) style="display: none;" @endif>แขนยาว
-                                            </option>
-                                            <option value="แขนกว้าง"
-                                                @if (in_array('แขนกว้าง', $list_check_mea)) style="display: none;" @endif>แขนกว้าง
-                                            </option>
-                                            <option value="เสื้อยาว"
-                                                @if (in_array('เสื้อยาว', $list_check_mea)) style="display: none;" @endif>เสื้อยาว
-                                            </option>
-                                            <option value="ต้นขา"
-                                                @if (in_array('ต้นขา', $list_check_mea)) style="display: none;" @endif>ต้นขา
-                                            </option>
-                                            <option value="ปลายขา"
-                                                @if (in_array('ปลายขา', $list_check_mea)) style="display: none;" @endif>ปลายขา
-                                            </option>
-                                            <option value="เป้า"
-                                                @if (in_array('เป้า', $list_check_mea)) style="display: none;" @endif>เป้า
-                                            </option>
-                                            <option value="กางเกงยาว"
-                                                @if (in_array('กางเกงยาว', $list_check_mea)) style="display: none;" @endif>กางเกงยาว
-                                            </option>
-                                        </select>
-
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" class="form-control" name="add_mea_now_number_[1]"
-                                            placeholder="หมายเลขการวัด" min="1" max="100" step="0.01"
-                                            required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p>นิ้ว</p>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-                        <button type="submit" class="btn btn-success">บันทึก</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        var add_measurement = document.getElementById('add_measurement');
-        var aria_show_add_mea_input = document.getElementById('aria_show_add_mea_input');
-        var count_add_mea = 1;
-        add_measurement.addEventListener('click', function() {
-            count_add_mea++;
-
-            var div = document.createElement('div');
-            div.className = 'row mb-3';
-            div.id = 'row_add_measurement' + count_add_mea;
-
-
-            input =
-
-
-                '<div class="col-md-3">' +
-                '<select class="form-control" name="add_mea_now_name_[' + count_add_mea + ']" required>' +
-                '<option value="" disabled selected>เลือกรายการ</option>' +
-                '<option value="ยาวหน้า" @if (in_array('ยาวหน้า', $list_check_mea)) style="display: none;" @endif>ยาวหน้า</option>' +
-                '<option value="ยาวหลัง" @if (in_array('ยาวหลัง', $list_check_mea)) style="display: none;" @endif>ยาวหลัง</option>' +
-                '<option value="ไหล่กว้าง" @if (in_array('ไหล่กว้าง', $list_check_mea)) style="display: none;" @endif>ไหล่กว้าง</option>' +
-                '<option value="บ่าหน้า" @if (in_array('บ่าหน้า', $list_check_mea)) style="display: none;" @endif>บ่าหน้า</option>' +
-                '<option value="บ่าหลัง" @if (in_array('บ่าหลัง', $list_check_mea)) style="display: none;" @endif>บ่าหลัง</option>' +
-                '<option value="รอบคอ" @if (in_array('รอบคอ', $list_check_mea)) style="display: none;" @endif>รอบคอ</option>' +
-                '<option value="รักแท้" @if (in_array('รักแท้', $list_check_mea)) style="display: none;" @endif>รักแท้</option>' +
-                '<option value="รอบอก" @if (in_array('รอบอก', $list_check_mea)) style="display: none;" @endif>รอบอก</option>' +
-                '<option value="อกห่าง" @if (in_array('อกห่าง', $list_check_mea)) style="display: none;" @endif>อกห่าง</option>' +
-                '<option value="อกสูง" @if (in_array('อกสูง', $list_check_mea)) style="display: none;" @endif>อกสูง</option>' +
-                '<option value="รอบเอว" @if (in_array('รอบเอว', $list_check_mea)) style="display: none;" @endif>รอบเอว</option>' +
-                '<option value="รอบสะโพก" @if (in_array('รอบสะโพก', $list_check_mea)) style="display: none;" @endif>รอบสะโพก</option>' +
-                '<option value="กระโปรงยาว" @if (in_array('กระโปรงยาว', $list_check_mea)) style="display: none;" @endif>กระโปรงยาว</option>' +
-                '<option value="แขนยาว" @if (in_array('แขนยาว', $list_check_mea)) style="display: none;" @endif>แขนยาว</option>' +
-                '<option value="แขนกว้าง" @if (in_array('แขนกว้าง', $list_check_mea)) style="display: none;" @endif>แขนกว้าง</option>' +
-                '<option value="เสื้อยาว" @if (in_array('เสื้อยาว', $list_check_mea)) style="display: none;" @endif>เสื้อยาว</option>' +
-                '<option value="ต้นขา" @if (in_array('ต้นขา', $list_check_mea)) style="display: none;" @endif>ต้นขา</option>' +
-                '<option value="ปลายขา" @if (in_array('ปลายขา', $list_check_mea)) style="display: none;" @endif>ปลายขา</option>' +
-                '<option value="เป้า" @if (in_array('เป้า', $list_check_mea)) style="display: none;" @endif>เป้า</option>' +
-                '<option value="กางเกงยาว" @if (in_array('กางเกงยาว', $list_check_mea)) style="display: none;" @endif>กางเกงยาว</option>' +
-                '</select>' +
-                '</div>' +
-                '<div class="col-md-3">' +
-                '<input type="number" class="form-control" name="add_mea_now_number_[' + count_add_mea +
-                ']" placeholder="หมายเลขการวัด" min="1" max="100" step="0.01" required >' +
-                '</div>' +
-                '<div class="col-md-3">' +
-                '<p>นิ้ว</p>' +
-                '</div>' +
-                '<div class="input-group-append">' +
-                '<button class="btn btn-danger remove-measurement" onclick="remove_add_mea_now(' + count_add_mea +
-                ')" type="button"><i class="bi bi-trash"></i>ลบ</button>' +
-                '</div>';
-            div.innerHTML = input;
-            aria_show_add_mea_input.appendChild(div);
-        });
-
-        function remove_add_mea_now(count_add_mea) {
-            var delete_add_mea_now = document.getElementById('row_add_measurement' + count_add_mea);
-            delete_add_mea_now.remove();
-        }
-    </script>
-
-
-
-
-
-
-
-
-    <!-- Modals for success and failure messages -->
-    <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true">
-        <div class="modal-dialog custom-modal-dialog">
-            <div class="modal-content custom-modal-content">
-                <div class="modal-body custom-modal-body">
-                    {{ session('success') }}
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
-        <div class="modal-dialog custom-modal-dialog">
-            <div class="modal-content custom-modal-content fail">
-                <div class="modal-body">{{ session('fail') }}</div>
+        
+        
+            <div class="modal fade" id="showfail" role="dialog" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg rounded-lg">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill"></i> เกิดข้อผิดพลาด</h5>
+                        </div>
+                        <div class="modal-body text-center p-4">
+                            <i class="bi bi-x-circle-fill text-danger" style="font-size: 3rem;"></i>
+                            <p class="mt-3 text-danger fw-bold">{{ session('fail') }}</p>
+                        </div>
+                        <div class="modal-footer border-0 justify-content-center">
+                            <button type="button" class="btn btn-danger px-4" data-dismiss="modal">ปิด</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+        
+            <script>
+                @if (session('success'))
+                    setTimeout(function() {
+                        $('#showsuccessss').modal('show');
+                    }, 500);
+                @endif
+                @if (session('fail'))
+                    setTimeout(function() {
+                        $('#showfail').modal('show');
+                    }, 500);
+                @endif
+            </script>
+        
 
-    <script>
-        @if (session('success'))
-            setTimeout(function() {
-                $('#showsuccessss').modal('show');
-                setTimeout(function() {
-                    $('#showsuccessss').modal('hide');
-                }, 6000);
-            }, 500);
-        @endif
-        @if (session('fail'))
-            setTimeout(function() {
-                $('#showfail').modal('show');
-                setTimeout(function() {
-                    $('#showfail').modal('hide');
-                }, 6000);
-            }, 500);
-        @endif
-    </script>
+
+
+
+
+
 @endsection

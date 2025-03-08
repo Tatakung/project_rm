@@ -112,7 +112,6 @@
                     ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
                     ->first();
                 $check_bunton_pass = true; //ตัวเช็คในการกดปุ่มอัพเดตสถานะ
-
                 if ($sort_queue) {
                     if ($reservation->id == $sort_queue->id) {
                         // คิวแรก
@@ -135,7 +134,8 @@
                 }
 
                 // dd($check_bunton_pass) ;
-            } elseif ($reservation->jewelry_set_id) {
+            }
+            elseif ($reservation->jewelry_set_id) {
                 $list_set = [];
                 // แค่jewelry_set_idในตาราง reservation
                 $jewwelry_set_id_in_reservation = App\Models\Reservation::where('status_completed', 0)
@@ -171,16 +171,25 @@
                         // คิวแรก
                         // คิวแรกก็จริงแต่มันก็ต้องไปเช้คว่า ในเซ้ตทั้งหมดอะ มันพร้อมที่จะให้เช่าทั้งหมดไหม นึกออกไหม
                         if ($reservation->status == 'ถูกจอง') {
-                            $jew_set_id_for = App\Models\Jewelrysetitem::where(
-                                'jewelry_set_id',
-                                $reservation->jewelry_set_id,
-                            )->get();
-                            foreach ($jew_set_id_for as $key => $value) {
-                                $check_jew_status = App\Models\Jewelry::find($value->jewelry_id);
-                                if ($check_jew_status->jewelry_status != 'พร้อมให้เช่า') {
-                                    $check_bunton_pass = false;
+
+                            // เช็คสถานะเฉพาะเซตก่อน
+                            if ($reservation->resermanytoonejewset->set_status == 'พร้อมให้เช่า') {
+                                $jew_set_id_for = App\Models\Jewelrysetitem::where(
+                                    'jewelry_set_id',
+                                    $reservation->jewelry_set_id,
+                                )->get();
+                                foreach ($jew_set_id_for as $key => $value) {
+                                    $check_jew_status = App\Models\Jewelry::find($value->jewelry_id);
+                                    if ($check_jew_status->jewelry_status != 'พร้อมให้เช่า') {
+                                        $check_bunton_pass = false;
+                                    }
                                 }
                             }
+                            elseif ($reservation->resermanytoonejewset->set_status == 'ยุติการให้เช่า') {
+                                $check_bunton_pass = false;
+                            }
+
+
                         }
 
                         if ($reservation->status == 'กำลังเช่า') {
@@ -191,6 +200,7 @@
                         $check_bunton_pass = false;
                     }
                 } else {
+                    // ไม่มีคิว
                     $check_bunton_pass = true;
                 }
             }
@@ -449,6 +459,20 @@
                                 </div>
                             </div>
                         @endif
+                        {{-- 123465 --}}
+                    @elseif($reservation->resermanytoonejewset->set_status == 'ยุติการให้เช่า')
+                        <div class="alert alert-danger" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                    <p class="mb-0"><strong>เซต{{ $reservation->resermanytoonejewset->set_name }}
+                                            ได้ยุติการให้เช่าแล้ว
+                                            กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                            {{ $customer->customer_phone }}</strong></p>
+                                </div>
+                            </div>
+                        </div>
                     @elseif($check_not_ready == true)
                         <div class="alert alert-danger" role="alert">
                             <div class="d-flex align-items-center">
@@ -538,6 +562,19 @@
                                 </div>
                             </div>
                         @endif
+                    @elseif($reservation->resermanytoonejewset->set_status == 'ยุติการให้เช่า')
+                        <div class="alert alert-danger" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
+                                    <p class="mb-0"><strong>เซต{{ $reservation->resermanytoonejewset->set_name }}
+                                            ได้ยุติการให้เช่าแล้ว
+                                            กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกและคืนเงินมัดจำ เบอร์ติดต่อลูกค้า :
+                                            {{ $customer->customer_phone }}</strong></p>
+                                </div>
+                            </div>
+                        </div>
                     @elseif($check_not_ready == true)
                         <div class="alert alert-danger" role="alert">
                             <div class="d-flex align-items-center">
@@ -590,8 +627,6 @@
             @endif
         @else
             @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน' || $orderdetail->status_detail == 'ยกเลิกโดยลูกค้า')
-
-
                 @if ($reservation->jewelry_id)
                     @if ($orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
                         @if (
@@ -1087,7 +1122,9 @@
                                                 <p> {{ $show->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}{{ $show->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $show->jewvationtorefil->jewelry_code }}
                                                     : สภาพปกติ
                                                     @if ($show->re_one_to_one_after_return_jew->price != 0)
-                                                        <span style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                        <span style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                            {{ number_format($show->re_one_to_one_after_return_jew->price, 2) }}
+                                                            บาท)</span>
                                                     @endif
                                                 </p>
                                             @elseif($show->re_one_to_one_after_return_jew->type == 2)
@@ -1095,28 +1132,36 @@
                                                     : ต้องซ่อม
                                                     เนื่องจาก{{ $show->re_one_many_repair->first()->repair_description }}
                                                     @if ($show->re_one_to_one_after_return_jew->price != 0)
-                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า
+                                                            {{ number_format($show->re_one_to_one_after_return_jew->price, 2) }}
+                                                            บาท)</span>
                                                     @endif
                                                 </p>
                                             @elseif($show->re_one_to_one_after_return_jew->type == 3)
                                                 <p> {{ $show->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}{{ $show->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $show->jewvationtorefil->jewelry_code }}
                                                     : ลูกค้าแจ้งสูญหาย
                                                     @if ($show->re_one_to_one_after_return_jew->price != 0)
-                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า
+                                                            {{ number_format($show->re_one_to_one_after_return_jew->price, 2) }}
+                                                            บาท)</span>
                                                     @endif
                                                 </p>
                                             @elseif($show->re_one_to_one_after_return_jew->type == 4)
                                                 <p> {{ $show->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}{{ $show->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $show->jewvationtorefil->jewelry_code }}
                                                     : สูญหาย ลูกค้าไม่ส่งคืน
                                                     @if ($show->re_one_to_one_after_return_jew->price != 0)
-                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า
+                                                            {{ number_format($show->re_one_to_one_after_return_jew->price, 2) }}
+                                                            บาท)</span>
                                                     @endif
                                                 </p>
                                             @elseif($show->re_one_to_one_after_return_jew->type == 5)
                                                 <p> {{ $show->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}{{ $show->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $show->jewvationtorefil->jewelry_code }}
                                                     : สภาพเสียหายหนัก ให้เช่าต่อไม่ได้
                                                     @if ($show->re_one_to_one_after_return_jew->price != 0)
-                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า {{number_format($show->re_one_to_one_after_return_jew->price,2)}} บาท)</span>
+                                                        <span style="color: red ; font-size: 14px;">(หักเงินประกันลูกค้า
+                                                            {{ number_format($show->re_one_to_one_after_return_jew->price, 2) }}
+                                                            บาท)</span>
                                                     @endif
                                                 </p>
                                             @endif
@@ -1152,7 +1197,8 @@
                                 <div class="ms-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <span class="text-secondary">รายได้ค่าเช่า</span>
-                                        <span class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
+                                        <span
+                                            class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
                                             บาท</span>
                                     </div>
 
@@ -1574,8 +1620,10 @@
                                                     <option value="cleanitem" selected>*สภาพปกติ ส่งทำความสะอาด</option>
                                                     <option value="repairitem">*ต้องซ่อม</option>
                                                     <option value="lost">*สูญหาย (ลูกค้าแจ้ง)</option>
-                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง คาดว่าไม่น่าจะคืน)</option>
-                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)</option>
+                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                        คาดว่าไม่น่าจะคืน)</option>
+                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)
+                                                    </option>
                                                 </select>
 
                                                 <div id="showrepair_detail_item" class="mt-2" style="display: none;">

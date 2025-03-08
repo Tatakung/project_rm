@@ -88,7 +88,7 @@
                                         <tr>
                                             {{-- <th>เลือก</th> --}}
                                             <th>รายการซัก</th>
-                                            <th>สถานะ</th>
+                                            
                                             <th>คิวเช่าต่อไป </th>
                                             <th>จัดการ</th>
                                         </tr>
@@ -96,9 +96,6 @@
                                     <tbody>
                                         @foreach ($clean_pending as $item)
                                             <tr>
-
-
-
                                                 <td>
                                                     @if ($item->shirtitems_id)
                                                         {{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}
@@ -115,7 +112,7 @@
                                                     @endif
                                                 </td>
 
-                                                <td style="color: #a22222 ; ">{{ $item->status }}</td>
+                                                
 
                                                 <td>
 
@@ -317,7 +314,7 @@
                                     <tr>
                                         {{-- <th>เลือก</th> --}}
                                         <th>รายการซัก</th>
-                                        <th>สถานะ</th>
+                                        
                                         <th>คิวเช่าต่อไป </th>
                                         <th>จัดการ</th>
                                     </tr>
@@ -325,11 +322,6 @@
                                 <tbody>
                                     @foreach ($clean_doing_wash as $item)
                                         <tr>
-
-                                            <td>
-                                                {{$item->id}}
-                                            </td>
-
                                             <td>
                                                 @if ($item->shirtitems_id)
                                                     {{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}
@@ -346,7 +338,7 @@
                                                 @endif
                                             </td>
 
-                                            <td style="color: #a22222 ; ">{{ $item->status }}</td>
+                                            
 
                                             <td>
 
@@ -524,7 +516,7 @@
 
 
                                                                 <textarea name="repair_detail" cols="60" rows="4" class="form-control"
-                                                                    placeholder="กรุณากรอกรายละเอียดของการซ่อมที่ต้องการ..."></textarea>
+                                                                    placeholder="กรุณากรอกรายละเอียดของการซ่อมที่ต้องการ..." required></textarea>
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn"

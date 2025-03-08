@@ -22,6 +22,8 @@ use App\Models\User;
 use App\Models\Reservation;
 use App\Models\Dressmeasurementcutedit;
 use App\Models\Date;
+use App\Models\Reservationfilterdress;
+
 use App\Models\Repair;
 
 use Illuminate\Http\Request;
@@ -308,10 +310,18 @@ class DressController extends Controller
 
 
         $date_reservations = Reservation::where('dress_id', $id)
-            ->where('dress_id', $id)
             ->where('status_completed', 0)
             // ->whereIn('status', ['ถูกจอง', "กำลังเช่า"])
+            ->where('status', '!=', 'อยู่ในตะกร้า')
             ->get();
+
+        $reser_dress_stopRent = Reservation::where('dress_id', $id)
+            ->where('dress_id', $id)
+            ->where('status_completed', 0)
+            ->where('status', 'ถูกจอง')
+            ->get();
+
+
 
         $mea_dress = Dressmea::where('dress_id', $id)->get();
 
@@ -319,7 +329,7 @@ class DressController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
         $check_admin = Auth::user()->is_admin;
-        return view('admin.dressdetail', compact('date_reservations', 'datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now', 'history_reservation', 'check_admin', 'historydress'));
+        return view('admin.dressdetail', compact('date_reservations', 'datadress', 'imagedata', 'name_type', 'measument_no_separate', 'measument_no_separate_now', 'measument_no_separate_now_modal', 'reservations', 'mea_dress', 'dress_status_now', 'history_reservation', 'check_admin', 'historydress', 'reser_dress_stopRent'));
     }
 
     // แยกได้
@@ -427,21 +437,25 @@ class DressController extends Controller
 
 
 
+
         //คิวเช่าเฉพาะทั้งชุด
         $date_reservations_dress = Reservation::where('dress_id', $id)
             ->whereNull('shirtitems_id')
             ->whereNull('skirtitems_id')
             ->where('status_completed', 0)
+            ->where('status', '!=', 'อยู่ในตะกร้า')
             ->get();
 
         // คิวเช่าเฉพาะเสื้อ
         $date_reservations_shirt = Reservation::where('shirtitems_id', $shirtitem->id)
             ->where('status_completed', 0)
+            ->where('status', '!=', 'อยู่ในตะกร้า')
             ->get();
 
         //คิวเช่าเฉพาะผ้าถุง
         $date_reservations_skirt = Reservation::where('skirtitems_id', $skirtitem->id)
             ->where('status_completed', 0)
+            ->where('status', '!=', 'อยู่ในตะกร้า')
             ->get();
 
         $historydress = PriceHistory_Dress::where('dress_id', $id)
@@ -461,19 +475,69 @@ class DressController extends Controller
         $check_admin = Auth::user()->is_admin;
 
 
+        //stop เสื้อ/ผ้าถุง
+        // reser_dress_stopRent_shirt
+        // reser_dress_stopRent_skirt
+        $list_stop_sh = [];
+        $list_stop_sk = [];
+        $list_id_stop_dress = Reservation::where('dress_id', $id)
+            ->whereNull('shirtitems_id')
+            ->whereNull('skirtitems_id')
+            ->where('status_completed', 0)
+            ->where('status', 'ถูกจอง')
+            ->get();
+        if ($list_id_stop_dress->isNotEmpty()) {
+            foreach ($list_id_stop_dress as $list_id_dress) {
+                $list_stop_sh[] = $list_id_dress->id;
+                $list_stop_sk[] = $list_id_dress->id;
+            }
+        }
+        $list_id_stop_shirt = Reservation::where('shirtitems_id', $shirtitem->id)
+            ->where('status_completed', 0)
+            ->where('status', 'ถูกจอง')
+            ->get();
+        if ($list_id_stop_shirt->isNotEmpty()) {
+            foreach ($list_id_stop_shirt as $list_id_sh) {
+                $list_stop_sh[] = $list_id_sh->id;
+            }
+        }
+        $reser_dress_stopRent_shirt = Reservation::whereIn('id', $list_stop_sh)->get();
+
+
+        $list_id_stop_skirt = Reservation::where('skirtitems_id', $skirtitem->id)
+            ->where('status_completed', 0)
+            ->where('status', 'ถูกจอง')
+            ->get();
+        if ($list_id_stop_skirt->isNotEmpty()) {
+            foreach ($list_id_stop_skirt as $list_id_sk) {
+                $list_stop_sk[] = $list_id_sk->id;
+            }
+        }
+
+
+        $reser_dress_stopRent_skirt = Reservation::whereIn('id', $list_stop_sk)->get();
 
 
 
-        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress', 'date_reservations_dress', 'date_reservations_shirt', 'date_reservations_skirt', 'check_admin', 'historydress','historypriceshirt','historypriceskirt'));
+
+
+
+
+
+
+
+
+
+
+
+
+        return view('admin.dressdetailyes', compact('text_check_status_shirt', 'text_check_status_skirt',  'datadress', 'imagedata', 'name_type', 'shirtitem', 'skirtitem', 'measument_yes_separate_shirt', 'measument_yes_separate_now_shirt', 'measument_yes_separate_skirt', 'measument_yes_separate_now_skirt', 'measument_yes_separate_now_shirt_modal', 'measument_yes_separate_now_skirt_modal', 'reservation_shirt', 'reservation_skirt', 'reservation_dress', 'dress_mea_shirt', 'dress_mea_skirt', 'dress_mea_totaldress', 'date_reservations_dress', 'date_reservations_shirt', 'date_reservations_skirt', 'check_admin', 'historydress', 'historypriceshirt', 'historypriceskirt', 'reser_dress_stopRent_shirt', 'reser_dress_stopRent_skirt'));
     }
 
 
     //อัปเดตชุดnoyes
     public function updatedressnoyes(Request $request, $id)
     {
-
-
-
         //ตารางdress
         $update_dress = Dress::find($id);
         if ($update_dress->dress_price != $request->input('update_dress_price')) {
@@ -487,10 +551,26 @@ class DressController extends Controller
         $update_dress->dress_price = $request->input('update_dress_price');
         $update_dress->dress_deposit = $request->input('update_dress_deposit');
         $update_dress->damage_insurance = $request->input('update_damage_insurance');
+        $update_dress->save();
+        return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
+    }
+
+    public function updatedressnoyesdes(Request $request, $id)
+    {
+        //ตารางdress
+        $update_dress = Dress::find($id);
         $update_dress->dress_description = $request->input('update_dress_description');
         $update_dress->save();
         return redirect()->back()->with('success', 'อัพเดตข้อมูลสำเร็จ !');
     }
+
+
+
+
+
+
+
+
 
     //อัปเดตชุดyesshirt
     public function updatedressyesshirt(Request $request, $id)
@@ -569,39 +649,6 @@ class DressController extends Controller
         }
     }
 
-    //เพิ่มข้อมูลการวัดno
-    public function addmeasumentno(Request $request, $id)
-    {
-        // add_mea_now_unit_
-        $max = Dressmeasurementnow::where('dress_id', $id)->max('count');
-        //ตาราง dressmeasurement
-        $add_mea_now_name = $request->input('add_mea_now_name_');
-        $add_mea_now_number = $request->input('add_mea_now_number_');
-        // $add_mea_now_unit = $request->input('add_mea_now_unit_');
-        foreach ($add_mea_now_name as $index => $add_mea_now_name) {
-            $add_save_measument = new Dressmeasurement;
-            $add_save_measument->dress_id = $id;
-            $add_save_measument->measurement_dress_name = $add_mea_now_name;
-            $add_save_measument->measurement_dress_number = $add_mea_now_number[$index];
-            $add_save_measument->measurement_dress_unit = "นิ้ว";
-            $add_save_measument->save();
-        }
-        //ตาราง dressmeasurementnow
-        $add_mea_now_name = $request->input('add_mea_now_name_');
-        $add_mea_now_number = $request->input('add_mea_now_number_');
-        // $add_mea_now_unit = $request->input('add_mea_now_unit_');
-        foreach ($add_mea_now_name as $index => $add_mea_now_name) {
-            $add_mea_now = new Dressmeasurementnow;
-            $add_mea_now->dress_id  = $id;
-            $add_mea_now->measurementnow_dress_name = $add_mea_now_name;
-            $add_mea_now->measurementnow_dress_number = $add_mea_now_number[$index];
-            $add_mea_now->measurementnow_dress_number_start = $add_mea_now_number[$index];
-            $add_mea_now->measurementnow_dress_unit = "นิ้ว";
-            $add_mea_now->count = $max;
-            $add_mea_now->save();
-        }
-        return redirect()->back()->with('success', 'เพิ่มข้อมูลการวัดสำเร็จ !');
-    }
 
 
 
@@ -610,75 +657,8 @@ class DressController extends Controller
 
 
 
-    //เพิ่มข้อมูลการวัดyesyshirt
-    public function addmeasumentyesshirt(Request $request, $id)
-    {
-        $max = Dressmeasurementnow::where('shirtitems_id', $id)->max('count');
-        //ตาราง dressmeasurement
-        $add_mea_now_name = $request->input('add_mea_now_name_');
-        $add_mea_now_number = $request->input('add_mea_now_number_');
-        // $add_mea_now_unit = $request->input('add_mea_now_unit_');
-        foreach ($add_mea_now_name as $index => $add_mea_now_name) {
-            $add_save_measument = new Dressmeasurement;
-            $add_save_measument->dress_id = $request->input('dress_id');
-            $add_save_measument->shirtitems_id = $id;
-            $add_save_measument->measurement_dress_name = $add_mea_now_name;
-            $add_save_measument->measurement_dress_number = $add_mea_now_number[$index];
-            $add_save_measument->measurement_dress_unit = "นิ้ว";
-            $add_save_measument->save();
-        }
-        //ตาราง dressmeasurementnow
-        $add_mea_now_name = $request->input('add_mea_now_name_');
-        $add_mea_now_number = $request->input('add_mea_now_number_');
-        // $add_mea_now_unit = $request->input('add_mea_now_unit_');
-        foreach ($add_mea_now_name as $index => $add_mea_now_name) {
-            $add_mea_now = new Dressmeasurementnow;
-            $add_mea_now->dress_id = $request->input('dress_id');
-            $add_mea_now->shirtitems_id  = $id;
-            $add_mea_now->measurementnow_dress_name = $add_mea_now_name;
-            $add_mea_now->measurementnow_dress_number = $add_mea_now_number[$index];
-            $add_mea_now->measurementnow_dress_number_start = $add_mea_now_number[$index];
-            $add_mea_now->measurementnow_dress_unit = "นิ้ว";
-            $add_mea_now->count = $max;
-            $add_mea_now->save();
-        }
-        return redirect()->back()->with('success', 'เพิ่มข้อมูลการวัดสำเร็จ !');
-    }
 
-    //เพิ่มข้อมูลการวัดyesyskirt
-    public function addmeasumentyesskirt(Request $request, $id)
-    {
-        $max = Dressmeasurementnow::where('skirtitems_id', $id)->max('count');
-        //ตาราง dressmeasurement
-        $add_mea_now_name = $request->input('add_mea_now_name_');
-        $add_mea_now_number = $request->input('add_mea_now_number_');
-        // $add_mea_now_unit = $request->input('add_mea_now_unit_');
-        foreach ($add_mea_now_name as $index => $add_mea_now_name) {
-            $add_save_measument = new Dressmeasurement;
-            $add_save_measument->dress_id = $request->input('dress_id');
-            $add_save_measument->skirtitems_id = $id;
-            $add_save_measument->measurement_dress_name = $add_mea_now_name;
-            $add_save_measument->measurement_dress_number = $add_mea_now_number[$index];
-            $add_save_measument->measurement_dress_unit = "นิ้ว";
-            $add_save_measument->save();
-        }
-        //ตาราง dressmeasurementnow
-        $add_mea_now_name = $request->input('add_mea_now_name_');
-        $add_mea_now_number = $request->input('add_mea_now_number_');
-        // $add_mea_now_unit = $request->input('add_mea_now_unit_');
-        foreach ($add_mea_now_name as $index => $add_mea_now_name) {
-            $add_mea_now = new Dressmeasurementnow;
-            $add_mea_now->dress_id = $request->input('dress_id');
-            $add_mea_now->skirtitems_id = $id;
-            $add_mea_now->measurementnow_dress_name = $add_mea_now_name;
-            $add_mea_now->measurementnow_dress_number = $add_mea_now_number[$index];
-            $add_mea_now->measurementnow_dress_number_start = $add_mea_now_number[$index];
-            $add_mea_now->measurementnow_dress_unit = "นิ้ว";
-            $add_mea_now->count = $max;
-            $add_mea_now->save();
-        }
-        return redirect()->back()->with('success', 'เพิ่มข้อมูลการวัดสำเร็จ !');
-    }
+
 
 
 
@@ -716,66 +696,59 @@ class DressController extends Controller
         return redirect()->back()->with('success', 'ลบข้อมูลการวัดสำเร็จ !');
     }
 
-    //เพิ่มรูปภาพชุด
-    public function addimage(Request $request, $id)
-    {
-        $adddata = new Dressimage();
-        $adddata->dress_id = $id;
-        if ($request->hasFile('addimage')) {
-            $adddata->dress_image = $request->file('addimage')->store('dress_images', 'public');
-            $adddata->save();
-        }
-        return redirect()->back()->with('success', 'เพิ่มรูปภาพสำเร็จ !');
-    }
+
 
 
     //บันทึกค่าใช้จ่าย
     public function expense()
     {
         $dataexpense = Expense::orderBy('date', 'desc')->paginate(8);
-        $expense = Expense::orderBy('date', 'desc')->get() ; 
-        $today = now()->toDateString() ; 
-        $month = 0 ; 
-        $year = 0 ; 
-        return view('admin.expense', compact('dataexpense','today','month','year','expense'));
+        $expense = Expense::orderBy('date', 'desc')->get();
+        $today = now()->toDateString();
+        $month = 0;
+        $year = 0;
+        return view('admin.expense', compact('dataexpense', 'today', 'month', 'year', 'expense'));
     }
-    public function expenseeditupdate(Request $request){
-        dd('ไม่ทำ') ; 
-    }
-
-    public function expensedelete(Request $request ,$id){
-        $expense = Expense::find($id) ; 
-        $expense->delete() ; 
-        return redirect()->back()->with('success','ลบสำเร็จ') ; 
+    public function expenseeditupdate(Request $request)
+    {
+        dd('ไม่ทำ');
     }
 
+    public function expensedelete(Request $request, $id)
+    {
+        $expense = Expense::find($id);
+        $expense->delete();
+        return redirect()->back()->with('success', 'ลบสำเร็จ');
+    }
 
 
 
 
 
-    public function expensefilter(Request $request){
-        
-        $month = $request->input('month') ; 
-        $year = $request->input('year') ; 
-        $today = now()->toDateString() ; 
+
+    public function expensefilter(Request $request)
+    {
+
+        $month = $request->input('month');
+        $year = $request->input('year');
+        $today = now()->toDateString();
         $dataexpense = Expense::orderBy('date', 'desc');
-        $expense = Expense::orderBy('date', 'desc') ; 
+        $expense = Expense::orderBy('date', 'desc');
 
-        if($month != 0 ){
-            $dataexpense->whereMonth('date',$month) ; 
-            $expense->whereMonth('date',$month) ; 
+        if ($month != 0) {
+            $dataexpense->whereMonth('date', $month);
+            $expense->whereMonth('date', $month);
         }
-        if($year != 0){
-            $dataexpense->whereYear('date',$year) ; 
-            $expense->whereYear('date',$year) ; 
+        if ($year != 0) {
+            $dataexpense->whereYear('date', $year);
+            $expense->whereYear('date', $year);
         }
-        $dataexpense = $dataexpense->paginate(8) ; 
-        $expense = $expense->get() ; 
+        $dataexpense = $dataexpense->paginate(8);
+        $expense = $expense->get();
 
-        return view('admin.expense', compact('dataexpense','today','month','year','expense'));
+        return view('admin.expense', compact('dataexpense', 'today', 'month', 'year', 'expense'));
     }
-    
+
 
     public function saveexpense(Request $request)
     {
@@ -790,7 +763,7 @@ class DressController extends Controller
         $save->expense_value = $request->input('expense_value');
         $save->employee_id = Auth::user()->id;
         $save->save();
-        return redirect()->route('admin.expense')->with('success', "เพิ่มค่าใช้จ่ายสำเร็จ !") ; 
+        return redirect()->route('admin.expense')->with('success', "เพิ่มค่าใช้จ่ายสำเร็จ !");
     }
 
 
@@ -843,9 +816,8 @@ class DressController extends Controller
 
     public function testtab()
     {
-
-
-        return view('testtab');
+        $categories = ['กำไล', 'สร้อย', 'แหวน', 'เพชร']; // ข้อมูลจากฐานข้อมูลแทนได้
+        return view('testtab',compact('categories'));
     }
 
 
@@ -1301,5 +1273,118 @@ class DressController extends Controller
             $skirt->save();
         }
         return redirect()->back()->with('success', 'สำเร็จ');
+    }
+    public function stopRentalnodress($id)
+    {
+        $dress = Dress::find($id);
+        if ($dress->dress_status == 'พร้อมให้เช่า') {
+            $dress->dress_status = 'ยุติการให้เช่า';
+            $dress->save();
+        } elseif ($dress->dress_status == 'กำลังถูกเช่า') {
+            return redirect()->back()->with('fail', 'ขณะนี้ชุดกำลังถูกเช่าโดยลูกค้าอยู่ ไม่สามารถยุติการให้เช่าสำหรับชุดนี้ได้');
+        } else {
+            // dd('อื่นๆ');
+            // รอทำความสะอาด กำลังส่งซัก 
+            //รอดำเนินการซ่อม กำลังซ่อม
+
+            $dress->dress_status = 'ยุติการให้เช่า';
+            $dress->save();
+
+            $reservation_filterdress = Reservationfilterdress::where('dress_id', $dress->id)
+                ->where('status_completed', 0)
+                ->whereIn('status', ['รอทำความสะอาด', 'กำลังส่งซัก', 'รอดำเนินการซ่อม', 'กำลังซ่อม'])
+                ->first();
+            //กำลังถูกเช่า กำลังส่งซัก
+            //รอดำเนินการซ่อม กำลังซ่อม
+
+            $reservation_update = Reservationfilterdress::find($reservation_filterdress->id);
+            $reservation_update->status = 'ยุติการให้เช่า';
+            $reservation_update->status_completed = 1;
+            $reservation_update->save();
+        }
+        return redirect()->back()->with('success', 'ชุดนี้ได้ยุติการให้เช่าแล้ว');
+    }
+
+    public function stopRentalyesdressshirt($id)
+    {
+        $shirtitem = Shirtitem::find($id);
+        if ($shirtitem->shirtitem_status == 'พร้อมให้เช่า') {
+            $shirtitem->shirtitem_status = 'ยุติการให้เช่า';
+            $shirtitem->save();
+        } elseif ($shirtitem->shirtitem_status == 'กำลังถูกเช่า') {
+            return redirect()->back()->with('fail', 'ขณะนี้เสื้อกำลังถูกเช่าโดยลูกค้าอยู่ ไม่สามารถยุติการให้เช่าสำหรับเสื้อนี้ได้');
+        } else {
+            // รอทำความสะอาด กำลังส่งซัก 
+            //รอดำเนินการซ่อม กำลังซ่อม
+
+            $shirtitem->shirtitem_status = 'ยุติการให้เช่า';
+            $shirtitem->save();
+
+            $reservation_filter_shirt = Reservationfilterdress::where('shirtitems_id', $shirtitem->id)
+                ->where('status_completed', 0)
+                ->whereIn('status', ['รอทำความสะอาด', 'กำลังส่งซัก', 'รอดำเนินการซ่อม', 'กำลังซ่อม'])
+                ->first();
+            $reservation_update = Reservationfilterdress::find($reservation_filter_shirt->id);
+            $reservation_update->status = 'ยุติการให้เช่า';
+            $reservation_update->status_completed = 1;
+            $reservation_update->save();
+        }
+        return redirect()->back()->with('success', 'ยุติการให้เช่าเสื้อสำเร็จแล้ว');
+    }
+
+
+    public function stopRentalyesdressskirt($id)
+    {
+        $skirtitem = Skirtitem::find($id);
+        if ($skirtitem->skirtitem_status == 'พร้อมให้เช่า') {
+            $skirtitem->skirtitem_status = 'ยุติการให้เช่า';
+            $skirtitem->save();
+        }
+        elseif ($skirtitem->skirtitem_status == 'กำลังถูกเช่า') {
+            return redirect()->back()->with('fail', 'ขณะนี้ผ้าถุงกำลังถูกเช่าโดยลูกค้าอยู่ ไม่สามารถยุติการให้เช่าสำหรับผ้าถุงนี้ได้');
+        }
+        else {
+            // รอทำความสะอาด กำลังส่งซัก 
+            //รอดำเนินการซ่อม กำลังซ่อม
+
+            $skirtitem->skirtitem_status = 'ยุติการให้เช่า';
+            $skirtitem->save();
+
+            $reservation_filter_skirt = Reservationfilterdress::where('skirtitems_id', $skirtitem->id)
+                ->where('status_completed', 0)
+                ->whereIn('status', ['รอทำความสะอาด', 'กำลังส่งซัก', 'รอดำเนินการซ่อม', 'กำลังซ่อม'])
+                ->first();
+            $reservation_update = Reservationfilterdress::find($reservation_filter_skirt->id);
+            $reservation_update->status = 'ยุติการให้เช่า';
+            $reservation_update->status_completed = 1;
+            $reservation_update->save();
+
+
+
+            
+        }
+        return redirect()->back()->with('success', 'ยุติการให้เช่าผ้าถุงสำเร็จแล้ว');
+    }
+
+    public function reopenRentalnodress($id)
+    {
+        $dress = Dress::find($id);
+        $dress->dress_status = 'พร้อมให้เช่า';
+        $dress->save();
+        return redirect()->back()->with('success', 'ชุดนี้ได้เปิดให้เช่าอีกครั้งแล้ว');
+    }
+    public function reopenRentalyesdressshirt($id)
+    {
+        $shirtitem = Shirtitem::find($id);
+        $shirtitem->shirtitem_status = 'พร้อมให้เช่า';
+        $shirtitem->save();
+        return redirect()->back()->with('success', 'เสื้อนี้ได้เปิดให้เช่าอีกครั้งแล้ว');
+    }
+    public function reopenRentalyesdressskirt($id)
+    {
+        $skirtitem = Skirtitem::find($id);
+        $skirtitem->skirtitem_status = 'พร้อมให้เช่า';
+        $skirtitem->save();
+        return redirect()->back()->with('success', 'ผ้าถุงนี้ได้เปิดให้เช่าอีกครั้งแล้ว');
     }
 }

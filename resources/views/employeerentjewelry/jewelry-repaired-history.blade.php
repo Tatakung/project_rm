@@ -76,7 +76,7 @@
     }
 </style>
     <div class="container mt-5">
-        <h2>ประวัติการซ่อมชุด{{ $typejewelry->type_jewelry_name }} {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</h2>
+        <h2>ประวัติการซ่อม{{ $typejewelry->type_jewelry_name }} {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</h2>
         
 
         @if ($history->count() > 0)

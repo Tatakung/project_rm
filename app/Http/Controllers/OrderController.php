@@ -757,15 +757,20 @@ class OrderController extends Controller
             $typejewelry = null;
             $imagejewelry = null;
             $check_not_ready = false;
-            foreach ($setjewelryitem as $itemm) {
-                $jewel = Jewelry::find($itemm->jewelry_id);
-                if (
-                    $jewel->jewelry_status == 'สูญหาย' ||
-                    $jewel->jewelry_status == 'ยุติการให้เช่า'
-                ) {
-                    $check_not_ready = true;
-                    break;
+
+
+            // เช็คสถานะเฉพาะเซตก่อน
+
+            if ($setjewelry->set_status == 'พร้อมให้เช่า') {
+                foreach ($setjewelryitem as $itemm) {
+                    $jewel = Jewelry::find($itemm->jewelry_id);
+                    if ($jewel->jewelry_status == 'สูญหาย' || $jewel->jewelry_status == 'ยุติการให้เช่า') {
+                        $check_not_ready = true;
+                        break;
+                    }
                 }
+            } elseif ($setjewelry->set_status == 'ยุติการให้เช่า') {
+                $check_not_ready = true;
             }
         }
         $orderdetailstatus = Orderdetailstatus::where('order_detail_id', $id)->get();
@@ -2520,14 +2525,14 @@ class OrderController extends Controller
 
                     // เสื้อ
                     $filtershirt_id = $request->input('filtershirt_id');
-                    $filterdress_id = Reservationfilterdress::find($filtershirt_id) ; 
+                    $filterdress_id = Reservationfilterdress::find($filtershirt_id);
                     $damage_insurance_shirt_two = $request->input('damage_insurance_shirt_two');
                     if ($request->input('actionreturnitemtotal1') == 'cleanitem') {
                         // สภาพปกติ
                         $filtershirt = Reservationfilterdress::find($filtershirt_id);
                         $filtershirt->status = 'รอทำความสะอาด';
                         $filtershirt->save();
-                        
+
                         //เช่าแค่เสื้อ
                         $update_shirt = Shirtitem::find($orderdetail->orderdetailmanytoonedress->shirtitems->first()->id);
                         $update_shirt->shirtitem_rental =  $update_shirt->shirtitem_rental  + 1;
@@ -2618,8 +2623,8 @@ class OrderController extends Controller
 
                     // ผ้าถุง
                     $filterskirt_id = $request->input('filterskirt_id');
-                    $filterdress_id_skirt = Reservationfilterdress::find($filterskirt_id) ; 
-                    $damage_insurance_skirt_two = $request->input('damage_insurance_skirt_two') ; 
+                    $filterdress_id_skirt = Reservationfilterdress::find($filterskirt_id);
+                    $damage_insurance_skirt_two = $request->input('damage_insurance_skirt_two');
                     if ($request->input('actionreturnitemtotal2') == 'cleanitem') {
                         // สภาพปกติ
                         $filtershirt = Reservationfilterdress::find($filterskirt_id);
@@ -2635,8 +2640,7 @@ class OrderController extends Controller
                         $after_return_dress->type = 1;
                         $after_return_dress->price = $damage_insurance_skirt_two;
                         $after_return_dress->save();
-                    }
-                    elseif ($request->input('actionreturnitemtotal2') == 'repairitem') {
+                    } elseif ($request->input('actionreturnitemtotal2') == 'repairitem') {
                         // ต้องซ่อม
                         $filtershirt = Reservationfilterdress::find($filterskirt_id);
                         $filtershirt->status = 'รอดำเนินการซ่อม';
@@ -2660,8 +2664,7 @@ class OrderController extends Controller
                         $after_return_dress->type = 2;
                         $after_return_dress->price = $damage_insurance_skirt_two;
                         $after_return_dress->save();
-                    }
-                    elseif ($request->input('actionreturnitemtotal2') == 'lost') {
+                    } elseif ($request->input('actionreturnitemtotal2') == 'lost') {
                         // สูญหาย (ลูกค้าแจ้ง)
                         $filtershirt = Reservationfilterdress::find($filterskirt_id);
                         $filtershirt->status = 'คืนชุดแล้ว';
@@ -2677,8 +2680,7 @@ class OrderController extends Controller
                         $after_return_dress->type = 3;
                         $after_return_dress->price = $damage_insurance_skirt_two;
                         $after_return_dress->save();
-                    }
-                    elseif ($request->input('actionreturnitemtotal2') == 'lost_unreported') {
+                    } elseif ($request->input('actionreturnitemtotal2') == 'lost_unreported') {
                         // สูญหาย (ลูกค้าไม่แจ้ง)
                         $filtershirt = Reservationfilterdress::find($filterskirt_id);
                         $filtershirt->status = 'คืนชุดแล้ว';
@@ -2694,8 +2696,7 @@ class OrderController extends Controller
                         $after_return_dress->type = 4;
                         $after_return_dress->price = $damage_insurance_skirt_two;
                         $after_return_dress->save();
-                    }
-                    elseif ($request->input('actionreturnitemtotal2') == 'damaged_beyond_repair') {
+                    } elseif ($request->input('actionreturnitemtotal2') == 'damaged_beyond_repair') {
                         // เสียหายหนัก
                         $filtershirt = Reservationfilterdress::find($filterskirt_id);
                         $filtershirt->status = 'คืนชุดแล้ว';
@@ -2713,7 +2714,7 @@ class OrderController extends Controller
                         $after_return_dress->save();
                     }
 
-                    $damage_insurance_shirt_skirt = $damage_insurance_shirt_two + $damage_insurance_skirt_two ; 
+                    $damage_insurance_shirt_skirt = $damage_insurance_shirt_two + $damage_insurance_skirt_two;
 
                     if ($damage_insurance_shirt_skirt > 0) {
                         $create_additional = new AdditionalChange();
@@ -2736,12 +2737,6 @@ class OrderController extends Controller
                         $create_additional->amount = $late_chart;
                         $create_additional->save();
                     }
-
-
-
-
-
-
                 }
             }
 

@@ -140,17 +140,17 @@
             <div class="table-responsive mt-4">
                 <table class="table table-striped text-start">
                     <thead>
-                        <tr>
-                            <th scope="col">วันที่เช่า</th>
-                            <th scope="col">วันที่คืน</th>
-                            <th scope="col">รวมระยะเวลา (วัน)</th>
-                            <th scope="col">สถานะ</th>
-                            <th scope="col">ดูรายละเอียด</th>
+                        <tr style="text-align: center ; ">
+                            <th>วันที่เช่า</th>
+                            <th>วันที่คืน</th>
+                            <th>รวมระยะเวลา (วัน)</th>
+                            <th>สถานะ</th>
+                            <th>ดูรายละเอียด</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($history as $item)
-                            <tr>
+                            <tr style="text-align: center ; ">
                                 <td>
                                     @php
                                         $date = App\Models\Date::where('order_detail_id', $item->re_one_many_details->first()->id)

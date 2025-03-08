@@ -638,12 +638,12 @@ class Orderjewelry extends Controller
                 // ตารางหลอก
                 $find_re_filter = Reservationfilters::where('reservation_id', $reservation->id)->first();
                 $update_re_filter = Reservationfilters::find($find_re_filter->id);
-                $update_re_filter->status = 'รอซ่อม';
+                $update_re_filter->status = 'รอดำเนินการซ่อม';
                 $update_re_filter->save();
 
                 // อัปเดตสถานะเครื่องประดับ
                 $update_status_jewelry = Jewelry::find($reservation->jewelry_id);
-                $update_status_jewelry->jewelry_status = 'รอซ่อม';
+                $update_status_jewelry->jewelry_status = 'รอดำเนินการซ่อม';
                 $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
                 $update_status_jewelry->save();
 
@@ -925,11 +925,11 @@ class Orderjewelry extends Controller
 
                     // ตารางหลอก
                     $update_re_filter = Reservationfilters::find($refil_id[$index]);
-                    $update_re_filter->status = 'รอซ่อม';
+                    $update_re_filter->status = 'รอดำเนินการซ่อม';
                     $update_re_filter->save();
                     // อัปเดตสถานะเครื่องประดับ
                     $update_status_jewelry = Jewelry::find($refil_jewelry_id[$index]);
-                    $update_status_jewelry->jewelry_status = 'รอซ่อม';
+                    $update_status_jewelry->jewelry_status = 'รอดำเนินการซ่อม';
                     $update_status_jewelry->jewelry_rental = $update_status_jewelry->jewelry_rental + 1;
                     $update_status_jewelry->save();
 
@@ -1125,32 +1125,26 @@ class Orderjewelry extends Controller
             }
 
             if ($total_damage_insurance_set > 0) {
-            $create_additional = new AdditionalChange();
-            $create_additional->order_detail_id = $id;
-            $create_additional->charge_type = 1;
-            $create_additional->amount = $total_damage_insurance_set;
-            $create_additional->save();
-        }
-        if ($late_return_fee > 0) {
-            $create_additionals = new AdditionalChange();
-            $create_additionals->order_detail_id = $id;
-            $create_additionals->charge_type = 2;
-            $create_additionals->amount = $late_return_fee;
-            $create_additionals->save();
-        }
-        if ($late_chart) {
-            $create_additionalw = new AdditionalChange();
-            $create_additionalw->order_detail_id = $id;
-            $create_additionalw->charge_type = 3;
-            $create_additionalw->amount = $late_chart;
-            $create_additionalw->save();
-        }
-            
-
-
-
-
-
+                $create_additional = new AdditionalChange();
+                $create_additional->order_detail_id = $id;
+                $create_additional->charge_type = 1;
+                $create_additional->amount = $total_damage_insurance_set;
+                $create_additional->save();
+            }
+            if ($late_return_fee > 0) {
+                $create_additionals = new AdditionalChange();
+                $create_additionals->order_detail_id = $id;
+                $create_additionals->charge_type = 2;
+                $create_additionals->amount = $late_return_fee;
+                $create_additionals->save();
+            }
+            if ($late_chart) {
+                $create_additionalw = new AdditionalChange();
+                $create_additionalw->order_detail_id = $id;
+                $create_additionalw->charge_type = 3;
+                $create_additionalw->amount = $late_chart;
+                $create_additionalw->save();
+            }
         }
 
         // ถ้ามันตรวจสอบแล้วพบว่าทุกรายการ มันเป็น คืนชุด/คืนเครื่องประดับครบยัง ทั้งหมดแล้ว แปลว่า จะต้องทำการสร้างใบเสร็จอัตโนมัติเลย
@@ -1446,51 +1440,38 @@ class Orderjewelry extends Controller
     {
         $jewelry = Jewelry::find($id);
         $typejewelry = Typejewelry::find($jewelry->type_jewelry_id);
-
         $value_month = 0;
         $value_year = 0;
-
-
         $history = Reservation::where('jewelry_id', $id)
             ->where('status_completed', 1)
             ->where('status', 'คืนเครื่องประดับแล้ว')
             // ->whereMonth('updated_at', now()->month)
             // ->whereYear('updated_at', now()->year)
             ->get();
-
-        return view('employeerentjewelry.jewelrydetail', compact('history', 'jewelry', 'typejewelry', 'value_month', 'value_year'));
+        return view('employeerentjewelry.jewelry-rented-history', compact('history', 'jewelry', 'typejewelry', 'value_month', 'value_year'));
     }
-
     public function showrentedhistoryfilter(Request $request, $id)
     {
         $jewelry = Jewelry::find($id);
         $typejewelry = Typejewelry::find($jewelry->type_jewelry_id);
         $value_month = $request->input('month');
         $value_year = $request->input('year');
-
-
         $history = Reservation::where('jewelry_id', $id)
             ->where('status_completed', 1)
             ->where('status', 'คืนเครื่องประดับแล้ว');
-
         if ($value_month != 0) {
             $history->whereMonth('updated_at', $value_month);
         }
-
         if ($value_year != 0) {
             $history->whereYear('updated_at', $value_year);
         }
-
         $history = $history->get();
-
         return view('employeerentjewelry.jewelry-rented-history', compact('history', 'jewelry', 'typejewelry', 'value_month', 'value_year'));
     }
 
     public function showjewsetrentedhistory(Request $request, $id)
     {
-
         $jewelryset = Jewelryset::find($id);
-
         $value_month = 0;
         $value_year = 0;
         $history = Reservation::where('jewelry_set_id', $id)
@@ -1552,15 +1533,34 @@ class Orderjewelry extends Controller
 
     public function jewelryproblemcancel()
     {
+        // เราต้องการ order_detail_id ที่มันได้รับผลกระทบ
+
+
         // เครื่องประดับ
-        $jewelry = Jewelry::whereIn('jewelry_status', ['สูญหาย', 'ยุติการให้เช่า'])->get();
+        $jewelry = Jewelry::whereIn('jewelry_status', ['สูญหาย', 'ยุติการให้เช่า'])->get(); // 1 2 3 4 5 6 7 8 9 10 11 12
         $list = [];
         foreach ($jewelry as $item) {
-            $reseraton = Reservationfilters::where('status_completed', 0)->where('jewelry_id', $item->id)->get();
+            $reseraton = Reservationfilters::where('status_completed', 0)
+                ->where('jewelry_id', $item->id)->get();
             foreach ($reseraton as $index) {
                 $list[] = $index->reservationtorefil->re_one_many_details->first()->id;
             }
         }
+        $setjew = Jewelryset::where('set_status', 'ยุติการให้เช่า')->get();
+        foreach ($setjew as $join) {// 9 10 11 
+            $reseraton_set = Reservationfilters::where('status_completed', 0)
+                ->where('jewelry_set_id', $join->id)->get();
+            if($reseraton_set->isNotEmpty()){
+                foreach($reseraton_set as $logeter){
+                    $list[] = $logeter->reservationtorefil->re_one_many_details->first()->id;
+                }
+            }
+        }
+
+        
+
+
+
 
 
         // ชุด เสื้อ ผ้าถุง
@@ -1603,6 +1603,7 @@ class Orderjewelry extends Controller
             }
         }
 
+     
         $orderdetail = Orderdetail::whereIn('id', $list)->get();
 
 

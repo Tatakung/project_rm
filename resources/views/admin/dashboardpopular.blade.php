@@ -734,11 +734,11 @@
         }
     </style>
 
-    {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // ดึงข้อมูลจาก Controller
-        const monthsJewelry = @json($monthsDataJewelry);
-        const revenueJewelry = @json($revenueDataJewelry);
+        const monthsJewelry = @json($monthsDataJewelry_chart);
+        const revenueJewelry = @json($revenueDataJewelry_chart);
 
         // สร้าง datasets จาก Object revenueJewelry
         const jewelryDatasets = Object.keys(revenueJewelry).map(type => ({
@@ -762,7 +762,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'รายรับ (บาท)',
+                            text: 'จำนวนครั้งในการเช่า (ครั้ง)',
                             font: {
                                 size: 14,
                                 weight: 'bold'
@@ -785,11 +785,11 @@
                     },
                     title: {
                         display: true,
-                        text: 'รายรับจากการเช่าเครื่องประดับ'
+                        text: 'จำนวนครั้งจากการเช่าเครื่องประดับ'
                     },
                     tooltip: {
                         callbacks: {
-                            label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                            label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} ครั้ง`
                         }
                     }
                 },
@@ -802,8 +802,8 @@
 
     <script>
         // ดึงข้อมูลจาก Controller
-        const monthsJewelrySet = @json($monthsDataJewelrySet);
-        const revenueJewelrySet = @json($revenueDataJewelrySet);
+        const monthsJewelrySet = @json($monthsDataJewelryset_chart);
+        const revenueJewelrySet = @json($revenueDataJewelryset_chart);
 
         // สร้าง datasets จาก Object revenueJewelrySet
         const jewelrySetDatasets = Object.keys(revenueJewelrySet).map(type => ({
@@ -827,7 +827,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'รายรับ (บาท)',
+                            text: 'จำนวนครั้งในการเช่า (ครั้ง)',
                             font: {
                                 size: 14,
                                 weight: 'bold'
@@ -850,7 +850,7 @@
                     },
                     title: {
                         display: true,
-                        text: 'รายรับจากการเช่าเซตเครื่องประดับ'
+                        text: 'จำนวนครั้งจากการเช่าเซตเครื่องประดับ'
                     },
                     tooltip: {
                         callbacks: {
@@ -865,7 +865,7 @@
     </script>
 
 
-    <script>
+    {{-- <script>
         // ดึงข้อมูลจาก Controller
         const monthsData = @json($monthsData);
         const revenueData = @json($revenueData);
@@ -927,8 +927,8 @@
                 categoryPercentage: 0.9
             }
         });
-    </script>
-    <script>
+    </script> --}}
+    {{-- <script>
         // ดึงข้อมูลจาก Controller
         const monthsTailoring = @json($monthsDataTailoring);
         const revenueTailoring = @json($revenueDataTailoring);
@@ -990,9 +990,9 @@
                 categoryPercentage: 0.9
             }
         });
-    </script>
+    </script> --}}
 
- --}}
+
 
 
 

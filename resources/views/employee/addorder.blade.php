@@ -21,20 +21,8 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Card 2 -->
-                    {{-- <div class="col-md-4 mb-4">
-                <div class="card custom-card">
-                    <div class="card-body text-center d-flex flex-column justify-content-between">
-                        <div>
-                            <i class="bi bi-shop card-icon"></i>
-                            <h5 class="card-title mt-3">เช่าชุด</h5>
-                        </div>
-                        <button class="btn custom-btn mt-3">
-                            <a href="{{route('employee.selectdate')}}" class="custom-link">เพิ่มออเดอร์</a>
-                        </button>
-                    </div>
-                </div>
-            </div> --}}
+                    
+                    
                     <div class="col-md-6 mb-4">
                         <div class="card custom-card">
                             <div class="card-body text-center d-flex flex-column justify-content-between">
@@ -50,21 +38,8 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Card 3 -->
-                    {{-- <div class="col-md-4 mb-4">
-                <div class="card custom-card">
-                    <div class="card-body text-center d-flex flex-column justify-content-between">
-                        <div>
-                            <i class="bi bi-bag-heart card-icon"></i>
-                            <h5 class="card-title mt-3">เช่าตัด</h5>
-                        </div>
-                        <button class="btn custom-btn mt-3">
-                            <a href="" class="custom-link">เพิ่มออเดอร์</a>
-                        </button>
-                    </div>
-                </div>
-            </div> --}}
-
+                    
+            
                 </div>
 
                 <div class="row mt-5">
@@ -97,12 +72,6 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-
 
 
 

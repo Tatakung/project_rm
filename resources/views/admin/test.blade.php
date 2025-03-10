@@ -75,7 +75,7 @@
         <div class="row">
             <div class="col-md-6">
                 <p><strong>เลขที่ใบเสร็จ:</strong> REC20241201-001</p>
-                <p><strong>วันที่:</strong> 
+                <p><strong>วันที่:</strong>
                     {{ \Carbon\Carbon::parse($date_now)->locale('th')->isoFormat('D MMM') }}
                     {{ \Carbon\Carbon::parse($date_now)->year + 543 }}
                 </p>
@@ -123,12 +123,13 @@
                                 @endif
                             @elseif($item->type_order == 3)
                                 @if ($item->detail_many_one_re->jewelry_id)
-                                    เช่า{{$item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name}} {{$item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter}}{{$item->detail_many_one_re->resermanytoonejew->jewelry_code}}
+                                    เช่า{{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
+                                    {{ $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $item->detail_many_one_re->resermanytoonejew->jewelry_code }}
                                 @elseif($item->detail_many_one_re->jewelry_set_id)
-                                    {{$item->detail_many_one_re->resermanytoonejewset->set_name}}
+                                    {{ $item->detail_many_one_re->resermanytoonejewset->set_name }}
                                 @endif
                             @elseif($item->type_order == 4)
-                                เช่าตัด{{$item->type_dress}}
+                                เช่าตัด{{ $item->type_dress }}
                             @endif
 
 
@@ -137,16 +138,16 @@
                         </td>
                         <td>{{ number_format($item->price, 2) }}</td>
                         <td>{{ number_format($item->deposit, 2) }}
-                            <p><span>จากราคาเต็ม ({{$item->price}})</span></p>
+                            <p><span>จากราคาเต็ม ({{ $item->price }})</span></p>
 
 
                         </td>
                         <td>{{ number_format($item->price - $item->deposit, 2) }}</td>
                         <td>
-                            {{ number_format($item->damage_insurance , 2 ) }}
+                            {{ number_format($item->damage_insurance, 2) }}
                         </td>
-                        
-                        
+
+
 
                     </tr>
                 @endforeach
@@ -170,5 +171,30 @@
         </div>
     </div>
 </body>
+
+<p>แบบฟอ์มที่ 1</p>
+<form action="{{ route('employee.savemanageitemcutdress', ['id' => $orderdetail->id]) }}" method="POST">
+    @csrf
+
+
+    <p>แบบฟอ์มที่ 2 </p>
+    <fieldset>
+        <!-- ข้อมูลแบบฟอร์มที่ 2 -->
+        <input type="text" name="form2_field1">
+        <input type="text" name="form2_field2">
+
+        <button type="submit" formaction="{{ route('form2.submit') }}">ส่งแบบฟอร์มที่ 2</button>
+    </fieldset>
+
+
+    <!-- ปุ่มสำหรับส่งไปที่ route หลัก -->
+    <button type="submit">ส่งแบบฟอร์มที่ 1</button>
+</form>
+
+
+
+
+
+
 
 </html>

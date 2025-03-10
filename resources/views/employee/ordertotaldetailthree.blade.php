@@ -173,16 +173,8 @@
                             @endphp
                             เช่าตัด{{ $item->type_dress }}
                             <br>
-                            @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
-                                <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
-                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
-                                </span>
-                            @endif
+
                         </td>
-
-
-
 
 
                         @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
@@ -208,7 +200,19 @@
 
 
 
-                        <td>{{ $item->status_detail }}</td>
+                        <td>
+                            @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
+                                <span style="color: red ; ">{{ $item->status_detail }}</span>
+                                <br>
+                                    <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
+                                        {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
+                                    </span>
+                                
+                            @else
+                                {{ $item->status_detail }}
+                            @endif
+                        </td>
 
 
                         <td>
@@ -236,7 +240,7 @@
                                 @endif
                             @endif
 
-                           
+
 
 
                             @if ($item->status_detail == 'ยกเลิกโดยลูกค้า' || $item->status_detail == 'ยกเลิกโดยทางร้าน')
@@ -245,9 +249,9 @@
                                 @if ($item->status_detail == 'กำลังเช่า' || $item->status_detail == 'คืนชุดแล้ว')
                                     {{-- style="display: none;" --}}
                                 @else
-                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                data-target="#cancelModal{{ $item->id }}">ยกเลิก
-                            </button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                                        data-target="#cancelModal{{ $item->id }}">ยกเลิก
+                                    </button>
                                 @endif
                             @endif
 
@@ -272,7 +276,7 @@
                                         <h5 class="modal-title d-flex align-items-center gap-2"
                                             id="cancelModal{{ $item->id }}">
                                             <i class="fas fa-exclamation-triangle text-red-500"></i>
-                                            ยกเลิกการจอง:
+                                            ยกเลิกรายการ:
                                             เช่าตัด{{ $item->type_dress }}
                                         </h5>
 
@@ -281,11 +285,11 @@
                                     <form action="{{ route('cancelorderrent', ['id' => $item->id]) }}" method="POST">
                                         @csrf
                                         <div class="modal-body">
-                                            <p class="text-muted">กรุณาเลือกสาเหตุการยกเลิกการจอง</p>
+                                            <p class="text-muted">กรุณาเลือกสาเหตุการยกเลิกรายการ</p>
                                             <!-- ยกเลิกโดยทางร้าน -->
                                             <div class="form-check border rounded-lg p-4 mb-3">
                                                 <input class="form-check-input" type="radio" name="cancelType"
-                                                    id="store" value="store">
+                                                    id="store" value="store" checked>
                                                 <label class="form-check-label d-flex align-items-center gap-2"
                                                     for="store">
                                                     <i class="fas fa-store"></i>
@@ -295,7 +299,7 @@
                                                     <ul class="mb-2">
                                                         <li>ไม่สามารถเช่าตัดได้</li>
                                                         <li>ต้องแจ้งลูกค้าและคืนเงินมัดจำ 100% แก่ลูกค้า <span
-                                                                style="font-size: 14px;">({{ number_format($item->price, 2) }}
+                                                                style="font-size: 14px;">({{ number_format($item->deposit, 2) }}
                                                                 บาท)</span></li>
                                                     </ul>
                                                     {{-- <textarea class="form-control" placeholder="ระบุรายละเอียดการยกเลิก..." rows="3"></textarea> --}}
@@ -414,7 +418,7 @@
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
                 <div>
                     <p class="mb-1">ใบเสร็จ</p>
-                    <p class="mb-1">วันที่:
+                    <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
                         {{ Carbon\Carbon::parse($receipt_one->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_one->created_at)->year + 543 }}
 
@@ -432,7 +436,7 @@
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
                 <div>
                     <p class="mb-1">ใบเสร็จ</p>
-                    <p class="mb-1">วันที่:
+                    <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
                         {{ Carbon\Carbon::parse($receipt_two->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_two->created_at)->year + 543 }}
 
@@ -447,7 +451,7 @@
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center">
                 <div>
                     <p class="mb-1">ใบเสร็จ</p>
-                    <p class="mb-1">วันที่:
+                    <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
                         {{ Carbon\Carbon::parse($receipt_three->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_three->created_at)->year + 543 }}
 

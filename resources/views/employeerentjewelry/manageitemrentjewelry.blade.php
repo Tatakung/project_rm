@@ -85,8 +85,8 @@
                                         <p><strong>ประกันค่าเสียหาย
                                                 :</strong>{{ number_format($orderdetail->damage_insurance) }} บาท</p>
                                     @elseif($reservation->jewelry_set_id)
-                                        <p><strong>ประเภทเครื่องประดับ :</strong> เซต</p>
-                                        <p><strong>หมายเลขเครื่องประดับ :</strong> SET00{{ $jewelryset->id }}</p>
+                                        {{-- <p><strong>ประเภทเครื่องประดับ :</strong> เซต</p> --}}
+                                        {{-- <p><strong>หมายเลขเครื่องประดับ :</strong> SET00{{ $jewelryset->id }}</p> --}}
                                         <p><strong>ราคาเช่า :</strong> {{ number_format($orderdetail->price) }} บาท</p>
                                         <p><strong>เงินมัดจำ :</strong> {{ number_format($orderdetail->price * 0.3) }} บาท
                                         </p>
@@ -108,13 +108,13 @@
                                     </p>
 
                                     @if ($reservation->jewelry_set_id)
-                                        <p>ประกอบด้วย :</p>
+                                        <p><strong>ประกอบด้วย :</strong></p>
                                         <div class="row">
                                             @foreach ($setjewelryitem as $item)
                                                 <div class="col-md-4 mb-3">
                                                     <img src="{{ asset('storage/' . $item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
                                                         alt="เครื่องประดับในเซต" class="img-fluid rounded mb-2"
-                                                        style="height: 150px; width: 150px; object-fit: cover;">
+                                                        style="height: 150px; width: 200px; object-fit: cover;">
                                                     <small class="d-block">
                                                         {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
                                                         {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}

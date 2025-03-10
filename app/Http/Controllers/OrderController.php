@@ -108,7 +108,8 @@ class OrderController extends Controller
         $receipt_one = Receipt::where('order_id', $id)
             ->where('receipt_type', 1)
             ->first();
-        return view('employee.ordertotaldetailone', compact('order', 'order_id', 'orderdetail', 'customer', 'employee', 'receipt_one'));
+        $today = now()->toDateString();
+        return view('employee.ordertotaldetailone', compact('order', 'order_id', 'orderdetail', 'customer', 'employee', 'receipt_one', 'today'));
     }
     private function ordertotaldetailtwo($id)
     {
@@ -908,7 +909,9 @@ class OrderController extends Controller
         $dress_edit_cut = Dressmeasurementcutedit::where('order_detail_id', $id)->get();
         $dress_adjusts = Dressmeaadjustment::where('order_detail_id', $id)->get();
         $round = AdjustmentRound::where('order_detail_id', $id)->get();
-
+        $check_cancel = Orderdetailstatus::where('order_detail_id', $id)
+            ->where('status', 'เริ่มดำเนินการตัด')
+            ->exists();
 
         $route_modal = AdjustmentRound::where('order_detail_id', $id)
             ->orderBy('created_at', 'desc')
@@ -917,7 +920,12 @@ class OrderController extends Controller
         $who_login = Auth::user()->id; //คนที่กำลังlogin
         $person_order = Order::where('id', $orderdetail->order_id)->value('user_id');  //คนที่รับ order
 
-        return view('employeecutdress.managedetailcutdress', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal', 'decoration_sum', 'decco'));
+        $receipt_two = Receipt::where('order_detail_id', $id)
+            ->where('receipt_type', 2)
+            ->first();
+
+            
+        return view('employeecutdress.managedetailcutdress', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal', 'decoration_sum', 'check_cancel', 'decco', 'receipt_two'));
     }
 
 
@@ -2909,6 +2917,8 @@ class OrderController extends Controller
             $create_status->status = "ส่งมอบชุดแล้ว";
             $create_status->save();
             if ($orderdetail->status_payment == 1) {
+                // เช็คเงินใบเสร็จ
+                $price_receipt_total = $orderdetail->price - $orderdetail->deposit;
                 //ตารางpaymentstatus
                 $create_paymentstatus = new Paymentstatus();
                 $create_paymentstatus->order_detail_id = $id;
@@ -2917,8 +2927,21 @@ class OrderController extends Controller
                 //ตารางorderdetail
                 $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
                 $orderdetail->save();
+            } else {
+                // เช็คเงินใบเสร็จ
+                $price_receipt_total = 0;
             }
             $message_session = 'ส่งมอบชุดสำเร็จ';
+
+
+            // สร้างใบเสร็จ
+            $ceate_receipt = new Receipt();
+            $ceate_receipt->order_id = $orderdetail->order_id;
+            $ceate_receipt->order_detail_id = $orderdetail->id;
+            $ceate_receipt->receipt_type = 2;
+            $ceate_receipt->total_price = $price_receipt_total;
+            $ceate_receipt->employee_id = Auth::user()->id;
+            $ceate_receipt->save();
         } elseif ($status == 'แก้ไขชุด') {
 
             //ตารางorderdetail
@@ -2960,6 +2983,7 @@ class OrderController extends Controller
 
             if ($orderdetail->status_payment == 1) {
                 //ตารางpaymentstatus
+                $sum_price_receipt_total = $orderdetail->price - $orderdetail->deposit;
                 $create_paymentstatus = new Paymentstatus();
                 $create_paymentstatus->order_detail_id = $id;
                 $create_paymentstatus->payment_status = 2;
@@ -2967,6 +2991,8 @@ class OrderController extends Controller
                 //ตารางorderdetail
                 $orderdetail->status_payment = 2; //1จ่ายมัดจำ 2จ่ายเต็มจำนวน
                 $orderdetail->save();
+            } else {
+                $sum_price_receipt_total = 0;
             }
 
             // ตารางdate อัปเดตวันที่รับชุดจริง
@@ -2977,6 +3003,18 @@ class OrderController extends Controller
             $update_date->actua_pickup_date = now();
             $update_date->save();
             $message_session = 'ส่งมอบชุดสำเร็จ';
+
+
+            // เช็คสิว่ามันมีค่า dec ไหม 
+            $decoration_receipt = Decoration::where('order_detail_id', $id)->sum('decoration_price');
+            // สร้างใบเสร็จ
+            $ceate_receipt = new Receipt();
+            $ceate_receipt->order_id = $orderdetail->order_id;
+            $ceate_receipt->order_detail_id = $orderdetail->id;
+            $ceate_receipt->receipt_type = 2;
+            $ceate_receipt->total_price = $sum_price_receipt_total + $decoration_receipt ;
+            $ceate_receipt->employee_id = Auth::user()->id;
+            $ceate_receipt->save();
         }
         return redirect()->back()->with('success', $message_session);
     }

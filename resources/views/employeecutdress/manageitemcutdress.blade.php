@@ -137,14 +137,15 @@
 
                                     <p class="d-flex align-items-center">
                                         <strong>เงินมัดจำ (บาท) :</strong>
-                                        <input type="number" name="update_deposit" id="update_deposit" value="{{ $orderdetail->deposit }}"
-                                            min="1" required class="form-control mx-2" style="width: 200px;">
+                                        <input type="number" name="update_deposit" id="update_deposit"
+                                            value="{{ $orderdetail->deposit }}" min="1" required
+                                            class="form-control mx-2" style="width: 200px;">
                                     </p>
 
                                     <script>
                                         var price = document.getElementById('update_price');
                                         var deposit = document.getElementById('update_deposit');
-                
+
                                         deposit.addEventListener('input', function() {
                                             var convert_deposit = parseFloat(deposit.value);
                                             var convert_price = parseFloat(price.value);
@@ -154,7 +155,7 @@
                                         });
                                         price.addEventListener('input', function() {
                                             deposit.value = '';
-                
+
                                         });
                                     </script>
 
@@ -162,16 +163,17 @@
 
 
 
-                                    <p class="d-flex align-items-center">
+                                    {{-- <p class="d-flex align-items-center">
                                         <strong>จำนวนชุด :</strong>
                                         <input type="number" name="update_amount" value="{{ $orderdetail->amount }}"
                                             min="1" required max="100" class="form-control mx-2"
                                             style="width: 200px;">
-                                    </p>
+                                    </p> --}}
 
                                     <p class="d-flex align-items-center">
                                         <strong>ที่มาของผ้า : </strong>
-                                        <select name="update_cloth" id="update_cloth" class="form-control "style="width: 200px;">
+                                        <select name="update_cloth" id="update_cloth"
+                                            class="form-control "style="width: 200px;">
                                             <option value="1" {{ $orderdetail->cloth == 1 ? 'selected' : '' }}>
                                                 ลูกค้านำผ้ามาเอง</option>
                                             <option value="2" {{ $orderdetail->cloth == 2 ? 'selected' : '' }}>
@@ -231,10 +233,14 @@
 
                                 <div class="col-md-2" style="padding-left: 1px; margin-top: 12px;">
 
-                                    <a
-                                        href="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}">
-                                        <button class="btn"><i class="bi bi-x-circle"></i></button>
-                                    </a>
+
+                                    <fieldset>
+                                        <button class="btn" type="submit"
+                                            formaction="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}"
+                                            formmethod="POST">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </fieldset>
 
                                 </div>
                             </div>

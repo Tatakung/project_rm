@@ -1280,21 +1280,25 @@
                                         <tr>
                                             <th class="bg-gray-100">รายการ</th>
                                             <th class="bg-gray-100">การดำเนินการ</th>
+                                            <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 
                                         <tr>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 {{ $typename }}
                                                 {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
                                             </td>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 <select name="actionreturnitemshirt" id="actionreturnitemshirt"
                                                     class="form-control">
-                                                    <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                    <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                     <option value="repairitem">ต้องซ่อม</option>
-                                                    <option value="lost">สูญหาย</option>
+                                                    <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
+                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                        คาดว่าไม่น่าจะคืน)</option>
+                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)</option>
                                                 </select>
 
                                                 <div id="showrepair_detail_itemshirt" class="mt-2"
@@ -1302,6 +1306,10 @@
                                                     <textarea name="repair_detail_for_itemshirt" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
                                                         rows="3"></textarea>
                                                 </div>
+                                            </td>
+                                            <td>
+                                                <input type="number" value="0" class="form-control" min="0"
+                                                    name="damage_insurance_shirt" required>
                                             </td>
                                         </tr>
                                         <script>
@@ -1327,21 +1335,26 @@
                                         <tr>
                                             <th class="bg-gray-100">รายการ</th>
                                             <th class="bg-gray-100">การดำเนินการ</th>
+                                            <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 
                                         <tr>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 {{ $typename }}
                                                 {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ผ้าถุง)
                                             </td>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 <select name="actionreturnitemskirt" id="actionreturnitemskirt"
                                                     class="form-control">
-                                                    <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                    <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                     <option value="repairitem">ต้องซ่อม</option>
-                                                    <option value="lost">สูญหาย</option>
+                                                    <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
+                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                        คาดว่าไม่น่าจะคืน)</option>
+                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)
+                                                    </option>
                                                 </select>
 
                                                 <div id="showrepair_detail_itemskirt" class="mt-2"
@@ -1349,6 +1362,10 @@
                                                     <textarea name="repair_detail_for_itemskirt" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
                                                         rows="3"></textarea>
                                                 </div>
+                                            </td>
+                                            <td>
+                                                <input type="number" value="0" class="form-control" min="0"
+                                                    name="damage_insurance_skirt" required>
                                             </td>
                                         </tr>
                                         <script>
@@ -1375,21 +1392,27 @@
                                             <tr>
                                                 <th class="bg-gray-100">รายการ</th>
                                                 <th class="bg-gray-100">การดำเนินการ</th>
+                                                <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
 
                                             <tr>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     {{ $typename }}
                                                     {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ทั้งชุด)
                                                 </td>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     <select name="actionreturnitemtotaldress"
                                                         id="actionreturnitemtotaldress" class="form-control">
                                                         <option value="cleanitem" selected>ส่งทำความสะอาด</option>
                                                         <option value="repairitem">ต้องซ่อม</option>
-                                                        <option value="lost">สูญหาย</option>
+                                                        <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="damaged_beyond_repair">*เสียหายหนัก
+                                                            (ให้เช่าต่อไม่ได้)
+                                                        </option>
                                                     </select>
 
                                                     <div id="showrepair_detail_itemtotaldress" class="mt-2"
@@ -1397,6 +1420,10 @@
                                                         <textarea name="repair_detail_for_itemtotaldress" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
                                                             rows="3"></textarea>
                                                     </div>
+                                                </td>
+                                                <td>
+                                                    <input type="number" value="0" class="form-control"
+                                                        min="0" name="damage_insurance_separable_one" required>
                                                 </td>
                                             </tr>
                                             <script>
@@ -1422,21 +1449,27 @@
                                             <tr>
                                                 <th class="bg-gray-100">รายการ</th>
                                                 <th class="bg-gray-100">การดำเนินการ</th>
+                                                <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
 
                                             <tr>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     {{ $typename }}
                                                     {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
                                                 </td>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     <select name="actionreturnitemtotal1" id="actionreturnitemtotal1"
                                                         class="form-control">
-                                                        <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                        <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                         <option value="repairitem">ต้องซ่อม</option>
-                                                        <option value="lost">สูญหาย</option>
+                                                        <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="damaged_beyond_repair">*เสียหายหนัก
+                                                            (ให้เช่าต่อไม่ได้)
+                                                        </option>
                                                     </select>
                                                     <input type="hidden" name="filtershirt_id"
                                                         value="{{ $filtershirt_id }}">
@@ -1447,18 +1480,26 @@
                                                             rows="3"></textarea>
                                                     </div>
                                                 </td>
+                                                <td>
+                                                    <input type="number" value="0" class="form-control"
+                                                        min="0" name="damage_insurance_shirt_two" required>
+                                                </td>
                                             </tr>
                                             <tr>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     {{ $typename }}
                                                     {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ผ้าถุง)
                                                 </td>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     <select name="actionreturnitemtotal2" id="actionreturnitemtotal2"
                                                         class="form-control">
-                                                        <option value="cleanitem" selected>ส่งทำความสะอาด</option>
+                                                        <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                         <option value="repairitem">ต้องซ่อม</option>
-                                                        <option value="lost">สูญหาย</option>
+                                                        <option value="lost">*สูญหาย (ลูกค้าแจ้ง)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
+                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="damaged_beyond_repair">*เสียหายหนัก
+                                                            (ให้เช่าต่อไม่ได้)</option>
                                                     </select>
                                                     <input type="hidden" name="filterskirt_id"
                                                         value="{{ $filterskirt_id }}">
@@ -1468,6 +1509,10 @@
                                                         <textarea name="repair_detail_for_item2" class="form-control" placeholder="กรุณาระบุรายละเอียดการซ่อม..."
                                                             rows="3"></textarea>
                                                     </div>
+                                                </td>
+                                                <td>
+                                                    <input type="number" value="0" class="form-control"
+                                                        min="0" name="damage_insurance_skirt_two" required>
                                                 </td>
                                             </tr>
 
@@ -1504,14 +1549,7 @@
                             @endif
 
 
-
                         @endif
-
-
-
-
-
-
 
 
                     </div>

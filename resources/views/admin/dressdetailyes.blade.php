@@ -90,18 +90,12 @@
 
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
-                                <!-- <p><strong>หมายเลขชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
+                                
                                                                                                                                                                                                                                                                 </p> -->
-                                {{-- <p><strong>สถานะชุด:</strong> <span
-                                        @if ($datadress->dress_status == 'พร้อมให้เช่า') style="color: green;" @else style="color: red;" @endif>
-                                        {{ $datadress->dress_status }}</span></p> --}}
+                                
 
 
-                                {{-- <p><strong>สถานะปัจจุบันของชุด</strong></p>
-                                <ul>
-                                    <li>เสื้อ : {{ $text_check_status_shirt }}</li>
-                                    <li>ผ้าถุง : {{ $text_check_status_skirt }}</li>
-                                </ul> --}}
+                                
 
 
                                 @if ($datadress->dress_price == 0)
@@ -154,9 +148,7 @@
                                                 <td col-1>{{ $dress_mea_totaldress->current_mea }} </td>
                                                 <td col-1>นิ้ว</td>
                                             </tr>
-                                            {{-- @php
-                                                $list_check_name_shirt[] = $item->measurementnow_dress_name;
-                                            @endphp --}}
+                                            
                                         @endforeach
                                     </table>
 

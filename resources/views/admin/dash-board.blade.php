@@ -1,48 +1,59 @@
 @extends('layouts.adminlayout')
 @section('content')
+    <style>
+        .hover-shadow {
+            transition: all 0.3s ease;
+        }
+
+        .hover-shadow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+    </style>
     <div class="container mt-2">
         <!-- Search Form -->
-        <div class="card">
-            <div class="card-body">
-                <form action="{{ route('dashboardfilter') }}" method="GET" class="form-inline">
-                    @csrf
-                    <div class="form-group mb-2">
-                        <div class="d-flex gap-2">
-                            <select class="form-control" name="year" id="year">
-                                <option value="0">ทุกปี</option>
-                                @for ($i = 2020; $i <= now()->year; $i++)
-                                    <option value="{{ $i }}" @if ($value_year == $i) selected @endif>
-                                        {{ $i + 543 }}
-                                    </option>
-                                @endfor
-                            </select>
-                            <select class="form-control" name="month" id="month">
-                                <option value="0" {{ $value_month == 0 ? 'selected' : '' }}>ทุกเดือน</option>
-                                <option value="1" {{ $value_month == 1 ? 'selected' : '' }}>มกราคม</option>
-                                <option value="2" {{ $value_month == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
-                                <option value="3" {{ $value_month == 3 ? 'selected' : '' }}>มีนาคม</option>
-                                <option value="4" {{ $value_month == 4 ? 'selected' : '' }}>เมษายน</option>
-                                <option value="5" {{ $value_month == 5 ? 'selected' : '' }}>พฤษภาคม</option>
-                                <option value="6" {{ $value_month == 6 ? 'selected' : '' }}>มิถุนายน</option>
-                                <option value="7" {{ $value_month == 7 ? 'selected' : '' }}>กรกฎาคม</option>
-                                <option value="8" {{ $value_month == 8 ? 'selected' : '' }}>สิงหาคม</option>
-                                <option value="9" {{ $value_month == 9 ? 'selected' : '' }}>กันยายน</option>
-                                <option value="10" {{ $value_month == 10 ? 'selected' : '' }}>ตุลาคม</option>
-                                <option value="11" {{ $value_month == 11 ? 'selected' : '' }}>พฤศจิกายน</option>
-                                <option value="12" {{ $value_month == 12 ? 'selected' : '' }}>ธันวาคม</option>
-                            </select>
 
-                            <button type="submit" class="btn" style="background-color:#BACEE6;">
-                                <i class="bi bi-search"></i> ฟิลเตอร์
-                            </button>
-                        </div>
+
+        <div class="container-fluid py-1">
+            <form action="{{ route('dashboardfilter') }}" method="GET" class="form-inline">
+                @csrf
+                <div class="form-group mb-2">
+                    <div class="d-flex gap-2">
+                        <select class="form-control" name="year" id="year">
+                            <option value="0">ทุกปี</option>
+                            @for ($i = 2020; $i <= now()->year; $i++)
+                                <option value="{{ $i }}" @if ($value_year == $i) selected @endif>
+                                    {{ $i + 543 }}
+                                </option>
+                            @endfor
+                        </select>
+                        <select class="form-control" name="month" id="month">
+                            <option value="0" {{ $value_month == 0 ? 'selected' : '' }}>ทุกเดือน</option>
+                            <option value="1" {{ $value_month == 1 ? 'selected' : '' }}>มกราคม</option>
+                            <option value="2" {{ $value_month == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
+                            <option value="3" {{ $value_month == 3 ? 'selected' : '' }}>มีนาคม</option>
+                            <option value="4" {{ $value_month == 4 ? 'selected' : '' }}>เมษายน</option>
+                            <option value="5" {{ $value_month == 5 ? 'selected' : '' }}>พฤษภาคม</option>
+                            <option value="6" {{ $value_month == 6 ? 'selected' : '' }}>มิถุนายน</option>
+                            <option value="7" {{ $value_month == 7 ? 'selected' : '' }}>กรกฎาคม</option>
+                            <option value="8" {{ $value_month == 8 ? 'selected' : '' }}>สิงหาคม</option>
+                            <option value="9" {{ $value_month == 9 ? 'selected' : '' }}>กันยายน</option>
+                            <option value="10" {{ $value_month == 10 ? 'selected' : '' }}>ตุลาคม</option>
+                            <option value="11" {{ $value_month == 11 ? 'selected' : '' }}>พฤศจิกายน</option>
+                            <option value="12" {{ $value_month == 12 ? 'selected' : '' }}>ธันวาคม</option>
+                        </select>
+
+                        <button type="submit" class="btn" style="background-color:#BACEE6;">
+                            <i class="bi bi-search"></i> ฟิลเตอร์
+                        </button>
                     </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="container-fluid py-4">
-            <div class="row g-4">
+                </div>
+            </form>
+            <div class="row g-4 mt-2">
                 <!-- Total Income Card -->
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="card border-0 shadow-sm h-100 hover-shadow transition-all">
@@ -125,22 +136,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        
 
-        <style>
-            .hover-shadow {
-                transition: all 0.3s ease;
-            }
 
-            .hover-shadow:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-            }
-
-            .transition-all {
-                transition: all 0.3s ease;
-            }
-        </style>
 
 
         <!-- Chart Section -->
@@ -265,6 +263,8 @@
             {{-- </div> --}}
 
         </div>
+
+    </div>
 
 
 
@@ -702,91 +702,68 @@
 
 
 
-<script>
-    // ดึงข้อมูลจาก Controller
-    const monthsRentalTailoring = @json($monthsDataRentalTailoring);
-    const revenueRentalTailoring = @json($revenueDataRentalTailoring);
+        <script>
+            // ดึงข้อมูลจาก Controller
+            const monthsRentalTailoring = @json($monthsDataRentalTailoring);
+            const revenueRentalTailoring = @json($revenueDataRentalTailoring);
 
-    // สร้าง datasets จาก Object revenueRentalTailoring
-    const rentalTailoringDatasets = Object.keys(revenueRentalTailoring).map(type => ({
-        label: type,
-        data: revenueRentalTailoring[type],
-        backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`
-    }));
+            // สร้าง datasets จาก Object revenueRentalTailoring
+            const rentalTailoringDatasets = Object.keys(revenueRentalTailoring).map(type => ({
+                label: type,
+                data: revenueRentalTailoring[type],
+                backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`
+            }));
 
-    // วาดกราฟ
-    new Chart(document.getElementById('rentalTailoringRevenueChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: monthsRentalTailoring,
-            datasets: rentalTailoringDatasets
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'รายรับ (บาท)',
-                        font: {
-                            size: 14,
-                            weight: 'bold'
+            // วาดกราฟ
+            new Chart(document.getElementById('rentalTailoringRevenueChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: monthsRentalTailoring,
+                    datasets: rentalTailoringDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'รายรับ (บาท)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                padding: {
+                                    bottom: 10
+                                },
+                                color: '#333'
+                            }
                         },
-                        padding: {
-                            bottom: 10
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
                         },
-                        color: '#333'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
+                        title: {
+                            display: true,
+                            text: 'รายรับจากการเช่าตัดชุด'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
+                            }
+                        }
+                    },
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
                 }
-            },
-            plugins: {
-                legend: {
-                    position: 'top'
-                },
-                title: {
-                    display: true,
-                    text: 'รายรับจากการเช่าตัดชุด'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: tooltipItem => ` ${tooltipItem.raw.toLocaleString()} บาท`
-                    }
-                }
-            },
-            barPercentage: 0.8,
-            categoryPercentage: 0.9
-        }
-    });
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            });
+        </script>
     </div>
 @endsection

@@ -825,41 +825,15 @@ class DressController extends Controller
     {
         return Dress::all();
     }
-    public function dresslist()
-    {
-        $typedresss = Typedress::with('dresses')->get();
-        return view('admin.dresslist', compact('typedresss'));
-    }
 
-    public function historydressadjust($id)
-    {
-        $dress = Dress::find($id);
-        if ($dress->separable == 1) {
-            return $this->dresslistno($id);
-        } elseif ($dress->separable == 2) {
-            return $this->dresslistyes($id);
-        }
-    }
+    
 
-    private function dresslistno($id)
-    {
-        $dress = Dress::find($id);
-        $typedress = Typedress::where('id', $dress->type_dress_id)->first();
-        $history = Dressmeasurementcutedit::where('dress_id', $id)->get();
-        return view('admin.his-dress-adjust-no', compact('dress', 'typedress', 'history'));
-    }
 
-    private function dresslistyes($id)
-    {
-        $dress = Dress::find($id);
-        $typedress = Typedress::where('id', $dress->type_dress_id)->first();
+    
 
-        $shirt_id = Shirtitem::where('dress_id', $id)->value('id');
-        $skirt_id = Skirtitem::where('dress_id', $id)->value('id');
-        $history_shirt = Dressmeasurementcutedit::where('shirtitems_id', $shirt_id)->get();
-        $history_skirt = Dressmeasurementcutedit::where('skirtitems_id', $skirt_id)->get();
-        return view('admin.his-dress-adjust-yes', compact('dress', 'typedress', 'history_shirt', 'history_skirt'));
-    }
+    
+
+    
 
     // ตัวแยกประวัติการซ่อม
     public function historydressrepair($id)

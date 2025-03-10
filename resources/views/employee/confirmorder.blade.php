@@ -241,33 +241,14 @@
                                 @endif
 
 
-                                {{-- <div class="ml-28 space-y-3">
-                                    <div class="flex items-center">
-                                        <input type="radio" name="payment_[{{$detail->id}}]" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" checked>
-                                        <label class="ml-2 text-sm font-medium text-gray-700">
-                                            ชำระเงินมัดจำ ({{number_format($detail->deposit , 2 )}} บาท)
-                                        </label>
-                                    </div>
-                        
-                                    <div class="flex items-center">
-                                        <input type="radio" name="payment_[{{$detail->id}}]" value="2" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                                        <label class="ml-2 text-sm font-medium text-gray-700">
-                                            ชำระเต็มจำนวน ({{ number_format($detail->price + $detail->damage_insurance , 2 ) }} บาท)
-                                        </label>
-                                        
-                                    </div>
-                                </div> --}}
+                                
 
 
                             </div>
                             <div class="media-body">
                                 <p>&nbsp;</p>
                             </div>
-                            {{-- <div class="media-right">
-                                <p style="font-size: 15px;  margin-bottom: 5px;">รวมทั้งสิ้น
-                                    {{ number_format($detail->price * $detail->amount + $detail->deposit * $detail->amount + $detail->damage_insurance + $detail->late_charge) }}
-                                </p>
-                            </div> --}}
+                            
                         </div>
                         <hr>
                         @php
@@ -287,27 +268,14 @@
                     </p>
                     <div class="media">
                         <div class="media-left">
-                            {{-- <p style="font-size: 15px;  margin-bottom: 5px; ">ราคา</p> --}}
-                            {{-- <p style="font-size: 15px;  margin-bottom: 5px;">เงินมัดจำ</p> --}}
-                            {{-- <p style="font-size: 15px;  margin-bottom: 5px;">รวมประกันค่าเสียหาย</p> --}}
-                            {{-- <p style="font-size: 15px;  margin-bottom: 5px;">ค่าบริการขยายเวลาเช่าชุด</p> --}}
                             <p style="font-size: 15px;  margin-bottom: 5px;"><strong>จำนวนเงินที่ต้องชำระสุทธิ</strong></p>
                         </div>
                         <div class="media-body">
                             <p>&nbsp;</p>
                         </div>
                         <div class="media-right">
-                            {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
-                                {{ number_format(array_sum($list_price), 2) }}
-                            </p> --}}
-                            {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
-                                {{ number_format(array_sum($list_deposit), 2) }}
-                            </p> --}}
 
                             <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
-                                {{-- {{ number_format(array_sum($list_damage_insurance), 2) }}</p> --}}
-                                {{-- <p style="font-size: 15px;  margin-bottom: 5px; text-align: right">
-                                {{ number_format(array_sum($late_charge_late_charge), 2) }}</p> --}}
                             <p id="show_total_deposit"
                                 @if ($check_pickip_today == '1') style="display: none ; "
                             @elseif($check_pickip_today == '0')

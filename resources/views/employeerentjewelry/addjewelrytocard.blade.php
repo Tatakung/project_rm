@@ -245,21 +245,25 @@
 
 
                                             <div class="modal-footer">
-                                                <form action="{{route('employee.addrentjewelrytocardaddtocard')}}" method="POST">
+                                                <form action="{{ route('employee.addrentjewelrytocardaddtocard') }}"
+                                                    method="POST">
                                                     @csrf
 
                                                     <input type="hidden" name="pickupdate" value="{{ $start_date }}">
                                                     <input type="hidden" name="returndate" value="{{ $end_date }}">
-                                                    <input type="hidden" name="jew_id" value="{{$jew->id}}">
-                                                    <input type="hidden" name="jew_price" value="{{$jew->jewelry_price}}">
-                                                    <input type="hidden" name="jew_deposit" value="{{$jew->jewelry_deposit}}">
-                                                    <input type="hidden" name="jew_damage_insurance" value="{{$jew->damage_insurance}}">
+                                                    <input type="hidden" name="jew_id" value="{{ $jew->id }}">
+                                                    <input type="hidden" name="jew_price"
+                                                        value="{{ $jew->jewelry_price }}">
+                                                    <input type="hidden" name="jew_deposit"
+                                                        value="{{ $jew->jewelry_deposit }}">
+                                                    <input type="hidden" name="jew_damage_insurance"
+                                                        value="{{ $jew->damage_insurance }}">
 
 
                                                     <button type="submit" class="btn"
                                                         style="background-color:#ACE6B7;">เพิ่มลงตะกร้า</button>
                                                     <!-- <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">ปิด</button> -->
+                                                                    data-dismiss="modal">ปิด</button> -->
                                                 </form>
                                             </div>
                                         </div>
@@ -278,17 +282,17 @@
                     <div class="col-md-3 mb-4">
                         <div class="card text-left custom-card">
 
-                            <!-- ปุ่มที่ครอบทั้งการ์ดและเป็นตัวเปิด modal -->
+
                             <button type="button" class="btn p-0" data-toggle="modal"
                                 data-target="#showModal{{ $jewset->id }}" style="border: none; background: none;">
-                                {{-- <p>jewelry_id : {{$jew->id}}</p> --}}
+
 
                                 <img src="{{ asset('images/setjewelry.jpg') }}" class="card-img-top custom-img"
                                     alt="">
                                 <div class="card-body">
-                                    {{-- <p><strong>jew_set_id:</strong> {{ $jewset->id }}</p> --}}
+
                                     <h5 class="card-title">{{ $jewset->set_name }}</h5>
-                                    {{-- <p class="card-title">รหัส: SET00{{ $jewset->id }}</p> --}}
+
                                 </div>
                             </button>
                         </div>
@@ -297,7 +301,7 @@
                     <!-- Modal สำหรับแต่ละรายการ -->
                     <div class="modal fade" id="showModal{{ $jewset->id }}" tabindex="-1" role="dialog"
                         aria-labelledby="showModalLabel{{ $jewset->id }}" aria-hidden="true" data-backdrop="static">
-                        <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-dialog modal-lg" role="document" style="max-width: 600px;">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="showModalLabel{{ $jewset->id }}">
@@ -308,18 +312,14 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="row">
-                                        <div class="col-md-4">
-                                            <!-- รูปภาพทางด้านซ้าย -->
-                                            <img src="{{ asset('images/setjewelry.jpg') }}" class="img-fluid"
-                                                alt="" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-8">
+
+                                        <div class="col-md-12">
                                             <p><strong>ชื่อเซต:</strong> {{ $jewset->set_name }}</p>
                                             <p><strong>ราคาเช่า:</strong> {{ $jewset->set_price }} บาท</p>
                                             <p><strong>ราคามัดจำ:</strong> {{ number_format($jewset->set_price * 0.3) }}
                                                 บาท</p>
                                             <p><strong>เงินประกัน:</strong> {{ $jewset->set_price }} บาท</p>
-                                            <p>ในเซตนี้ประกอบด้วย</p>
+                                            <p><strong>ในเซตนี้ประกอบด้วย :</strong></p>
                                             @php
                                                 $item_jew = App\Models\Jewelrysetitem::where(
                                                     'jewelry_set_id',
@@ -327,14 +327,21 @@
                                                 )->get();
                                             @endphp
                                             @foreach ($item_jew as $item)
-                                                <li>
-                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
-                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
-                                                    
-                                                </li>
+                                                <div class="item d-flex align-items-center mb-3 pb-3"
+                                                    style="border-bottom: 1px dashed #eee;">
+                                                    <img src="{{ asset('storage/' . $item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
+                                                        class="me-3 rounded"
+                                                        alt="{{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}"
+                                                        style="width: 150px; height: 150px; object-fit: cover; background-color: #f5f5f5;">
+
+                                                    <div class="item-details ml-2">
+                                                        <div class="fw-bold">
+                                                            {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                            {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             @endforeach
-
-
 
                                             <div class="modal-footer">
                                                 <form action="{{route('employee.addrentjewelrytocardaddtocardset')}}" method="POST">
@@ -344,7 +351,7 @@
                                                     <input type="hidden" name="jewset_id" value="{{$jewset->id}}">
                                                     <input type="hidden" name="jewset_price" value="{{$jewset->set_price}}">
                                                     <button type="submit" class="btn"
-                                                        style="background-color:#ACE6B7;">เพิ่มลงตะกร้า</button>
+                                                        style="background-color:#ACE6B7;">เพิ่มลงตะกร้าแบบเซต</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -384,7 +391,8 @@
         <div class="modal-dialog custom-modal-dialog" role="document">
             <div class="modal-content custom-modal-content"
                 style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
-                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                <div class="modal-body"
+                    style="padding: 10px; display: flex; align-items: center; justify-content: center;">
                     <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
                 </div>
             </div>
@@ -394,7 +402,8 @@
         <div class="modal-dialog custom-modal-dialog" role="document">
             <div class="modal-content custom-modal-content"
                 style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
-                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                <div class="modal-body"
+                    style="padding: 10px; display: flex; align-items: center; justify-content: center;">
                     <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
                 </div>
             </div>

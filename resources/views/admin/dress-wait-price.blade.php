@@ -1,49 +1,49 @@
 @extends('layouts.adminlayout')
 @section('content')
-<style>
+    <style>
         .btn-c {
-            background-color:rgb(255, 255, 255);
+            background-color: rgb(255, 255, 255);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             color: black;
             border: none;
             font-weight: bold;
         }
-</style>
-<div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
-    <div class="modal-dialog custom-modal-dialog" role="document">
-        <div class="modal-content custom-modal-content"
-            style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
-            <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
+    </style>
+    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content custom-modal-content"
+                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #EE4E4E; border: 2px solid #EE4E4E; ">
+                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                    <p style="margin: 0; color: #ffffff;">{{ session('fail') }}</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    @if (session('fail'))
-        setTimeout(function() {
-            $('#showfail').modal('show');
-        }, 500);
-    @endif
-</script>
-<div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
-    <div class="modal-dialog custom-modal-dialog" role="document">
-        <div class="modal-content custom-modal-content"
-            style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
-            <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
+    <script>
+        @if (session('fail'))
+            setTimeout(function() {
+                $('#showfail').modal('show');
+            }, 500);
+        @endif
+    </script>
+    <div class="modal fade" id="showsuccess" role="dialog" aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content custom-modal-content"
+                style="max-width: 300px; height: 50px; width: 100%; margin: auto; background-color: #39d628; border: 2px solid #4fe227; ">
+                <div class="modal-body" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                    <p style="margin: 0; color: #ffffff;">{{ session('success') }}</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script>
-    @if (session('success'))
-        setTimeout(function() {
-            $('#showsuccess').modal('show');
-        }, 500);
-    @endif
-</script>
+    <script>
+        @if (session('success'))
+            setTimeout(function() {
+                $('#showsuccess').modal('show');
+            }, 500);
+        @endif
+    </script>
     <div class="container-fluid py-4">
         <div class="card mb-4">
             <div class="card-header">
@@ -85,7 +85,7 @@
                                 <!-- Modal for each item -->
                                 <div class="modal fade" id="priceModal{{ $item->id }}" tabindex="-1" aria-hidden="true"
                                     data-backdrop="static">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog" style="max-width: 50%;">
                                         <div class="modal-content">
                                             <form action="{{ route('dresswaitpricesaved', ['id' => $item->id]) }}"
                                                 method="POST">
@@ -93,7 +93,8 @@
 
                                                 <div class="modal-header">
                                                     <h5 class="mb-3">กำหนดราคาเช่า{{ $item->typedress->type_dress_name }}
-                                                        {{ $item->typedress->specific_letter }}{{ $item->dress_code }}</h5>
+                                                        {{ $item->typedress->specific_letter }}{{ $item->dress_code }}
+                                                    </h5>
                                                 </div>
 
 
@@ -105,6 +106,8 @@
                                                         <img src="{{ asset('storage/' . $item->dressimages->first()->dress_image) }}"
                                                             alt="ภาพชุด" class="img-thumbnail"
                                                             style="width: 200px; height: 230px; object-fit: cover;">
+                                                            <br>
+                                                            <span style="color: #EE4E4E ; ">*ชุดนี้มาจากการเช่าตัด</span>
                                                     </div>
 
                                                     <div class="mb-4">
@@ -117,14 +120,14 @@
                                                                     id="price_dress{{ $item->id }}" required>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <label class="form-label">เงินมัดจำ:</label>
+                                                                <label class="form-label">เงินมัดจำ (30% ของราคาเช่า)</label>
                                                                 <input type="number" class="form-control"
                                                                     placeholder="เงินมัดจำ" name="deposit_dress"
                                                                     id="deposit_dress{{ $item->id }}" step="0.01"
                                                                     required readonly>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <label class="form-label">ค่าประกัน:</label>
+                                                                <label class="form-label">ค่าประกัน (เท่ากับราคาเช่า)</label>
                                                                 <input type="number" class="form-control"
                                                                     placeholder="ค่าประกัน" name="insurance_dress"
                                                                     id="insurance_dress{{ $item->id }}" step="0.01"
@@ -140,12 +143,11 @@
 
                                                                     var change_input_price = parseFloat(input_price.value);
                                                                     if (change_input_price == 0) {
-                                                                        value_deposit_dress.value = '' ; 
-                                                                        value_insurance_dress.value = '' ; 
-                                                                    }
-                                                                    else{
+                                                                        value_deposit_dress.value = '';
+                                                                        value_insurance_dress.value = '';
+                                                                    } else {
                                                                         value_deposit_dress.value = Math.ceil(change_input_price * 0.3);
-                                                                    value_insurance_dress.value = Math.ceil(change_input_price);
+                                                                        value_insurance_dress.value = Math.ceil(change_input_price);
 
                                                                     }
 
@@ -167,7 +169,7 @@
                                                                     @if ($item->separable == 2) required @endif>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <label class="form-label">เงินมัดจำ:</label>
+                                                                <label class="form-label">เงินมัดจำ (30% ของราคาเช่า)</label>
                                                                 <input type="number" class="form-control"
                                                                     placeholder="เงินมัดจำ" name="deposit_shirt"
                                                                     id="deposit_shirt{{ $item->id }}" step="0.01"
@@ -175,10 +177,11 @@
                                                                     readonly>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <label class="form-label">ค่าประกัน:</label>
+                                                                <label class="form-label">ค่าประกัน (เท่ากับราคาเช่า)</label>
                                                                 <input type="number" class="form-control"
                                                                     placeholder="ค่าประกัน" name="insurance_shirt"
-                                                                    id="insurance_shirt{{ $item->id }}" step="0.01"
+                                                                    id="insurance_shirt{{ $item->id }}"
+                                                                    step="0.01"
                                                                     @if ($item->separable == 2) required @endif
                                                                     readonly>
                                                             </div>
@@ -192,10 +195,9 @@
                                                                 input_price_shirt.addEventListener('input', function() {
                                                                     var change_input_price_shirt = parseFloat(input_price_shirt.value);
                                                                     if (change_input_price_shirt == 0) {
-                                                                        value_deposit_shirt.value = '' ; 
-                                                                        value_insurance_shirt.value = '' ; 
-                                                                    }
-                                                                    else{
+                                                                        value_deposit_shirt.value = '';
+                                                                        value_insurance_shirt.value = '';
+                                                                    } else {
                                                                         value_deposit_shirt.value = Math.ceil(change_input_price_shirt * 0.3);
                                                                         value_insurance_shirt.value = Math.ceil(change_input_price_shirt);
 
@@ -217,7 +219,7 @@
                                                                     @if ($item->separable == 2) required @endif>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <label class="form-label">เงินมัดจำ:</label>
+                                                                <label class="form-label">เงินมัดจำ (30% ของราคาเช่า)</label>
                                                                 <input type="number" class="form-control"
                                                                     placeholder="เงินมัดจำ" name="skirt_deposit"
                                                                     id="skirt_deposit{{ $item->id }}" step="0.01"
@@ -225,7 +227,7 @@
                                                                     required readonly>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <label class="form-label">ค่าประกัน:</label>
+                                                                <label class="form-label">ค่าประกัน (เท่ากับราคาเช่า)</label>
                                                                 <input type="number" class="form-control"
                                                                     placeholder="ค่าประกัน" name="skirt_insurance"
                                                                     id="skirt_insurance{{ $item->id }}"
@@ -243,10 +245,9 @@
                                                                 input_skirt_price.addEventListener('input', function() {
                                                                     var change_input_skirt_price = parseFloat(input_skirt_price.value);
                                                                     if (change_input_skirt_price == 0) {
-                                                                        value_skirt_deposit.value = '' ; 
-                                                                        value_skirt_insurance.value = '' ; 
-                                                                    }
-                                                                    else{
+                                                                        value_skirt_deposit.value = '';
+                                                                        value_skirt_insurance.value = '';
+                                                                    } else {
                                                                         value_skirt_deposit.value = Math.ceil(change_input_skirt_price * 0.3);
                                                                         value_skirt_insurance.value = Math.ceil(change_input_skirt_price);
 
@@ -255,7 +256,7 @@
                                                                 });
                                                             });
                                                         </script>
-                                                                               
+
 
                                                     </div>
 
@@ -266,12 +267,14 @@
                                                 <div class="modal-footer">
                                                     <div class="text-end">
 
-                                                        <a href="{{ route('dresswaitprice') }}"
+                                                        {{-- <a href="{{ route('dresswaitprice') }}"
                                                             class="btn btn-light me-2">
                                                             ยกเลิก
-                                                        </a>
-
-                                                        <button type="submit" class="btn"style="background-color:#ACE6B7">บันทึกราคา</button>
+                                                        </a> --}}
+                                                        
+                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                                        <button type="submit"
+                                                            class="btn"style="background-color:#ACE6B7">บันทึกราคา</button>
                                                     </div>
                                                 </div>
 

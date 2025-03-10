@@ -645,8 +645,8 @@
 
                             @if ($orderdetail->status_detail == 'ยกเลิกโดยลูกค้า' || $orderdetail->status_detail == 'ยกเลิกโดยทางร้าน')
                                 @if ($check_cancel == false)
-                                    <div class="status-step text-center" style="background: red ; ">
-                                        <div class="status-icon active">
+                                    <div class="status-step text-center">
+                                        <div class="status-icon active" style="background: rgb(166, 32, 32) ; ">
                                             {{-- <i class="fas fa-check"></i> --}}
                                         </div>
                                         <p class="text-danger">ยกเลิกรายการ</p>
@@ -673,7 +673,6 @@
                                     </div>
                                     <div class="status-line "></div>
                                 @endif
-
                             @endif
 
 

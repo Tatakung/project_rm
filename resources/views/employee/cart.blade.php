@@ -88,15 +88,15 @@
                         <p style="font-size: 15px;">
 
                             @if ($detail->type_order == 1)
-                                รายการตัดชุด
+                                รายการตัด{{$detail->type_dress}}
                             @elseif($detail->type_order == 2)
                                 @if ($detail->shirtitems_id)
-                                    เช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
+                                รายการเช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
                                 @elseif($detail->skirtitems_id)
-                                    เช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                รายการเช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
                                     (ผ้าถุง)
                                 @else
-                                    เช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                รายการเช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
                                     (ทั้งชุด)
                                 @endif
                             @elseif($detail->type_order == 3)
@@ -104,16 +104,16 @@
                                     @php
                                         $datajewelry = App\Models\Jewelry::find($reservation->jewelry_id);
                                     @endphp
-                                    เช่า{{ $datajewelry->jewelry_m_o_typejew->type_jewelry_name }}
+                                    รายการเช่า{{ $datajewelry->jewelry_m_o_typejew->type_jewelry_name }}
                                     {{ $datajewelry->jewelry_m_o_typejew->specific_letter }}{{ $datajewelry->jewelry_code }}
                                 @elseif($reservation->jewelry_set_id)
                                     @php
                                         $datasetjewelry = App\Models\Jewelryset::find($reservation->jewelry_set_id);
                                     @endphp
-                                    เช่าเซต{{ $datasetjewelry->set_name }}
+                                    รายการเช่าเซต{{ $datasetjewelry->set_name }}
                                 @endif
                             @elseif($detail->type_order == 4)
-                                เช่าตัด
+                            รายการเช่าตัด{{$detail->type_dress}}
                             @endif
 
                         </p>
@@ -148,45 +148,14 @@
                         </p>
 
                         <p style="font-size: 15px;">
-                            {{-- dress_idคือ:{{$detail->dress_id}} --}}
+                            
                         </p>
-                        {{-- <p style="font-size: 15px;" >separable :{{App\Models\Dress::where('id',$detail->dress_id)->value('separable')}}</p> --}}
+                        
 
                     </div>
-                    {{-- <div class="media-right">
-                        <p style="font-size: 15px;">
-                        <form action="{{ route('employee.manageitem', ['id' => $detail->id]) }}" method="GET"
-                            style="display:inline;">
-                            @csrf
-                            <input type="hidden" name="type_order" value="{{ $detail->type_order }}">
-                            <button type="submit" class="btn btn-c btn-sm">จัดการ</button>
-                        </form>
-                        </p>
-                        <p style="font-size: 15px;">
-                        <form action="{{ route('employee.deletelist', ['id' => $detail->id]) }}" method="POST"
-                            style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-d btn-sm"
-                                onclick="return confirm('แน่ใจใช่ไหมว่าคุณต้องการนำออก?')">ยกเลิกรายการ</button>
-                        </form>
-                        </p>
-                    </div> --}}
+                    
 
-                    {{-- <div class="media-right d-flex justify-content-between align-items-center">
-                        <p style="font-size: 15px; margin-right: 10px;">
-                            <form action="{{ route('employee.manageitem', ['id' => $detail->id]) }}" method="GET" style="display:inline;">
-                                @csrf
-                                <input type="hidden" name="type_order" value="{{ $detail->type_order }}">
-                                <button type="submit" class="btn btn-c btn-sm">จัดการ</button>
-                            </form>
-                        </p>
-                        <p style="font-size: 15px;">
-                            <form action="{{ route('employee.deletelist', ['id' => $detail->id]) }}" method="POST" style="display:inline;">
-                                @csrf
-                                <button type="submit" class="btn btn-d btn-sm" onclick="return confirm('แน่ใจใช่ไหมว่าคุณต้องการนำออก?')">ยกเลิก</button>
-                            </form>
-                        </p>
-                    </div> --}}
+                    
                     <div class="media-right d-flex justify-content-between align-items-center">
                         <p style="font-size: 15px; margin-right: 20px;"> <!-- เพิ่ม margin-right -->
                         <form action="{{ route('employee.manageitem', ['id' => $detail->id]) }}" method="GET"

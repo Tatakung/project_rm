@@ -1793,7 +1793,7 @@
                 <div class="card shadow">
                     <div class="card-body">
                         <h5 class="card-title">ข้อมูลการเช่า</h5>
-                        {{ $orderdetail->reservation_id }}
+                        
 
                         @php
                             $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
@@ -2667,6 +2667,7 @@
                                         {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}</td>
                                 </tr>
+                                
                                 <tr>
                                     <th style="width: 50%; text-align: left; padding: 10px;">วันที่มาคืนจริง:</th>
                                     <td style="padding: 10px;">
@@ -2762,11 +2763,11 @@
                                     <tbody>
 
                                         <tr>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 {{ $typename }}
                                                 {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
                                             </td>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 <select name="actionreturnitemshirt" id="actionreturnitemshirt"
                                                     class="form-control">
                                                     <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
@@ -2774,8 +2775,7 @@
                                                     <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
                                                     <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
                                                         คาดว่าไม่น่าจะคืน)</option>
-                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)
-                                                    </option>
+                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)</option>
                                                 </select>
 
                                                 <div id="showrepair_detail_itemshirt" class="mt-2"
@@ -2784,7 +2784,7 @@
                                                         rows="3"></textarea>
                                                 </div>
                                             </td>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 <input type="number" value="0" class="form-control" min="0"
                                                     name="damage_insurance_shirt" required>
                                             </td>
@@ -2818,11 +2818,11 @@
                                     <tbody>
 
                                         <tr>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 {{ $typename }}
                                                 {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ผ้าถุง)
                                             </td>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 <select name="actionreturnitemskirt" id="actionreturnitemskirt"
                                                     class="form-control">
                                                     <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
@@ -2840,7 +2840,7 @@
                                                         rows="3"></textarea>
                                                 </div>
                                             </td>
-                                            <td class="px-4 py-2">
+                                            <td>
                                                 <input type="number" value="0" class="form-control" min="0"
                                                     name="damage_insurance_skirt" required>
                                             </td>
@@ -2875,11 +2875,11 @@
                                         <tbody>
 
                                             <tr>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     {{ $typename }}
                                                     {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ทั้งชุด)
                                                 </td>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     <select name="actionreturnitemtotaldress"
                                                         id="actionreturnitemtotaldress" class="form-control">
                                                         <option value="cleanitem" selected>ส่งทำความสะอาด</option>
@@ -2898,7 +2898,7 @@
                                                             rows="3"></textarea>
                                                     </div>
                                                 </td>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     <input type="number" value="0" class="form-control"
                                                         min="0" name="damage_insurance_separable_one" required>
                                                 </td>
@@ -2932,11 +2932,11 @@
                                         <tbody>
 
                                             <tr>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     {{ $typename }}
                                                     {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
                                                 </td>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     <select name="actionreturnitemtotal1" id="actionreturnitemtotal1"
                                                         class="form-control">
                                                         <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
@@ -2957,17 +2957,17 @@
                                                             rows="3"></textarea>
                                                     </div>
                                                 </td>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     <input type="number" value="0" class="form-control"
                                                         min="0" name="damage_insurance_shirt_two" required>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     {{ $typename }}
                                                     {{ $dress->dress_code_new }}{{ $dress->dress_code }} (ผ้าถุง)
                                                 </td>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     <select name="actionreturnitemtotal2" id="actionreturnitemtotal2"
                                                         class="form-control">
                                                         <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
@@ -2987,7 +2987,7 @@
                                                             rows="3"></textarea>
                                                     </div>
                                                 </td>
-                                                <td class="px-4 py-2">
+                                                <td>
                                                     <input type="number" value="0" class="form-control"
                                                         min="0" name="damage_insurance_skirt_two" required>
                                                 </td>
@@ -3026,15 +3026,7 @@
                             @endif
 
 
-
                         @endif
-
-
-
-
-
-
-
 
                     </div>
                     <div class="modal-footer">

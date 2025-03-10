@@ -19,18 +19,7 @@
                                                                 <h5 class="modal-title">ข้อมูลการวัดตัวของลูกค้า (นิ้ว)</h5>
                                                             </div>
                 <div class="card-body">
-                    {{-- <div class="row">
-                        @foreach ($dress_adjusts as $item)
-                            <div class="col-md-3 mb-3">
-                                <label for="chest">{{ $item->name }}:</label>
-                                <input type="hidden" name="adjust_id_[]" value="{{ $item->id }}">
-                                <input type="hidden" name="adjust_name_[]" value="{{ $item->name }}">
-                                <input type="hidden" name="old_[]" value="{{ $item->new_size }}">
-                                <input type="number" class="form-control" name="new_[]" value="{{ $item->new_size }}"
-                                    step="0.01" min="0" required>
-                            </div>
-                        @endforeach
-                    </div> --}}
+                    
 
 
                     <div class="row">
@@ -91,17 +80,7 @@
                 </div>
             </div>
 
-            {{-- <div class="card mb-4 shadow">
-            <div class="card-header">
-                รายละเอียดการแก้ไข/หรือเพิ่มเติม
-            </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <label for="edit_details">รายละเอียดที่ต้องแก้ไข:</label>
-                    <textarea class="form-control" id="edit_details" name="edit_details" rows="4" required></textarea>
-                </div>
-            </div>
-        </div> --}}
+            
 
             <div class="card mb-4 shadow">
                

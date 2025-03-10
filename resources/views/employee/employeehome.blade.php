@@ -195,13 +195,7 @@
 
                             @if ($clean_pending_dress->count() > 0 || $clean_pending_jewelry->count() > 0)
                                 @foreach ($clean_pending_dress as $item)
-                                    {{-- @php
-                                        $near_dress = App\Models\Reservation::whereNot('id', $item->reservation_id)
-                                            ->where('dress_id', $item->clean_one_to_one_reser->dress_id)
-                                            ->where('status', 'ถูกจอง')
-                                            ->orderByRaw("STR_TO_DATE(start_date,'%Y-%m-%d') asc")
-                                            ->first();
-                                    @endphp --}}
+                                    
 
 
                                     @if ($item->shirtitems_id)
@@ -506,20 +500,7 @@
 
         <!-- Fitting Appointments Section -->
         <div class="row ">
-            {{-- <div class="col-6">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <!-- <i class="fas fa-calendar-check text-info me-2"></i> -->
-                            <h5 class="card-title mb-0">นัดลองชุดวันนี้ (1)</h5>
-                        </div>
-                        <div class=" scrollable-contentps-4">
-                            <p class="fw-bold mb-1">คุณวิภา สวยเสมอ</p>
-                            <p class="text-muted ms-2">- เช่าตัดชุดไทยบรหม</p>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
+            
 
 
 

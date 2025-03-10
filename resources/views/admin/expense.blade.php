@@ -230,10 +230,7 @@
                                             <div class="btn-group" role="group">
 
 
-                                                {{-- <button type="submit" class="btn btn-warning btn-sm" data-toggle="modal"
-                                                    data-target="#editExpenseModal{{ $item->id }}">
-                                                    <i class="fas fa-edit"></i>
-                                                </button> --}}
+                                                
 
 
                                                 

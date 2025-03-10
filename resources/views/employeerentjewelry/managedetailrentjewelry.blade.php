@@ -227,7 +227,7 @@
                                         <div>
                                             {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
                                             <p class="mb-0">
-                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
                                                 </strong>
                                             </p>
                                         </div>
@@ -240,7 +240,7 @@
                                         <div>
                                             {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
                                             <p class="mb-0">
-                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
                                                 </strong>
                                             </p>
                                         </div>
@@ -337,7 +337,7 @@
                                                     <div>
                                                         {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
                                                         <p class="mb-0">
-                                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
                                                             </strong>
                                                         </p>
                                                     </div>
@@ -638,7 +638,7 @@
                                     <div>
                                         {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
                                         <p class="mb-0">
-                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
                                             </strong>
                                         </p>
                                     </div>
@@ -651,7 +651,7 @@
                                     <div>
                                         {{-- <h4 class="alert-heading">แจ้งเตือนสินค้าสูญหาย!</h4> --}}
                                         <p class="mb-0">
-                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้านเนื่องจากเครื่องประดับ{{ $reservation->resermanytoonejew->jewelry_status }}
+                                            <strong>รายการนี้ถูกยกเลิกการจองโดยทางร้าน
                                             </strong>
                                         </p>
                                     </div>
@@ -822,13 +822,13 @@
 
 
                             @if (in_array('ยกเลิกโดยทางร้าน', $list_status) || in_array('ยกเลิกโดยลูกค้า', $list_status))
-                                <div class="status-step text-center">
-                                    <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif">
+                                <div class="status-step text-center" >
+                                    <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif" style="background: rgb(166, 32, 32) ; ">
                                         {{-- <i class="fas fa-check"></i> --}}
                                     </div>
-                                    <p>ยกเลิกการจอง</p>
+                                    <p style="color: rgb(166, 32, 32)">ยกเลิกการจอง</p>
                                     <small>
-                                        <p>
+                                        <p style="color: rgb(166, 32, 32)">
                                             @php
                                                 $created_at = App\Models\Orderdetailstatus::where(
                                                     'order_detail_id',

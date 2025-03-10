@@ -55,18 +55,7 @@
 
         {{-- ส่วนข้อมูลพื้นฐานของเซต --}}
         <div class="card mb-4 shadow position-relative">
-            <!-- ปุ่มแก้ไขให้อยู่มุมขวาบนสุด -->
-            {{-- <button class="btn btn-link p-0 position-absolute" data-toggle="modal" data-target="#edittotal"
-                @if ($is_admin == 1) 
-                    style="display: inline-block ;"
-                @elseif($is_admin == 0)
-                    style="display: none ; " 
-                @endif
-                
-                
-                >
-                <i class="bi bi-pencil-square text-dark"></i>
-            </button> --}}
+            
 
             <div class="card-body">
 

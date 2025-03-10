@@ -70,16 +70,19 @@
             background-color: #2980b9;
             /* เปลี่ยนสีเมื่อชี้ */
         }
+
         #button_add_fitting {
-            background-color: #3498db;       
-            color: #fff;          
+            background-color: #3498db;
+            color: #fff;
             border: none;
             border-radius: 4px;
             padding: 6px 10px;
             font-size: 14px;
             margin-left: 10px;
-            transition: background-color 0.3s ease; /* เอฟเฟกต์เปลี่ยนสี */
+            transition: background-color 0.3s ease;
+            /* เอฟเฟกต์เปลี่ยนสี */
         }
+
         #button_add_fitting:hover {
             background-color: #2980b9;
             /* เปลี่ยนสีเมื่อชี้ */
@@ -122,7 +125,8 @@
     </script>
 
 
-    <form action="{{ route('employee.savemanageitemcutrent', ['id' => $orderdetail->id]) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('employee.savemanageitemcutrent', ['id' => $orderdetail->id]) }}" method="POST"
+        enctype="multipart/form-data">
         @csrf
         <div class="container mt-5">
             <div class="card shadow">
@@ -173,12 +177,10 @@
 
 
 
-                                    <p class="d-flex align-items-center">
-                                        <strong>จำนวนชุดที่เช่าตัด :</strong>
-                                        <input type="number" name="update_amount" value="{{ $orderdetail->amount }}"
-                                            min="1" required max="100" class="form-control mx-2"
-                                            style="width: 200px;">
-                                    </p>
+
+                                    <input type="hidden" name="update_amount" value="{{ $orderdetail->amount }}"
+                                        min="1" required max="100">
+
 
 
 
@@ -188,15 +190,14 @@
 
                                     <p class="d-flex align-items-center">
                                         <strong>วันที่นัดรับ :</strong>
-                                        <input type="date" name="update_pickup_date" value="{{ $Date->pickup_date }}"
-                                            min="{{ $today }}" class="form-control mx-2" style="width: 200px;">
+                                        <span>&nbsp;{{ \Carbon\Carbon::parse($Date->pickup_date)->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}</span>
+
                                     </p>
-
-
                                     <p class="d-flex align-items-center">
                                         <strong>วันที่นัดคืน :</strong>
-                                        <input type="date" name="update_return_date" value="{{ $Date->return_date }}"
-                                            min="{{ $today }}" class="form-control mx-2" style="width: 200px;">
+                                        <span>&nbsp;{{ \Carbon\Carbon::parse($Date->return_date)->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}</span>
                                     </p>
 
                                 </div>
@@ -240,10 +241,18 @@
 
                                 <div class="col-md-2" style="padding-left: 1px; margin-top: 12px;">
 
-                                    <a
-                                        href="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}">
-                                        <button class="btn"><i class="bi bi-x-circle"></i></button>
-                                    </a>
+
+
+                                    <fieldset>
+                                        <button class="btn" type="submit"
+                                            formaction="{{ route('employee.deletemeasurementitem', ['id' => $measurementorderdetail->id]) }}"
+                                            formmethod="POST">
+                                            <i class="bi bi-x-circle"> {{ $measurementorderdetail->id }} </i>
+                                        </button>
+                                    </fieldset>
+
+
+
 
                                 </div>
                             </div>
@@ -367,7 +376,7 @@
                         </script>
                     </div>
 
-                    
+
 
 
 
@@ -392,47 +401,49 @@
                         @foreach ($fittings as $item)
                             <div class="row mb-2" id="div_fitting">
                                 <div class="col-md-4">
-                                    <input type="hidden" name="fitting_id_[]" value="{{$item->id}}">
+                                    <input type="hidden" name="fitting_id_[]" value="{{ $item->id }}">
                                     <input type="date" name="update_fitting_[]" class="form-control"
                                         value="{{ $item->fitting_date }}" min="{{ $today }}" required>
                                 </div>
                                 <div class="col-md-2" style="padding-left: 1px; margin-top: 1px;">
-                                    <a href="{{route('deleteitemfittingrentcut',['id' => $item->id])}}"><button
+                                    <a href="{{ route('deleteitemfittingrentcut', ['id' => $item->id]) }}"><button
                                             class="btn"><i class="bi bi-x-circle"></i></button>
                                     </a>
                                 </div>
                             </div>
                         @endforeach
 
-                       
+
                     </div>
 
                     <script>
-                        var button_add_fitting = document.getElementById('button_add_fitting') ; 
-                        var aria_show_fitting = document.getElementById('aria_show_fitting') ; 
-                        var count_fitting = 0 ; 
-                        button_add_fitting.addEventListener('click',function(){
-                            count_fitting++ ; 
+                        var button_add_fitting = document.getElementById('button_add_fitting');
+                        var aria_show_fitting = document.getElementById('aria_show_fitting');
+                        var count_fitting = 0;
+                        button_add_fitting.addEventListener('click', function() {
+                            count_fitting++;
 
-                            var divfitting = document.createElement('div') ; 
-                            divfitting.id = 'div_fitting'+count_fitting ; 
-                            divfitting.className = 'row mb-2' ; 
+                            var divfitting = document.createElement('div');
+                            divfitting.id = 'div_fitting' + count_fitting;
+                            divfitting.className = 'row mb-2';
 
-                            input_fitting = 
+                            input_fitting =
 
-                            '<div class="col-md-4">' + 
-                                '<input type="date" name="add_fitting_['+count_fitting+']" class="form-control">' + 
-                            '</div>' + 
-                            '<div class="col-md-2" style="padding-left: 1px; margin-top: 1px;">' + 
-                               '<button class="btn" onclick="deletefitting('+count_fitting+')"><i class="bi bi-x-circle"></i></button>' + 
-                            '</div>' ; 
+                                '<div class="col-md-4">' +
+                                '<input type="date" name="add_fitting_[' + count_fitting + ']" class="form-control">' +
+                                '</div>' +
+                                '<div class="col-md-2" style="padding-left: 1px; margin-top: 1px;">' +
+                                '<button class="btn" onclick="deletefitting(' + count_fitting +
+                                ')"><i class="bi bi-x-circle"></i></button>' +
+                                '</div>';
 
-                            divfitting.innerHTML = input_fitting ; 
-                            aria_show_fitting.appendChild(divfitting) ; 
-                        }) ; 
-                        function deletefitting(count_fitting){
-                            var deletefitin = document.getElementById('div_fitting'+count_fitting) ; 
-                            deletefitin.remove() ; 
+                            divfitting.innerHTML = input_fitting;
+                            aria_show_fitting.appendChild(divfitting);
+                        });
+
+                        function deletefitting(count_fitting) {
+                            var deletefitin = document.getElementById('div_fitting' + count_fitting);
+                            deletefitin.remove();
                         }
                     </script>
 

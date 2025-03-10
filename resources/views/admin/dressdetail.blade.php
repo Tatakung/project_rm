@@ -105,11 +105,7 @@
                     รายละเอียดชุด
                 </div>
                 <div>
-                    {{-- <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#edittotal"
-                        @if ($check_admin == 1) style="display: block ; "
-                        @elseif($check_admin == 0) style="display: none ; " @endif>
-                        <i class="bi bi-pencil-square text-dark"></i>
-                    </button> --}}
+                    
                     <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#stopRentalModal"
                         @if ($check_admin == 1) @if ($datadress->dress_status == 'ยุติการให้เช่า' || $datadress->dress_status == 'สูญหาย')
                                 style="display: none ; "
@@ -132,11 +128,6 @@
                     
                 </div>
             </div>
-
-
-
-
-
 
             <!-- Modal ยืนยันการเปิดให้เช่าอีกครั้ง -->
             <div class="modal fade" id="reopenRentalModal" tabindex="-1" role="dialog"
@@ -348,23 +339,6 @@
             </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             <div class="card-body">
                 <div class="row">
                     <div class="d-flex">
@@ -377,13 +351,7 @@
                     </div>
                     <div class="col-md-4">
                         <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
-                        <!-- <p><strong>รหัสชุด:</strong> {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</p> -->
-
-
-
-
-
-
+                        
 
 
                         @if ($datadress->dress_price == 0)
@@ -531,7 +499,7 @@
                 <a href="#" data-toggle="modal" data-target="#priceHistoryModal" class="text-dark">
                     <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
                 </a>
-                {{-- check_admin --}}
+                
                 </li>
 
 

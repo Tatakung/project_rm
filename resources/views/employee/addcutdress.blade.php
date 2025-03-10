@@ -110,20 +110,18 @@
             <div class="card shadow">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="type_dress" class="form-label">ประเภทชุดที่ตัด</label>
                             <select name="type_dress" id="type_dress" class="form-control" required>
                                 <option value="" disabled selected>เลือกรายการ</option>
-                                @foreach ($type_dress as $dressType)
-                                    <option value="{{ $dressType->type_dress_name }}">
-                                        {{ $dressType->type_dress_name }}
-                                    </option>
-                                @endforeach
+                                <option value="ชุดผ้าไหม">ชุดผ้าไหม</option>
+                                <option value="ชุดราตรี">ชุดราตรี</option>
+                                <option value="ชุดเดรส">ชุดเดรส</option>
                                 <option value="other_type">อื่นๆ</option>
                             </select>
                         </div>
 
-                        <div class="col-md-4" id="show_other_input" style="display: none;">
+                        <div class="col-md-6" id="show_other_input" style="display: none;">
                             <label for="" class="form-label">ระบุประเภทชุด</label>
                             <input type="text" name="other_input" id="other_input" class="form-control">
                         </div>
@@ -146,7 +144,7 @@
 
 
 
-                        <div class="col-md-4">
+                        <div class="col-md-4" style="display: none ; ">
                             <label for="amount" class="form-label">จำนวนชุดที่ตัด</label>
                             <input class="form-control" type="number" value="1" min="1" max="100"
                                 name="amount" id="amount" required>

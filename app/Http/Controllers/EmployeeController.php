@@ -83,8 +83,12 @@ class EmployeeController extends Controller
 
 
 
-        $clean_pending_dress = Reservationfilterdress::where('status', 'รอทำความสะอาด')->get();  //ชุดที่รอทำความสะอาด
-        $clean_pending_jewelry = Reservationfilters::where('status', 'รอทำความสะอาด')->get();
+        $clean_pending_dress = Reservationfilterdress::where('status', 'รอทำความสะอาด')
+            ->where('status_completed', 0)
+            ->get();  //ชุดที่รอทำความสะอาด
+        $clean_pending_jewelry = Reservationfilters::where('status', 'รอทำความสะอาด')
+            ->where('status_completed', 0)
+            ->get();
 
 
         $repair_dress = Repair::where('repair_status', 'รอดำเนินการ')
@@ -95,7 +99,7 @@ class EmployeeController extends Controller
             ->whereNotNull('reservationfilter_id')
             ->get();
 
-        
+
 
 
 
@@ -242,7 +246,7 @@ class EmployeeController extends Controller
     public function queuerentcuttotal()
 
     {
-        
+
         $cutdresss_page_one = Orderdetail::where('type_order', 4)
             ->where('status_detail', 'รอดำเนินการตัด')
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
@@ -259,7 +263,7 @@ class EmployeeController extends Controller
             ->orderByRaw(" STR_TO_DATE(pickup_date,'%Y-%m-%d') asc ")
             ->get();
 
-        
+
         // 1.รอดำเนินการตัด
         // 2.เริ่มดำเนินการตัด
         // 3.ตัดชุดเสร็จสิ้น
@@ -623,7 +627,7 @@ class EmployeeController extends Controller
                 $repair->repair_status = 'ซ่อมเสร็จแล้ว';
                 $repair->save();
 
-                
+
                 //รออัพเดตสถานะเครื่องประดับนะ
                 if ($reser_fildress->filterdress_many_to_one_dress->separable == 1) {
                     $dress = Dress::find($reser_fildress->dress_id);
@@ -644,8 +648,7 @@ class EmployeeController extends Controller
                         $skirt->save();
                     }
                 }
-            }
-            elseif ($status_next == '2') {
+            } elseif ($status_next == '2') {
                 $reser_fildress = Reservationfilterdress::find($repair->reservationfilterdress_id);
                 $reser_fildress->status = 'ซ่อมไม่ได้';
                 $reser_fildress->status_completed = 1;
@@ -676,9 +679,7 @@ class EmployeeController extends Controller
                     }
                 }
             }
-
-        }
-        elseif ($repair->repair_type == '2') {
+        } elseif ($repair->repair_type == '2') {
             $status_next = $request->input('status_next');
             if ($status_next == '1') {
 
@@ -947,9 +948,7 @@ class EmployeeController extends Controller
     //หน้าformเพิ่มตัดชุด
     public function addcutdress()
     {
-
-        $type_dress = Typedress::all();
-        return view('Employee.addcutdress', compact('type_dress'));
+        return view('Employee.addcutdress');
     }
     //หน้า form เพิ่มเช่าตัด
     public function addcutrent()
@@ -964,8 +963,14 @@ class EmployeeController extends Controller
     public function savecutdress(Request $request)
     {
 
+
+
+
+
         DB::beginTransaction();
         try {
+
+
 
             $id_employee = Auth::user()->id;
             // 0คือยังไม่เสร็จ 1 คือ เสร็จแล้ว
@@ -998,26 +1003,12 @@ class EmployeeController extends Controller
 
             // ตารางorderdetail
             if ($request->input('type_dress') == 'other_type') {
-                $checkdouble = Typedress::where('type_dress_name', $request->input('other_input'))->first();
-                if ($checkdouble) {
-                    $TYPE_DRESS = $request->input('other_input');
-                } else {
-                    //สร้างตัวอักษรมา1ตัว
-                    do {
-                        $random = chr(65 + rand(0, 25));
 
-                        $check = Typedress::where('specific_letter', $random)->first();
-                    } while ($check);
-                    $character = $random; //ได้ตัวอักษรมาแล้ว นำไปคำนวณcen
-                    $create_id_of_typedress = new Typedress();
-                    $create_id_of_typedress->type_dress_name = $request->input('other_input');
-                    $create_id_of_typedress->specific_letter = $character;
-                    $create_id_of_typedress->save();
-                    $TYPE_DRESS = $request->input('other_input');
-                }
+                $TYPE_DRESS = $request->input('other_input');
             } else {
                 $TYPE_DRESS = $request->input('type_dress');
             }
+
 
             $orderdetail = new Orderdetail();
             $orderdetail->order_id = $ID_ORDER;
@@ -1482,10 +1473,10 @@ class EmployeeController extends Controller
         $image_rent = Imagerent::where('order_detail_id', $orderdetail->id)->get();
         return view('employeerentcut.manageitemrentcut', compact('orderdetail', 'type_dress', 'measurementorderdetail', 'fittings', 'measurementadjusts', 'Date', 'image_rent'));
     }
-    //ลบdeletemeasurementitem ใน item
+
     public function deletemeasurementitem($id)
     {
-        dd($id);
+
         $delete_measuremen = Dressmeaadjustment::find($id);
         $delete_measuremen->delete();
         return redirect()->back();
@@ -1699,8 +1690,7 @@ class EmployeeController extends Controller
                         }
                     }
                 }
-            }
-            elseif ($orderdetail->type_order == 3) {
+            } elseif ($orderdetail->type_order == 3) {
                 //เช่าเครื่องประดับ
                 $date = Date::where('order_detail_id', $orderdetail->id)
                     ->orderBy('created_at', 'desc')
@@ -1868,9 +1858,16 @@ class EmployeeController extends Controller
 
 
 
-
-
-
         return redirect()->route('employee.ordertotaldetail', ['id' => $order_id]);
     }
+    public function changePickupDateCutdress(Request $request ,$id){
+        $new_pickup_date = $request->input('new_pickup_date') ; 
+        $date = new Date();
+        $date->order_detail_id = $id;
+        $date->pickup_date = $new_pickup_date;
+        $date->save();
+        return redirect()->back()->with('success','เลื่อนวันนัดรับชุดสำเร็จ') ; 
+    }
+
+    
 }

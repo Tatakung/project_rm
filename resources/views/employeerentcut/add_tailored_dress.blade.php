@@ -127,21 +127,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    {{-- <div class="mt-3 bg-light p-3 rounded">
-                                        <h5 class=" mb-3">
-                                            <i class="fas fa-ruler me-2"></i>
-                                            <strong>ขนาดชุด(นิ้ว)</strong>
-                                        </h5>
-
-                                        <div class="row">
-                                            @foreach ($measurements as $item)
-                                                <div class="col-md-6">
-                                                    <p>{{ $item->name }} : <span>{{ $item->new_size }}</span></p>
-                                                </div>
-                                            @endforeach
-
-                                        </div>
-                                    </div> --}}
+                                    
                                     <div class="bg-light p-3 rounded">
                                         <h5 class=" mb-3">
                                             <i class="fas fa-image me-2"></i>

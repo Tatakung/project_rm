@@ -45,21 +45,7 @@ class ManageorderController extends Controller
 
 
 
-    //หน้าเพิ่มออเดอร์เช่าชุด หลังจากที่เลือกประเภทชุดแล้ว
-    public function typerentdressshow(Request $request, $id)
-    {
-
-        $selectstartDate = $request->input('startDate');
-        $selectendDate = $request->input('endDate');
-        $selecttotalDay = $request->input('totalDay');
-
-
-        $type_dress_id = $id;
-        $type_dress_name = Typedress::where('id', $id)->select('type_dress_name', 'specific_letter')->first();
-        $search_separable = null;
-        $dress = Dress::where('type_dress_id', $id)->with(['dressimages', 'dressmeasurements', 'dressmeasurementnows', 'shirtitems', 'skirtitems'])->get();
-        return view('Employee.typerentdressshow', compact('dress', 'type_dress_name', 'type_dress_id', 'search_separable', 'selectstartDate', 'selectendDate', 'selecttotalDay'));
-    }
+    
 
 
     //ค้นหา อก เอว สะโพก
@@ -147,21 +133,7 @@ class ManageorderController extends Controller
 
 
 
-    //หน้าเพิ่มออเดอร์เช่าเครื่องประดับ เลือกประเภทเครื่องประดับ
-    public function typerentjewelry()
-    {
-        $typejewelry = Typejewelry::all();
-        return view('employee.typerentjewelry', compact('typejewelry'));
-    }
-    public function typerentjewelryshow($id)
-    {
-
-        $type_jewelry_name = Typejewelry::where('id', $id)->select('type_jewelry_name', 'specific_letter')->first();
-
-
-        $jewelry = Jewelry::where('type_jewelry_id', $id)->with('jewelryimages')->get();
-        return view('Employee.typerentjewelryshow', compact('type_jewelry_name', 'jewelry'));
-    }
+    
 
 
 

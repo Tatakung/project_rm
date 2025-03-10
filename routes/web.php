@@ -45,8 +45,8 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     //กลุ่มชุด
     Route::get('/admin/adddress-form', [DressController::class, 'formadddress'])->name('admin.formadddress'); //แบบฟอร์มเพิ่มชุด
-    Route::get('/admin/dresslist', [DressController::class, 'dresslist'])->name('admin.dresslist');
-    Route::get('/admin/historydressadjust/{id}', [DressController::class, 'historydressadjust'])->name('admin.historydressadjust');
+    
+    
 
 
 
@@ -126,7 +126,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
-    Route::get('/admin/dashboardcutdress', [DashboardController::class, 'dashboardcutdress'])->name('admin.dashboardcutdress');
+    
 
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/filter-shop', [DashboardController::class, 'dashboardfiltershop'])->name('dashboardfilter');
@@ -142,7 +142,6 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
-    Route::get('/testdashboard', [DashboardController::class, 'testdashboard'])->name('testdashboard');
 
 
     Route::get('/jewelrydashboard', [DashboardController::class, 'jewelrydashboard'])->name('jewelrydashboard');
@@ -280,7 +279,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/cart/deletelist/{id}', [EmployeeController::class, 'deletelist'])->name('employee.deletelist'); //ลบรายการในตะกร้า
     Route::get('/employee/card/manageitem/{id}', [EmployeeController::class, 'manageitem'])->name('employee.manageitem'); //จัดการตาม item แยกตาม type_order
     // Route::post('/employee/manageitem/deletemeaitem/{id}', [EmployeeController::class, 'deletemeaitem'])->name('employee.deletemeaitem'); //ลบdeletemeasurement ใน item
-    Route::get('/employee/manageitem/deletemeasurementitem/{id}', [EmployeeController::class, 'deletemeasurementitem'])->name('employee.deletemeasurementitem'); //ลบdeletemeasurement ใน item
+    Route::post('/employee/manageitem/deletemeasurementitem/{id}', [EmployeeController::class, 'deletemeasurementitem'])->name('employee.deletemeasurementitem'); //ลบdeletemeasurement ใน item
     Route::get('/employee/manageitem/deletefittingitem/{id}', [EmployeeController::class, 'deletefittingitem'])->name('employee.deletefittingitem'); //ลบdeletefittng ใน item
 
     // Route::post('/employee/manageitem/savemanageitem/{id}', [ManageorderController::class, 'savemanageitem'])->name('employee.savemanageitem'); //บันทึกจัดการตาม item
@@ -289,7 +288,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     //เพิ่มเช่าชุดลงในตะกร้า
     Route::get('/employee/selectdate/success', [ManageorderController::class, 'selectdatesuccess'])->name('employee.selectdatesuccess'); //เช่าวันที่เช่าชุด
     Route::get('/employee/typerentdress', [ManageorderController::class, 'typerentdress'])->name('employee.typerentdress'); //เช่าชุดหน้าเลือกประเภทชุด
-    Route::get('/employee/typerentdress/show/{id}', [ManageorderController::class, 'typerentdressshow'])->name('employee.typerentdressshow'); //หลังจากที่เลือกประเภทชุดแล้ว
     Route::post('/employee/typerentdress/show/addrentdresscart', [ManageorderController::class, 'addrentdresscart'])->name('employee.addrentdresscart'); //เช่าชุดเพิ่มลงในตะกร้า
     Route::get('/employee/show/filtermea', [ManageorderController::class, 'filtermea'])->name('employee.filtermea'); //
 
@@ -300,8 +298,6 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     //เพิ่มเครื่องประดับลงตะกร้า
-    Route::get('/employee/typerentjewelry', [ManageorderController::class, 'typerentjewelry'])->name('employee.typerentjewelry'); //เช่าเครื่องประดับหน้าเลือกประเภทเครื่องประดับ
-    Route::get('/employee/typerentjewelry/show/{id}', [ManageorderController::class, 'typerentjewelryshow'])->name('employee.typerentjewelryshow'); //หลังจากที่เลือกประเภทเครื่องประดับแล้ว
     Route::post('/employee/typerentjewelry/show/addrentjewelrycart', [ManageorderController::class, 'addrentjewelrycart'])->name('employee.addrentjewelrycart'); //เช่าเครื่องประดับเพิ่มลงในตะกร้า
 
 
@@ -336,6 +332,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/employee/ordertotal/detail/show/postpone/checkeddressshirt/{id}', [OrderController::class, 'ordertotaldetailpostponecheckeddressshirt'])->name('employee.ordertotaldetailpostponecheckeddressshirt'); //เช็คเลื่อนวันนัดรับ-คืน
     Route::get('/employee/ordertotal/detail/show/postpone/checkeddressskirt/{id}', [OrderController::class, 'ordertotaldetailpostponecheckeddressskirt'])->name('employee.ordertotaldetailpostponecheckeddressskirt'); //เช็คเลื่อนวันนัดรับ-คืน
 
+    Route::post('/employee/ordertotal/detail/changePickupDate-Cutdress/{id}', [EmployeeController::class, 'changePickupDateCutdress'])->name('changePickupDateCutdress'); //ออเดอร์detail แยก
 
 
 
@@ -469,6 +466,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::post('/employee/ordertotal/detail/cancel-order-rent/{id}', [DashboardController::class, 'cancelorderrent'])->name('cancelorderrent');
+
+    Route::post('/employee/ordertotal/detail/cancel-order-cut/{id}', [DashboardController::class, 'cancelordercut'])->name('cancelordercut');
+
 
 
     Route::get('/admin/typedress/dressdetail/historydressrent/{id}', [DressController::class, 'historydressrent'])->name('admin.historydressrent'); //1001

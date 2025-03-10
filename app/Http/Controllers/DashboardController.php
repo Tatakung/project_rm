@@ -20,148 +20,6 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     //
-    public function dashboardcutdress()
-    {
-
-        // $orderdetail = Orderdetail::where('type_order', 2)
-        //     ->get();
-        // $list_count_type = []; 
-
-        // foreach ($orderdetail as $item) {
-        //     if (!isset($list_count_type[$item->type_dress])) {
-        //         $list_count_type[$item->type_dress] = 1;
-        //     } else {
-        //         $list_count_type[$item->type_dress]++;
-        //     }
-        // }
-        // dd($list_count_type) ; 
-        // // มันก็จะแบ่ง เป็น as จะประกอบด้วย key และ value 
-        // $list_type = array_keys($list_count_type);
-        // $list_count_type_values = array_values($list_count_type);
-
-
-
-
-        $list_combined = [
-            [1, 5000, 4500, 2024],
-            [2, 4100, 4800, 2024],
-            [3, 6900, 4700, 2024]
-        ];
-
-
-
-
-
-        $list_combined = [];
-        $data_orderdetail = Orderdetail::get();
-
-        foreach ($data_orderdetail as $items) {
-            $month = $items->updated_at->month;
-            $year = $items->updated_at->year;
-            $price = $items->price;
-
-            // ใช้ array_column() เพื่อดึงค่า "เดือน" จาก $list_combined
-            $column_months = array_column($list_combined, 0);
-            $column_years = array_column($list_combined, 3);
-
-            if (in_array($month, $column_months) && in_array($year, $column_years)) {
-                // หา key ของเดือนใน $list_combined
-                $key = array_search($month, $column_months);
-                $list_combined[$key][1] += $price;
-            } else {
-                // ถ้าไม่มีเดือนนี้ใน list_combined ให้เพิ่มใหม่
-
-                $list_combined[] = [$month, $price, 0, $year];
-            }
-        }
-
-        foreach ($list_combined as $key => $item) {
-            if ($item[0] == 1) {
-                $list_combined[$key][0] = 'มกราคม ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 2) {
-                $list_combined[$key][0] = 'กุมภาพันธ์ ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 3) {
-                $list_combined[$key][0] = 'มีนาคม ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 4) {
-                $list_combined[$key][0] = 'เมษายน ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 5) {
-                $list_combined[$key][0] = 'พฤษภาคม ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 6) {
-                $list_combined[$key][0] = 'มิถุนายน ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 7) {
-                $list_combined[$key][0] = 'กรกฎาคม ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 8) {
-                $list_combined[$key][0] = 'สิงหาคม ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 9) {
-                $list_combined[$key][0] = 'กันยายน ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 10) {
-                $list_combined[$key][0] = 'ตุลาคม ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 11) {
-                $list_combined[$key][0] = 'พฤศจิกายน ' . $list_combined[$key][3] + 543;
-            } elseif ($item[0] == 12) {
-                $list_combined[$key][0] = 'ธันวาคม ' . $list_combined[$key][3] + 543;
-            }
-        }
-
-        // ใช้ array_map() เพื่อแยกข้อมูลเป็น 3 ลิสต์
-        $list_one = array_map(function ($item) {
-            return $item[0];
-        }, $list_combined);
-
-        $list_two = array_map(function ($item) {
-            return $item[1];
-        }, $list_combined);
-
-        $list_three = array_map(function ($item) {
-            return $item[2];
-        }, $list_combined);
-
-
-        $labels = ["มกราคม", "กุมภาพันธ์", "มีนาคม"];
-        $incomeData = [5000, 7000, 6000];
-        $expenseData = [3000, 4500, 3500];
-        $expenseDatas = [3000, 4500, 3500];
-
-        return view('employeecutdress.dashboardcut', compact('labels', 'incomeData', 'expenseData', 'expenseDatas', 'list_one', 'list_two', 'list_three'));
-    }
-
-
-
-
-
-
-
-
-    public function testdashboard()
-    {
-
-
-        $visitors = Expense::select("date", "expense_value", "expense_value")->get();
-
-        $result[] = ['วันที่', 'รายรับ', 'รายจ่าย'];
-
-        foreach ($visitors as $key => $value) {
-
-            $result[++$key] = [$value->date, (int)$value->expense_value, (int)$value->expense_value];
-        }
-        $monthlySales = [
-            'มกราคม' => ['product1' => 500, 'product2' => 350],
-            'กุมภาพันธ์' => ['product1' => 400, 'product2' => 250],
-            'มีนายน' => ['product1' => 300, 'product2' => 250],
-            'Apr' => ['product1' => 750, 'product2' => 500],
-            'Mai' => ['product1' => 500, 'product2' => 400],
-            'Jun' => ['product1' => 350, 'product2' => 300],
-            'Jul' => ['product1' => 300, 'product2' => 250],
-            'Aug' => ['product1' => 400, 'product2' => 350],
-            'Sep' => ['product1' => 550, 'product2' => 350],
-            'Oct' => ['product1' => 600, 'product2' => 400],
-            'Nov' => ['product1' => 750, 'product2' => 600],
-            'Dec' => ['product1' => 850, 'product2' => 650],
-        ];
-        return view('employee.testdashboard', compact('result', 'monthlySales'));
-    }
-
-
 
 
 
@@ -2616,12 +2474,37 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'ยกเลิกรายการสำเร็จ');
     }
 
+    public function cancelordercut(Request $request, $id)
+    {
+        $orderdetail = Orderdetail::find($id);
+        $type_cancel = $request->input('cancelType');
+        if ($type_cancel == 'store') {
+            // ยกเลิกโดยทางร้าน
+            $update_orderdetail = Orderdetail::find($id);
+            $update_orderdetail->status_detail = 'ยกเลิกโดยทางร้าน';
+            $update_orderdetail->save();
+            $status = new Orderdetailstatus();
+            $status->order_detail_id = $id;
+            $status->status = 'ยกเลิกโดยทางร้าน';
+            $status->save();
+        } elseif ($type_cancel == 'customer') {
+            // ยกเลิกโดยลูกค้า
+            $update_orderdetail = Orderdetail::find($id);
+            $update_orderdetail->status_detail = 'ยกเลิกโดยลูกค้า';
+            $update_orderdetail->save();
+            $status = new Orderdetailstatus();
+            $status->order_detail_id = $id;
+            $status->status = 'ยกเลิกโดยลูกค้า';
+            $status->save();
+        }
+        return redirect()->back()->with('success', 'ยกเลิกรายการสำเร็จ');
+    }
+
 
     public function dashboardpopular()
     {
         $value_year = now()->year;
         $value_month = now()->month;
-
         // เครื่องประดับที่นิยมเช่ามากที่สุด
         $popular_jewelry = Reservation::whereNotNull('jewelry_id')
             ->where('status', 'คืนเครื่องประดับแล้ว')
@@ -2634,6 +2517,7 @@ class DashboardController extends Controller
         }
         $popular_jewelry = $popular_jewelry->get();
         $list_popular_jew = [];
+
         if ($popular_jewelry->isNotEmpty()) {
             foreach ($popular_jewelry as $item_jew) {
                 if (!isset($list_popular_jew[$item_jew->jewelry_id])) {
@@ -2644,6 +2528,7 @@ class DashboardController extends Controller
             }
         }
         arsort($list_popular_jew);
+        //แบ่งประเภท
         $l_for_type_jew = [];
         foreach ($list_popular_jew as $index_one_j => $index_two_j) {
             $ch_type_jew = Jewelry::where('id', $index_one_j)->value('type_jewelry_id');
@@ -2651,6 +2536,71 @@ class DashboardController extends Controller
                 $l_for_type_jew[] = $ch_type_jew;
             }
         }
+
+
+        // แผนภูมิจำนวนครั้งแบ่งตามประเภทเครื่องประดับ
+        $popular_jewelry_chart = Reservation::whereNotNull('jewelry_id')
+            ->where('status', 'คืนเครื่องประดับแล้ว')
+            ->where('status_completed', 1);
+        if ($value_month != 0) {
+            $popular_jewelry_chart->whereMonth('updated_at', $value_month);
+        }
+        if ($value_year != 0) {
+            $popular_jewelry_chart->whereYear('updated_at', $value_year);
+        }
+        $popular_jewelry_chart = $popular_jewelry_chart->get();
+        $list_chart_jew = [];
+        foreach ($popular_jewelry_chart as $chart_jew) {
+            $month_chart_jew = $chart_jew->updated_at->month;
+            $year_chart_jew = $chart_jew->updated_at->year;
+            $type_chart_jew = $chart_jew->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name;
+            $found_jew = false;
+            foreach ($list_chart_jew as $index => $data) {
+                if ($data[0] ==  $month_chart_jew && $data[1] == $year_chart_jew && $data[2] == $type_chart_jew) {
+                    $list_chart_jew[$index][3] += 1;
+                    $found_jew = true;
+                    break;
+                }
+            }
+            if (!$found_jew) {
+                $list_chart_jew[] = [$month_chart_jew, $year_chart_jew, $type_chart_jew, 1];
+            }
+        }
+        $monthsDataJewelry_chart = [];
+        $revenueDataJewelry_chart = [];
+        $months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+        foreach ($list_chart_jew as $data) {
+            $month = $data[0];
+            $year = $data[1];
+            $thaiYear = $year + 543;
+            $monthLabel = $months[$month - 1] . ' ' . $thaiYear;
+            if (!in_array($monthLabel, $monthsDataJewelry_chart)) {
+                $monthsDataJewelry_chart[] = $monthLabel;
+            }
+        }
+
+        $allJewelryTypes = array_unique(array_column($list_chart_jew, 2));
+        foreach ($allJewelryTypes as $jewelryType) {
+            $revenueDataJewelry_chart[$jewelryType] = array_fill(0, count($monthsDataJewelry_chart), 0);
+        }
+
+        foreach ($list_chart_jew as $data) {
+            $month = $data[0];
+            $year = $data[1];
+            $jewelryType = $data[2];
+            $revenue = $data[3];
+            $thaiYear = $year + 543;
+            $monthLabel = $months[$month - 1] . ' ' . $thaiYear;
+
+            $index = array_search($monthLabel, $monthsDataJewelry_chart);
+            if ($index !== false) {
+                if (!isset($revenueDataJewelry_chart[$jewelryType])) {
+                    $revenueDataJewelry_chart[$jewelryType] = array_fill(0, count($monthsDataJewelry_chart), 0);
+                }
+                $revenueDataJewelry_chart[$jewelryType][$index] += $revenue;
+            }
+        }
+
 
 
 
@@ -2676,6 +2626,71 @@ class DashboardController extends Controller
             }
         }
         arsort($list_popular_jew_set);
+        // แสดงผลแผนภูมิแท่งแบ่งตามเซตเครื่องประดับ
+        $popular_jewelry_set_chart = Reservation::whereNotNull('jewelry_set_id')
+            ->where('status', 'คืนเครื่องประดับแล้ว')
+            ->where('status_completed', 1);
+        if ($value_month != 0) {
+            $popular_jewelry_set_chart->whereMonth('updated_at', $value_month);
+        }
+        if ($value_year != 0) {
+            $popular_jewelry_set_chart->whereYear('updated_at', $value_year);
+        }
+        $popular_jewelry_set_chart = $popular_jewelry_set_chart->get();
+
+        $list_chart_jew_set = [];
+        foreach ($popular_jewelry_set_chart as $chart_set_jew) {
+            $month_chart_jew_set = $chart_set_jew->updated_at->month;
+            $year_chart_jew_set = $chart_set_jew->updated_at->year;
+            $type_chart_jew_set = $chart_set_jew->resermanytoonejewset->set_name;
+            $found_jew_set = false;
+            foreach ($list_chart_jew_set as $index => $data) {
+                if ($data[0] ==  $month_chart_jew_set && $data[1] == $year_chart_jew_set && $data[2] == $type_chart_jew_set) {
+                    $list_chart_jew_set[$index][3] += 1;
+                    $found_jew_set = true;
+                    break;
+                }
+            }
+            if (!$found_jew_set) {
+                $list_chart_jew_set[] = [$month_chart_jew_set, $year_chart_jew_set, $type_chart_jew_set, 1];
+            }
+        }
+
+        $monthsDataJewelryset_chart = [];
+        $revenueDataJewelryset_chart = [];
+        foreach ($list_chart_jew_set as $data) {
+            $month = $data[0];
+            $year = $data[1];
+            $thaiYear = $year + 543;
+            $monthLabel = $months[$month - 1] . ' ' . $thaiYear;
+            if (!in_array($monthLabel, $monthsDataJewelryset_chart)) {
+                $monthsDataJewelryset_chart[] = $monthLabel;
+            }
+        }
+
+
+        $allJewelryTypesset = array_unique(array_column($list_chart_jew_set, 2));
+        foreach ($allJewelryTypesset as $jewelryType) {
+            $revenueDataJewelryset_chart[$jewelryType] = array_fill(0, count($monthsDataJewelryset_chart), 0);
+        }
+
+        foreach ($list_chart_jew_set as $data) {
+            $month = $data[0];
+            $year = $data[1];
+            $jewelryType = $data[2];
+            $revenue = $data[3];
+            $thaiYear = $year + 543;
+            $monthLabel = $months[$month - 1] . ' ' . $thaiYear;
+
+            $index = array_search($monthLabel, $monthsDataJewelryset_chart);
+            if ($index !== false) {
+                if (!isset($revenueDataJewelryset_chart[$jewelryType])) {
+                    $revenueDataJewelryset_chart[$jewelryType] = array_fill(0, count($monthsDataJewelryset_chart), 0);
+                }
+                $revenueDataJewelryset_chart[$jewelryType][$index] += $revenue;
+            }
+        }
+
 
         // ประเภทชุดที่นิยมตัดมากที่สุด
         $popular_cutdress = Orderdetail::where('type_order', 1)
@@ -2699,6 +2714,9 @@ class DashboardController extends Controller
         }
         arsort($list_popular_cut_dress);
         $list_popular_cut_dress = array_slice($list_popular_cut_dress, 0, 12, true);
+
+
+        // dd($list_popular_cut_dress) ; 
         // $list_popular_dress =
         //     [
         //         ['67', '1', '10'],
@@ -2706,6 +2724,9 @@ class DashboardController extends Controller
         //         ['68', '1', '20'],
 
         //     ];
+
+
+
         // ชุดที่นิยมเช่ามากที่สุด
         $list_popular_dress = [];
 
@@ -2810,6 +2831,15 @@ class DashboardController extends Controller
         usort($list_popular_dress, function ($a, $b) {
             return $b[1] - $a[1]; // เปรียบเทียบค่าของ index ที่ 1 (จำนวนครั้ง)
         });
+
+        // $list_popular_dress =
+        //     [
+        //         ['67', '1', '10'],
+        //         ['67', '1', '20'],
+        //         ['68', '1', '20'],
+
+        //     ];
+        // หาประเภทชุด
         $list_for_tab_type_dress = [];
         foreach ($list_popular_dress as $nobody) {
             $ty_dr = Dress::where('id', $nobody[0])->value('type_dress_id');
@@ -2817,7 +2847,148 @@ class DashboardController extends Controller
                 $list_for_tab_type_dress[] = $ty_dr;
             }
         }
-        return view('admin.dashboardpopular', compact('value_year', 'value_month', 'list_popular_jew', 'list_popular_jew_set', 'list_popular_dress', 'list_popular_cut_dress', 'l_for_type_jew', 'list_for_tab_type_dress'));
+
+
+        // แผนภูมิแท่ง
+        // รายรับแยกตามประเภทชุด
+        $orderdetailtypedress = Orderdetail::whereIn('type_order', [2, 4])
+            ->where('status_detail', 'คืนชุดแล้ว');
+        if ($value_month != 0) {
+            $orderdetailtypedress->whereMonth('updated_at', $value_month);
+        }
+        if ($value_year != 0) {
+            $orderdetailtypedress->whereYear('updated_at', $value_year);
+        }
+        $orderdetailtypedress = $orderdetailtypedress->get();
+
+
+        $list_type_dress_data = [];
+        foreach ($orderdetailtypedress as $item) {
+
+
+            $Month = $item->updated_at->month;  // เดือน
+            $Year = $item->updated_at->year;    // ปี
+            $Dress = $item->type_dress;         // ประเภทชุด
+            $found = false;
+            foreach ($list_type_dress_data as $index => $data) {
+                if ($data[0] == $Month && $data[1] == $Year && $data[2] == $Dress) {
+                    $list_type_dress_data[$index][3] += 1; // อัปเดตข้อมูลโดยใช้ index แทน
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $list_type_dress_data[] = [$Month, $Year, $Dress, 1];
+            }
+        }
+
+        $monthsDatadress = [];
+        $revenueDatadress = [];
+
+        foreach ($list_type_dress_data as $data) {
+            $month = $data[0];
+            $year = $data[1];
+            $thaiYear = $year + 543;
+            $monthLabel = $months[$month - 1] . ' ' . $thaiYear;
+            if (!in_array($monthLabel, $monthsDatadress)) {
+                $monthsDatadress[] = $monthLabel;
+            }
+        }
+
+        $allDressTypes = array_unique(array_column($list_type_dress_data, 2));
+        foreach ($allDressTypes as $dressType) {
+            $revenueDatadress[$dressType] = array_fill(0, count($monthsDatadress), 0);
+        }
+
+
+        foreach ($list_type_dress_data as $data) {
+            $month = $data[0]; //เดือน
+            $year = $data[1]; //ปี
+            $dressType = $data[2]; //ประเภทชุด
+            $revenue = $data[3]; // รายรับ
+            $thaiYear = $year + 543; //แปลง ค.ศ. เป็น พ.ศ 
+            $monthLabel = $months[$month - 1] . ' ' . $thaiYear;
+            $index = array_search($monthLabel, $monthsDatadress);
+            if ($index !== false) {
+                if (!isset($revenueDatadress[$dressType])) {
+                    $revenueDatadress[$dressType] = array_fill(0, count($monthsDatadress), 0);
+                }
+                $revenueDatadress[$dressType][$index] += $revenue;
+            }
+        }
+
+
+
+
+
+
+        // แผนภูมิ
+        $orderdetailtailoring = Orderdetail::where('type_order', 1)
+            ->where('status_detail', 'ส่งมอบชุดแล้ว');
+
+        if ($value_month != 0) {
+            $orderdetailtailoring->whereMonth('updated_at', $value_month);
+        }
+        if ($value_year != 0) {
+            $orderdetailtailoring->whereYear('updated_at', $value_year);
+        }
+        $orderdetailtailoring = $orderdetailtailoring->get();
+
+        $list_type_tailoring = [];
+        foreach ($orderdetailtailoring as $item) {
+
+
+            $Month = $item->updated_at->month;
+            $Year = $item->updated_at->year;
+            $Tailoring = $item->type_dress;
+            $found = false;
+            foreach ($list_type_tailoring as $index => $data) {
+                if ($data[0] == $Month && $data[1] == $Year && $data[2] == $Tailoring) {
+                    $list_type_tailoring[$index][3] += 1;
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $list_type_tailoring[] = [$Month, $Year, $Tailoring, 1];
+            }
+        }
+
+        $monthsDataTailoring = [];
+        $revenueDataTailoring = [];
+
+        foreach ($list_type_tailoring as $data) {
+            $month = $data[0];
+            $year = $data[1];
+            $thaiYear = $year + 543;
+            $monthLabel = $months[$month - 1] . ' ' . $thaiYear;
+            if (!in_array($monthLabel, $monthsDataTailoring)) {
+                $monthsDataTailoring[] = $monthLabel;
+            }
+        }
+
+        $allTailoringTypes = array_unique(array_column($list_type_tailoring, 2));
+        foreach ($allTailoringTypes as $tailoringType) {
+            $revenueDataTailoring[$tailoringType] = array_fill(0, count($monthsDataTailoring), 0);
+        }
+
+        foreach ($list_type_tailoring as $data) {
+            $month = $data[0];
+            $year = $data[1];
+            $tailoringType = $data[2];
+            $revenue = $data[3];
+            $thaiYear = $year + 543;
+            $monthLabel = $months[$month - 1] . ' ' . $thaiYear;
+
+            $index = array_search($monthLabel, $monthsDataTailoring);
+            if ($index !== false) {
+                if (!isset($revenueDataTailoring[$tailoringType])) {
+                    $revenueDataTailoring[$tailoringType] = array_fill(0, count($monthsDataTailoring), 0);
+                }
+                $revenueDataTailoring[$tailoringType][$index] += $revenue;
+            }
+        }
+        return view('admin.dashboardpopular', compact('value_year', 'value_month', 'list_popular_jew', 'list_popular_jew_set', 'list_popular_dress', 'list_popular_cut_dress', 'l_for_type_jew', 'list_for_tab_type_dress', 'monthsDataJewelry_chart', 'revenueDataJewelry_chart', 'monthsDataJewelryset_chart', 'revenueDataJewelryset_chart', 'monthsDatadress', 'revenueDatadress', 'monthsDataTailoring', 'revenueDataTailoring'));
     }
     public function dashboardpopularfiltershop(Request $request)
     {
@@ -3240,20 +3411,9 @@ class DashboardController extends Controller
 
 
 
-
-
-
-
-
-
-
-
-
-
-
         // แผนภูมิ
         $orderdetailtailoring = Orderdetail::where('type_order', 1)
-                        ->where('status_detail','ส่งมอบชุดแล้ว') ; 
+            ->where('status_detail', 'ส่งมอบชุดแล้ว');
 
         if ($value_month != 0) {
             $orderdetailtailoring->whereMonth('updated_at', $value_month);
@@ -3265,7 +3425,7 @@ class DashboardController extends Controller
 
         $list_type_tailoring = [];
         foreach ($orderdetailtailoring as $item) {
-  
+
 
             $Month = $item->updated_at->month;
             $Year = $item->updated_at->year;
@@ -3273,7 +3433,7 @@ class DashboardController extends Controller
             $found = false;
             foreach ($list_type_tailoring as $index => $data) {
                 if ($data[0] == $Month && $data[1] == $Year && $data[2] == $Tailoring) {
-                    $list_type_tailoring[$index][3] += 1 ;
+                    $list_type_tailoring[$index][3] += 1;
                     $found = true;
                     break;
                 }
@@ -3317,6 +3477,6 @@ class DashboardController extends Controller
                 $revenueDataTailoring[$tailoringType][$index] += $revenue;
             }
         }
-        return view('admin.dashboardpopular', compact('value_year', 'value_month', 'list_popular_jew', 'list_popular_jew_set', 'list_popular_dress', 'list_popular_cut_dress', 'l_for_type_jew', 'list_for_tab_type_dress', 'monthsDataJewelry_chart', 'revenueDataJewelry_chart', 'monthsDataJewelryset_chart', 'revenueDataJewelryset_chart', 'monthsDatadress', 'revenueDatadress','monthsDataTailoring','revenueDataTailoring'));
+        return view('admin.dashboardpopular', compact('value_year', 'value_month', 'list_popular_jew', 'list_popular_jew_set', 'list_popular_dress', 'list_popular_cut_dress', 'l_for_type_jew', 'list_for_tab_type_dress', 'monthsDataJewelry_chart', 'revenueDataJewelry_chart', 'monthsDataJewelryset_chart', 'revenueDataJewelryset_chart', 'monthsDatadress', 'revenueDatadress', 'monthsDataTailoring', 'revenueDataTailoring'));
     }
 }

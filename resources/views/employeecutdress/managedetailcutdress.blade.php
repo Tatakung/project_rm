@@ -259,9 +259,10 @@
                                                         @foreach ($show_edit_mea as $item)
                                                             <div class="p-2 bg-light rounded">
                                                                 <div class="d-flex justify-content-between">
-                                                                    <span>{{ $item->name }} ปรับจาก {{ $item->old_size }} เป็น
+                                                                    <span>{{ $item->name }} ปรับจาก
+                                                                        {{ $item->old_size }} เป็น
                                                                         {{ $item->edit_new_size }}</span>
-                                                                    
+
                                                                 </div>
                                                             </div>
                                                         @endforeach
@@ -285,13 +286,13 @@
                                                         </ul> --}}
 
                                                         @foreach ($show_edit_decoration as $item)
-                                                        <div class="p-2 bg-light rounded">
-                                                            <div class="d-flex justify-content-between">
-                                                                <span>{{ $item->decoration_description }}</span>
-                                                                
+                                                            <div class="p-2 bg-light rounded">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span>{{ $item->decoration_description }}</span>
+
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endforeach
+                                                        @endforeach
 
 
                                                     @endif
@@ -914,21 +915,110 @@
         </div>
 
         @if ($receipt_two)
-        <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center mt-3">
-            <div>
-                <p class="mb-1">ใบเสร็จรับชุด</p>
-                <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
-                    {{-- {{ Carbon\Carbon::parse($receipt_one->created_at)->locale('th')->isoFormat('D MMM') }}
-                        {{ Carbon\Carbon::parse($receipt_one->created_at)->year + 543 }} --}}
-                    26 ส.ค 68
+            <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    <p class="mb-1">ใบเสร็จรับชุด {{$receipt_two->id}}</p>
+                    <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
+                        {{ Carbon\Carbon::parse($receipt_two->created_at)->locale('th')->isoFormat('D MMM') }}
+                        {{ Carbon\Carbon::parse($receipt_two->created_at)->year + 543 }}
+                        
 
-                </p>
+                    </p>
+                </div>
+                <a href="{{route('receiptpickupcutdress',['id' => $orderdetail->id])}}" target="_blank" class="btn btn-sm" style="background-color:#DADAE3;"
+                    tabindex="-1">พิมพ์ใบเสร็จ</a>
             </div>
-            <a href="" target="_blank" class="btn btn-sm" style="background-color:#DADAE3;"
-                tabindex="-1">พิมพ์ใบเสร็จ</a>
-        </div>
         @endif
+        <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
+            <div class="col-md-12"
+                @if ($orderdetail->status_detail == 'ส่งมอบชุดแล้ว') style="display: block;" 
+                @else 
+                    style="display: none;" @endif>
+                <div class="card shadow-sm">
+                    <!-- หัวข้อการ์ด -->
+                    <div class="card-header bg-light border-bottom d-flex align-items-center">
+                        <div class="border-4 border-primary rounded me-2" style="width: 4px; height: 20px;"></div>
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-file-earmark-text"></i> สรุปข้อมูลการตัดชุด
+                        </h5>
+                    </div>
 
+                    <!-- เนื้อหาการ์ด -->
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <!-- ข้อมูลระยะเวลา -->
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-center text-secondary mb-3">
+                                    <i class="bi bi-calendar3 me-2"></i>
+                                    <span class="fw-medium">ข้อมูลระยะเวลา</span>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary">วันที่รับชุดจริง</span>
+                                        <span
+                                            class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary">วันที่คืนชุดจริง</span>
+                                        <span
+                                            class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
+                                            {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ข้อมูลการเงิน -->
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center text-dark mb-3">
+
+                                    <span class="fw-medium">ข้อมูลการเงิน</span>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-secondary">รายได้ค่าเช่าชุด</span>
+                                        <span class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
+                                            บาท</span>
+                                    </div>
+
+
+
+                                    @if ($decco->count() > 0)
+                                        @foreach ($decco as $item)
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <span class="text-secondary"> {{ $item->decoration_description }} </span>
+                                                <span
+                                                    class="fw-medium text-secondary">{{ number_format($item->decoration_price, 2) }}
+                                                    บาท</span>
+                                            </div>
+                                        @endforeach
+                                    @endif
+
+
+
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="text-secondary fw-medium"><strong>รายได้รวมทั้งหมด</strong></span>
+
+                                        <span
+                                            class="fw-medium fs-5">{{ number_format($orderdetail->price + $decoration_sum, 2) }}
+                                            บาท</span>
+
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <h3 class="mt-5 ">ข้อมูลการตัดชุด</h3>
         <div class="row mt-3 d-flex align-items-stretch">
 
@@ -1174,96 +1264,6 @@
 
 
 
-        <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
-            <div class="col-md-12"
-                @if ($orderdetail->status_detail == 'ส่งมอบชุดแล้ว') style="display: block;" 
-                @else 
-                    style="display: none;" @endif>
-                <div class="card shadow-sm">
-                    <!-- หัวข้อการ์ด -->
-                    <div class="card-header bg-light border-bottom d-flex align-items-center">
-                        <div class="border-4 border-primary rounded me-2" style="width: 4px; height: 20px;"></div>
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-file-earmark-text"></i> สรุปข้อมูลการตัดชุด
-                        </h5>
-                    </div>
-
-                    <!-- เนื้อหาการ์ด -->
-                    <div class="card-body p-4">
-                        <div class="row">
-                            <!-- ข้อมูลระยะเวลา -->
-                            <div class="col-md-6 mb-4">
-                                <div class="d-flex align-items-center text-secondary mb-3">
-                                    <i class="bi bi-calendar3 me-2"></i>
-                                    <span class="fw-medium">ข้อมูลระยะเวลา</span>
-                                </div>
-                                <div class="ms-4">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-secondary">วันที่รับชุดจริง</span>
-                                        <span
-                                            class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
-                                            {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-secondary">วันที่คืนชุดจริง</span>
-                                        <span
-                                            class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
-                                            {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                                        
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- ข้อมูลการเงิน -->
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center text-dark mb-3">
-
-                                    <span class="fw-medium">ข้อมูลการเงิน</span>
-                                </div>
-                                <div class="ms-4">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-secondary">รายได้ค่าเช่าชุด</span>
-                                        <span class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
-                                            บาท</span>
-                                    </div>
-
-
-
-                                    @if ($decco->count() > 0)
-                                        @foreach ($decco as $item)
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <span class="text-secondary"> {{ $item->decoration_description }} </span>
-                                                <span
-                                                    class="fw-medium text-secondary">{{ number_format($item->decoration_price, 2) }}
-                                                    บาท</span>
-                                            </div>
-                                        @endforeach
-                                    @endif
-
-
-
-                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                                        <span class="text-secondary fw-medium"><strong>รายได้รวมทั้งหมด</strong></span>
-
-                                        <span
-                                            class="fw-medium fs-5">{{ number_format($orderdetail->price + $decoration_sum, 2) }}
-                                            บาท</span>
-
-                                    </div>
-                                </div>
-
-
-
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
 
 

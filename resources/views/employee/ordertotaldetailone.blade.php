@@ -372,7 +372,7 @@
 
                     </p>
                 </div>
-                <a href="{{ route('receiptreservation', ['id' => $order_id]) }}" target="_blank" class="btn btn-sm"
+                <a href="{{ route('receiptordercutdress', ['id' => $order_id]) }}" target="_blank" class="btn btn-sm"
                     style="background-color:#DADAE3;" tabindex="-1">พิมพ์ใบเสร็จ</a>
             </div>
         @endif

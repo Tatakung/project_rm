@@ -1766,174 +1766,11 @@
 
 
 
-
-
-        <div class="row mt-3 d-flex align-items-stretch">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-body">
-
-                        <div class="row">
-                            <div class="col-md-4">
-                                <img src="{{ asset('storage/' . $dressimage->dress_image) }}" alt=""
-                                    width="154px;" height="auto">
-                            </div>
-                            <div class="col-md-8">
-                                <h5>ข้อมุลชุด</h5>
-                                <p>ประเภทชุด : {{ $typename }}</p>
-                                <p>หมายเลขชุด : {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
-                                {{-- <p>รายละเอียด : {{ $dress->dress_description }}</p> --}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h5 class="card-title">ข้อมูลการเช่า</h5>
-                        
-
-                        @php
-                            $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
-                            $customer = App\Models\Customer::find($customer_id);
-                        @endphp
-                        <p><span class="bi bi-person"></span> ชื่อผู้เช่า : คุณ{{ $customer->customer_fname }}
-                            {{ $customer->customer_lname }}</p>
-
-
-                        @php
-                            $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)
-                                ->orderBy('created_at', 'desc')
-                                ->first();
-                        @endphp
-
-                        <p><i class="bi bi-calendar"></i> วันที่นัดรับ - นัดคืน :
-                            {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
-                            -
-                            {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
-
-                        </p>
-
-
-
-                        <p><i></i> ราคาเช่า : {{ number_format($orderdetail->price, 2) }} บาท
-                        </p>
-                        <p><i></i> เงินมัดจำ : {{ number_format($orderdetail->deposit, 2) }}
-                            บาท</p>
-                        <p><i class="bi bi-shield-check"></i> ประกันค่าเสียหาย :
-                            {{ number_format($orderdetail->damage_insurance, 2) }} บาท</p>
-                        <p><i class="bi bi-check-circle"></i> สถานะ : @if ($orderdetail->status_payment == 1)
-                                ชำระเงินมัดจำแล้ว
-                            @elseif($orderdetail->status_payment == 2)
-                                ชำระเงินครบแล้ว
-                            @endif
-                        </p>
-                        @php
-                            $user_id = App\Models\Order::where('id', $orderdetail->order_id)->value('user_id');
-                            $user = App\Models\User::find($user_id);
-                        @endphp
-                        <p><span class="bi bi-person"></span> พนักงานผู้รับออเดอร์ : คุณ{{ $user->name }}
-                            {{ $user->lname }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-        <div class="row mt-3">
-            <div class="col-md-12">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5 class="card-title">รายการปรับแก้ไขชุด (หน่วยเป็นนิ้ว)</h5>
-                            </div>
-                        </div>
-
-                        <table class="table mt-3">
-                            <thead>
-                                <tr>
-                                    <th scope="col">รายการ</th>
-                                    <th scope="col">
-                                        @if ($check_button_updatestatusadjust == true)
-                                            ขนาดเดิม
-                                        @elseif($check_button_updatestatusadjust == false)
-                                            ขนาด
-                                        @endif
-                                    </th>
-                                    <th scope="col">
-                                        @if ($check_button_updatestatusadjust == true)
-                                            ขนาดที่ปรับแก้
-                                        @endif
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($dress_mea_adjust as $item)
-                                    <tr>
-                                        @php
-                                            $dress_mea = App\Models\Dressmea::where('id', $item->dressmea_id)->first();
-                                        @endphp
-                                        <td>{{ $dress_mea->mea_dress_name }}</td>
-                                        <td>{{ $dress_mea->current_mea }}</td>
-
-                                        @if ($check_button_updatestatusadjust == true)
-                                            <td>
-                                                @if ($dress_mea->current_mea != $item->new_size)
-                                                    <span style="color: red;">ปรับแก้:จาก{{ $dress_mea->current_mea }}<i
-                                                            class="bi bi-arrow-right"></i>{{ $item->new_size }}นิ้ว</span>
-                                                @else
-                                                    ไม่ต้องปรับแก้ขนาด
-                                                @endif
-                                            </td>
-                                        @endif
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        <div class="col-md-12"
-                            @if ($check_reser_status_for_his != 1) @if ($check_button_updatestatusadjust == true && $check_open_button == true) 
-                                style="display: block; text-align: right ;" 
-                            @else
-                                style="display: none ; text-align: right ; " @endif
-                        @else style="display: none ; text-align: right ; " @endif
-                            >
-                            <button class="btn " data-toggle='modal' data-target="#updatestatusadjust"
-                                style="background-color:#ACE6B7;" type="button">ปรับแก้ไขขนาดสำเร็จ</button>
-                        </div>
-
-                        @if ($his_dress_adjust->count() > 0)
-                            <p><strong>ประวัติการปรับแก้ขนาด</strong></p>
-                            <p style="margin-left: 10px; font-size: 14px;">พนักงานที่ทำการปรับแก้ : คุณผกาสินี ชัยเลิศ</p>
-                            @foreach ($his_dress_adjust as $item)
-                                <li>{{ $item->name }} ปรับจาก {{ $item->old_size }} เป็น {{ $item->edit_new_size }}
-                                </li>
-                            @endforeach
-                        @endif
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
+        @php
+            $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
+            $customer = App\Models\Customer::find($customer_id);
+            $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)->orderBy('created_at', 'desc')->first();
+        @endphp
         <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
             <div class="col-md-12"
                 @if ($orderdetail->status_detail == 'คืนชุดแล้ว') style="display: block;" 
@@ -2269,15 +2106,15 @@
                                                                 @endif
                                                             </p>
                                                         @elseif ($item->skirtitems_id)
-                                                        <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
-                                                            : สภาพเสียหายหนัก ให้เช่าต่อไม่ได้
-                                                            @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
-                                                                <span
-                                                                    style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
-                                                                    {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
-                                                                    บาท)</span>
-                                                            @endif
-                                                        </p>
+                                                            <p>{{ $item->filterdress_many_to_one_dress->typedress->type_dress_name }}{{ $item->filterdress_many_to_one_dress->typedress->specific_letter }}{{ $item->filterdress_many_to_one_dress->dress_code }}(ผ้าถุง)
+                                                                : สภาพเสียหายหนัก ให้เช่าต่อไม่ได้
+                                                                @if ($item->filterdress_one_to_one_afterreturndress->price != 0)
+                                                                    <span
+                                                                        style="color: red ; font-size: 12px; ">(หักเงินประกันลูกค้า
+                                                                        {{ number_format($item->filterdress_one_to_one_afterreturndress->price, 2) }}
+                                                                        บาท)</span>
+                                                                @endif
+                                                            </p>
                                                         @endif
                                                     @endif
                                                 @endforeach
@@ -2381,6 +2218,159 @@
                 </div>
             </div>
         </div>
+
+
+
+
+        <div class="row mt-3 d-flex align-items-stretch">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="{{ asset('storage/' . $dressimage->dress_image) }}" alt=""
+                                    width="154px;" height="auto">
+                            </div>
+                            <div class="col-md-8">
+                                <h5>ข้อมูลชุด</h5>
+                                <p>ประเภทชุด : {{ $typename }}</p>
+                                <p>หมายเลขชุด : {{ $dress->dress_code_new }}{{ $dress->dress_code }}</p>
+                                {{-- <p>รายละเอียด : {{ $dress->dress_description }}</p> --}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">ข้อมูลการเช่า</h5>
+
+                        <p><span class="bi bi-person"></span> ชื่อผู้เช่า : คุณ{{ $customer->customer_fname }}
+                            {{ $customer->customer_lname }}</p>
+
+
+
+
+                        <p><i class="bi bi-calendar"></i> วันที่นัดรับ - นัดคืน :
+                            {{ \Carbon\Carbon::parse($Date->pickup_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($Date->pickup_date)->year + 543 }}
+                            -
+                            {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}
+
+                        </p>
+
+
+
+                        <p><i></i> ราคาเช่า : {{ number_format($orderdetail->price, 2) }} บาท
+                        </p>
+                        <p><i></i> เงินมัดจำ : {{ number_format($orderdetail->deposit, 2) }}
+                            บาท</p>
+                        <p><i class="bi bi-shield-check"></i> ประกันค่าเสียหาย :
+                            {{ number_format($orderdetail->damage_insurance, 2) }} บาท</p>
+                        <p><i class="bi bi-check-circle"></i> สถานะ : @if ($orderdetail->status_payment == 1)
+                                ชำระเงินมัดจำแล้ว
+                            @elseif($orderdetail->status_payment == 2)
+                                ชำระเงินครบแล้ว
+                            @endif
+                        </p>
+                        @php
+                            $user_id = App\Models\Order::where('id', $orderdetail->order_id)->value('user_id');
+                            $user = App\Models\User::find($user_id);
+                        @endphp
+                        <p><span class="bi bi-person"></span> พนักงานผู้รับออเดอร์ : คุณ{{ $user->name }}
+                            {{ $user->lname }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="card-title">รายการปรับแก้ไขชุด (หน่วยเป็นนิ้ว)</h5>
+                            </div>
+                        </div>
+
+                        <table class="table mt-3">
+                            <thead>
+                                <tr>
+                                    <th scope="col">รายการ</th>
+                                    <th scope="col">
+                                        @if ($check_button_updatestatusadjust == true)
+                                            ขนาดเดิม
+                                        @elseif($check_button_updatestatusadjust == false)
+                                            ขนาด
+                                        @endif
+                                    </th>
+                                    <th scope="col">
+                                        @if ($check_button_updatestatusadjust == true)
+                                            ขนาดที่ปรับแก้
+                                        @endif
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($dress_mea_adjust as $item)
+                                    <tr>
+                                        @php
+                                            $dress_mea = App\Models\Dressmea::where('id', $item->dressmea_id)->first();
+                                        @endphp
+                                        <td>{{ $dress_mea->mea_dress_name }}</td>
+                                        <td>{{ $dress_mea->current_mea }}</td>
+
+                                        @if ($check_button_updatestatusadjust == true)
+                                            <td>
+                                                @if ($dress_mea->current_mea != $item->new_size)
+                                                    <span style="color: red;">ปรับแก้:จาก{{ $dress_mea->current_mea }}<i
+                                                            class="bi bi-arrow-right"></i>{{ $item->new_size }}นิ้ว</span>
+                                                @else
+                                                    ไม่ต้องปรับแก้ขนาด
+                                                @endif
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div class="col-md-12"
+                            @if ($check_reser_status_for_his != 1) @if ($check_button_updatestatusadjust == true && $check_open_button == true) 
+                                style="display: block; text-align: right ;" 
+                            @else
+                                style="display: none ; text-align: right ; " @endif
+                        @else style="display: none ; text-align: right ; " @endif
+                            >
+                            <button class="btn " data-toggle='modal' data-target="#updatestatusadjust"
+                                style="background-color:#ACE6B7;" type="button">ปรับแก้ไขขนาดสำเร็จ</button>
+                        </div>
+
+                        @if ($his_dress_adjust->count() > 0)
+                            <p><strong>ประวัติการปรับแก้ขนาด</strong></p>
+                            <p style="margin-left: 10px; font-size: 14px;">พนักงานที่ทำการปรับแก้ : คุณผกาสินี ชัยเลิศ</p>
+                            @foreach ($his_dress_adjust as $item)
+                                <li>{{ $item->name }} ปรับจาก {{ $item->old_size }} เป็น {{ $item->edit_new_size }}
+                                </li>
+                            @endforeach
+                        @endif
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+
 
 
 
@@ -2667,7 +2657,7 @@
                                         {{ \Carbon\Carbon::parse($Date->return_date)->locale('th')->isoFormat('D MMM') }}
                                         {{ \Carbon\Carbon::parse($Date->return_date)->year + 543 }}</td>
                                 </tr>
-                                
+
                                 <tr>
                                     <th style="width: 50%; text-align: left; padding: 10px;">วันที่มาคืนจริง:</th>
                                     <td style="padding: 10px;">
@@ -2739,7 +2729,7 @@
                         </table>
 
                         <!-- ฟิลด์สำหรับพนักงานกรอกค่าธรรมเนียมการเสียหาย -->
-                    
+
 
                         <!-- สรุปการชำระเงิน -->
                         {{-- <div class="alert alert-warning" style="font-size: 1.2rem; padding: 10px;">
@@ -2775,7 +2765,8 @@
                                                     <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
                                                     <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
                                                         คาดว่าไม่น่าจะคืน)</option>
-                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)</option>
+                                                    <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)
+                                                    </option>
                                                 </select>
 
                                                 <div id="showrepair_detail_itemshirt" class="mt-2"

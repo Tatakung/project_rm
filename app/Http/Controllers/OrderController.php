@@ -876,9 +876,8 @@ class OrderController extends Controller
         $receipt_bill_return = Orderdetailstatus::where('order_detail_id', $id)
             ->where('status', 'คืนชุดแล้ว')
             ->exists();
-
-
-        return view('employeerentcut.managedetailrentcut', compact('datadress', 'additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup', 'receipt_bill_return',  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'decoration_sum', 'sum_additional', 'filtershirt_id', 'filterskirt_id'));
+        $reservationfilterdress = Reservationfilterdress::where('reservation_id', $orderdetail->reservation_id)->get();
+        return view('employeerentcut.managedetailrentcut', compact('datadress', 'additional', 'dress_mea_adjust_modal_show', 'receipt_bill_pickup', 'receipt_bill_return',  'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'sum_dec', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'decoration_sum', 'sum_additional', 'filtershirt_id', 'filterskirt_id','reservationfilterdress'));
     }
     //จัดการตัดชุด
     private function managedetailcutdress($id)
@@ -924,7 +923,7 @@ class OrderController extends Controller
             ->where('receipt_type', 2)
             ->first();
 
-            
+
         return view('employeecutdress.managedetailcutdress', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal', 'decoration_sum', 'check_cancel', 'decco', 'receipt_two'));
     }
 
@@ -3012,7 +3011,7 @@ class OrderController extends Controller
             $ceate_receipt->order_id = $orderdetail->order_id;
             $ceate_receipt->order_detail_id = $orderdetail->id;
             $ceate_receipt->receipt_type = 2;
-            $ceate_receipt->total_price = $sum_price_receipt_total + $decoration_receipt ;
+            $ceate_receipt->total_price = $sum_price_receipt_total + $decoration_receipt;
             $ceate_receipt->employee_id = Auth::user()->id;
             $ceate_receipt->save();
         }

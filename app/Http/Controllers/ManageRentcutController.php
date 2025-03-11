@@ -383,14 +383,14 @@ class ManageRentcutController extends Controller
             ->where('status', 'เริ่มดำเนินการตัด')
             ->exists();
         $check_cut_dress_success = Orderdetailstatus::where('order_detail_id', $id)
-        ->where('status', 'ตัดชุดเสร็จสิ้น')
-        ->exists();
-        
+            ->where('status', 'ตัดชุดเสร็จสิ้น')
+            ->exists();
+
 
         $check_button_add_fitting_image = Orderdetailstatus::where('order_detail_id', $id)
             ->where('status', 'ถูกจอง')
             ->exists();
-        return view('employeerentcut.managedetailrentcut-for-doing-cut', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'employee', 'fitting', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal', 'check_button_add_fitting_image', 'check_cancel','check_cut_dress_success'));
+        return view('employeerentcut.managedetailrentcut-for-doing-cut', compact('is_admin', 'who_login', 'person_order', 'orderdetail', 'employee', 'fitting', 'Date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetailforedit', 'dress_adjusts', 'dress_edit_cut', 'round', 'route_modal', 'check_button_add_fitting_image', 'check_cancel', 'check_cut_dress_success'));
     }
     public function storeTailoredDress($id)
     {
@@ -666,13 +666,60 @@ class ManageRentcutController extends Controller
             ->exists();
         // dd($only_rent->pickup_date) ; 
 
-
-
         $pdf = PDF::loadView('receipt.receipt_pickup_dress_or_jew', compact('receipt', 'order', 'orderdetails', 'customer', 'transaction_date', 'only_rent', 'only_payment', 'employee'));
         $pdf->setPaper('A4');
         return $pdf->stream('receipt.pdf');
         return $pdfs->stream();
     }
+
+
+    public function receiptordercutdress($id)
+    {
+        $order = Order::find($id);
+        $orderdetail = Orderdetail::where('order_id', $id)
+            ->where('type_order', 1)
+            ->get();
+        $receipt = Receipt::where('order_id', $id)
+            ->where('receipt_type', 1)
+            ->first();
+        $customer = Customer::find($order->customer_id);
+        $employee = User::find($order->user_id);
+        $only_payment = Paymentstatus::where('order_detail_id', $orderdetail->first()->id)
+            ->where('payment_status', 1)
+            ->exists();
+        $pdf = PDF::loadView('receipt.receipt_order_cut_dress', compact('orderdetail', 'receipt', 'customer', 'employee', 'only_payment'));
+        $pdf->setPaper('A4');
+        return $pdf->stream('receipt.pdf');
+        return $pdfs->stream();
+    }
+
+    public function receiptpickupcutdress($id)
+    {
+        $orderdetail = Orderdetail::find($id);
+        $receipt = Receipt::where('order_detail_id', $id)->where('receipt_type', 2)->first();
+        $order = Order::find($orderdetail->order_id);
+        $customer = customer::find($order->customer_id);
+        $decoration = Decoration::where('order_detail_id', $id)->get();
+        $employee = User::find($order->user_id);
+        $only_payment = Paymentstatus::where('order_detail_id', $orderdetail->id)
+            ->where('payment_status', 1)
+            ->exists();
+        $pdf = PDF::loadView('receipt.receipt_pickup_cut_dress', compact('orderdetail', 'receipt', 'customer', 'employee', 'only_payment', 'decoration'));
+        $pdf->setPaper('A4');
+        return $pdf->stream('receipt.pdf');
+        return $pdfs->stream();
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

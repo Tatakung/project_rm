@@ -947,106 +947,6 @@
             </div>
         </div>
 
-        <div class="row mt-3 d-flex align-items-stretch">
-            {{-- ข้อมูลเครื่องประดับ --}}
-            <div class="col-md-6 mb-3">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h5>ข้อมูลเครื่องประดับ</h5>
-                                @if ($reservation->jewelry_id)
-                                    <p>ประเภทเครื่องประดับ : {{ $typejewelry->type_jewelry_name }}</p>
-                                    <p>หมายเลขเครื่องประดับ :
-                                        {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</p>
-                                    <div class="col-md-4">
-                                        <img src="{{ asset('storage/' . $imagejewelry->jewelry_image) }}"
-                                            alt="เครื่องประดับ" class="img-fluid rounded"
-                                            style="width: 154px; height: auto;">
-                                    </div>
-                                @elseif($reservation->jewelry_set_id)
-                                    <p>ชื่อเซตเครื่องประดับ : เซต{{ $setjewelry->set_name }}</p>
-                                    <p>ประกอบด้วย :</p>
-                                    <div class="row">
-                                        @foreach ($setjewelryitem as $item)
-                                            <div class="col-md-4 mb-3">
-                                                <img src="{{ asset('storage/' . $item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
-                                                    alt="เครื่องประดับในเซต" class="img-fluid rounded mb-2"
-                                                    style="height: 150px; width: 150px; object-fit: cover;">
-                                                <small class="d-block">
-                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
-                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
-                                                </small>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- ข้อมูลการเช่า --}}
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h5 class="card-title">ข้อมูลการเช่า</h5>
-
-                        <p class="mb-3">
-                            <span class="bi bi-person"></span>
-                            ชื่อผู้เช่า : คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
-                        </p>
-
-                        <p class="mb-3">
-                            <span class="bi bi-calendar"></span>
-                            วันที่นัดรับ-นัดคืน :
-                            {{ \Carbon\Carbon::parse($reservation->start_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($reservation->start_date)->year + 543 }} -
-                            {{ \Carbon\Carbon::parse($reservation->end_date)->locale('th')->isoFormat('D MMM') }}
-                            {{ \Carbon\Carbon::parse($reservation->end_date)->year + 543 }}
-                        </p>
-
-                        <p class="mb-3">
-                            <i></i>
-                            ราคาเช่า : {{ number_format($orderdetail->price, 2) }} บาท
-                        </p>
-
-                        <p class="mb-3">
-                            <i></i>
-                            เงินมัดจำ : {{ number_format($orderdetail->deposit, 2) }} บาท
-                        </p>
-
-                        <p class="mb-3">
-                            <i class="bi bi-shield-check"></i>
-                            ประกันค่าเสียหาย : {{ number_format($orderdetail->damage_insurance, 2) }} บาท
-                        </p>
-
-                        <p class="mb-3">
-                            <i class="bi bi-check-circle"></i>
-                            สถานะ :
-                            @if ($orderdetail->status_payment == 1)
-                                ชำระเงินมัดจำแล้ว
-                            @elseif($orderdetail->status_payment == 2)
-                                ชำระเงินครบแล้ว
-                            @endif
-                        </p>
-
-                        <p class="mb-3">
-                            <span class="bi bi-person"></span>
-                            พนักงานผู้รับออเดอร์ : คุณ{{ $user->name }} {{ $user->lname }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-
-
-
-
 
         <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
             <div class="col-md-12"
@@ -1275,6 +1175,121 @@
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+        <div class="row mt-3 d-flex align-items-stretch">
+            {{-- ข้อมูลเครื่องประดับ --}}
+            <div class="col-md-6 mb-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>ข้อมูลเครื่องประดับ</h5>
+                                @if ($reservation->jewelry_id)
+                                    <p>ประเภทเครื่องประดับ : {{ $typejewelry->type_jewelry_name }}</p>
+                                    <p>หมายเลขเครื่องประดับ :
+                                        {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</p>
+                                    <div class="col-md-4">
+                                        <img src="{{ asset('storage/' . $imagejewelry->jewelry_image) }}"
+                                            alt="เครื่องประดับ" class="img-fluid rounded"
+                                            style="width: 154px; height: auto;">
+                                    </div>
+                                @elseif($reservation->jewelry_set_id)
+                                    <p>ชื่อเซตเครื่องประดับ : เซต{{ $setjewelry->set_name }}</p>
+                                    <p>ประกอบด้วย :</p>
+                                    <div class="row">
+                                        @foreach ($setjewelryitem as $item)
+                                            <div class="col-md-4 mb-3">
+                                                <img src="{{ asset('storage/' . $item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
+                                                    alt="เครื่องประดับในเซต" class="img-fluid rounded mb-2"
+                                                    style="height: 150px; width: 150px; object-fit: cover;">
+                                                <small class="d-block">
+                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}
+                                                    {{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->specific_letter }}{{ $item->jewitem_m_to_o_jew->jewelry_code }}
+                                                </small>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ข้อมูลการเช่า --}}
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">ข้อมูลการเช่า</h5>
+
+                        <p class="mb-3">
+                            <span class="bi bi-person"></span>
+                            ชื่อผู้เช่า : คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}
+                        </p>
+
+                        <p class="mb-3">
+                            <span class="bi bi-calendar"></span>
+                            วันที่นัดรับ-นัดคืน :
+                            {{ \Carbon\Carbon::parse($reservation->start_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($reservation->start_date)->year + 543 }} -
+                            {{ \Carbon\Carbon::parse($reservation->end_date)->locale('th')->isoFormat('D MMM') }}
+                            {{ \Carbon\Carbon::parse($reservation->end_date)->year + 543 }}
+                        </p>
+
+                        <p class="mb-3">
+                            <i></i>
+                            ราคาเช่า : {{ number_format($orderdetail->price, 2) }} บาท
+                        </p>
+
+                        <p class="mb-3">
+                            <i></i>
+                            เงินมัดจำ : {{ number_format($orderdetail->deposit, 2) }} บาท
+                        </p>
+
+                        <p class="mb-3">
+                            <i class="bi bi-shield-check"></i>
+                            ประกันค่าเสียหาย : {{ number_format($orderdetail->damage_insurance, 2) }} บาท
+                        </p>
+
+                        <p class="mb-3">
+                            <i class="bi bi-check-circle"></i>
+                            สถานะ :
+                            @if ($orderdetail->status_payment == 1)
+                                ชำระเงินมัดจำแล้ว
+                            @elseif($orderdetail->status_payment == 2)
+                                ชำระเงินครบแล้ว
+                            @endif
+                        </p>
+
+                        <p class="mb-3">
+                            <span class="bi bi-person"></span>
+                            พนักงานผู้รับออเดอร์ : คุณ{{ $user->name }} {{ $user->lname }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+        
 
 
 

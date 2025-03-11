@@ -460,6 +460,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/receipt-pickup-rent/{id}', [ManageRentcutController::class, 'receiptpickuprent'])->name('receiptpickuprent');
     Route::get('/receipt-return-rent/{id}', [ManageRentcutController::class, 'receiptreturnrent'])->name('receiptreturnrent');
 
+    Route::get('/receipt-order-cut-dress/{id}', [ManageRentcutController::class, 'receiptordercutdress'])->name('receiptordercutdress');
+
+    Route::get('/receipt-pickup-cut-dress/{id}', [ManageRentcutController::class, 'receiptpickupcutdress'])->name('receiptpickupcutdress');
 
 
     Route::post('/employee/ordertotal/detail/update-status-pickup-total-rent/{id}', [ManageorderController::class, 'updatestatuspickuptotalrent'])->name('updatestatuspickuptotalrent');

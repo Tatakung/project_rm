@@ -87,6 +87,10 @@
                         <div class="p-2">
                             <img src="{{ asset('storage/' . $dataimage->jewelry_image) }}" alt=""
                                 style="max-height: 350px; width: auto;">
+
+                            <img src="{{ asset($dataimage->jewelry_image) }}" alt="Jewelry Image"
+                                style="max-height: 350px; width: auto;">
+
                         </div>
                     </div>
                     <div class="col-md-5">
@@ -505,41 +509,41 @@
 
 
 
-<!-- Modal ยืนยันการเปิดให้เช่าอีกครั้ง -->
-<div class="modal fade" id="reopenRentalModal" tabindex="-1" role="dialog"
-aria-labelledby="reopenRentalModalLabel" aria-hidden="true" data-backdrop="static">
-<div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content shadow-lg border-0 rounded-3">
-        <div class="modal-header bg-success text-white d-flex align-items-center">
-            <i class="fas fa-check-circle me-2 fa-lg"></i>
-            <h5 class="modal-title" id="reopenRentalModalLabel">ยืนยันการเปิดให้เช่าอีกครั้ง</h5>
-            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body text-center">
-            <i class="fas fa-info-circle text-success fa-3x mb-3"></i>
+    <!-- Modal ยืนยันการเปิดให้เช่าอีกครั้ง -->
+    <div class="modal fade" id="reopenRentalModal" tabindex="-1" role="dialog"
+        aria-labelledby="reopenRentalModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content shadow-lg border-0 rounded-3">
+                <div class="modal-header bg-success text-white d-flex align-items-center">
+                    <i class="fas fa-check-circle me-2 fa-lg"></i>
+                    <h5 class="modal-title" id="reopenRentalModalLabel">ยืนยันการเปิดให้เช่าอีกครั้ง</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <i class="fas fa-info-circle text-success fa-3x mb-3"></i>
 
-            <p class="fs-5 mt-3">
-                คุณต้องการเปิดให้เช่าชุดนี้อีกครั้งใช่หรือไม่?
-                <span class="text-success fw-bold">หลังจากเปิดให้เช่าอีกครั้ง
-                    ลูกค้าจะสามารถจองเครื่องประดับนี้ได้ตามปกติ</span>
-            </p>
-        </div>
-        <div class="modal-footer d-flex justify-content-center">
-            <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-dismiss="modal">
-                <i class="fas fa-times"></i> ยกเลิก
-            </button>
-            <form action="{{ route('jewelryreopen', ['id' => $datajewelry->id]) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-success px-4 py-2 rounded-pill">
-                    <i class="fas fa-check"></i> ยืนยัน
-                </button>
-            </form>
+                    <p class="fs-5 mt-3">
+                        คุณต้องการเปิดให้เช่าชุดนี้อีกครั้งใช่หรือไม่?
+                        <span class="text-success fw-bold">หลังจากเปิดให้เช่าอีกครั้ง
+                            ลูกค้าจะสามารถจองเครื่องประดับนี้ได้ตามปกติ</span>
+                    </p>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-dismiss="modal">
+                        <i class="fas fa-times"></i> ยกเลิก
+                    </button>
+                    <form action="{{ route('jewelryreopen', ['id' => $datajewelry->id]) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-success px-4 py-2 rounded-pill">
+                            <i class="fas fa-check"></i> ยืนยัน
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-</div>
 
 
 

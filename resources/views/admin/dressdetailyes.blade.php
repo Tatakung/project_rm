@@ -27,18 +27,26 @@
         }
     </style>
 
+    
+
+
     <ol class="breadcrumb" style="background-color: transparent;">
         <li class="breadcrumb-item">
-            <a href="{{ route('admin.dresstotal') }}" style="color: black ; ">จัดการชุด</a>
+            <a href="{{ route('admin.dresstotal') }}" style="color: black ; ">รายการชุด</a>
         </li>
         <li class="breadcrumb-item">
             <a href="{{ route('admin.typedress', ['id' => $datadress->type_dress_id]) }}"
-                style="color: black ;">ประเภท{{ $name_type }}</a>
+                style="color: black ;">ประเภท{{$name_type}}</a>
         </li>
         <li class="breadcrumb-item active">
-            รายละเอียดของหมายเลขชุด{{ $datadress->dress_code_new }}{{ $datadress->dress_code }}</li>
-
+            รายละเอียด{{$name_type}} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
+        </li>
     </ol>
+
+
+
+
+
     <div class="container">
         <div class="row">
             <div class="col">
@@ -91,7 +99,7 @@
                             <div class="col-md-4">
                                 <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
                                 
-                                                                                                                                                                                                                                                                </p> -->
+                                                                                                                                                                                                                                                               
                                 
 
 

@@ -1,7 +1,24 @@
 @extends('layouts.adminlayout')
 
 @section('content')
-    <div class="container mt-5">
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('admin.jewelrytotal') }}" style="color: black ; ">รายการเครื่องประดับ</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a href="{{route('admin.setjewelry')}}" style="color: black ; ">ประเภทเซตเครื่องประดับ</a>
+        </li>
+
+        <li class="breadcrumb-item active">
+            รายละเอียดของเซต{{ $jewelryset->set_name }}
+        </li>
+
+    </ol>
+
+
+
+    <div class="container mt-3">
         {{-- ส่วนหัวข้อ --}}
         <div class="row mb-3">
             <div class="col">
@@ -55,7 +72,7 @@
 
         {{-- ส่วนข้อมูลพื้นฐานของเซต --}}
         <div class="card mb-4 shadow position-relative">
-            
+
 
             <div class="card-body">
 
@@ -65,16 +82,14 @@
                     </div>
                     <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal"
                         data-target="#stopRentalModal"
-                        @if ($is_admin == 1) 
-                            @if ($check_not_ready == true)
+                        @if ($is_admin == 1) @if ($check_not_ready == true)
                                 style="display:none;"
                             @elseif($check_not_ready == false)
                                 @if ($jewelryset->set_status == 'พร้อมให้เช่า')
                                     style="display:block;"
                                 @elseif($jewelryset->set_status == 'ยุติการให้เช่า')
-                                    style="display:none;" 
-                                @endif
-                            @endif
+                                    style="display:none;" @endif
+                        @endif
                     @elseif($is_admin == 0)
                         style="display:none;"
                         @endif
@@ -83,27 +98,25 @@
                     </button>
 
                     <button type="button" class="btn btn-sm btn-outline-success" data-toggle="modal"
-                    data-target="#reopenRentalModal"
-                    @if ($is_admin == 1)
-                        @if ($check_not_ready == true)
+                        data-target="#reopenRentalModal"
+                        @if ($is_admin == 1) @if ($check_not_ready == true)
                             style="display:none;"
                         @elseif($check_not_ready == false)
                             @if ($jewelryset->set_status == 'พร้อมให้เช่า')
                                 style="display:none;"
                             @elseif($jewelryset->set_status == 'ยุติการให้เช่า')
-                                style="display:block;"
-                            @endif
+                                style="display:block;" @endif
                         @endif
                     @elseif($is_admin == 0)
                         style="display:none;"
-                    @endif
+                        @endif
 
-                    
-                    >
-                    <i class="fas fa-stop"></i> เปิดให้เช่าอีกครั้ง
-                </button>
 
-                    
+                        >
+                        <i class="fas fa-stop"></i> เปิดให้เช่าอีกครั้ง
+                    </button>
+
+
 
 
 
@@ -303,66 +316,66 @@
 
 
     <div class="modal fade" id="stopRentalModal" tabindex="-1" role="dialog" aria-labelledby="stopRentalModalLabel"
-    aria-hidden="true" data-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content shadow-lg border-0 rounded-3">
-            <div class="modal-header bg-danger text-white d-flex align-items-center">
-                <i class="fas fa-exclamation-triangle me-2 fa-lg"></i>
-                <h5 class="modal-title" id="stopRentalModalLabel">ยืนยันการยุติการให้เช่า</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body text-center">
-                {{-- <i class="fas fa-exclamation-circle text-danger fa-3x mb-3"></i> --}}
-
-                <p class="fs-5 mt-3">
-                    คุณแน่ใจหรือไม่ว่าต้องการยุติการให้เช่าเซตเครื่องประดับนี้?
-                    <span class="text-danger fw-bold">หากต้องการ สามารถเปิดให้เช่าอีกครั้งในภายหลังได้</span>
-                </p>
-                <!-- แสดงข้อความแจ้งเตือนหากมีลูกค้าจองชุดนี้ -->
-            </div>
-
-
-            @if ($stop_reservation->count() > 0)
-                <!-- จำลองว่ามีลูกค้าจองอยู่ -->
-                <div class="alert alert-warning text-start">
-
-                    
-
-
-                    <strong>มีลูกค้าที่จองเซตนี้ไว้ {{ $stop_reservation->count() }} คน</strong>
-                    <ul class="mt-2">
-                        @foreach ($stop_reservation as $item)
-                            <li style="font-size : 14px;">
-                                คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }}
-                                {{ $item->re_one_many_details->first()->order->customer->customer_lname }}
-                                <span>(นัดรับวันที่
-                                    {{ \Carbon\Carbon::parse($item->start_date)->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($item->start_date)->year + 543 }})</span>
-                                
-                            </li>
-                        @endforeach
-                    </ul>
-                    <p class="text-danger fw-bold mt-2">**กรุณาพิจารณาผลกระทบก่อนยืนยันการดำเนินการ
-                        และติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
-                </div>
-            @endif
-            <div class="modal-footer d-flex justify-content-center">
-                <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-dismiss="modal">
-                    <i class="fas fa-times"></i> ยกเลิก
-                </button>
-                <form action="{{ route('setjewelrystoprent', ['id' => $jewelryset->id]) }}" method="POST">
-                    <!-- ตัวอย่าง id -->
-                    @csrf
-                    <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill">
-                        <i class="fas fa-check"></i> ยืนยัน
+        aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content shadow-lg border-0 rounded-3">
+                <div class="modal-header bg-danger text-white d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-2 fa-lg"></i>
+                    <h5 class="modal-title" id="stopRentalModalLabel">ยืนยันการยุติการให้เช่า</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
                     </button>
-                </form>
+                </div>
+                <div class="modal-body text-center">
+                    {{-- <i class="fas fa-exclamation-circle text-danger fa-3x mb-3"></i> --}}
+
+                    <p class="fs-5 mt-3">
+                        คุณแน่ใจหรือไม่ว่าต้องการยุติการให้เช่าเซตเครื่องประดับนี้?
+                        <span class="text-danger fw-bold">หากต้องการ สามารถเปิดให้เช่าอีกครั้งในภายหลังได้</span>
+                    </p>
+                    <!-- แสดงข้อความแจ้งเตือนหากมีลูกค้าจองชุดนี้ -->
+                </div>
+
+
+                @if ($stop_reservation->count() > 0)
+                    <!-- จำลองว่ามีลูกค้าจองอยู่ -->
+                    <div class="alert alert-warning text-start">
+
+
+
+
+                        <strong>มีลูกค้าที่จองเซตนี้ไว้ {{ $stop_reservation->count() }} คน</strong>
+                        <ul class="mt-2">
+                            @foreach ($stop_reservation as $item)
+                                <li style="font-size : 14px;">
+                                    คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }}
+                                    {{ $item->re_one_many_details->first()->order->customer->customer_lname }}
+                                    <span>(นัดรับวันที่
+                                        {{ \Carbon\Carbon::parse($item->start_date)->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($item->start_date)->year + 543 }})</span>
+
+                                </li>
+                            @endforeach
+                        </ul>
+                        <p class="text-danger fw-bold mt-2">**กรุณาพิจารณาผลกระทบก่อนยืนยันการดำเนินการ
+                            และติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
+                    </div>
+                @endif
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-dismiss="modal">
+                        <i class="fas fa-times"></i> ยกเลิก
+                    </button>
+                    <form action="{{ route('setjewelrystoprent', ['id' => $jewelryset->id]) }}" method="POST">
+                        <!-- ตัวอย่าง id -->
+                        @csrf
+                        <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill">
+                            <i class="fas fa-check"></i> ยืนยัน
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 
@@ -413,97 +426,95 @@
             </div>
         </div>
 
-<!-- Modal ยืนยันการเปิดให้เช่าอีกครั้ง -->
-<div class="modal fade" id="reopenRentalModal" tabindex="-1" role="dialog"
-aria-labelledby="reopenRentalModalLabel" aria-hidden="true" data-backdrop="static">
-<div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content shadow-lg border-0 rounded-3">
-        <div class="modal-header bg-success text-white d-flex align-items-center">
-            <i class="fas fa-check-circle me-2 fa-lg"></i>
-            <h5 class="modal-title" id="reopenRentalModalLabel">ยืนยันการเปิดให้เช่าอีกครั้ง</h5>
-            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body text-center">
-            <i class="fas fa-info-circle text-success fa-3x mb-3"></i>
+        <!-- Modal ยืนยันการเปิดให้เช่าอีกครั้ง -->
+        <div class="modal fade" id="reopenRentalModal" tabindex="-1" role="dialog"
+            aria-labelledby="reopenRentalModalLabel" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content shadow-lg border-0 rounded-3">
+                    <div class="modal-header bg-success text-white d-flex align-items-center">
+                        <i class="fas fa-check-circle me-2 fa-lg"></i>
+                        <h5 class="modal-title" id="reopenRentalModalLabel">ยืนยันการเปิดให้เช่าอีกครั้ง</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <i class="fas fa-info-circle text-success fa-3x mb-3"></i>
 
-            <p class="fs-5 mt-3">
-                คุณต้องการเปิดให้เช่าเซตเครื่องประดับนี้อีกครั้งใช่หรือไม่?
-                <span class="text-success fw-bold">หลังจากเปิดให้เช่าอีกครั้ง
-                    ลูกค้าจะสามารถจองเซตเครื่องประดับนี้ได้ตามปกติ</span>
-            </p>
-        </div>
-        <div class="modal-footer d-flex justify-content-center">
-            <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-dismiss="modal">
-                <i class="fas fa-times"></i> ยกเลิก
-            </button>
-            <form action="{{ route('setjewelryreopen', ['id' => $jewelryset->id]) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-success px-4 py-2 rounded-pill">
-                    <i class="fas fa-check"></i> ยืนยัน
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
-</div>
-
-
-
-
-
-
-
-         <!-- Modals for success and failure messages -->
-    <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-lg">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title"><i class="bi bi-check-circle-fill"></i> สำเร็จ</h5>
-
-                </div>
-                <div class="modal-body text-center p-4">
-                    <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
-                    <p class="mt-3 text-success fw-bold">{{ session('success') }}</p>
-                </div>
-                <div class="modal-footer border-0 justify-content-center">
-                    <button type="button" class="btn btn-success px-4" data-dismiss="modal">ตกลง</button>
+                        <p class="fs-5 mt-3">
+                            คุณต้องการเปิดให้เช่าเซตเครื่องประดับนี้อีกครั้งใช่หรือไม่?
+                            <span class="text-success fw-bold">หลังจากเปิดให้เช่าอีกครั้ง
+                                ลูกค้าจะสามารถจองเซตเครื่องประดับนี้ได้ตามปกติ</span>
+                        </p>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-dismiss="modal">
+                            <i class="fas fa-times"></i> ยกเลิก
+                        </button>
+                        <form action="{{ route('setjewelryreopen', ['id' => $jewelryset->id]) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success px-4 py-2 rounded-pill">
+                                <i class="fas fa-check"></i> ยืนยัน
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
-    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-lg">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill"></i> เกิดข้อผิดพลาด</h5>
-                </div>
-                <div class="modal-body text-center p-4">
-                    <i class="bi bi-x-circle-fill text-danger" style="font-size: 3rem;"></i>
-                    <p class="mt-3 text-danger fw-bold">{{ session('fail') }}</p>
-                </div>
-                <div class="modal-footer border-0 justify-content-center">
-                    <button type="button" class="btn btn-danger px-4" data-dismiss="modal">ปิด</button>
+
+
+
+
+
+        <!-- Modals for success and failure messages -->
+        <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-lg">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title"><i class="bi bi-check-circle-fill"></i> สำเร็จ</h5>
+
+                    </div>
+                    <div class="modal-body text-center p-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                        <p class="mt-3 text-success fw-bold">{{ session('success') }}</p>
+                    </div>
+                    <div class="modal-footer border-0 justify-content-center">
+                        <button type="button" class="btn btn-success px-4" data-dismiss="modal">ตกลง</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <script>
-        @if (session('success'))
-            setTimeout(function() {
-                $('#showsuccessss').modal('show');
-            }, 500);
-        @endif
-        @if (session('fail'))
-            setTimeout(function() {
-                $('#showfail').modal('show');
-            }, 500);
-        @endif
-    </script>
 
 
+        <div class="modal fade" id="showfail" role="dialog" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-lg">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill"></i> เกิดข้อผิดพลาด</h5>
+                    </div>
+                    <div class="modal-body text-center p-4">
+                        <i class="bi bi-x-circle-fill text-danger" style="font-size: 3rem;"></i>
+                        <p class="mt-3 text-danger fw-bold">{{ session('fail') }}</p>
+                    </div>
+                    <div class="modal-footer border-0 justify-content-center">
+                        <button type="button" class="btn btn-danger px-4" data-dismiss="modal">ปิด</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            @if (session('success'))
+                setTimeout(function() {
+                    $('#showsuccessss').modal('show');
+                }, 500);
+            @endif
+            @if (session('fail'))
+                setTimeout(function() {
+                    $('#showfail').modal('show');
+                }, 500);
+            @endif
+        </script>
     @endsection

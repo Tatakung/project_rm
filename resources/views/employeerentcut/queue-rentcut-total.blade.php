@@ -42,7 +42,7 @@
 
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a href="#pagea" class="nav-link active" data-toggle="tab">รอดำเนินการตัด
+                <a href="#pagea" class="nav-link active" data-toggle="tab" style="color: #3d3d3d;">รอดำเนินการตัด
                     @if ($cutdresss_page_one->count() > 0)
                         <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
                             {{ $cutdresss_page_one->count() }}
@@ -51,7 +51,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#pageb" class="nav-link" data-toggle="tab">เริ่มดำเนินการตัด
+                <a href="#pageb" class="nav-link" data-toggle="tab" style="color: #3d3d3d;">เริ่มดำเนินการตัด
                     @if ($cutdresss_page_two->count() > 0)
                         <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
                             {{ $cutdresss_page_two->count() }}
@@ -61,7 +61,7 @@
             </li>
 
             <li class="nav-item">
-                <a href="#paged" class="nav-link" data-toggle="tab">ตัดเสร็จแล้ว (รอรับชุดเช่า)
+                <a href="#paged" class="nav-link" data-toggle="tab" style="color: #3d3d3d;">ตัดเสร็จแล้ว (รอรับชุดเช่า)
                     @if ($cutdresss_page_three->count() > 0)
                         <span class="badge custom-badge ml-1" style="font-size: 0.8rem;">
                             {{ $cutdresss_page_three->count() }}

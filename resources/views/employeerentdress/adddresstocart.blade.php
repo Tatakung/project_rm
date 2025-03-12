@@ -105,7 +105,20 @@
 
 
     {{-- ส่วนฟิลเตอร์ --}}
-    <div class="container  mt-5">
+
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.addorder') }}" style="color: black ; ">เพิ่มออเดอร์</a>
+        </li>
+       
+        <li class="breadcrumb-item active">
+            เพิ่มรายการเช่าชุด
+        </li>
+    </ol>
+
+
+
+    <div class="container  mt-1">
         <h1 class=" font-bold mb-4 ">การเช่าชุด</h1>
         <p id="show_day"></p>
 

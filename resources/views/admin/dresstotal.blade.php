@@ -58,10 +58,30 @@
 
     <body>
 
+        
+      
+
+      
+      
+        
+
+
+        
+
+        
 
 
 
-        <div class="container  mt-5">
+        <!-- ถ้าต้องการควบคุมสีมากขึ้น สามารถเพิ่ม CSS แบบนี้ -->
+       
+
+
+
+
+
+
+
+        <div class="container mt-4">
             <div class="col">
                 <h1 class="font-bold">ประเภทชุด</h1>
 
@@ -73,31 +93,30 @@
             <div class="row">
                 @foreach ($showtype as $index => $item)
                     @php
-                        $dress = App\Models\Dress::where('type_dress_id',$item->id)->get() ; 
+                        $dress = App\Models\Dress::where('type_dress_id', $item->id)->get();
                     @endphp
-                    
-                    @if($dress->count() > 0  )
-                    <div class="col-md-3 mb-4">
-                        <div class="card text-left custom-card">
-                            <button type="button" class="btn p-0" style="border: none; background: none;"
-                                onclick="window.location='{{ route('admin.typedress', ['id' => $item->id]) }}'">
-                                @php
-                                    $type_id = $item->id;
-                                    $dress_id = App\Models\Dress::where('type_dress_id', $type_id)->value('id');
-                                    $image_show = App\Models\Dressimage::where('dress_id', $dress_id)->first();
-                                @endphp
-                                <img src="{{ asset('storage/' . $image_show->dress_image) }}" alt=""
-                                    class="card-img-top custom-img">
 
-                            </button>
-                            <div class="card-body">
-                                <h5 class="card-title text-center">{{ $item->type_dress_name }}</h5>
+                    @if ($dress->count() > 0)
+                        <div class="col-md-3 mb-4">
+                            <div class="card text-left custom-card">
+                                <button type="button" class="btn p-0" style="border: none; background: none;"
+                                    onclick="window.location='{{ route('admin.typedress', ['id' => $item->id]) }}'">
+                                    @php
+                                        $type_id = $item->id;
+                                        $dress_id = App\Models\Dress::where('type_dress_id', $type_id)->value('id');
+                                        $image_show = App\Models\Dressimage::where('dress_id', $dress_id)->first();
+                                    @endphp
+                                    <img src="{{ asset('storage/' . $image_show->dress_image) }}" alt=""
+                                        class="card-img-top custom-img">
+
+                                </button>
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">{{ $item->type_dress_name }}</h5>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     @endif
                     @if (($index + 1) % 4 == 0)
-                
             </div>
             <div class="row">
                 @endif

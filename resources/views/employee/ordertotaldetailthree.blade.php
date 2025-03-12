@@ -98,11 +98,17 @@
         }
     </style>
 
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#">หน้าแรก</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
-        <li class="breadcrumb-item active">รายละเอียดออเดอร์ที่ {{ $order_id }}</li>
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.ordertotal') }}" style="color: black ; ">รายการออเดอร์ทั้งหมด</a>
+        </li>
+
+        <li class="breadcrumb-item active">
+            รายการออเดอร์ที่ {{ $order_id }}
+        </li>
     </ol>
+
+
 
     <div class="container mt-4">
         <h3>รายละเอียดออเดอร์เช่าตัดชุด {{ $order_id }}</h3>
@@ -204,11 +210,10 @@
                             @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
                                 <span style="color: red ; ">{{ $item->status_detail }}</span>
                                 <br>
-                                    <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
-                                        {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                        {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
-                                    </span>
-                                
+                                <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
+                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
+                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
+                                </span>
                             @else
                                 {{ $item->status_detail }}
                             @endif

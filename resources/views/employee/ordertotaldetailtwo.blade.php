@@ -99,11 +99,23 @@
         }
     </style>
 
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#">หน้าแรก</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
-        <li class="breadcrumb-item active">รายละเอียดออเดอร์ที่ {{ $order_id }}</li>
+    
+
+
+
+    
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.ordertotal') }}" style="color: black ; ">รายการออเดอร์ทั้งหมด</a>
+        </li>
+        
+        <li class="breadcrumb-item active">
+            รายการออเดอร์ที่ {{ $order_id }} 
+        </li>
     </ol>
+
+
+
     <div class="container mt-4">
         <h3>รายละเอียดออเดอร์เช่า เลขออเดอร์ที่{{ $order_id }}</h3>
         <div class="row mb-4">
@@ -118,7 +130,7 @@
                     <span id="show_history_day" style="font-size: 14px; color: rgb(158, 143, 143) ; "></span>
                 </p>
             </div>
-            <div class="col-md-6">
+            {{-- <div class="col-md-6">
                 <button type="button" class="btn btn-c " data-toggle="modal" data-target="#show_modal_pickup_total"
                     @if ($queue_pass == true) @if ($check_button_new == 1)
                     style="display: block ; background-color:#DADAE3; "
@@ -128,7 +140,7 @@
                     >
                     รับชุด/รับเครื่องประดับ (ทั้งหมด)
                 </button>
-            </div>
+            </div> --}}
         </div>
         <script>
             var create_date_now = new Date();
@@ -459,7 +471,7 @@
                                             $item->orderdetailmanytoonedress->dress_status == 'สูญหาย' ||
                                                 $item->orderdetailmanytoonedress->dress_status == 'ยุติการให้เช่า')
                                         @else
-                                            <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
+                                            <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->id]) }}"
                                                 class="btn btn-postpone btn-sm">เลื่อนวัน</a>
                                         @endif
                                     @elseif($item->orderdetailmanytoonedress->separable == 2)
@@ -468,7 +480,7 @@
                                                 $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'สูญหาย' ||
                                                     $item->orderdetailmanytoonedress->shirtitems->first()->shirtitem_status == 'ยุติการให้เช่า')
                                             @else
-                                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
+                                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->id]) }}"
                                                     class="btn btn-postpone btn-sm">เลื่อนวัน</a>
                                             @endif
                                         @elseif($item->skirtitems_id)
@@ -476,7 +488,7 @@
                                                 $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
                                                     $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
                                             @else
-                                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
+                                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->id]) }}"
                                                     class="btn btn-postpone btn-sm">เลื่อนวัน</a>
                                             @endif
                                         @else
@@ -486,7 +498,7 @@
                                                     $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'สูญหาย' ||
                                                     $item->orderdetailmanytoonedress->skirtitems->first()->skirtitem_status == 'ยุติการให้เช่า')
                                             @else
-                                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->reservation_id]) }}"
+                                                <a href="{{ route('employee.ordertotaldetailpostpone', ['id' => $item->id]) }}"
                                                     class="btn btn-postpone btn-sm">เลื่อนวัน</a>
                                             @endif
                                         @endif

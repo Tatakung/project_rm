@@ -37,6 +37,22 @@
         @endif
     </script>
 
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.ordertotal') }}" style="color: black ; ">รายการออเดอร์ทั้งหมด</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}"
+                style="color: black ; ">รายการออเดอร์ที่ {{ $orderdetail->order_id }} </a>
+        </li>
+
+
+        <li class="breadcrumb-item active">
+            รายละเอียดเลื่อนวันนัดรับ-นัดคืนของรายละเอียดที่ {{ $orderdetail->id }}
+        </li>
+    </ol>
+
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-12" style="text-align: center ;">
@@ -101,9 +117,11 @@
                 </script>
             </div>
             <div class="col-md-5">
-                <h2 class="card-title">ลำดับคิวเช่าของ{{$typedress->type_dress_name}} {{$typedress->specific_letter}}{{$dress->dress_code}} (ทั้งชุด)</h2>
+                <h2 class="card-title">ลำดับคิวเช่าของ{{ $typedress->type_dress_name }}
+                    {{ $typedress->specific_letter }}{{ $dress->dress_code }} (ทั้งชุด)</h2>
                 <ul>
-                    <li>สถานะ {{$typedress->type_dress_name}} {{$typedress->specific_letter}}{{$dress->dress_code}} (ทั้งชุด) ปัจุจุบัน : {{$dress->dress_status}}</li>
+                    <li>สถานะ {{ $typedress->type_dress_name }} {{ $typedress->specific_letter }}{{ $dress->dress_code }}
+                        (ทั้งชุด) ปัจุจุบัน : {{ $dress->dress_status }}</li>
                 </ul>
                 คิวการเช่าเรียงตามวันที่นัดรับ
                 <table class="table table-striped">
@@ -113,7 +131,7 @@
                             <th scope="col">ชื่อลูกค้า</th>
                             <th scope="col">วันนัดรับ</th>
                             <th scope="col">วันนัดคืน</th>
-                            
+
                         </tr>
                     </thead>
                     <tbody>
@@ -122,7 +140,8 @@
 
                                 <td>{{ $index + 1 }}</td>
                                 <td>
-                                    <span>คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }} {{ $item->re_one_many_details->first()->order->customer->customer_lname }}</span>
+                                    <span>คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }}
+                                        {{ $item->re_one_many_details->first()->order->customer->customer_lname }}</span>
                                 </td>
                                 <td>
                                     {{ \carbon\Carbon::parse($item->start_date)->locale('th')->isoFormat('D MMM') }}
@@ -201,21 +220,33 @@
                                 <div class="col-md-6">
                                     <button type="submit" class="btn btn-secondary mb-2">ตรวจสอบ</button>
                         </form>
-                        <h5>เงื่อนไขการเลื่อนวันนัดรับ-นัดคืน</h5>
+                        <h5>เงื่อนไขการเลื่อนวันนัดรับ-นัดคืนชุด</h5>
                         <p>
-                            การเลื่อนวันนัดรับ-นัดคืนจะต้องเป็นไปตามเงื่อนไขดังต่อไปนี้:
+                            การเลื่อนวันนัดรับ-นัดคืนชุดจะต้องผ่านการตรวจสอบความพร้อมของชุดทั้ง 3 เงื่อนไขดังต่อไปนี้:
                         </p>
                         <ul>
                             <li>
-                                <strong>วันนัดรับ:</strong> สามารถเลื่อนวันได้ล่วงหน้า <strong>ไม่เกิน 7 วันก่อนวันนัดรับเดิม</strong> เพื่อเผื่อเวลาสำหรับการคืนชุดจากลูกค้าคนก่อนหน้า หรือการซักและซ่อมแซมชุดก่อนถึงวันนัดรับใหม่
+                                <strong>เงื่อนไขที่ 1 (ช่วงก่อนวันนัดรับใหม่):</strong> ระบบจะตรวจสอบ 7
+                                วันก่อนวันนัดรับใหม่ว่าชุดไม่ติดการจองหรือการเช่าของลูกค้าท่านอื่น
                             </li>
                             <li>
-                                <strong>วันนัดคืน:</strong> สามารถเลื่อนวันได้ภายหลัง <strong>ไม่เกิน 7 วันหลังจากวันนัดคืนเดิม</strong> ทั้งนี้ต้องไม่มีลูกค้าคนอื่นจองชุดในช่วงเวลาดังกล่าว เพื่อเผื่อเวลาในกรณีที่ลูกค้าคืนชุดล่าช้า หรือมีการซักและซ่อมแซมชุด
+                                <strong>เงื่อนไขที่ 2 (ช่วงวันนัดรับใหม่ถึงวันนัดคืนใหม่):</strong>
+                                ระบบจะตรวจสอบว่าในช่วงวันที่ต้องการเลื่อนไปใช้บริการนั้น
+                                ชุดไม่ติดการจองหรือการเช่าของลูกค้าท่านอื่น
                             </li>
-                           
+                            <li>
+                                <strong>เงื่อนไขที่ 3 (ช่วงหลังวันนัดคืนใหม่):</strong> ระบบจะตรวจสอบ 7
+                                วันหลังวันนัดคืนใหม่ว่าชุดไม่ติดการจองหรือการเช่าของลูกค้าท่านอื่น
+                            </li>
                         </ul>
-                       
-                        
+                        <p>
+                            <strong>หมายเหตุ:</strong> การเลื่อนวันนัดรับ-นัดคืนจะสามารถทำได้ก็ต่อเมื่อผ่านทั้ง 3
+                            เงื่อนไขข้างต้น
+                            เพื่อให้มั่นใจว่ามีช่วงเวลาเพียงพอสำหรับการเตรียมชุดก่อนส่งมอบและการจัดการหลังคืนชุด
+                            โดยไม่กระทบต่อการจองของลูกค้าท่านอื่น
+                        </p>
+
+
 
 
 
@@ -305,8 +336,8 @@
         </div>
 
 
-        <div class="modal fade" id="rescheduleModal" tabindex="-1" role="dialog" aria-labelledby="rescheduleModalLabel"
-            aria-hidden="true" data-backdrop="static">
+        <div class="modal fade" id="rescheduleModal" tabindex="-1" role="dialog"
+            aria-labelledby="rescheduleModalLabel" aria-hidden="true" data-backdrop="static">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <form action="{{ route('employee.postponecheckedpass', ['id' => $orderdetail->id]) }}"

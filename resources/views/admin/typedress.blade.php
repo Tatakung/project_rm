@@ -56,6 +56,21 @@
     </html>
 
     <body>
+
+
+        <ol class="breadcrumb" style="background-color: transparent;">
+            <li class="breadcrumb-item">
+                <a href="{{route('admin.dresstotal')}}" style="color: black ; ">รายการชุด </a>
+            </li>
+            
+            <li class="breadcrumb-item active">
+                ประเภทชุด 
+            </li>
+        </ol>
+
+
+
+
         <div class="container  mt-5">
             <div class="col">
                 <h1 class="font-bold">ประเภท{{ $typedress->type_dress_name }}</h1>

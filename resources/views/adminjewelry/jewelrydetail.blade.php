@@ -23,18 +23,23 @@
     </style>
 
 
+    
+
+
     <ol class="breadcrumb" style="background-color: transparent;">
         <li class="breadcrumb-item">
-            <a href="" style="color: black ; ">จัดการเครื่องประดับ</a>
+            <a href="{{ route('admin.jewelrytotal') }}" style="color: black ; ">รายการเครื่องประดับ</a>
         </li>
         <li class="breadcrumb-item">
             <a href="{{ route('admin.typejewelry', ['id' => $datajewelry->type_jewelry_id]) }}"
                 style="color: black ;">ประเภท{{ $data_type->type_jewelry_name }}</a>
         </li>
         <li class="breadcrumb-item active">
-            รายละเอียดของหมายเลขเครื่องประดับ {{ $data_type->specific_letter }}{{ $datajewelry->jewelry_code }}
+            รายละเอียดของ{{ $data_type->type_jewelry_name }} {{ $data_type->specific_letter }}{{ $datajewelry->jewelry_code }}
         </li>
     </ol>
+
+
 
 
 
@@ -88,8 +93,7 @@
                             <img src="{{ asset('storage/' . $dataimage->jewelry_image) }}" alt=""
                                 style="max-height: 350px; width: auto;">
 
-                            <img src="{{ asset($dataimage->jewelry_image) }}" alt="Jewelry Image"
-                                style="max-height: 350px; width: auto;">
+                            
 
                         </div>
                     </div>

@@ -59,15 +59,26 @@
             color: #6c757d;
         }
     </style>
-    <ol class="breadcrumb"style="background-color: transparent;">
-        <li class="breadcrumb-item"><a href="" style="color: black ; ">หน้าแรก</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}"
-                style="color: black ; ">รายการออเดอร์ทั้งหมด</a></li>
-        <li class="breadcrumb-item"><a
-                href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">รายละเอียดออเดอร์ที่
-                {{ $orderdetail->order_id }}</a></li>
-        <li class="breadcrumb-item active">{{ $orderdetail->title_name }}</li>
+    
+
+
+
+
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.ordertotal') }}" style="color: black ; ">รายการออเดอร์ทั้งหมด</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}" style="color: black ; ">รายการออเดอร์ที่ {{ $orderdetail->order_id }} </a>
+        </li>
+        
+        <li class="breadcrumb-item active">
+            รายละเอียดที่ {{ $orderdetail->id }}
+        </li>
     </ol>
+
+
 
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
@@ -959,12 +970,7 @@
                                             class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_pickup_date)->locale('th')->isoFormat('D MMM') }}
                                             {{ \Carbon\Carbon::parse($Date->actua_pickup_date)->year + 543 }}</span>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-secondary">วันที่คืนชุดจริง</span>
-                                        <span
-                                            class="fw-medium">{{ \Carbon\Carbon::parse($Date->actua_return_date)->locale('th')->isoFormat('D MMM') }}
-                                            {{ \Carbon\Carbon::parse($Date->actua_return_date)->year + 543 }}</span>
-                                    </div>
+                                    
                                     <div class="d-flex justify-content-between align-items-center pt-2 border-top">
 
 

@@ -235,18 +235,19 @@
                 </button>
                 <div class="collapse" id="shop-collapse" data-parent="#sidebar">
                     <div class="list-group">
-                        <a href="{{ route('employeetotal') }}" class="list-group-item list-group-item-action border-0 pl-5"
-                            id="d">-
-                            จัดการพนักงาน</a>
-                        <a href="{{ route('register') }}" class="list-group-item list-group-item-action border-0 pl-5"
-                            id="d">-
-                            เพิ่มพนักงาน</a>
+                        
                         <a href="{{ route('admin.expense') }}" class="list-group-item list-group-item-action border-0 pl-5"
                             id="d">-
                             บันทึกรายจ่ายของร้าน</a>
                         <a href="{{ route('jewelryproblemcancel') }}" class="list-group-item list-group-item-action border-0 pl-5"
                             id="d">-
                             การจองที่ได้รับผลกระทบ</a>
+                            <a href="{{ route('employeetotal') }}" class="list-group-item list-group-item-action border-0 pl-5"
+                            id="d">-
+                            จัดการพนักงาน</a>
+                        <a href="{{ route('register') }}" class="list-group-item list-group-item-action border-0 pl-5"
+                            id="d">-
+                            เพิ่มพนักงาน</a>
 
                     </div>
                 </div>

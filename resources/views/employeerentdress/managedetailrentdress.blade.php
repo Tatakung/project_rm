@@ -129,14 +129,25 @@
 
 
 
-    <ol class="breadcrumb" style="background-color: transparent; ">
-        <li class="breadcrumb-item"><a href="">หน้าแรก</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
-        <li class="breadcrumb-item"><a
-                href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}">รายละเอียดออเดอร์ที่
-                {{ $orderdetail->order_id }}</a></li>
-        <li class="breadcrumb-item active">{{ $orderdetail->title_name }}</li>
+    
+
+
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.ordertotal') }}" style="color: black ; ">รายการออเดอร์ทั้งหมด</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}" style="color: black ; ">รายการออเดอร์ที่ {{ $orderdetail->order_id }} </a>
+        </li>
+        
+        <li class="breadcrumb-item active">
+            รายละเอียดที่ {{ $orderdetail->id }}
+        </li>
     </ol>
+
+
+
 
     <div class="container mt-4">
         @php

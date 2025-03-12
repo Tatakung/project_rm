@@ -60,12 +60,21 @@
 
 
 
+    
+
+
     <ol class="breadcrumb" style="background-color: transparent;">
         <li class="breadcrumb-item">
-            <a href="{{ route('employee.addorder') }}" style="color: black ; ">เพิ่มออเดอร์ใหม่</a>
+            <a href="{{ route('employee.addorder') }}" style="color: black ; ">เพิ่มออเดอร์</a>
         </li>
-        <li class="breadcrumb-item active">เพิ่มรายการตัดชุด</li>
+       
+        <li class="breadcrumb-item active">
+            เพิ่มรายการตัดชุด 
+        </li>
     </ol>
+
+
+
 
     <div class="modal fade" id="showfail" role="dialog" aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">

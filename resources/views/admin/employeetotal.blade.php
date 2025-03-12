@@ -47,7 +47,7 @@
                                         <a href="{{route('admin.employeedetail',['id' => $user->id])}}">ดูรายละเอียด</a>
                         </td> --}}
                         <td style="text-align: center;">
-                            <a href="{{route('admin.employeedetail',['id'=>$user->id])}}">ดูรายละเอียด</a>
+                            <a href="{{route('admin.employeedetail',['id'=>$user->id])}}" class="btn btn-sm btn-secondary">ดูรายละเอียด</a>
                         </td>
                     </tr>
                     @endif

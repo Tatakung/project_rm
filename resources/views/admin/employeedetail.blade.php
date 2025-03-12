@@ -109,14 +109,15 @@
 </style>
 
 
-<!-- <ol class="breadcrumb" style="background-color: transparent; ">
-        <li class="breadcrumb-item">
-            <a href="{{ route('employeetotal') }}" style="color: black ; ">จัดการพนักงาน</a>
-        </li>
-        <li class="breadcrumb-item active">
-            รายละเอียดของพนักงาน
-        </li>
-    </ol> -->
+<ol class="breadcrumb" style="background-color: transparent;">
+    <li class="breadcrumb-item">
+        <a href="{{route('employeetotal')}}" style="color: black ; ">จัดการพนักงาน</a>
+    </li>
+  
+    <li class="breadcrumb-item active">
+        รายละเอียดของพนักงาน 
+    </li>
+</ol>
 
 
 

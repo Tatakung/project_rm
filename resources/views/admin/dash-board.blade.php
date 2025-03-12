@@ -14,6 +14,18 @@
             transition: all 0.3s ease;
         }
     </style>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Library</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Data</li>
+        </ol>
+    </nav>
+
+
+
+
     <div class="container mt-2">
         <!-- Search Form -->
 
@@ -136,14 +148,14 @@
                     </div>
                 </div>
             </div>
-        
 
 
 
 
-        <!-- Chart Section -->
-        <div class="row mb-1">
-            {{-- <div class="col-6">
+
+            <!-- Chart Section -->
+            <div class="row mb-1">
+                {{-- <div class="col-6">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title mb-4">สัดส่วนรายได้แต่ละบริการ</h5>
@@ -190,81 +202,81 @@
 
             </div> --}}
 
-            <!-- Revenue & Expense Chart Section -->
-            {{-- <div class="row mt-4"> --}}
-            <div class="col-6 mt-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">รายรับ - รายจ่าย(ทั้งหมด)ของร้าน</h5>
-                        <div class="chart-container" style="position: relative; height:400px;">
-                            <canvas id="revenueExpenseChart"></canvas>
+                <!-- Revenue & Expense Chart Section -->
+                {{-- <div class="row mt-4"> --}}
+                <div class="col-6 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">รายรับ - รายจ่าย(ทั้งหมด)ของร้าน</h5>
+                            <div class="chart-container" style="position: relative; height:400px;">
+                                <canvas id="revenueExpenseChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-6 mt-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">รายรับ-แยกตามประเภทชุดเช่า</h5>
-                        <div class="chart-container" style="position: relative; height:400px;">
-                            <canvas id="revenueChart"></canvas>
+                <div class="col-6 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">รายรับ-แยกตามประเภทชุดเช่า</h5>
+                            <div class="chart-container" style="position: relative; height:400px;">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-6 mt-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">รายรับ-แยกตามประเภทเครื่องประดับ</h5>
-                        <div class="chart-container" style="position: relative; height:400px;">
-                            <canvas id="jewelryRevenueChart"></canvas>
+                <div class="col-6 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">รายรับ-แยกตามประเภทเครื่องประดับ</h5>
+                            <div class="chart-container" style="position: relative; height:400px;">
+                                <canvas id="jewelryRevenueChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-6 mt-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">รายรับ-แยกตามประเภทเซตเครื่องประดับ</h5>
-                        <div class="chart-container" style="position: relative; height:400px;">
-                            <canvas id="jewelrySetRevenueChart"></canvas>
+                <div class="col-6 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">รายรับ-แยกตามประเภทเซตเครื่องประดับ</h5>
+                            <div class="chart-container" style="position: relative; height:400px;">
+                                <canvas id="jewelrySetRevenueChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-6 mt-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">รายรับ-แยกตามประเภทชุดที่สั่งตัด</h5>
-                        <div class="chart-container" style="position: relative; height:400px;">
-                            <canvas id="tailoringRevenueChart"></canvas>
+                <div class="col-6 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">รายรับ-แยกตามประเภทชุดที่สั่งตัด</h5>
+                            <div class="chart-container" style="position: relative; height:400px;">
+                                <canvas id="tailoringRevenueChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-6 mt-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">รายรับ-แยกตามประเภทชุดที่เช่าตัด</h5>
-                        <div class="chart-container" style="position: relative; height:400px;">
-                            <canvas id="rentalTailoringRevenueChart"></canvas>
+                <div class="col-6 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">รายรับ-แยกตามประเภทชุดที่เช่าตัด</h5>
+                            <div class="chart-container" style="position: relative; height:400px;">
+                                <canvas id="rentalTailoringRevenueChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+
+
+                {{-- </div> --}}
+
             </div>
-
-
-
-            {{-- </div> --}}
 
         </div>
-
-    </div>
 
 
 

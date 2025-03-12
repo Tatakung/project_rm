@@ -97,14 +97,21 @@
         }
     </style>
 
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#">หน้าแรก</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('employee.ordertotal') }}">รายการออเดอร์ทั้งหมด</a></li>
-        <li class="breadcrumb-item active">รายละเอียดออเดอร์ที่ {{ $order_id }}</li>
+    
+
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('employee.ordertotal') }}" style="color: black ; ">รายการออเดอร์ทั้งหมด</a>
+        </li>
+        
+        <li class="breadcrumb-item active">
+            รายการออเดอร์ที่ {{ $order_id }} 
+        </li>
     </ol>
 
+
     <div class="container mt-4">
-        <h3>รายละเอียดออเดอร์ตัดชุด เลขออเดอร์ที่{{ $order_id }}</h3>
+        <h3>รายการออเดอร์ตัดชุด เลขออเดอร์ที่ {{ $order_id }}</h3>
         <div class="row mb-4">
             <div class="col-md-6">
                 <p><strong>ชื่อลูกค้า:</strong> คุณ{{ $customer->customer_fname }} {{ $customer->customer_lname }}</p>

@@ -52,18 +52,12 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     Route::post('/admin/adddress-form/save', [DressController::class, 'savedress'])->name('admin.savedress'); //บันทึกข้อมูล 
     Route::get('/gettypename/{typename}', [DressController::class, 'autodresscode']);
-    // Route::get('/admin/dresstotal', [DressController::class, 'dresstotal'])->name('admin.dresstotal'); //ชุดทั้งหมด
-    // Route::get('/admin/typedress/{id}', [DressController::class, 'typedress'])->name('admin.typedress'); //หลังจากแยกประเภทชุด
-    // Route::get('/admin/typedress/dressdetail/{id}', [DressController::class, 'dressdetail'])->name('admin.dressdetail'); //รายะลเอียดย่อย
     Route::post('/admin/typedress/dressdetail/updatedressnoyes/{id}', [DressController::class, 'updatedressnoyes'])->name('admin.updatedressnoyes'); //อัปเดตชุดnoyes
     Route::post('/admin/typedress/dressdetail/updatedressnoyes-des/{id}', [DressController::class, 'updatedressnoyesdes'])->name('updatedressnoyesdes'); //อัปเดตชุดnoyes
 
     Route::post('/admin/typedress/dressdetail/updatedressyesshirt/{id}', [DressController::class, 'updatedressyesshirt'])->name('admin.updatedressyesshirt'); //อัปเดตชุดyesshirt
     Route::post('/admin/typedress/dressdetail/updatedressyesskirt/{id}', [DressController::class, 'updatedressyesskirt'])->name('admin.updatedressyesskirt'); //อัปเดตชุดyesskirt
 
-    // Route::post('/admin/typedress/dressdetail/updateprice/{id}', [DressController::class, 'updateprice'])->name('admin.updateprice'); //อัปเดตราคา
-    // Route::post('/admin/typedress/dressdetail/addmeasumentyesshirt/{id}', [DressController::class, 'addmeasumentyesshirt'])->name('admin.addmeasumentyesshirt'); //เพิ่มการวัดyesshirt
-    // Route::post('/admin/typedress/dressdetail/addmeasumentyesskirt/{id}', [DressController::class, 'addmeasumentyesskirt'])->name('admin.addmeasumentyesskirt'); //เพิ่มการวัดyesskirt
 
 
     Route::post('/admin/typedress/dressdetail/updatemeasument/{id}', [DressController::class, 'updatemeasument'])->name('admin.updatemeasument'); //อัปเดตข้อมูลการวัด
@@ -389,9 +383,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/jewelry-pickup-queue/filter', [Orderjewelry::class, 'showpickupqueuejewelryfilter'])->name('showpickupqueuejewelryfilter');
     Route::get('/jewelry-cleaning', [Orderjewelry::class, 'showcleanjewelry'])->name('showcleanjewelry');
     Route::get('/jewelry-repairing', [Orderjewelry::class, 'showrepairjewelry'])->name('showrepairjewelry');
-
-
-
 
 
 

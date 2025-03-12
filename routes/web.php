@@ -65,12 +65,6 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
-
-
-
-
-
-
     //กลุ่มเครื่องประดับ
     Route::get('/admin/addjewelry-form', [JewelryController::class, 'formaddjewelry'])->name('admin.formaddjewelry'); //แบบฟอร์มเพิ่มเครื่องประดับ
     Route::post('/admin/addjewelry-form/save', [JewelryController::class, 'savejewelry'])->name('admin.savejewelry'); //บันทึกข้อมูล 

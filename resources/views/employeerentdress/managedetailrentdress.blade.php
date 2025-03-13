@@ -2739,14 +2739,13 @@
                             </tbody>
                         </table>
 
-                        <!-- ฟิลด์สำหรับพนักงานกรอกค่าธรรมเนียมการเสียหาย -->
-
-
-                        <!-- สรุปการชำระเงิน -->
-                        {{-- <div class="alert alert-warning" style="font-size: 1.2rem; padding: 10px;">
-                        <p>ยอดประกันชุดต้องคืนให้กับลูกค้า: <strong id="total_return_to_customer"></strong></p>
-                        <p>ยอดเงินที่ลูกค้าต้องจ่ายเพิ่มเติม: <strong id="total_customer_to_pay_shop"></strong></p>
-                    </div> --}}
+                        <div class="form-group">
+                            <p>เก็บประกันจากลูกค้า : <span>{{ $orderdetail->damage_insurance }} บาท</span></p>
+                            {{-- <strong for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</strong> --}}
+                            {{-- <input type="number" class="form-control" name="total_damage_insurance"
+                                id="total_damage_insurance" placeholder="กรอกจำนวนเงิน" min="0" step="0.01"
+                                required value="0"> --}}
+                        </div>
 
 
 
@@ -2774,8 +2773,7 @@
                                                     <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                     <option value="repairitem">ต้องซ่อม</option>
                                                     <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
-                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
-                                                        คาดว่าไม่น่าจะคืน)</option>
+                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่ส่งคืน)</option>
                                                     <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)
                                                     </option>
                                                 </select>
@@ -2830,8 +2828,7 @@
                                                     <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                     <option value="repairitem">ต้องซ่อม</option>
                                                     <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
-                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
-                                                        คาดว่าไม่น่าจะคืน)</option>
+                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่ส่งคืน)</option>
                                                     <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)
                                                     </option>
                                                 </select>
@@ -2887,8 +2884,7 @@
                                                         <option value="cleanitem" selected>ส่งทำความสะอาด</option>
                                                         <option value="repairitem">ต้องซ่อม</option>
                                                         <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
-                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
-                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่ส่งคืน)</option>
                                                         <option value="damaged_beyond_repair">*เสียหายหนัก
                                                             (ให้เช่าต่อไม่ได้)
                                                         </option>
@@ -2944,8 +2940,7 @@
                                                         <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                         <option value="repairitem">ต้องซ่อม</option>
                                                         <option value="lost">สูญหาย (ลูกค้าแจ้ง)</option>
-                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
-                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่ส่งคืน)</option>
                                                         <option value="damaged_beyond_repair">*เสียหายหนัก
                                                             (ให้เช่าต่อไม่ได้)
                                                         </option>
@@ -2975,8 +2970,7 @@
                                                         <option value="cleanitem" selected>สภาพปกติ ส่งทำความสะอาด</option>
                                                         <option value="repairitem">ต้องซ่อม</option>
                                                         <option value="lost">*สูญหาย (ลูกค้าแจ้ง)</option>
-                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
-                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่ส่งคืน)</option>
                                                         <option value="damaged_beyond_repair">*เสียหายหนัก
                                                             (ให้เช่าต่อไม่ได้)</option>
                                                     </select>

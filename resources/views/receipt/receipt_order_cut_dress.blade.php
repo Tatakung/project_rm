@@ -225,43 +225,6 @@
 
 
 
-        {{-- <span class="sub-item" style="margin-left: 20px;">-
-            นัดคืนวันที่
-            {{ \Carbon\Carbon::parse($only_rent->return_date)->locale('th')->isoFormat('D MMM') }}
-            {{ \Carbon\Carbon::parse($only_rent->return_date)->year + 543 }}
-        </span> --}}
-
-
-
-
-        {{-- @if ($orderdetail->type_order == 1)
-        @elseif($orderdetail->type_order == 2)
-            <span class="sub-item" style="margin-left: 20px;">- กำหนดคืนชุดวันที่
-                {{ \Carbon\Carbon::parse($date->return_date)->locale('th')->isoFormat('D MMM') }}
-                {{ \Carbon\Carbon::parse($date->return_date)->year + 543 }}</span><br>
-            <span class="sub-item" style="margin-left: 20px;">-
-                จะได้รับเงินประกันคืนเมื่อคืนชุดตามกำหนดและชุดอยู่ในสภาพสมบูรณ์</span><br>
-            <span class="sub-item" style="margin-left: 20px;">- กรณีส่งคืนชุดล่าช้า หากเกินกำหนดวันคืนชุด
-                ผู้เช่าจะต้องชำระค่าปรับเพิ่มเติม คิดเป็นวันละ 200 บาท/ชุด</span><br>
-        @elseif($orderdetail->type_order == 3)
-            <span class="sub-item" style="margin-left: 20px;">- กำหนดคืนเครื่องประดับวันที่
-                {{ \Carbon\Carbon::parse($date->return_date)->locale('th')->isoFormat('D MMM') }}
-                {{ \Carbon\Carbon::parse($date->return_date)->year + 543 }}</span><br>
-            <span class="sub-item" style="margin-left: 20px;">-
-                จะได้รับเงินประกันคืนเมื่อคืนเครื่องประดับตามกำหนดและชุดอยู่ในสภาพสมบูรณ์</span><br>
-            <span class="sub-item" style="margin-left: 20px;">- กรณีส่งคืนล่าช้า หากเกินกำหนดวันคืน
-                ผู้เช่าจะต้องชำระค่าปรับเพิ่มเติม คิดเป็นวันละ 200 บาท</span><br>
-        @elseif($orderdetail->type_order == 4)
-            <span class="sub-item" style="margin-left: 20px;">- กำหนดคืนชุดวันที่
-                {{ \Carbon\Carbon::parse($date->return_date)->locale('th')->isoFormat('D MMM') }}
-                {{ \Carbon\Carbon::parse($date->return_date)->year + 543 }}</span><br>
-            <span class="sub-item" style="margin-left: 20px;">-
-                จะได้รับเงินประกันคืนเมื่อคืนชุดตามกำหนดและชุดอยู่ในสภาพสมบูรณ์</span><br>
-            <span class="sub-item" style="margin-left: 20px;">- กรณีส่งคืนชุดล่าช้า หากเกินกำหนดวันคืนชุด
-                ผู้เช่าจะต้องชำระค่าปรับเพิ่มเติม คิดเป็นวันละ 200 บาท/ชุด</span><br>
-        @endif --}}
-
-
 
     </div>
 

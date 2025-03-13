@@ -23,7 +23,7 @@
     </style>
 
 
-    
+
 
 
     <ol class="breadcrumb" style="background-color: transparent;">
@@ -35,7 +35,8 @@
                 style="color: black ;">ประเภท{{ $data_type->type_jewelry_name }}</a>
         </li>
         <li class="breadcrumb-item active">
-            รายละเอียดของ{{ $data_type->type_jewelry_name }} {{ $data_type->specific_letter }}{{ $datajewelry->jewelry_code }}
+            รายละเอียดของ{{ $data_type->type_jewelry_name }}
+            {{ $data_type->specific_letter }}{{ $datajewelry->jewelry_code }}
         </li>
     </ol>
 
@@ -93,7 +94,7 @@
                             <img src="{{ asset('storage/' . $dataimage->jewelry_image) }}" alt=""
                                 style="max-height: 350px; width: auto;">
 
-                            
+
 
                         </div>
                     </div>
@@ -313,27 +314,31 @@
                 </div>
 
 
+                @if ($set_name->count() > 0)
+                <div class="alert alert-warning text-start">
+                    <div class="mb-2 text-danger fw-bold">
+                        คำเตือน: เครื่องประดับชิ้นนี้อยู่ใน {{ $set_name->count() }} เซต
+                        การยุติการให้เช่าจะทำให้ทั้ง {{ $set_name->count() }} เซตไม่สามารถให้เช่าได้ครบถ้วน
+                        และเซตเหล่านั้นจะถูกยุติการให้เช่าโดยอัตโนมัติ
+                    </div>
+                    <ul class="mb-2" style="font-size: 14px;">
+                        @foreach ($set_name as $item)
+                            <li>เซต{{ $item->set_name }}</li>
+                        @endforeach
+                    </ul>
+                    <p class="text-danger fw-bold mt-2">**กรุณาพิจารณาผลกระทบก่อนยืนยันการดำเนินการ
+                        และติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
+                </div>
+                @endif
+
+
+
+
                 @if ($stop_re->count() > 0)
                     <!-- จำลองว่ามีลูกค้าจองอยู่ -->
                     <div class="alert alert-warning text-start">
 
-                        @if ($set_name->count() > 0)
-                            <div class="mb-2 text-danger fw-bold">
-                                คำเตือน: เครื่องประดับชิ้นนี้อยู่ใน {{ $set_name->count() }} เซต
-                                การยุติการให้เช่าจะทำให้ทั้ง {{ $set_name->count() }} เซตไม่สามารถให้เช่าได้ครบถ้วน
-                                และเซตเหล่านั้นจะถูกยุติการให้เช่าโดยอัตโนมัติ
-                            </div>
-                            <ul class="mb-2" style="font-size: 14px;">
-                                @foreach ($set_name as $item)
-                                    <li>เซต{{ $item->set_name }}</li>
-                                @endforeach
-
-
-                            </ul>
-                            {{-- <p class="text-danger fw-bold">การยุติการให้เช่าจะทำให้ทั้ง {{$set_name->count()}} เซตไม่สามารถให้เช่าได้ครบถ้วน และจะถูกยุติการให้เช่าโดยอัตโนมัติ</p> --}}
-                        @endif
-
-
+                        
                         <strong>มีลูกค้าที่จองไว้ {{ $stop_re->count() }} คน</strong>
                         <ul class="mt-2">
                             @foreach ($stop_re as $item)

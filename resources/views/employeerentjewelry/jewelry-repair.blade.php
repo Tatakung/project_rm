@@ -78,7 +78,7 @@
                                     {{-- <th>เลือก</th> --}}
                                     <th>รายการซ่อม</th>
                                     <th>รายละเอียดของการซ่อม</th>
-                                    <th>สถานะ</th>
+                                    
                                     <th>คิวเช่าต่อไป </th>
                                     <th>จัดการ</th>
                                 </tr>
@@ -108,8 +108,7 @@
                                             {{ $repair->repair_description }}
                                         </td>
 
-                                        <td>{{ $repair->repair_status }}
-                                        </td>
+                                        
 
                                         <td>
 
@@ -238,7 +237,7 @@
                                         {{-- <th>เลือก</th> --}}
                                         <th>รายการซ่อม</th>
                                         <th>รายละเอียดของการซ่อม</th>
-                                        <th>สถานะ</th>
+                                        
                                         <th>คิวเช่าต่อไป </th>
                                         <th>จัดการ</th>
                                     </tr>
@@ -268,7 +267,8 @@
                                                 {{ $repair->repair_description }}
                                             </td>
 
-                                            <td style="color: #0c3daf">{{ $repair->repair_status }}</td>
+                                            
+                                            
                                             <td>
                                                 <span id="days{{ $repair->id }}"></span>
                                                 @php

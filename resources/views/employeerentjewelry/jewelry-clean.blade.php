@@ -95,7 +95,7 @@
                                         <tr>
                                             {{-- <th>เลือก</th> --}}
                                             <th>รายการ</th>
-                                            <th>สถานะ</th>
+                                            
                                             <th>คิวเช่าต่อไป </th>
                                             <th>จัดการ</th>
                                         </tr>
@@ -115,8 +115,7 @@
                                                     {{ $clean->jewvationtorefil->jewelry_m_o_typejew->specific_letter }}{{ $clean->jewvationtorefil->jewelry_code }}
                                                 </td>
 
-                                                <td style="color: #a22222 ; ">{{ $clean->status }}</td>
-
+                                                
                                                 <td>
                                                     <span id="day{{ $clean->id }}"></span>
                                                     @php
@@ -173,9 +172,9 @@
                                                                         <input type="hidden" name="jewelry_id"
                                                                             value="{{ $clean->jewelry_id }}">
                                                                         <p>ยืนยันว่าจะเปลี่ยนสถานะจาก <span
-                                                                                style="color: #EE4E4E ; ">'รอดำเนินการ'</span>เป็น
+                                                                                >'รอดำเนินการ'</span>เป็น
                                                                             <span
-                                                                                style="color: #EE4E4E ; ">'กำลังทำความสะอาด'</span>
+                                                                                >'กำลังทำความสะอาด'</span>
                                                                         </p>
 
 
@@ -216,8 +215,8 @@
                                         </div>
                                         <div class="modal-body">
                                             <p>ยืนยันว่าจะเปลี่ยนสถานะจาก <span
-                                                    style="color: #EE4E4E ; ">'รอดำเนินการ'</span>เป็น <span
-                                                    style="color: rgb(24, 15, 206) ; ">'กำลังส่งซัก'</span></p>
+                                                    >'รอดำเนินการ'</span>เป็น <span
+                                                    >'กำลังส่งซัก'</span></p>
 
                                             <span id="statuschangemessage"></span>
                                         </div>

@@ -67,9 +67,10 @@
         </li>
 
         <li class="breadcrumb-item">
-            <a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}" style="color: black ; ">รายการออเดอร์ที่ {{ $orderdetail->order_id }} </a>
+            <a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}"
+                style="color: black ; ">รายการออเดอร์ที่ {{ $orderdetail->order_id }} </a>
         </li>
-        
+
         <li class="breadcrumb-item active">
             รายละเอียดที่ {{ $orderdetail->id }}
         </li>
@@ -141,8 +142,7 @@
                 }
 
                 // dd($check_bunton_pass) ;
-            }
-            elseif ($reservation->jewelry_set_id) {
+            } elseif ($reservation->jewelry_set_id) {
                 $list_set = [];
                 // แค่jewelry_set_idในตาราง reservation
                 $jewwelry_set_id_in_reservation = App\Models\Reservation::where('status_completed', 0)
@@ -178,7 +178,6 @@
                         // คิวแรก
                         // คิวแรกก็จริงแต่มันก็ต้องไปเช้คว่า ในเซ้ตทั้งหมดอะ มันพร้อมที่จะให้เช่าทั้งหมดไหม นึกออกไหม
                         if ($reservation->status == 'ถูกจอง') {
-
                             // เช็คสถานะเฉพาะเซตก่อน
                             if ($reservation->resermanytoonejewset->set_status == 'พร้อมให้เช่า') {
                                 $jew_set_id_for = App\Models\Jewelrysetitem::where(
@@ -191,12 +190,9 @@
                                         $check_bunton_pass = false;
                                     }
                                 }
-                            }
-                            elseif ($reservation->resermanytoonejewset->set_status == 'ยุติการให้เช่า') {
+                            } elseif ($reservation->resermanytoonejewset->set_status == 'ยุติการให้เช่า') {
                                 $check_bunton_pass = false;
                             }
-
-
                         }
 
                         if ($reservation->status == 'กำลังเช่า') {
@@ -829,8 +825,9 @@
 
 
                             @if (in_array('ยกเลิกโดยทางร้าน', $list_status) || in_array('ยกเลิกโดยลูกค้า', $list_status))
-                                <div class="status-step text-center" >
-                                    <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif" style="background: rgb(166, 32, 32) ; ">
+                                <div class="status-step text-center">
+                                    <div class="status-icon @if (in_array('ถูกจอง', $list_status)) active @endif"
+                                        style="background: rgb(166, 32, 32) ; ">
                                         {{-- <i class="fas fa-check"></i> --}}
                                     </div>
                                     <p style="color: rgb(166, 32, 32)">ยกเลิกการจอง</p>
@@ -1104,8 +1101,7 @@
                                 <div class="ms-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <span class="text-secondary">รายได้ค่าเช่า</span>
-                                        <span
-                                            class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
+                                        <span class="fw-medium text-secondary">{{ number_format($orderdetail->price, 2) }}
                                             บาท</span>
                                     </div>
 
@@ -1193,7 +1189,7 @@
 
 
 
-        
+
 
         <div class="row mt-3 d-flex align-items-stretch">
             {{-- ข้อมูลเครื่องประดับ --}}
@@ -1296,7 +1292,7 @@
 
 
 
-        
+
 
 
 
@@ -1491,7 +1487,7 @@
 
     <div class="modal fade" id="updatestatus_return" tabindex="-1" role="dialog"
         aria-labelledby="updatestatus_returnLabel" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <form action="{{ route('employee.updatereturnjewelry', ['id' => $orderdetail->id]) }}" method="POST">
                 @csrf
                 <div class="modal-content">
@@ -1623,6 +1619,7 @@
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
+                                            <th class="bg-gray-100">รูปภาพ</th>
                                             <th class="bg-gray-100">รายการ</th>
                                             <th class="bg-gray-100">การดำเนินการ</th>
                                             <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย (บาท)</th>
@@ -1631,10 +1628,15 @@
                                     <tbody>
 
                                         <tr>
+                                            <td>
+                                                <img src="{{ asset('storage/' . $imagejewelry->jewelry_image) }}"
+                                                    alt="เครื่องประดับ" class="img-fluid rounded"
+                                                    style="width: 130px; height: 130px;">
+
+                                            </td>
                                             <td class="px-4 py-2">
                                                 {{ $typejewelry->type_jewelry_name }}
-                                                {{ $typejewelry->specific_letter }}
-                                                {{ $jewelry->jewelry_code }}
+                                                {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
                                             </td>
                                             <td class="px-4 py-2">
                                                 <select name="actionreturnitem" id="actionreturnitem"
@@ -1642,8 +1644,7 @@
                                                     <option value="cleanitem" selected>*สภาพปกติ ส่งทำความสะอาด</option>
                                                     <option value="repairitem">*ต้องซ่อม</option>
                                                     <option value="lost">*สูญหาย (ลูกค้าแจ้ง)</option>
-                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
-                                                        คาดว่าไม่น่าจะคืน)</option>
+                                                    <option value="lost_unreported">*สูญหาย (ลูกค้าไม่ส่งคืน)</option>
                                                     <option value="damaged_beyond_repair">*เสียหายหนัก (ให้เช่าต่อไม่ได้)
                                                     </option>
                                                 </select>
@@ -1680,6 +1681,7 @@
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
+                                            <th class="bg-gray-100">รูปภาพ</th>
                                             <th class="bg-gray-100">รายการ</th>
                                             <th class="bg-gray-100">การดำเนินการ</th>
                                             <th class="bg-gray-100">ค่าธรรมเนียมความเสียหาย</th>
@@ -1688,10 +1690,16 @@
                                     <tbody>
                                         @foreach ($reservationfilter as $item)
                                             <tr>
-
                                                 <input type="hidden" name="refil_id_[]" value="{{ $item->id }}">
                                                 <input type="hidden" name="refil_jewelry_id_[]"
                                                     value="{{ $item->jewelry_id }}">
+
+                                                <td>
+                                                    <img src="{{ asset('storage/' . $item->jewvationtorefil->jewelryimages->first()->jewelry_image) }}"
+                                                        alt="เครื่องประดับ" class="img-fluid rounded"
+                                                        style="width: 130px; height: 130px;">
+
+                                                </td>
 
                                                 <td class="px-4 py-2">
                                                     {{ $item->jewvationtorefil->jewelry_m_o_typejew->type_jewelry_name }}
@@ -1704,8 +1712,7 @@
                                                         <option value="repair">*ต้องซ่อม</option>
 
                                                         <option value="lost">*สูญหาย (ลูกค้าแจ้ง)</option>
-                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่แจ้ง
-                                                            คาดว่าไม่น่าจะคืน)</option>
+                                                        <option value="lost_unreported">*สูญหาย (ลูกค้าไม่ส่งคืน)</option>
                                                         <option value="damaged_beyond_repair">*เสียหายหนัก
                                                             (ให้เช่าต่อไม่ได้)
                                                         </option>

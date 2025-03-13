@@ -299,12 +299,12 @@
                     <td class="text-right" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
                         <span>คืนเงินประกัน (บาท)</span><br>
                         <span>ภาษีมูลค่าเพิ่ม 7 % (บาท)</span><br>
-                        <span><strong>จำนวนคืนเงินประกันทั้งสิ้น (บาท)</strong></span>
+                        <span>จำนวนคืนเงินประกันทั้งสิ้น (บาท)</span>
                     </td>
                     <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
                         <span>{{ number_format($receipt->total_price , 2 ) }}</span><br>
                         <span>0.00</span><br>
-                        <span><strong>{{ number_format($receipt->total_price , 2 ) }}</strong></span>
+                        <span>{{ number_format($receipt->total_price , 2 ) }}</span>
     
                     </td>
                 </tr>
@@ -318,13 +318,12 @@
                     <td class="text-right" style="vertical-align: top ;   border-top: 1px solid black;" colspan="4">
                         <span>ลูกค้าต้องชำระเพิ่ม (<i>ค่าเสียหายเกินวงเกินประกัน</i>)</span><br>
                         <span>ภาษีมูลค่าเพิ่ม 7 % (บาท)</span><br>
-                        <span><strong>จำนวนเงินที่ต้องชำระเพิ่มทั้งสิ้น (บาท)</strong></span>
+                        <span>จำนวนเงินที่ต้องชำระเพิ่มทั้งสิ้น (บาท)</span>
                     </td>
                     <td class="text-center" style="vertical-align: top; border-top: 1px solid black;">
                         <span>{{ number_format(abs($receipt->total_price) , 2 ) }}</span><br>
                         <span>0.00</span><br>
-                        <span><strong>{{ number_format(abs($receipt->total_price) , 2) }}</strong></span>
-    
+                        <span>{{ number_format(abs($receipt->total_price) , 2) }}</span>
                     </td>
                 </tr>
 

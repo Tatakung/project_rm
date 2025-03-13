@@ -109,7 +109,6 @@
                                             {{ $item->repair_description }}
                                         </td>
 
-                                        {{-- <td style="color: #a22222 ; ">{{ $item->repair_status }}</td> --}}
 
                                         <td>
 
@@ -346,7 +345,7 @@
                                                 @endif
                                             </td>
 
-                                            <td style="color: #a22222 ; ">{{ $item->repair_description }}</td>
+                                            <td>{{ $item->repair_description }}</td>
 
                                             <td>
 

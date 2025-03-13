@@ -98,7 +98,7 @@
                                         เช่า{{ $reservation->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name }}
                                         {{ $reservation->resermanytoonejew->jewelry_m_o_typejew->specific_letter }}{{ $reservation->resermanytoonejew->jewelry_code }}
                                     @elseif($reservation->jewelry_set_id)
-                                        เช่าเซต{{ $reservation->resermanytoonejewset->set_name }}
+                                        เช่าเซตเครื่องประดับ{{ $reservation->resermanytoonejewset->set_name }}
                                     @endif
 
 
@@ -111,7 +111,7 @@
                                 <td >
                                     {{ \Carbon\Carbon::parse($reservation->end_date)->locale('th')->isoFormat('D MMM') }}
                                     {{ \Carbon\Carbon::parse($reservation->end_date)->year + 543 }}
-                                    <span style="color: red ; " id="showday{{ $reservation->id }}"></span>
+                                    <span style="color: red ; font-size: 12px; " id="showday{{ $reservation->id }}"></span>
                                 </td>
                                 {{-- <td style="width: 300px;">
                                     <p id="late{{ $reservation->id }}"></p>
@@ -127,25 +127,29 @@
 
                                     document.getElementById('showday{{ $reservation->id }}').innerHTML
                                     if (totalday == 0) {
-                                        document.getElementById('showday{{ $reservation->id }}').innerHTML = "คืนวันนี้";
+                                        document.getElementById('showday{{ $reservation->id }}').innerHTML = "(คืนวันนี้)";
                                         document.getElementById('late{{ $reservation->id }}').innerHTML = '-';
                                     } else if (totalday < 0) {
-                                        document.getElementById('showday{{ $reservation->id }}').innerHTML = "เลยกำหนด " + Math.abs(totalday) + ' วัน';
+                                        document.getElementById('showday{{ $reservation->id }}').innerHTML = "(เลยกำหนด " + Math.abs(totalday) + ' วัน)';
                                         document.getElementById('late{{ $reservation->id }}').innerHTML = 200 * Math.abs(totalday) + ' บาท';
                                         console.log(typeof(totalday));
                                     } else {
-                                        document.getElementById('showday{{ $reservation->id }}').innerHTML = 'อีก ' + totalday + ' วัน';
+                                        document.getElementById('showday{{ $reservation->id }}').innerHTML = '(อีก ' + totalday + ' วัน)';
                                         document.getElementById('late{{ $reservation->id }}').innerHTML = '-';
                                     }
                                 </script>
                                 <td>
-                                    <span style="color: darkorange;">{{ $reservation->status }}</span>
+                                    <span>{{ $reservation->status }}</span>
                                 </td>
                                 <td style="padding: 16px;">
-                                    <a href="{{ route('employee.ordertotaldetailshow', ['id' => $orderdetail->id]) }}"
-                                        class="btn btn-s" style="background-color:#DADAE3;">
+                                    
+
+                                    <a href="{{ route('employee.ordertotaldetail', ['id' => $orderdetail->order_id]) }}"
+                                        class="btn btn-sm" style="background-color:#DADAE3;">
                                         ดูรายละเอียด
                                     </a>
+
+
                                 </td>
 
                             </tr>

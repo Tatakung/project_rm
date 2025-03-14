@@ -82,7 +82,7 @@
                                         $dress_id = App\Models\Jewelry::where('type_jewelry_id', $type_id)->value('id');
                                         $image_show = App\Models\Jewelryimage::where('jewelry_id', $dress_id)->first();
                                     @endphp
-                                    <img src="{{ asset('storage/' . $image_show->jewelry_image) }}" alt=""
+                                    <img src="{{ asset($image_show->jewelry_image) }}" alt=""
                                         class="card-img-top custom-img">
                                 </button>
                                 <div class="card-body">

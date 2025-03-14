@@ -81,9 +81,25 @@
     }
     </style>
 
-    @php
-        $test_car = '2' ; 
-    @endphp
+<ol class="breadcrumb" style="background-color: transparent;">
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.dresstotal') }}" style="color: black ; ">รายการชุด</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.typedress', ['id' => $typedress->id]) }}"
+            style="color: black ;">ประเภท{{ $typedress->type_dress_name }}</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.dressdetail', ['id' => $dress->id, 'separable' => $dress->separable]) }}"
+            style="color: black ;">รายละเอียด{{ $typedress->type_dress_name }}
+            {{ $dress->dress_code_new }}{{ $dress->dress_code }}</a>
+    </li>
+
+
+    <li class="breadcrumb-item active">
+        ประวัติการเช่า{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+    </li>
+</ol>
 
     <div class="container mt-5">
         <h3>ประวัติการเช่าชุด </h3>
@@ -143,7 +159,7 @@
                         <div class="card-body">
                             <h5>ข้อมูลสรุป</h5>
                             <p>จำนวนครั้งที่ถูกเช่า <strong>{{ $history_renrdress->count() }} ครั้ง</strong></p>
-                            <p>รายได้รวม <strong>{{ number_format($history_renrdress->sum('price'), 2) }} บาท</strong></p>
+                            {{-- <p>รายได้รวม <strong>{{ number_format($history_renrdress->sum('price'), 2) }} บาท</strong></p> --}}
                             {{-- <p>อัตรราการเช่าต่อเดือน </p> --}}
                         </div>
                     </div>
@@ -269,7 +285,7 @@
                         <div class="card-body">
                             <h5>ข้อมูลสรุป</h5>
                             <p>จำนวนครั้งที่ถูกเช่า <strong>{{ $history_rentshirt->count() }} ครั้ง</strong></p>
-                            <p>รายได้รวม <strong>{{ number_format($history_rentshirt->sum('price'), 2) }} บาท</strong></p>
+                            {{-- <p>รายได้รวม <strong>{{ number_format($history_rentshirt->sum('price'), 2) }} บาท</strong></p> --}}
                             {{-- <p>อัตรราการเช่าต่อเดือน </p> --}}
                         </div>
                     </div>
@@ -395,7 +411,7 @@
                         <div class="card-body">
                             <h5>ข้อมูลสรุป</h5>
                             <p>จำนวนครั้งที่ถูกเช่า <strong>{{ $history_rentskirt->count() }} ครั้ง</strong></p>
-                            <p>รายได้รวม <strong>{{ number_format($history_rentskirt->sum('price'), 2) }} บาท</strong></p>
+                            {{-- <p>รายได้รวม <strong>{{ number_format($history_rentskirt->sum('price'), 2) }} บาท</strong></p> --}}
                             {{-- <p>อัตรราการเช่าต่อเดือน </p> --}}
                         </div>
                     </div>

@@ -3,10 +3,10 @@
 @section('content')
     <div class="container-fluid py-4">
         <!-- บันทึกรายจ่าย -->
-        <div class="card mb-4">
+        <div class="card mb-4 shadow">
             <div class="card-header">
                 <h5 class="card-title mb-0">
-                    <i class="fas fa-plus-circle me-2"></i>บันทึกรายจ่าย
+                    บันทึกรายจ่าย
                 </h5>
             </div>
             <div class="card-body">
@@ -58,9 +58,9 @@
                     </div> --}}
 
                         <!-- แถวที่ 4: ปุ่มบันทึก -->
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>บันทึกรายจ่าย
+                        <div class="col-12 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success">
+                                บันทึกรายจ่าย
                             </button>
                             {{-- <button type="reset" class="btn btn-secondary ms-2">
                             <i class="fas fa-redo me-2"></i>ล้างข้อมูล
@@ -94,10 +94,10 @@
         @endphp
 
         <!-- ตารางแสดงรายการ -->
-        <div class="card">
+        <div class="card shadow">
             <div class="card-header">
                 <h5 class="card-title mb-0">
-                    <i class="fas fa-history me-2"></i>ประวัติรายจ่าย
+                    ประวัติรายจ่าย
                 </h5>
             </div>
 

@@ -75,8 +75,27 @@
             margin-top: 20px;
         }
     </style>
+        <ol class="breadcrumb" style="background-color: transparent;">
+            <li class="breadcrumb-item">
+                <a href="{{ route('admin.dresstotal') }}" style="color: black ; ">รายการชุด</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ route('admin.typedress', ['id' => $typedressname->id]) }}"
+                    style="color: black ;">ประเภท{{ $typedressname->type_dress_name }}</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ route('admin.dressdetail', ['id' => $dress->id, 'separable' => $dress->separable]) }}"
+                    style="color: black ;">รายละเอียด{{ $typedressname->type_dress_name }}
+                    {{ $dress->dress_code_new }}{{ $dress->dress_code }}</a>
+            </li>
+    
+    
+            <li class="breadcrumb-item active">
+                ประวัติการซ่อม{{ $typedressname->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+            </li>
+        </ol>
         <div class="container mt-5">
-            <h2>ประวัติการซ่อมชุด{{ $typedressname->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</h2>
+            <h2>ประวัติการซ่อม{{ $typedressname->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}</h2>
             
 
             <ul class="nav nav-tabs">

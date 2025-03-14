@@ -192,10 +192,10 @@
 
                         <td class="image-container">
                             @if ($item->type_order == 2 && $item->orderdetailmanytoonedress->dressimages->first())
-                                <img src="{{ asset('storage/' . $item->orderdetailmanytoonedress->dressimages->first()->dress_image) }}"
+                                <img src="{{ asset($item->orderdetailmanytoonedress->dressimages->first()->dress_image) }}"
                                     alt="รูปสินค้า">
                             @elseif($item->type_order == 3 && $item->detail_many_one_re->jewelry_id)
-                                <img src="{{ asset('storage/' . $item->detail_many_one_re->resermanytoonejew->jewelryimages->first()->jewelry_image) }}"
+                                <img src="{{ asset($item->detail_many_one_re->resermanytoonejew->jewelryimages->first()->jewelry_image) }}"
                                     alt="">
                             @else
                                 <img src="{{ asset('images/setjewelry.jpg') }}" alt="">

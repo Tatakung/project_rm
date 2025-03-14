@@ -210,7 +210,9 @@
                                         </li>
                                     @endforeach
                                 </ul>
-                                <p class="text-danger fw-bold mt-2">**กรุณาติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
+                                <p class="text-danger fw-bold mt-2">**กรุณาพิจารณาผลกระทบก่อนยืนยันการดำเนินการ
+                                    และติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
+                                
                             </div>
                         @endif
                         <div class="modal-footer d-flex justify-content-center">
@@ -355,7 +357,7 @@
                     <div class="d-flex">
                         @foreach ($imagedata as $image)
                             <div class="p-2">
-                                <img src="{{ asset('storage/' . $image->dress_image) }}" alt=""
+                                <img src="{{ asset($image->dress_image) }}" alt=""
                                     style="max-height: 350px; width: auto;">
                             </div>
                         @endforeach

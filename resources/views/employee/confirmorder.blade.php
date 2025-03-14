@@ -120,7 +120,7 @@
 
                         <div class="media">
                             @if ($detail->type_order == 2)
-                                <img src="{{ asset('storage/' . App\Models\Dressimage::where('dress_id', $detail->dress_id)->first()->dress_image) }}"
+                                <img src="{{ asset($detail->orderdetailmanytoonedress->dressimages->first()->dress_image) }}"
                                     class="mr-5" alt="..." style="width: 146px; height: 195px; border-radius: 8px;">
                             @elseif($detail->type_order == 1)
                                 <div class="mr-5"
@@ -129,7 +129,7 @@
                                 </div>
                             @elseif($detail->type_order == 3)
                                 @if ($reserv->jewelry_id)
-                                    <img src="{{ asset('storage/' . $imagejewelry->jewelry_image) }}" class="mr-5"
+                                    <img src="{{ asset($imagejewelry->jewelry_image) }}" class="mr-5"
                                         alt="..." style="width: 146px; height: 195px; border-radius: 8px;">
                                 @elseif($reserv->jewelry_set_id)
                                     <img src="{{ asset('images/setjewelry.jpg') }}" class="mr-5" alt="..."

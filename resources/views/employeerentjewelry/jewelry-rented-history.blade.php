@@ -64,31 +64,51 @@
             color: #6c757d;
             font-size: 1.1rem;
             margin-top: 20px;
-            
+
         }
+
         .btn-s {
-        border-radius: 20px;
-        background-color: #007bff;
-        border: none;
-        padding: 5px 15px;
-        display: flex;
-        align-items: center;
-        transition: background-color 0.3s ease;
-    }
+            border-radius: 20px;
+            background-color: #007bff;
+            border: none;
+            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
 
-    .btn-s:hover {
-        background-color: #0056b3;
-    }
+        .btn-s:hover {
+            background-color: #0056b3;
+        }
 
-    .btn-s i {
-        margin-right: 2px;
-        font-size: 14px;
-    }
+        .btn-s i {
+            margin-right: 2px;
+            font-size: 14px;
+        }
     </style>
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('admin.jewelrytotal') }}" style="color: black ; ">รายการเครื่องประดับ</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ route('admin.typejewelry', ['id' => $jewelry->type_jewelry_id]) }}"
+                style="color: black ;">ประเภท{{ $typejewelry->type_jewelry_name }}</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a href="{{ route('admin.jewelrydetail', ['id' => $jewelry->id]) }}" style="color: black ;">รายละเอียดของ{{ $typejewelry->type_jewelry_name }}
+                {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</a>
+        </li>
+        <li class="breadcrumb-item active">
+            ประวัติการเช่า{{ $typejewelry->type_jewelry_name }}
+            {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
+        </li>
+    </ol>
+
+
     <div class="container mt-5">
-        <h3>ประวัติการเช่าเครื่องประดับ </h3>
-
-
+        <h3>ประวัติการเช่า{{ $typejewelry->type_jewelry_name }}
+            {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }} </h3>
         <div class="card mb-5">
             <div class="card-body">
                 <form action="{{ route('showrentedhistoryfilter', ['id' => $jewelry->id]) }}" method="GET"
@@ -120,19 +140,21 @@
                             @endfor
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-s mb-2" style="background-color:#BACEE6 ;"><i class="bi bi-search"></i> ค้นหา</button>
+                    <button type="submit" class="btn btn-s mb-2" style="background-color:#BACEE6 ;"><i
+                            class="bi bi-search"></i> ค้นหา</button>
                 </form>
             </div>
         </div>
 
 
-        
+
         @if ($history->count() > 0)
             <div class="card">
                 <div class="card-body">
-                    <h5>ข้อมูลสรุปของ{{ $typejewelry->type_jewelry_name }} {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
+                    <h5>ข้อมูลสรุปของ{{ $typejewelry->type_jewelry_name }}
+                        {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
                     </h5>
-                    <p>จำนวนครั้งที่ถูกเช่า:   <strong>{{ $history->count() }} ครั้ง</strong></p>
+                    <p>จำนวนครั้งที่ถูกเช่า: <strong>{{ $history->count() }} ครั้ง</strong></p>
                     {{-- <p>รายได้รวม:   <strong>{{ number_format($history->re_one_many_details->sum('price'), 2) }} บาท</strong></p> --}}
                     {{-- <p>อัตราการเช่าต่อเดือน:   <strong>ข้อมูลเพิ่มเติม (หากมี)</strong></p> --}}
                 </div>
@@ -153,7 +175,10 @@
                             <tr style="text-align: center ; ">
                                 <td>
                                     @php
-                                        $date = App\Models\Date::where('order_detail_id', $item->re_one_many_details->first()->id)
+                                        $date = App\Models\Date::where(
+                                            'order_detail_id',
+                                            $item->re_one_many_details->first()->id,
+                                        )
                                             ->orderBy('created_at', 'desc')
                                             ->first();
                                     @endphp

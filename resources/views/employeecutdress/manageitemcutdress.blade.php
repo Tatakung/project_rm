@@ -314,7 +314,7 @@
                         @foreach ($image_rent as $item)
                             <div class="col-md-6">
                                 <div class="card h-100 shadow-sm">
-                                    <img src="{{ asset('storage/' . $item->image) }}" alt="Image description"
+                                    <img src="{{ asset($item->image) }}" alt="Image description"
                                         style="width: 100%; height: 300px;">
                                     <div class="card-body">
                                         <p class="card-text">{{ $item->description }}</p>

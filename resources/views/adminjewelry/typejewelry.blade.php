@@ -88,7 +88,7 @@
                                         'jewelry_image',
                                     );
                                 @endphp
-                                <img src="{{ asset('storage/' . $image) }}" alt="" class="card-img-top custom-img">
+                                <img src="{{ asset($image) }}" alt="" class="card-img-top custom-img">
                                 <div class="card-body text-center">
                                     <h6 style="color: black;">
                                         {{ $item->jewelry_m_o_typejew->specific_letter }}{{ $item->jewelry_code }}</h6>

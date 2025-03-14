@@ -727,8 +727,10 @@ class OrderController extends Controller
 
         $reservationfilterdress = Reservationfilterdress::where('reservation_id', $orderdetail->reservation_id)->get();
 
+        $currentdate = now()->toDateString() ; 
+        // dd($current) ; 
 
-        return view('employeerentdress.managedetailrentdress', compact('receipt_bill_pickup', 'receipt_bill_return',   'additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'sum_additional', 'datadress', 'shirtdata', 'skirtdata', 'filtershirt_id', 'filterskirt_id', 'reservationfilterdress'));
+        return view('employeerentdress.managedetailrentdress', compact('receipt_bill_pickup', 'receipt_bill_return',   'additional', 'dress_mea_adjust_modal_show', 'status_if_dress', 'orderdetail', 'dress', 'employee', 'fitting', 'cost', 'date', 'decoration', 'imagerent', 'mea_dress', 'mea_orderdetail', 'orderdetailstatus', 'valuestatus', 'customer', 'mea_orderdetail_for_adjust', 'dressimage', 'dress_mea_adjust', 'dress_mea_adjust_modal', 'dress_mea_adjust_button', 'his_dress_adjust', 'dateeee', 'sum_additional', 'datadress', 'shirtdata', 'skirtdata', 'filtershirt_id', 'filterskirt_id', 'reservationfilterdress','currentdate'));
     }
 
 

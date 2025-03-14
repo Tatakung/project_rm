@@ -1204,7 +1204,7 @@
                                     <p>หมายเลขเครื่องประดับ :
                                         {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</p>
                                     <div class="col-md-4">
-                                        <img src="{{ asset('storage/' . $imagejewelry->jewelry_image) }}"
+                                        <img src="{{ asset($imagejewelry->jewelry_image) }}"
                                             alt="เครื่องประดับ" class="img-fluid rounded"
                                             style="width: 154px; height: auto;">
                                     </div>
@@ -1214,7 +1214,7 @@
                                     <div class="row">
                                         @foreach ($setjewelryitem as $item)
                                             <div class="col-md-4 mb-3">
-                                                <img src="{{ asset('storage/' . $item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
+                                                <img src="{{ asset($item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
                                                     alt="เครื่องประดับในเซต" class="img-fluid rounded mb-2"
                                                     style="height: 150px; width: 150px; object-fit: cover;">
                                                 <small class="d-block">
@@ -1629,7 +1629,7 @@
 
                                         <tr>
                                             <td>
-                                                <img src="{{ asset('storage/' . $imagejewelry->jewelry_image) }}"
+                                                <img src="{{ asset($imagejewelry->jewelry_image) }}"
                                                     alt="เครื่องประดับ" class="img-fluid rounded"
                                                     style="width: 130px; height: 130px;">
 
@@ -1695,7 +1695,7 @@
                                                     value="{{ $item->jewelry_id }}">
 
                                                 <td>
-                                                    <img src="{{ asset('storage/' . $item->jewvationtorefil->jewelryimages->first()->jewelry_image) }}"
+                                                    <img src="{{ asset($item->jewvationtorefil->jewelryimages->first()->jewelry_image) }}"
                                                         alt="เครื่องประดับ" class="img-fluid rounded"
                                                         style="width: 130px; height: 130px;">
 

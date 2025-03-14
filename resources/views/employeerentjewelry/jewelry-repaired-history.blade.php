@@ -75,6 +75,24 @@
         margin-top: 20px;
     }
 </style>
+<ol class="breadcrumb" style="background-color: transparent;">
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.jewelrytotal') }}" style="color: black ; ">รายการเครื่องประดับ</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.typejewelry', ['id' => $jewelry->type_jewelry_id]) }}"
+            style="color: black ;">ประเภท{{ $typejewelry->type_jewelry_name }}</a>
+    </li>
+
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.jewelrydetail', ['id' => $jewelry->id]) }}" style="color: black ;">รายละเอียดของ{{ $typejewelry->type_jewelry_name }}
+            {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</a>
+    </li>
+    <li class="breadcrumb-item active">
+        ประวัติการซ่อม{{ $typejewelry->type_jewelry_name }}
+        {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}
+    </li>
+</ol>
     <div class="container mt-5">
         <h2>ประวัติการซ่อม{{ $typejewelry->type_jewelry_name }} {{ $typejewelry->specific_letter }}{{ $jewelry->jewelry_code }}</h2>
         

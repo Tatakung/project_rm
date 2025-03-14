@@ -45,10 +45,10 @@
         @endif
     </script>
     <div class="container-fluid py-4">
-        <div class="card mb-4">
+        <div class="card mb-4 shadow">
             <div class="card-header">
-                <h2 class="card-title mb-0">ชุดรอกำหนดราคา</h2>
-                <p class="text-muted">พบ {{ $count_dress }} รายการที่รอการกำหนดราคา</p>
+                <h2 class="card-title mb-2">ชุดรอกำหนดราคา</h2>
+                <p class="text-muted ml-2">พบ {{ $count_dress }} รายการที่รอการกำหนดราคา</p>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -65,7 +65,7 @@
                             @foreach ($dress_wait as $item)
                                 <tr>
                                     <td>
-                                        <img src="{{ asset('storage/' . $item->dressimages->first()->dress_image) }}"
+                                        <img src="{{ asset($item->dressimages->first()->dress_image) }}"
                                             alt="" class="img-thumbnail"
                                             style="width: 100px; height: 120px; object-fit: cover;">
                                     </td>
@@ -103,7 +103,7 @@
 
 
                                                     <div class="text-center mb-4">
-                                                        <img src="{{ asset('storage/' . $item->dressimages->first()->dress_image) }}"
+                                                        <img src="{{ asset($item->dressimages->first()->dress_image) }}"
                                                             alt="ภาพชุด" class="img-thumbnail"
                                                             style="width: 200px; height: 230px; object-fit: cover;">
                                                             <br>

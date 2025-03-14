@@ -128,13 +128,21 @@ class DressController extends Controller
             $mea_dress_unit = $request->input('measurement_dress_unit_');
 
 
-            // ปรับเป็น 2 รูป
+            
+
             if ($request->hasFile('add_image')) {
+                $image = $request->file('add_image');
+                $imageName = time() . '.' . $image->extension(); // ตั้งชื่อไฟล์ให้ไม่ซ้ำ
+                $image->move(public_path('dress_images'), $imageName); // ย้ายไฟล์ไปที่ public/dress_images
+            
                 $add_image = new Dressimage();
                 $add_image->dress_id = $dress->id;
-                $add_image->dress_image = $request->file('add_image')->store('dress_images', 'public');
+                $add_image->dress_image = 'dress_images/' . $imageName; // บันทึกแค่ path ไม่รวม public
                 $add_image->save();
             }
+            
+
+
 
 
 
@@ -817,7 +825,7 @@ class DressController extends Controller
     public function testtab()
     {
         $categories = ['กำไล', 'สร้อย', 'แหวน', 'เพชร']; // ข้อมูลจากฐานข้อมูลแทนได้
-        return view('testtab',compact('categories'));
+        return view('testtab', compact('categories'));
     }
 
 
@@ -826,14 +834,14 @@ class DressController extends Controller
         return Dress::all();
     }
 
-    
 
 
-    
 
-    
 
-    
+
+
+
+
 
     // ตัวแยกประวัติการซ่อม
     public function historydressrepair($id)
@@ -1313,11 +1321,9 @@ class DressController extends Controller
         if ($skirtitem->skirtitem_status == 'พร้อมให้เช่า') {
             $skirtitem->skirtitem_status = 'ยุติการให้เช่า';
             $skirtitem->save();
-        }
-        elseif ($skirtitem->skirtitem_status == 'กำลังถูกเช่า') {
+        } elseif ($skirtitem->skirtitem_status == 'กำลังถูกเช่า') {
             return redirect()->back()->with('fail', 'ขณะนี้ผ้าถุงกำลังถูกเช่าโดยลูกค้าอยู่ ไม่สามารถยุติการให้เช่าสำหรับผ้าถุงนี้ได้');
-        }
-        else {
+        } else {
             // รอทำความสะอาด กำลังส่งซัก 
             //รอดำเนินการซ่อม กำลังซ่อม
 
@@ -1332,10 +1338,6 @@ class DressController extends Controller
             $reservation_update->status = 'ยุติการให้เช่า';
             $reservation_update->status_completed = 1;
             $reservation_update->save();
-
-
-
-            
         }
         return redirect()->back()->with('success', 'ยุติการให้เช่าผ้าถุงสำเร็จแล้ว');
     }

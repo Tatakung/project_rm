@@ -19,7 +19,7 @@
                         @csrf
                         <div class="form-group mb-2">
                             <div class="d-flex gap-2">
-                                <select class="form-control" name="year" id="year">
+                                <select class="form-control" name="year" id="year"style="margin-right:0.2cm">
                                     <option value="0">ทุกปี</option>
                                     @for ($i = 2020; $i <= now()->year; $i++)
                                         <option value="{{ $i }}"
@@ -28,7 +28,7 @@
                                         </option>
                                     @endfor
                                 </select>
-                                <select class="form-control" name="month" id="month">
+                                <select class="form-control" name="month" id="month"style="margin-right:0.2cm">
                                     <option value="0" {{ $value_month == 0 ? 'selected' : '' }}>ทุกเดือน</option>
                                     <option value="1" {{ $value_month == 1 ? 'selected' : '' }}>มกราคม</option>
                                     <option value="2" {{ $value_month == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
@@ -45,7 +45,7 @@
                                 </select>
 
                                 <button type="submit" class="btn" style="background-color:#BACEE6;">
-                                    <i class="bi bi-search"></i> ฟิลเตอร์
+                                    <i class="bi bi-search"></i> ค้นหา
                                 </button>
                             </div>
                         </div>
@@ -160,7 +160,7 @@
 
                                                         </div>
                                                         <div class="product-image mb-3">
-                                                            <img src="{{ asset('storage/' . $image_jew->jewelry_image) }}"
+                                                            <img src="{{ asset($image_jew->jewelry_image) }}"
                                                                 alt="SR1007B-4A C1" class="img-fluid">
                                                         </div>
                                                         <div class="product-name mb-2">
@@ -215,7 +215,7 @@
                                                                     @endif
                                                                 </div>
                                                                 <div class="product-image mb-3">
-                                                                    <img src="{{ asset('storage/' . $image_jew->jewelry_image) }}"
+                                                                    <img src="{{ asset($image_jew->jewelry_image) }}"
                                                                         alt="SR1007B-4A C1" class="img-fluid">
                                                                 </div>
                                                                 <div class="product-name mb-2">
@@ -373,7 +373,7 @@
                                                             @endif
                                                         </div>
                                                         <div class="product-image mb-3">
-                                                            <img src="{{ asset('storage/' . $imagedress->dress_image) }}"
+                                                            <img src="{{ asset($imagedress->dress_image) }}"
                                                                 alt="SR1007B-4A C1" class="img-fluid">
                                                         </div>
                                                         <div class="product-name mb-2">
@@ -441,7 +441,7 @@
                                                                     @endif
                                                                 </div>
                                                                 <div class="product-image mb-3">
-                                                                    <img src="{{ asset('storage/' . $imagedress->dress_image) }}"
+                                                                    <img src="{{ asset($imagedress->dress_image) }}"
                                                                         alt="SR1007B-4A C1" class="img-fluid">
                                                                 </div>
                                                                 <div class="product-name mb-2">

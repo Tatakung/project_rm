@@ -1048,18 +1048,52 @@ class EmployeeController extends Controller
                 }
             }
 
-            // บันทึกช้อม๔ุลงในตาราง rentimage
+            // บันทึกช้อมูลลงในตาราง rentimage
+            // if ($request->hasFile('file_image_')) {
+            //     $imf_loop = $request->file('file_image_');
+            //     $note_image = $request->input('note_image_');
+            //     foreach ($imf_loop as $index => $img) {
+            //         $image_save = new Imagerent();
+            //         $image_save->order_detail_id = $orderdetail->id;
+            //         $image_save->image = $img->store('rent_images', 'public');
+            //         $image_save->description = $note_image[$index] ?? null;
+            //         $image_save->save();
+            //     }
+            // }
+
+
             if ($request->hasFile('file_image_')) {
                 $imf_loop = $request->file('file_image_');
                 $note_image = $request->input('note_image_');
+
                 foreach ($imf_loop as $index => $img) {
-                    $image_save = new Imagerent();
-                    $image_save->order_detail_id = $orderdetail->id;
-                    $image_save->image = $img->store('rent_images', 'public');
-                    $image_save->description = $note_image[$index] ?? null;
-                    $image_save->save();
+                    if ($img->isValid()) {
+                        // สร้างชื่อไฟล์ที่ไม่ซ้ำ
+                        $imageName = time() . '_' . $index . '.' . $img->extension();
+                        // ย้ายไฟล์ไปที่ public/rent_images
+                        $img->move(public_path('rent_images'), $imageName);
+
+                        // บันทึกข้อมูลลงฐานข้อมูล
+                        $image_save = new Imagerent();
+                        $image_save->order_detail_id = $orderdetail->id;
+                        $image_save->image = 'rent_images/' . $imageName; // ไม่ต้องมี public
+                        $image_save->description = $note_image[$index] ?? null;
+                        $image_save->save();
+                    }
                 }
             }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             DB::commit();
@@ -1073,12 +1107,23 @@ class EmployeeController extends Controller
 
     public function savecutdressaddimage(Request $request, $id)
     {
+        
         if ($request->hasFile('file_image')) {
-            $add_image = new Imagerent();
-            $add_image->order_detail_id = $id;
-            $add_image->image = $request->file('file_image')->store('rent_images', 'public');
-            $add_image->description = $request->input('note_image');
-            $add_image->save();
+            $image = $request->file('file_image');
+
+            if ($image->isValid()) {
+                // สร้างชื่อไฟล์แบบไม่ซ้ำ
+                $imageName = time() . '.' . $image->extension();
+                // ย้ายไฟล์ไปที่ public/rent_images
+                $image->move(public_path('rent_images'), $imageName);
+
+                // บันทึกข้อมูลลงฐานข้อมูล
+                $add_image = new Imagerent();
+                $add_image->order_detail_id = $id;
+                $add_image->image = 'rent_images/' . $imageName; // เก็บเฉพาะ path โดยไม่ต้องมี public
+                $add_image->description = $request->input('note_image');
+                $add_image->save();
+            }
         }
         return redirect()->back()->with('success', 'เพิ่มรูปภาพสำเร็จ');
     }
@@ -1860,14 +1905,13 @@ class EmployeeController extends Controller
 
         return redirect()->route('employee.ordertotaldetail', ['id' => $order_id]);
     }
-    public function changePickupDateCutdress(Request $request ,$id){
-        $new_pickup_date = $request->input('new_pickup_date') ; 
+    public function changePickupDateCutdress(Request $request, $id)
+    {
+        $new_pickup_date = $request->input('new_pickup_date');
         $date = new Date();
         $date->order_detail_id = $id;
         $date->pickup_date = $new_pickup_date;
         $date->save();
-        return redirect()->back()->with('success','เลื่อนวันนัดรับชุดสำเร็จ') ; 
+        return redirect()->back()->with('success', 'เลื่อนวันนัดรับชุดสำเร็จ');
     }
-
-    
 }

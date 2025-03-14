@@ -78,13 +78,24 @@ class JewelryController extends Controller
 
             $list_for_session[] = $session_name_type . ' รหัสเครื่องประดับ ' . $string_name . '' . $maxcode;
 
-            // ตารางรูปภาพ
+            
+
+
             if ($request->hasFile('jewelry_image')) {
+                $image = $request->file('jewelry_image');
+                $imageName = time() . '.' . $image->extension(); // ตั้งชื่อไฟล์ให้ไม่ซ้ำ
+                $image->move(public_path('jewelry_images'), $imageName); // ย้ายไฟล์ไปที่ public/jewelry_images
+            
                 $create_image = new Jewelryimage();
                 $create_image->jewelry_id = $create_jew->id;
-                $create_image->jewelry_image = $request->file('jewelry_image')->store('jewelry_images', 'public');
+                $create_image->jewelry_image = 'jewelry_images/' . $imageName; // บันทึก path ไม่รวม public
                 $create_image->save();
             }
+            
+
+
+
+
         }
         return redirect()->back()->with('warn', $list_for_session);
     }

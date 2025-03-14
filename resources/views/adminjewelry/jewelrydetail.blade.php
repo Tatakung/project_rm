@@ -91,7 +91,7 @@
                 <div class="row">
                     <div class="d-flex">
                         <div class="p-2">
-                            <img src="{{ asset('storage/' . $dataimage->jewelry_image) }}" alt=""
+                            <img src="{{ asset($dataimage->jewelry_image) }}" alt=""
                                 style="max-height: 350px; width: auto;">
 
 
@@ -314,31 +314,68 @@
                 </div>
 
 
-                @if ($set_name->count() > 0)
+                @if ($set_name->count() > 0 || $stop_re->count() > 0)
                 <div class="alert alert-warning text-start">
-                    <div class="mb-2 text-danger fw-bold">
-                        คำเตือน: เครื่องประดับชิ้นนี้อยู่ใน {{ $set_name->count() }} เซต
-                        การยุติการให้เช่าจะทำให้ทั้ง {{ $set_name->count() }} เซตไม่สามารถให้เช่าได้ครบถ้วน
-                        และเซตเหล่านั้นจะถูกยุติการให้เช่าโดยอัตโนมัติ
-                    </div>
-                    <ul class="mb-2" style="font-size: 14px;">
-                        @foreach ($set_name as $item)
-                            <li>เซต{{ $item->set_name }}</li>
-                        @endforeach
-                    </ul>
+                    @if ($set_name->count() > 0)
+
+                        <div class="mb-2 text-danger fw-bold">
+                            คำเตือน: เครื่องประดับชิ้นนี้อยู่ใน {{ $set_name->count() }} เซต
+                            การยุติการให้เช่าจะทำให้ทั้ง {{ $set_name->count() }} เซตไม่สามารถให้เช่าได้ครบถ้วน
+                            และเซตเหล่านั้นจะถูกยุติการให้เช่าโดยอัตโนมัติ
+                        </div>
+                        <ul class="mb-2" style="font-size: 14px;">
+                            @foreach ($set_name as $item)
+                                <li>เซต{{ $item->set_name }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    @if ($stop_re->count() > 0)
+                        <!-- จำลองว่ามีลูกค้าจองอยู่ -->
+                        <strong>มีลูกค้าที่จองไว้ {{ $stop_re->count() }} คน</strong>
+                        <ul class="mt-2">
+                            @foreach ($stop_re as $item)
+                                <li style="font-size : 14px;">
+                                    คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }}
+                                    {{ $item->re_one_many_details->first()->order->customer->customer_lname }}
+                                    <span>(นัดรับวันที่
+                                        {{ \Carbon\Carbon::parse($item->start_date)->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($item->start_date)->year + 543 }})</span>
+                                    @if ($item->jewelry_id)
+                                        <i class="fas fa-check-circle text-success fa-1x mb-3"></i> จองเป็นรายชิ้น
+                                    @elseif($item->jewelry_set_id)
+                                        <i class="fas fa-check-circle text-success fa-1x mb-3"></i> จองเป็นเซต
+                                    @endif
+
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
                     <p class="text-danger fw-bold mt-2">**กรุณาพิจารณาผลกระทบก่อนยืนยันการดำเนินการ
                         และติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
                 </div>
                 @endif
 
 
-
-
-                @if ($stop_re->count() > 0)
-                    <!-- จำลองว่ามีลูกค้าจองอยู่ -->
+                {{-- @if ($set_name->count() > 0)
                     <div class="alert alert-warning text-start">
+                        <div class="mb-2 text-danger fw-bold">
+                            คำเตือน: เครื่องประดับชิ้นนี้อยู่ใน {{ $set_name->count() }} เซต
+                            การยุติการให้เช่าจะทำให้ทั้ง {{ $set_name->count() }} เซตไม่สามารถให้เช่าได้ครบถ้วน
+                            และเซตเหล่านั้นจะถูกยุติการให้เช่าโดยอัตโนมัติ
+                        </div>
+                        <ul class="mb-2" style="font-size: 14px;">
+                            @foreach ($set_name as $item)
+                                <li>เซต{{ $item->set_name }}</li>
+                            @endforeach
+                        </ul>
+                        <p class="text-danger fw-bold mt-2">**กรุณาพิจารณาผลกระทบก่อนยืนยันการดำเนินการ
+                            และติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
+                    </div>
+                @endif --}}
 
-                        
+
+                {{-- @if ($stop_re->count() > 0)
+                    <div class="alert alert-warning text-start">
                         <strong>มีลูกค้าที่จองไว้ {{ $stop_re->count() }} คน</strong>
                         <ul class="mt-2">
                             @foreach ($stop_re as $item)
@@ -360,13 +397,13 @@
                         <p class="text-danger fw-bold mt-2">**กรุณาพิจารณาผลกระทบก่อนยืนยันการดำเนินการ
                             และติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
                     </div>
-                @endif
+                @endif --}}
                 <div class="modal-footer d-flex justify-content-center">
                     <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-dismiss="modal">
                         <i class="fas fa-times"></i> ยกเลิก
                     </button>
                     <form action="{{ route('jewelrystoprent', ['id' => $datajewelry->id]) }}" method="POST">
-                        <!-- ตัวอย่าง id -->
+
                         @csrf
                         <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill">
                             <i class="fas fa-check"></i> ยืนยัน

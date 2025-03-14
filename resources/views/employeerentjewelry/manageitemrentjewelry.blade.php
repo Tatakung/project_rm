@@ -58,11 +58,10 @@
                         <div class="col-md-12">
                             <div class="media">
                                 @if ($reservation->jewelry_id)
-                                    <img src="{{ asset('storage/' . $imagejewelry->jewelry_image) }}" class="mr-5"
+                                    <img src="{{ asset($imagejewelry->jewelry_image) }}" class="mr-5"
                                         alt="..." style="max-height: 350px; width: auto;">
                                 @elseif($reservation->jewelry_set_id)
-                                    {{-- <img src="{{ asset('images/setjewelry.jpg') }}" class="mr-5" alt="..."
-                                        style="width: 96px; height: 145px; border-radius: 8px;"> --}}
+                                    
                                 @endif
 
                                 <div class="media-left">
@@ -112,7 +111,7 @@
                                         <div class="row">
                                             @foreach ($setjewelryitem as $item)
                                                 <div class="col-md-4 mb-3">
-                                                    <img src="{{ asset('storage/' . $item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
+                                                    <img src="{{ asset($item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
                                                         alt="เครื่องประดับในเซต" class="img-fluid rounded mb-2"
                                                         style="height: 150px; width: 200px; object-fit: cover;">
                                                     <small class="d-block">

@@ -46,8 +46,9 @@
             @foreach ($order->order_one_many_orderdetails as $index => $detail)
                 <div class="media">
                     @if ($detail->type_order == 2)
-                        <img src="{{ asset('storage/' . App\Models\Dressimage::where('dress_id', $detail->dress_id)->first()->dress_image) }}"
+                        <img src="{{ asset($detail->orderdetailmanytoonedress->dressimages->first()->dress_image) }}"
                             class="mr-5" alt="..." style="width: 96px; height: 145px; border-radius: 8px;">
+                        
                     @elseif($detail->type_order == 1)
                         <div class="mr-5"
                             style="width: 96px; height: 145px; border-radius: 2px; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
@@ -64,7 +65,7 @@
                             }
                         @endphp
                         @if ($reservation->jewelry_id != null)
-                            <img src="{{ asset('storage/' . $jewelryimagenoset) }}" class="mr-5" alt="..."
+                            <img src="{{ asset($jewelryimagenoset) }}" class="mr-5" alt="..."
                                 style="width: 96px; height: 145px; border-radius: 8px;">
                         @else
                             <img src="{{ asset('images/setjewelry.jpg') }}" class="mr-5" alt="..."
@@ -88,15 +89,16 @@
                         <p style="font-size: 15px;">
 
                             @if ($detail->type_order == 1)
-                                รายการตัด{{$detail->type_dress}}
+                                รายการตัด{{ $detail->type_dress }}
                             @elseif($detail->type_order == 2)
                                 @if ($detail->shirtitems_id)
-                                รายการเช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }} (เสื้อ)
+                                    รายการเช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                    (เสื้อ)
                                 @elseif($detail->skirtitems_id)
-                                รายการเช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                    รายการเช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
                                     (ผ้าถุง)
                                 @else
-                                รายการเช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                                    รายการเช่า{{ $type_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
                                     (ทั้งชุด)
                                 @endif
                             @elseif($detail->type_order == 3)
@@ -113,7 +115,7 @@
                                     รายการเช่าเซต{{ $datasetjewelry->set_name }}
                                 @endif
                             @elseif($detail->type_order == 4)
-                            รายการเช่าตัด{{$detail->type_dress}}
+                                รายการเช่าตัด{{ $detail->type_dress }}
                             @endif
 
                         </p>
@@ -148,14 +150,14 @@
                         </p>
 
                         <p style="font-size: 15px;">
-                            
+
                         </p>
-                        
+
 
                     </div>
-                    
 
-                    
+
+
                     <div class="media-right d-flex justify-content-between align-items-center">
                         <p style="font-size: 15px; margin-right: 20px;"> <!-- เพิ่ม margin-right -->
                         <form action="{{ route('employee.manageitem', ['id' => $detail->id]) }}" method="GET"

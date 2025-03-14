@@ -64,7 +64,7 @@
             </li>
             
             <li class="breadcrumb-item active">
-                ประเภทชุด 
+                ประเภท{{ $typedress->type_dress_name }}
             </li>
         </ol>
 
@@ -85,7 +85,7 @@
                             <a href="{{ route('admin.dressdetail', ['id' => $item->id, 'separable' => $item->separable]) }}"
                                 style="text-decoration: none;">
                                 @if ($item->dressimages->isNotEmpty())
-                                    <img src="{{ asset('storage/' . $item->dressimages->first()->dress_image) }}"
+                                    <img src="{{ asset($item->dressimages->first()->dress_image) }}"
                                         alt="" class="card-img-top custom-img">
                                 @endif
                                 <div class="card-body text-center">

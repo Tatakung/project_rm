@@ -64,29 +64,52 @@
             color: #6c757d;
             font-size: 1.1rem;
             margin-top: 20px;
-            
+
         }
+
         .btn-s {
-        border-radius: 20px;
-        background-color: #007bff;
-        border: none;
-        padding: 5px 15px;
-        display: flex;
-        align-items: center;
-        transition: background-color 0.3s ease;
-    }
+            border-radius: 20px;
+            background-color: #007bff;
+            border: none;
+            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
 
-    .btn-s:hover {
-        background-color: #0056b3;
-    }
+        .btn-s:hover {
+            background-color: #0056b3;
+        }
 
-    .btn-s i {
-        margin-right: 2px;
-        font-size: 14px;
-    }
+        .btn-s i {
+            margin-right: 2px;
+            font-size: 14px;
+        }
     </style>
+
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item">
+            <a href="{{ route('admin.dresstotal') }}" style="color: black ; ">รายการชุด</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ route('admin.typedress', ['id' => $typedress->id]) }}"
+                style="color: black ;">ประเภท{{ $typedress->type_dress_name }}</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ route('admin.dressdetail', ['id' => $dress->id, 'separable' => $dress->separable]) }}"
+                style="color: black ;">รายละเอียด{{ $typedress->type_dress_name }}
+                {{ $dress->dress_code_new }}{{ $dress->dress_code }}</a>
+        </li>
+
+
+        <li class="breadcrumb-item active">
+            ประวัติการเช่า{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+        </li>
+    </ol>
+
+
     <div class="container mt-5">
-        <h3>ประวัติการเช่าชุด </h3>
+        <h3>ประวัติการเช่า{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }} </h3>
 
 
         <div class="card mb-5">
@@ -120,21 +143,23 @@
                             @endfor
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-s mb-2" style="background-color:#BACEE6 ;"><i class="bi bi-search"></i> ค้นหา</button>
+                    <button type="submit" class="btn btn-s mb-2" style="background-color:#BACEE6 ;"><i
+                            class="bi bi-search"></i> ค้นหา</button>
                 </form>
             </div>
         </div>
 
 
-        
+
         @if ($history_renrdress->count() > 0)
             <div class="card">
                 <div class="card-body">
-                    <h5>ข้อมูลสรุปของ{{ $typedress->type_dress_name }} {{ $dress->dress_code_new }}{{ $dress->dress_code }}
+                    <h5>ข้อมูลสรุปของ{{ $typedress->type_dress_name }}
+                        {{ $dress->dress_code_new }}{{ $dress->dress_code }}
                     </h5>
-                    <p>จำนวนครั้งที่ถูกเช่า:   <strong>{{ $history_renrdress->count() }} ครั้ง</strong></p>
-                    <p>รายได้รวม:   <strong>{{ number_format($history_renrdress->sum('price'), 2) }} บาท</strong></p>
-                    {{-- <p>อัตราการเช่าต่อเดือน:   <strong>ข้อมูลเพิ่มเติม (หากมี)</strong></p> --}}
+                    <p>จำนวนครั้งที่ถูกเช่า: <strong>{{ $history_renrdress->count() }} ครั้ง</strong></p>
+                    {{-- <p>รายได้รวม:   <strong>{{ number_format($history_renrdress->sum('price'), 2) }} บาท</strong></p> --}}
+
                 </div>
             </div>
             <div class="table-responsive mt-4">

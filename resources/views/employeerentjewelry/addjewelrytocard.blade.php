@@ -208,7 +208,7 @@
                                 data-target="#showModal{{ $jew->id }}" style="border: none; background: none;">
                                 {{-- <p>jewelry_id : {{$jew->id}}</p> --}}
 
-                                <img src="{{ asset('storage/' . $image->jewelry_image) }}" class="card-img-top custom-img"
+                                <img src="{{ asset($image->jewelry_image) }}" class="card-img-top custom-img"
                                     alt="{{ $image->jewelry_image }}">
                                 <div class="card-body">
                                     @php
@@ -238,7 +238,7 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <!-- รูปภาพทางด้านซ้าย -->
-                                            <img src="{{ asset('storage/' . $image->jewelry_image) }}" class="img-fluid"
+                                            <img src="{{ asset($image->jewelry_image) }}" class="img-fluid"
                                                 alt="{{ $image->jewelry_image }}" style="max-width: 100%; height: auto;">
                                         </div>
                                         <div class="col-md-8">
@@ -338,7 +338,7 @@
                                             @foreach ($item_jew as $item)
                                                 <div class="item d-flex align-items-center mb-3 pb-3"
                                                     style="border-bottom: 1px dashed #eee;">
-                                                    <img src="{{ asset('storage/' . $item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
+                                                    <img src="{{ asset($item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
                                                         class="me-3 rounded"
                                                         alt="{{ $item->jewitem_m_to_o_jew->jewelry_m_o_typejew->type_jewelry_name }}"
                                                         style="width: 150px; height: 150px; object-fit: cover; background-color: #f5f5f5;">

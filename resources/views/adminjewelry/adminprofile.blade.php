@@ -25,7 +25,7 @@
                                                 <div class="d-flex justify-content-center align-items-center rounded"
                                                     style="height: 140px; background-color: rgb(233, 236, 239);">
                                                     {{-- <span style="color: rgb(166, 168, 170); font: bold 8pt Arial;">140x140</span> --}}
-                                                    <span> <img src="{{ asset('storage/' . $adm->image) }}" alt="รูปภาพ"
+                                                    <span> <img src="{{ asset($adm->image) }}" alt="รูปภาพ"
                                                             style="width: 140px; height: 140px;">
                                                     </span>
                                                 </div>

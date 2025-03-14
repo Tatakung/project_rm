@@ -13,15 +13,24 @@
         .transition-all {
             transition: all 0.3s ease;
         }
+        .breadcrumb {
+            background-color: transparent;
+            font-size: 1rem;
+        }
+
+        .breadcrumb a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .breadcrumb-item.active {
+            color: #6c757d;
+        }
     </style>
 
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Library</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Data</li>
-        </ol>
-    </nav>
+
+        
+
 
 
 
@@ -35,7 +44,7 @@
                 @csrf
                 <div class="form-group mb-2">
                     <div class="d-flex gap-2">
-                        <select class="form-control" name="year" id="year">
+                        <select class="form-control" name="year" id="year" style="margin-right:0.2cm">
                             <option value="0">ทุกปี</option>
                             @for ($i = 2020; $i <= now()->year; $i++)
                                 <option value="{{ $i }}" @if ($value_year == $i) selected @endif>
@@ -43,7 +52,7 @@
                                 </option>
                             @endfor
                         </select>
-                        <select class="form-control" name="month" id="month">
+                        <select class="form-control" name="month" id="month" style="margin-right:0.2cm">
                             <option value="0" {{ $value_month == 0 ? 'selected' : '' }}>ทุกเดือน</option>
                             <option value="1" {{ $value_month == 1 ? 'selected' : '' }}>มกราคม</option>
                             <option value="2" {{ $value_month == 2 ? 'selected' : '' }}>กุมภาพันธ์</option>
@@ -60,7 +69,7 @@
                         </select>
 
                         <button type="submit" class="btn" style="background-color:#BACEE6;">
-                            <i class="bi bi-search"></i> ฟิลเตอร์
+                            <i class="bi bi-search"></i> ค้นหา
                         </button>
                     </div>
                 </div>
@@ -68,11 +77,11 @@
             <div class="row g-4 mt-2">
                 <!-- Total Income Card -->
                 <div class="col-12 col-md-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100 hover-shadow transition-all">
+                    <div class="card border-0 shadow h-100 hover-shadow transition-all">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 bg-opacity-10 me-3">
-                                    <i class="bi bi-wallet-fill"></i>
+                                    {{-- <i class="bi bi-wallet-fill"></i> --}}
                                 </div>
                                 <div>
                                     <h6 class="text-muted mb-1 fw-light">รายได้รวม</h6>
@@ -87,11 +96,11 @@
 
                 <!-- Total Expenses Card -->
                 <div class="col-12 col-md-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-40 hover-shadow transition-all">
-                        <div class="card-body">
+                    <div class="card border-0 shadow h-40 hover-shadow transition-all">
+                        <div class="card-body  d-flex flex-column h-100">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 bg-opacity-10 me-3">
-                                    <i class="bi bi-credit-card-fill fs-3"></i>
+                                    {{-- <i class="bi bi-credit-card-fill fs-3"></i> --}}
                                 </div>
                                 <div>
                                     <h6 class="text-muted mb-1 fw-light">รายจ่ายรวม</h6>
@@ -108,11 +117,11 @@
 
                 <!-- Total Transactions Card -->
                 <div class="col-12 col-md-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100 hover-shadow transition-all">
+                    <div class="card border-0 shadow h-100 hover-shadow transition-all">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 bg-opacity-10 me-3">
-                                    <i class="bi bi-file-earmark-text-fill fs-3"></i>
+                                    {{-- <i class="bi bi-file-earmark-text-fill fs-3"></i> --}}
                                 </div>
                                 <div>
                                     <h6 class="text-muted mb-1 fw-light">จำนวนรายการ</h6>
@@ -129,11 +138,11 @@
 
                 <!-- Insurance Deposit Card -->
                 <div class="col-12 col-md-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100 hover-shadow transition-all">
+                    <div class="card border-0 shadow h-100 hover-shadow transition-all">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 bg-opacity-10 me-3">
-                                    <i class="bi bi-bank2 fs-3"></i>
+                                    {{-- <i class="bi bi-bank2 fs-3"></i> --}}
                                 </div>
                                 <div>
                                     <h6 class="text-muted mb-1 fw-light">เงินประกันที่ยังไม่ได้คืน</h6>

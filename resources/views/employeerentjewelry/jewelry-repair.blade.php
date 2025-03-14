@@ -300,7 +300,7 @@
                                             </td>
                                             <td>
                                                 <button type="button" class="btn btn-secondary" data-toggle="modal"
-                                                    data-target="#update_two_no_clean{{ $repair->id }}">อัพเดตสถานะ456</button>
+                                                    data-target="#update_two_no_clean{{ $repair->id }}">อัพเดตสถานะ</button>
                                             </td>
 
                                             <div class="modal fade" id="update_two_no_clean{{ $repair->id }}"

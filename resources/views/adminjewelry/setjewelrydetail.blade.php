@@ -220,7 +220,7 @@
                             @forelse ($Jewelrysetitem as $item)
                                 <tr style="text-align: center ; ">
                                     <td>
-                                        <img src="{{ asset('storage/' . $item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
+                                        <img src="{{ asset($item->jewitem_m_to_o_jew->jewelryimages->first()->jewelry_image) }}"
                                             alt=""
                                             style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
                                     </td>

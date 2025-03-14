@@ -1512,7 +1512,11 @@
         @endif
 
 
-
+        @php
+        $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
+        $customer = App\Models\Customer::find($customer_id);
+        $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)->orderBy('created_at', 'desc')->first();
+    @endphp
 
 
 
@@ -1569,12 +1573,16 @@
 
 
 
+                            
                             <div class="col-md-6 text-right"
-                                @if ($orderdetail->status_detail == 'ถูกจอง' && $check_button_updatestatusadjust == false && $check_open_button == true) style="display: block ; "
-                            @else
-                                style="display: none ; " @endif>
+                                @if ($orderdetail->status_detail == 'ถูกจอง' && $check_button_updatestatusadjust == false && $check_open_button == true  ) 
+                                    style="display: block ; "
+                                @else
+                                style="display: none ; " 
+                                @endif
+                                >
                                 <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัปเดตสถานะการเช่า</button>
+                                    data-target="#updatestatus">อัปเดตสถานะการเช่าอยู่นี่</button>
                             </div>
 
 
@@ -1777,11 +1785,7 @@
 
 
 
-        @php
-            $customer_id = App\Models\Order::where('id', $orderdetail->order_id)->value('customer_id');
-            $customer = App\Models\Customer::find($customer_id);
-            $Date = App\Models\Date::where('order_detail_id', $orderdetail->id)->orderBy('created_at', 'desc')->first();
-        @endphp
+        
         <div class="row mt-3 d-flex align-items-stretch" id="div_show_net">
             <div class="col-md-12"
                 @if ($orderdetail->status_detail == 'คืนชุดแล้ว') style="display: block;" 
@@ -2240,7 +2244,7 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <img src="{{ asset('storage/' . $dressimage->dress_image) }}" alt=""
+                                <img src="{{ asset($dressimage->dress_image) }}" alt=""
                                     width="154px;" height="auto">
                             </div>
                             <div class="col-md-8">

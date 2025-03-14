@@ -1093,7 +1093,7 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <img src="{{ asset('storage/' . $dressimage->dress_image) }}" alt=""
+                                <img src="{{ asset($dressimage->dress_image) }}" alt=""
                                     width="154px;" height="auto">
                             </div>
                             <div class="col-md-8">
@@ -1552,13 +1552,10 @@
                         </table>
 
                         <!-- ฟิลด์สำหรับพนักงานกรอกค่าธรรมเนียมการเสียหาย -->
-                        <strong class="mb-3">กรอกข้อมูลค่าธรรมเนียม:</strong>
+                        
                         <div class="form-group">
                             <p>เก็บประกันจากลูกค้า : <span>{{ $orderdetail->damage_insurance }} บาท</span></p>
-                            <strong for="damageFee">ค่าธรรมเนียมความเสียหาย (หักจากประกัน):</strong>
-                            <input type="number" class="form-control" name="total_damage_insurance"
-                                id="total_damage_insurance" placeholder="กรอกจำนวนเงิน" min="0" step="0.01"
-                                required value="0">
+                            
                         </div>
 
                         <!-- สรุปการชำระเงิน -->

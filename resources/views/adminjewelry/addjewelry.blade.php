@@ -8,7 +8,7 @@
 <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header"style="background-color: #EAD8C0">
                 บันทึกข้อมูลสำเร็จ
             </div>
             <div class="modal-body">

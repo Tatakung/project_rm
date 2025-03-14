@@ -45,7 +45,7 @@ class ManageorderController extends Controller
 
 
 
-    
+
 
 
     //ค้นหา อก เอว สะโพก
@@ -133,7 +133,7 @@ class ManageorderController extends Controller
 
 
 
-    
+
 
 
 
@@ -1098,18 +1098,48 @@ class ManageorderController extends Controller
                 }
             }
 
-            if ($request->hasFile('file_image_')) {
-                $file_image = $request->file('file_image_');
-                $note_image = $request->input('note_image_');
+            // if ($request->hasFile('file_image_')) {
+            //     $file_image = $request->file('file_image_');
+            //     $note_image = $request->input('note_image_');
 
-                foreach ($file_image as $index => $image) {
-                    $create_image = new Imagerent();
-                    $create_image->order_detail_id = $id;
-                    $create_image->image = $image->store('rent_images', 'public');
-                    $create_image->description = $note_image[$index];
-                    $create_image->save();
+            //     foreach ($file_image as $index => $image) {
+            //         $create_image = new Imagerent();
+            //         $create_image->order_detail_id = $id;
+            //         $create_image->image = $image->store('rent_images', 'public');
+            //         $create_image->description = $note_image[$index];
+            //         $create_image->save();
+            //     }
+            // }
+
+
+            if ($request->hasFile('file_image_')) {
+                $file_images = $request->file('file_image_');
+                $note_images = $request->input('note_image_');
+
+                foreach ($file_images as $index => $image) {
+                    if ($image->isValid()) {
+                        // สร้างชื่อไฟล์แบบไม่ซ้ำ
+                        $imageName = time() . '_' . $index . '.' . $image->extension();
+                        // ย้ายไฟล์ไปที่ public/rent_images
+                        $image->move(public_path('rent_images'), $imageName);
+
+                        // บันทึกข้อมูลลงฐานข้อมูล
+                        $create_image = new Imagerent();
+                        $create_image->order_detail_id = $id;
+                        $create_image->image = 'rent_images/' . $imageName; // เก็บเฉพาะ path โดยไม่ต้องมี public
+                        $create_image->description = $note_images[$index] ?? null;
+                        $create_image->save();
+                    }
                 }
             }
+
+
+
+
+
+
+
+
 
 
             DB::commit();
@@ -1243,17 +1273,32 @@ class ManageorderController extends Controller
             }
         }
 
+        // บันทึกข้อมูลลงในตาราง rentimage โดยตรง
         if ($request->hasFile('file_image_')) {
-            $note_image = $request->input('note_image_');
-            $file_image = $request->file('file_image_');
-            foreach ($file_image as $index => $file) {
-                $image_save = new Imagerent();
-                $image_save->order_detail_id = $id;
-                $image_save->image = $file->store('rent_images', 'public');
-                $image_save->description = $note_image[$index] ?? null;
-                $image_save->save();
+            foreach ($request->file('file_image_') as $index => $file) {
+                if ($file->isValid()) {
+                    // สร้างชื่อไฟล์แบบไม่ซ้ำ
+                    $imageName = time() . '_' . $index . '.' . $file->extension();
+                    // ย้ายไฟล์ไปที่ public/rent_images
+                    $file->move(public_path('rent_images'), $imageName);
+
+                    // บันทึกข้อมูลลงฐานข้อมูล
+                    $image_save = new Imagerent();
+                    $image_save->order_detail_id = $id;
+                    $image_save->image = 'rent_images/' . $imageName; // เก็บ path ไฟล์
+                    $image_save->description = $request->input('note_image_')[$index] ?? null;
+                    $image_save->save();
+                }
             }
         }
+
+
+
+
+
+
+
+
 
         // อัปเดตข้อมูลการนัดลองชุด
         if ($request->input('fitting_id_')) {
@@ -1285,7 +1330,7 @@ class ManageorderController extends Controller
         $order = Order::find($id);
         $dataorderdetail = Orderdetail::where('order_id', $order->id)->get();
         foreach ($dataorderdetail as $detail) {
-            if ($detail->type_order == 2 || $detail->type_order == 4 ) {
+            if ($detail->type_order == 2 || $detail->type_order == 4) {
                 if ($detail->status_detail == 'ถูกจอง') {
                     //ตารางorderdetail
                     $orderdetail = Orderdetail::find($detail->id);
@@ -1322,8 +1367,7 @@ class ManageorderController extends Controller
                         $orderdetail->save();
                     }
                 }
-            }
-            elseif ($detail->type_order == 3) {
+            } elseif ($detail->type_order == 3) {
                 //ตารางorderdetail
                 $orderdetail = Orderdetail::find($detail->id);
                 $orderdetail->status_detail = "กำลังเช่า";
@@ -1381,18 +1425,17 @@ class ManageorderController extends Controller
                     $orderdetail->save();
                 }
             }
-            
         }
 
 
 
         // สร้างใบเสร็จรวม
-        $total_price_receipt = 0 ; 
-        $sum_decoration = 0 ; 
-        foreach($dataorderdetail as $item){
-            $decoration = Decoration::where('order_detail_id',$item->id)->get() ; 
-            foreach($decoration as $value){
-                $sum_decoration += $value->decoration_price ; 
+        $total_price_receipt = 0;
+        $sum_decoration = 0;
+        foreach ($dataorderdetail as $item) {
+            $decoration = Decoration::where('order_detail_id', $item->id)->get();
+            foreach ($decoration as $value) {
+                $sum_decoration += $value->decoration_price;
             }
         }
 
@@ -1402,7 +1445,7 @@ class ManageorderController extends Controller
                 ->where('payment_status', 1)
                 ->exists();
             if ($check_payment) {
-                $total_price_receipt+=  ($item->price - $item->deposit) + $item->damage_insurance;
+                $total_price_receipt +=  ($item->price - $item->deposit) + $item->damage_insurance;
             }
         }
 

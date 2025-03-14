@@ -37,7 +37,7 @@
                                                     </td>
 
                                                     <td style="text-align: center ; ">
-                                                        <img src="{{ asset('storage/' . $jew->jewelryimages->first()->jewelry_image) }}"
+                                                        <img src="{{ asset($jew->jewelryimages->first()->jewelry_image) }}"
                                                             alt="{{ $jew->jewelryimages->first()->id }}" width="15%"
                                                             height="15%">
                                                     </td>

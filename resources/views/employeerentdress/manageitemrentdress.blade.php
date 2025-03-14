@@ -69,7 +69,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="media">
-                            <img src="{{ asset('storage/' . $imagedress->first()->dress_image) }}" class="mr-5" alt="..."
+                            <img src="{{ asset($imagedress->first()->dress_image) }}" class="mr-5" alt="..."
                                 style="max-height: 350px; width: auto;">
                             <div class="media-left">
                                 @php

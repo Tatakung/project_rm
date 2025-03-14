@@ -180,30 +180,29 @@ class ManageRentcutController extends Controller
             }
         }
 
+// บันทึกข้อมูลลงในตาราง rentimage
+if ($request->hasFile('file_image_')) {
+    foreach ($request->file('file_image_') as $index => $img) {
+        if ($img->isValid()) {
+            // สร้างชื่อไฟล์แบบไม่ซ้ำ
+            $imageName = time() . '_' . $index . '.' . $img->extension();
+            // ย้ายไฟล์ไปที่ public/rent_images
+            $img->move(public_path('rent_images'), $imageName);
 
-
-
-
-
-
-
-
-
-
-
-
-        // บันทึกช้อมูลลงในตาราง rentimage
-        if ($request->hasFile('file_image_')) {
-            $imf_loop = $request->file('file_image_');
-            $note_image = $request->input('note_image_');
-            foreach ($imf_loop as $index => $img) {
-                $image_save = new Imagerent();
-                $image_save->order_detail_id = $orderdetail->id;
-                $image_save->image = $img->store('rent_images', 'public');
-                $image_save->description = $note_image[$index] ?? null;
-                $image_save->save();
-            }
+            // บันทึกข้อมูลลงฐานข้อมูล
+            $image_save = new Imagerent();
+            $image_save->order_detail_id = $orderdetail->id;
+            $image_save->image = 'rent_images/' . $imageName; // เก็บ path ไฟล์
+            $image_save->description = $request->input('note_image_')[$index] ?? null;
+            $image_save->save();
         }
+    }
+}
+
+
+        
+
+
 
 
         // บันทึกข้อมูลในตารางfitting
@@ -442,12 +441,25 @@ class ManageRentcutController extends Controller
         $dress->separable = $separate_rentable;  //1แยกไม่ได้ 2 แยกได้
         $dress->save();
 
+
         if ($request->hasFile('dress_image')) {
-            $add_image = new Dressimage();
-            $add_image->dress_id = $dress->id;
-            $add_image->dress_image = $request->file('dress_image')->store('dress_images', 'public');
-            $add_image->save();
+            if ($request->file('dress_image')->isValid()) {
+                // ตั้งชื่อไฟล์ใหม่โดยใช้ timestamp เพื่อป้องกันชื่อซ้ำ
+                $imageName = time() . '.' . $request->file('dress_image')->extension();
+        
+                // ย้ายไฟล์ไปที่ public/dress_images
+                $request->file('dress_image')->move(public_path('dress_images'), $imageName);
+        
+                // บันทึก path ของรูปภาพในฐานข้อมูล
+                $add_image = new Dressimage();
+                $add_image->dress_id = $dress->id;
+                $add_image->dress_image = 'dress_images/' . $imageName; // บันทึกเฉพาะ path
+                $add_image->save();
+            }
         }
+        
+
+
 
 
 

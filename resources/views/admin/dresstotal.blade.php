@@ -106,7 +106,7 @@
                                         $dress_id = App\Models\Dress::where('type_dress_id', $type_id)->value('id');
                                         $image_show = App\Models\Dressimage::where('dress_id', $dress_id)->first();
                                     @endphp
-                                    <img src="{{ asset('storage/' . $image_show->dress_image) }}" alt=""
+                                        <img src="{{ asset($image_show->dress_image) }}" alt=""
                                         class="card-img-top custom-img">
 
                                 </button>

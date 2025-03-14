@@ -159,7 +159,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-4">
-                    <img src="{{ asset('storage/' . $data->image) }}" alt="รูปภาพ"
+                    <img src="{{ asset($data->image) }}" alt="รูปภาพ"
                         style="width: 250px; height: 350px;">
                 </div>
                 <div class="col-mb-4">

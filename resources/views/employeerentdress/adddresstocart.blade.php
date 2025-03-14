@@ -268,7 +268,7 @@
                             <!-- ปุ่มที่ครอบทั้งการ์ดและเป็นตัวเปิด modal -->
                             <button type="button" class="btn p-0" data-toggle="modal"
                                 data-target="#showModal{{ $dress->id }}" style="border: none; background: none;">
-                                <img src="{{ asset('storage/' . $image->dress_image) }}" class="card-img-top custom-img"
+                                <img src="{{ asset($image->dress_image) }}" class="card-img-top custom-img"
                                     alt="{{ $image->dress_image }}">
                                 <div class="card-body">
                                     @php
@@ -306,7 +306,7 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <!-- รูปภาพทางด้านซ้าย -->
-                                            <img src="{{ asset('storage/' . $image->dress_image) }}" class="img-fluid"
+                                            <img src="{{ asset($image->dress_image) }}" class="img-fluid"
                                                 alt="{{ $image->dress_image }}" style="max-width: 100%; height: auto;">
                                         </div>
                                         <div class="col-md-8">

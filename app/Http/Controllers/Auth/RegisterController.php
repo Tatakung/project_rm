@@ -73,10 +73,18 @@ class RegisterController extends Controller
 
         $imagepath = null;
         if (isset($data['image'])) {
-            // $imagepath = $data['image']->store('public/user_images');    
-            $imagepath = $data['image']->store('user_images', 'public');     //storage/app/public/user_images
-
+            if ($data['image']->isValid()) {
+                // สร้างชื่อไฟล์แบบไม่ซ้ำ
+                $imageName = time() . '.' . $data['image']->extension();
+                // ย้ายไฟล์ไปที่ public/user_images
+                $data['image']->move(public_path('user_images'), $imageName);
+                // กำหนด path ที่จะบันทึกในฐานข้อมูล
+                $imagepath = 'user_images/' . $imageName;
+            }
         }
+
+
+
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -90,7 +98,7 @@ class RegisterController extends Controller
             'birthday' => $data['birthday'],
             'image' => $imagepath
         ]);
-        return redirect()->back()->with('success','เพิ่มบัญชีพนักงานสำเร็จ') ; 
+        return redirect()->back()->with('success', 'เพิ่มบัญชีพนักงานสำเร็จ');
     }
 
 
@@ -161,7 +169,7 @@ class RegisterController extends Controller
     //อัปเดตข้อมูล
     public function updateprofile(Request $request, User $user)
     {
-        // dd($request->input('lname')) ; 
+         
         $input = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
@@ -172,9 +180,28 @@ class RegisterController extends Controller
             'image' => 'nullable|mimes:jpeg,jpg,png,gif|max:2048',
         ]);
         if ($request->hasFile('image')) {
-            $input['image'] = $request->file('image')->store('user_images', 'public');
+            // ตรวจสอบว่าไฟล์ที่อัปโหลดมาถูกต้อง
+            if ($request->file('image')->isValid()) {
+                // สร้างชื่อไฟล์ใหม่เพื่อหลีกเลี่ยงการชนกัน
+                $imageName = time() . '.' . $request->file('image')->extension();
+                
+                // ย้ายไฟล์ไปที่ public/user_images และบันทึกชื่อไฟล์
+                $request->file('image')->move(public_path('user_images'), $imageName);
+                
+                // กำหนด path ของรูปภาพที่บันทึกในฐานข้อมูล
+                $input['image'] = 'user_images/' . $imageName;
+            }
         }
+        
+
+
+        
         $user->update($input);
         return redirect()->back()->with('success', 'แก้ไขสำเร็จแล้ว');
     }
+
+
+
+
+
 }

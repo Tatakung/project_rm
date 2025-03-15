@@ -790,13 +790,8 @@ class OrderController extends Controller
 
         $sum_additional = AdditionalChange::where('order_detail_id', $id)->sum('amount');
 
-
-
-
-
-
-
-        return view('employeerentjewelry.managedetailrentjewelry', compact('additional', 'sum_additional', 'orderdetail', 'reservation', 'jewelry', 'receipt_bill_pickup', 'typejewelry', 'receipt_bill_return', 'orderdetailstatus', 'setjewelry', 'imagejewelry', 'order', 'customer', 'user', 'setjewelryitem', 'Date', 'reservationfilter', 'additional', 'check_not_ready'));
+        $currentdate = now()->toDateString() ; 
+        return view('employeerentjewelry.managedetailrentjewelry', compact('additional', 'sum_additional', 'orderdetail', 'reservation', 'jewelry', 'receipt_bill_pickup', 'typejewelry', 'receipt_bill_return', 'orderdetailstatus', 'setjewelry', 'imagejewelry', 'order', 'customer', 'user', 'setjewelryitem', 'Date', 'reservationfilter', 'additional', 'check_not_ready','currentdate'));
     }
 
     //จัดการเช่าตัด

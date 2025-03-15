@@ -1571,7 +1571,7 @@
                             {{-- && $now_today == $dateeee->pickup_date --}}
 
 
-
+                            
 
                             
                             <div class="col-md-6 text-right"

@@ -103,6 +103,7 @@
                             เบอร์โทร: {{ $customer->customer_phone }} <br>
                         </td>
                     </tr>
+                    
                 </table>
             </td>
             <td style="width: 40%;">

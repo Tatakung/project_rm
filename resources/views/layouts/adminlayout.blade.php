@@ -895,13 +895,14 @@
                 <span class="bi bi-list text-primary h3"></span>
             </button>
             <div class="ml-auto d-flex">
+                 
                 <div class="dropdown">
                     <a class="btn py-0 d-flex align-items-center" id="cart-dropdown"
                         href="{{ route('employee.cart') }}" style="color: #000000">
                         <span class="bi bi-cart text-dark h4"></span>
                         <span class=" mb-2 small text-dark">
 
-
+                            
                             @php
                                 $count_cart = App\Models\Order::where('user_id', Auth::user()->id)
                                     ->where('order_status', 0)

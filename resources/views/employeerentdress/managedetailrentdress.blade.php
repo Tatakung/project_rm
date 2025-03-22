@@ -1572,17 +1572,17 @@
 
 
                             
-
+                        
                             
                             <div class="col-md-6 text-right"
-                                @if ($orderdetail->status_detail == 'ถูกจอง' && $check_button_updatestatusadjust == false && $check_open_button == true  ) 
+                                @if ($orderdetail->status_detail == 'ถูกจอง' && $check_button_updatestatusadjust == false && $check_open_button == true && $currentdate == $Date->pickup_date  ) 
                                     style="display: block ; "
                                 @else
-                                style="display: none ; " 
+                                    style="display: none ; " 
                                 @endif
                                 >
                                 <button class="btn" style="background: #C28041; color: #ffffff;" data-toggle="modal"
-                                    data-target="#updatestatus">อัปเดตสถานะการเช่าอยู่นี่</button>
+                                    data-target="#updatestatus">อัปเดตสถานะการเช่า</button>
                             </div>
 
 

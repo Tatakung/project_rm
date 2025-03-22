@@ -154,7 +154,7 @@
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'ตัดชุดเสร็จสิ้น') style="display: none;" @endif>
                                 <button class="btn" style="background: #ACE6B7;" data-toggle="modal"
-                                    data-target="#updatestatus_to_deliver">ส่งมอบชุดครั้งแรก</button>
+                                    data-target="#updatestatus_to_deliver">ส่งมอบชุด</button>
                                 <a href="{{ route('employee.cutadjust', ['id' => $orderdetail->id]) }}"class="btn"
                                     style="background: #E3A499;">ชุดต้องมีการปรับแก้ไข</a>
                             </div>
@@ -164,7 +164,7 @@
                             <div class="col-md-6 text-right"
                                 @if ($orderdetail->status_detail != 'แก้ไขชุดเสร็จสิ้น') style="display: none;" @endif>
                                 <button class="btn" style="background-color:#ACE6B7;" data-toggle="modal"
-                                    data-target="#updatestatus_to_deliver_after_edit">ส่งมอบชุดครั้งที่สอง</button>
+                                    data-target="#updatestatus_to_deliver_after_edit">ส่งมอบชุด</button>
                                 <a href="{{ route('employee.cutadjust', ['id' => $orderdetail->id]) }}"class="btn"
                                     style="background: #E3A499;">ชุดต้องมีการปรับแก้ไข</a>
                             </div>
@@ -928,7 +928,7 @@
         @if ($receipt_two)
             <div class="list-group-item shadow-sm mb-3 d-flex justify-content-between align-items-center mt-3">
                 <div>
-                    <p class="mb-1">ใบเสร็จรับชุด {{$receipt_two->id}}</p>
+                    <p class="mb-1">ใบเสร็จรับชุด</p>
                     <p class="mb-1" style="font-size: 14px; color: #6c757d ; ">วันที่ออกใบเสร็จ:
                         {{ Carbon\Carbon::parse($receipt_two->created_at)->locale('th')->isoFormat('D MMM') }}
                         {{ Carbon\Carbon::parse($receipt_two->created_at)->year + 543 }}

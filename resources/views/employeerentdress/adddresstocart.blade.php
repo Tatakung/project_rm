@@ -188,7 +188,7 @@
                                 mode: "range",
                                 dateFormat: "d/m/Y",
                                 locale: "th",
-                                // minDate: "today",
+                                minDate: "today",
                                 // maxDate: new Date().fp_incr(60),
                                 altInput: true,
                                 altFormat: "j F Y",

@@ -188,21 +188,23 @@
 
                     </div>
                 </div>
+
+
                 <div>
-                    <li>
-                        <a href="{{ route('showrentedhistory', ['id' => $datajewelry->id]) }}" class="text-dark">
-                            <i class="bi bi-clock-history"></i> ประวัติการเช่า
+                    <a>
+                        <a href="{{ route('showrentedhistory', ['id' => $datajewelry->id]) }}" class="text-dark btn btn-sm btn-outline-primary mt-2 ">
+                            <i class="bi bi-clock-history me-2 text-primary"></i> ประวัติการเช่า
                         </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('showrepairjewelryhistory', ['id' => $datajewelry->id]) }}" class="text-dark">
-                            <i class="bi bi-tools"></i> ประวัติการซ่อม
+                    </a>
+                    <a>
+                        <a href="{{ route('showrepairjewelryhistory', ['id' => $datajewelry->id]) }}" class="text-dark btn btn-sm btn-outline-danger  mt-2">
+                            <i class="bi bi-tools me-2 text-danger"></i>  ประวัติการซ่อม
                         </a>
-                    </li>
-                    <li @if ($is_admin == 0) style="visibility: hidden;" @endif>
-                        <a href="#" data-toggle="modal" data-target="#priceHistoryModal" class="text-dark"><i
-                                class="bi bi-clock-history"></i> ประวัติการปรับแก้ไขราคาเช่า</a>
-                    </li>
+                    </a>
+                    <a @if ($is_admin == 0) style="visibility: hidden;" @endif>
+                        <a href="#" data-toggle="modal" data-target="#priceHistoryModal" class="text-dark btn btn-sm btn-outline-warning  mt-2">
+                            <i class="bi bi-clock-history me-2 text-warning"></i> ประวัติการปรับแก้ไขราคาเช่า</a>
+                        </a>
                 </div>
 
 
@@ -434,7 +436,7 @@
                                 <div>
                                     <div style="color:#000"><strong>{{ $item->jewitem_m_to_o_jewset->set_name }}</strong>
                                     </div>
-                                    <div class="text-muted">รหัสเซต: SET{{ $item->jewitem_m_to_o_jewset->id }}</div>
+                                    {{-- <div class="text-muted">รหัสเซต: SET{{ $item->jewitem_m_to_o_jewset->id }}</div> --}}
                                 </div>
                                 <div>
                                     <strong

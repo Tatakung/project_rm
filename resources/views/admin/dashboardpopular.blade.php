@@ -21,7 +21,7 @@
                             <div class="d-flex gap-2">
                                 <select class="form-control" name="year" id="year"style="margin-right:0.2cm">
                                     <option value="0">ทุกปี</option>
-                                    @for ($i = 2020; $i <= now()->year; $i++)
+                                    @for ($i = 2024; $i <= now()->year; $i++)
                                         <option value="{{ $i }}"
                                             @if ($value_year == $i) selected @endif>
                                             {{ $i + 543 }}

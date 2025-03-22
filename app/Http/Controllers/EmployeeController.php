@@ -117,7 +117,7 @@ class EmployeeController extends Controller
     {
         // $dress = 
 
-        return view('Employee.addorder');
+        return view('employee.addorder');
     }
 
     public function cleanningdress()
@@ -948,13 +948,13 @@ class EmployeeController extends Controller
     //หน้าformเพิ่มตัดชุด
     public function addcutdress()
     {
-        return view('Employee.addcutdress');
+        return view('employee.addcutdress');
     }
     //หน้า form เพิ่มเช่าตัด
     public function addcutrent()
     {
         $type_dress = Typedress::all();
-        return view('Employee.addcutrent', compact('type_dress'));
+        return view('employee.addcutrent', compact('type_dress'));
     }
 
 
@@ -1304,7 +1304,7 @@ class EmployeeController extends Controller
 
 
 
-        return view('Employee.cart', compact('order'));
+        return view('employee.cart', compact('order'));
     }
 
 

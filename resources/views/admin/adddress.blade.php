@@ -200,11 +200,19 @@
                                 name="damage_insurance" id="damage_insurance" readonly>
                         </div>
 
-                        <div class="col-md-6" id="coun">
+                        {{-- <div class="col-md-6" id="coun">
                             <label for="" class="form-label">จำนวนชุด</label>
                             <input type="number" class="form-control" min="1" required placeholder="กรอกจำนวนชุด"
                                 name="dress_count" id="dress_count" value="1">
-                        </div>
+                        </div> --}}
+
+                        
+                            <input type="hidden" class="form-control" min="1" required placeholder="กรอกจำนวนชุด"
+                                name="dress_count" id="dress_count" value="1">
+                    
+
+
+
                     </div>
                     <script>
                         var dress_price = document.getElementById('dress_price');

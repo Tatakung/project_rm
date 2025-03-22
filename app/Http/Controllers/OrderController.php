@@ -1030,7 +1030,7 @@ class OrderController extends Controller
 
         $check_reservation = Reservationfilterdress::where('status_completed', 0)
             ->where('dress_id', $dress->id)
-            ->whereNot('id', $reser->id)
+            ->whereNot('reservation_id', $reser->id)
             ->get();
 
 
@@ -1868,32 +1868,14 @@ class OrderController extends Controller
                 $ceate_receipt->employee_id = Auth::user()->id;
                 $ceate_receipt->save();
             }
-        } elseif ($status == "กำลังเช่า") {
+        }
+        elseif ($status == "กำลังเช่า") {
             $total_damage_insurance = $request->input('total_damage_insurance'); //1.ปรับเงินประกันจริงๆ 
             $late_return_fee = $request->input('late_return_fee'); //2.ค่าปรับส่งคืนชุดล่าช้า:
             $late_chart = $request->input('late_chart'); //3.ค่าธรรมเนียมขยายระยะเวลาเช่า:
 
-            // if ($total_damage_insurance > 0) {
-            //     $create_additional = new AdditionalChange();
-            //     $create_additional->order_detail_id = $id;
-            //     $create_additional->charge_type = 1;
-            //     $create_additional->amount = $total_damage_insurance;
-            //     $create_additional->save();
-            // }
-            // if ($late_return_fee > 0) {
-            //     $create_additional = new AdditionalChange();
-            //     $create_additional->order_detail_id = $id;
-            //     $create_additional->charge_type = 2;
-            //     $create_additional->amount = $late_return_fee;
-            //     $create_additional->save();
-            // }
-            // if ($late_chart) {
-            //     $create_additional = new AdditionalChange();
-            //     $create_additional->order_detail_id = $id;
-            //     $create_additional->charge_type = 3;
-            //     $create_additional->amount = $late_chart;
-            //     $create_additional->save();
-            // }
+        
+
 
             //ตารางorderdetail
             $orderdetail->status_detail = "คืนชุดแล้ว";
@@ -2111,7 +2093,8 @@ class OrderController extends Controller
                         $create_additional->save();
                     }
                 }
-            } elseif ($dress->separable == 2) {
+            }
+            elseif ($dress->separable == 2) {
                 if ($orderdetail->shirtitems_id != null) {
 
                     $damage_insurance_shirt = $request->input('damage_insurance_shirt');
@@ -2317,9 +2300,7 @@ class OrderController extends Controller
                         }
                     }
                 } elseif ($orderdetail->skirtitems_id != null) {
-
                     $damage_insurance_skirt = $request->input('damage_insurance_skirt');
-
                     if ($request->input('actionreturnitemskirt') == 'cleanitem') {
                         // สภาพปกติ
                         $filterdress = Reservationfilterdress::where('reservation_id', $orderdetail->reservation_id)->get();

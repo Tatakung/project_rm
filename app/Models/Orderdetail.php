@@ -125,11 +125,15 @@ class Orderdetail extends Model
     {
         return $this->hasMany(ReceiptReturn::class, 'order_detail_id');
     }
-    
-
-
     public function orderdetail_one_to_one_SeparateRentability()
     {
         return $this->hasOne(SeparateRentability::class, 'order_detail_id');
     }
+    public function orderdetail_one_to_one_cancelbyeemployee(){
+        return $this->hasOne(Cancelbyemployee::class, 'order_detail_id');
+    }
+    
+
+
+
 }

@@ -82,10 +82,17 @@
             <div class="row">
                 @foreach ($Jewelryset as $index => $item)
                     <div class="col-md-3 mb-4">
-                        <div class="card text-left custom-card">
+                        <div class="card text-left custom-card" style="position: relative;">
+
+                            @if ($item->set_status == 'ยุติการให้เช่า')
+                                <span class="badge badge-danger"
+                                    style="position: absolute; top: 10px; left: 10px; font-size: 14px; padding: 5px 10px;">
+                                    เซตเครื่องประดับยกเลิกให้เช่า
+                                </span>
+                            @endif
+
                             <a href="{{ route('admin.setjewelrydetail', ['id' => $item->id]) }}"
                                 style="text-decoration: none;">
-
                                 <img src="{{ asset('images/setjewelry.jpg') }}" alt=""
                                     class="card-img-top custom-img">
                                 <div class="card-body text-center">
@@ -96,7 +103,6 @@
                         </div>
                     </div>
 
-                    <!-- Add a new row after every 4 items -->
                     @if (($index + 1) % 4 == 0)
             </div>
             <div class="row mt-4">
@@ -104,6 +110,7 @@
                 @endforeach
             </div>
         </div>
+
 
     </body>
 @endsection

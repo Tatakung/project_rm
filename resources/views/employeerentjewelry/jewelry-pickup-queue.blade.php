@@ -288,11 +288,7 @@
 
 
 
-                                    <a href="{{ route('postponeroutejewelry', ['id' => $reservation->id]) }}"
-                                        class="btn btn-m" style="background-color:#BACEE6 ;">
-                                        เลื่อนวัน
-                                    </a>
-
+                                    
                                 </td>
                             </tr>
                         @endif

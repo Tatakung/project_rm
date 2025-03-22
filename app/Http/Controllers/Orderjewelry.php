@@ -508,7 +508,8 @@ class Orderjewelry extends Controller
                     $create_additional->amount = $damage_insurance_no_set;
                     $create_additional->save();
                 }
-            } else {
+            }
+            else {
                 // ลูกค้าแจ้ง
                 if ($damage_insurance_no_set > 0) {
                     $create_additional = new AdditionalChange();
@@ -517,6 +518,8 @@ class Orderjewelry extends Controller
                     $create_additional->amount = $damage_insurance_no_set;
                     $create_additional->save();
                 }
+                
+                // ทดสอบและคอมเม้นไว้
                 if ($late_return_fee > 0) {
                     $create_additionals = new AdditionalChange();
                     $create_additionals->order_detail_id = $id;
@@ -531,34 +534,13 @@ class Orderjewelry extends Controller
                     $create_additionalw->amount = $late_chart;
                     $create_additionalw->save();
                 }
+
             }
         }
 
 
 
-
-
-        // if ($total_damage_insurance > 0) {
-        //     $create_additional = new AdditionalChange();
-        //     $create_additional->order_detail_id = $id;
-        //     $create_additional->charge_type = 1;
-        //     $create_additional->amount = $total_damage_insurance;
-        //     $create_additional->save();
-        // }
-        // if ($late_return_fee > 0) {
-        //     $create_additionals = new AdditionalChange();
-        //     $create_additionals->order_detail_id = $id;
-        //     $create_additionals->charge_type = 2;
-        //     $create_additionals->amount = $late_return_fee;
-        //     $create_additionals->save();
-        // }
-        // if ($late_chart) {
-        //     $create_additionalw = new AdditionalChange();
-        //     $create_additionalw->order_detail_id = $id;
-        //     $create_additionalw->charge_type = 3;
-        //     $create_additionalw->amount = $late_chart;
-        //     $create_additionalw->save();
-        // }
+ 
 
         // เช่าเป็นชิ้น
         if ($check_for_set_or_item == 'item') {
@@ -1131,6 +1113,7 @@ class Orderjewelry extends Controller
                 $create_additional->amount = $total_damage_insurance_set;
                 $create_additional->save();
             }
+            // (ทดสอบข้อมุล เลยต้องคอมเม้นไว้ก่อน)
             if ($late_return_fee > 0) {
                 $create_additionals = new AdditionalChange();
                 $create_additionals->order_detail_id = $id;

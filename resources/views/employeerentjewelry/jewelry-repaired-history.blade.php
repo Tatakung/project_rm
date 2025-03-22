@@ -98,6 +98,8 @@
         
 
         @if ($history->count() > 0)
+        <div class="card">
+
             <div class="table-responsive mt-4">
                 <table class="table table-striped text-start">
                     <thead>
@@ -121,6 +123,8 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+            
         @else
             <p class="centered">ไม่มีรายการประวัติการซ่อม</p>
         @endif

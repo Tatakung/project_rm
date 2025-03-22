@@ -761,14 +761,18 @@
                             </div>
 
                             @php
+                                
                                 $now_today = now()->format('Y-m-d');
                             @endphp
 
                             @if ($check_bunton_pass == true)
                                 <div class="col-md-6 text-right"
-                                    @if ($orderdetail->status_detail == 'ถูกจอง') style="display: block ;"
-                                @else
-                                    style="display: none ;" @endif>
+                                    @if ($orderdetail->status_detail == 'ถูกจอง' && $currentdate == $reservation->start_date) 
+                                        style="display: block ;"
+                                    @else
+                                        style="display: none ;" 
+                                    @endif
+                                    >
 
                                     <button class="btn" style="background: #C28041; color: #ffffff;"
                                         data-toggle="modal" data-target="#updatestatus">อัปเดตสถานะการเช่า</button>

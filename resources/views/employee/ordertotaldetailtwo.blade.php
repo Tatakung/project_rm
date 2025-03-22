@@ -447,8 +447,10 @@
                             @if ($item->status_detail == 'ยกเลิกโดยทางร้าน' || $item->status_detail == 'ยกเลิกโดยลูกค้า')
                                 <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
                                     {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }}
+                                    {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }} <br>
+                                    พนักงานที่ยกเลิก : {{$item->orderdetail_one_to_one_cancelbyeemployee->cancelbyemployee_many_to_one_user->name}} {{$item->orderdetail_one_to_one_cancelbyeemployee->cancelbyemployee_many_to_one_user->lname}}
                                 </span>
+                                
                             @endif
 
 
@@ -589,7 +591,7 @@
                                                     <ul class="mb-2">
                                                         <li>สินค้าเสียหาย/สูญหาย ไม่สามารถให้เช่าได้</li>
                                                         <li>ต้องแจ้งลูกค้าและคืนเงินมัดจำ 100% <span
-                                                                style="font-size: 14px;">({{ number_format($item->price, 2) }}
+                                                                style="font-size: 14px;">({{ number_format($item->deposit, 2) }}
                                                                 บาท)</span></li>
                                                     </ul>
                                                     {{-- <textarea class="form-control" placeholder="ระบุรายละเอียดการยกเลิก..." rows="3"></textarea> --}}

@@ -1,14 +1,15 @@
 @extends('layouts.adminlayout')
 @section('content')
     {{-- views/notifications/lost-items.blade.php --}}
-
-    <div class="container mt-4">
+    
+    <div class="container mt-4"><h3>รายการจองที่ได้รับผลกระทบ</h3>
         <div class="alert alert-danger" role="alert">
             <div class="d-flex align-items-center">
-                
+
                 <div>
                     {{-- <h4 class="alert-heading">แจ้งเตือนชุดสูญหาย/ยุติการให้เช่า!</h4> --}}
-                    <p class="mb-0">รายการที่ได้รับผลกระทบจากเครื่องประดับหรือชุด สูญหาย/ยุติการให้เช่า กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกและคืนเงินมัดจำ
+                    <p class="mb-0">รายการที่ได้รับผลกระทบจากเครื่องประดับหรือชุด สูญหาย/ยุติการให้เช่า
+                        กรุณาติดต่อลูกค้าเพื่อแจ้งยกเลิกและคืนเงินมัดจำ
                     </p>
                 </div>
             </div>
@@ -16,13 +17,10 @@
 
 
         <div class="card mb-4">
-            <div class="card-header bg-white">
+            
+            <div class="card-body shadow">
 
-            </div>
-            <div class="card-body">
-
-
-                <h6 class="mb-3">รายการจองที่ได้รับผลกระทบ:</h6>
+       
 
                 @if ($orderdetail->count() > 0)
                     <div class="table-responsive">
@@ -46,14 +44,14 @@
                                                     (ทั้งชุด)
                                                 @elseif($item->orderdetailmanytoonedress->separable == 2)
                                                     @if ($item->shirtitems_id)
-                                                    เช่า{{ $item->orderdetailmanytoonedress->typedress->type_dress_name }}{{ $item->orderdetailmanytoonedress->typedress->specific_letter }}{{ $item->orderdetailmanytoonedress->dress_code }}
-                                                    (เสื้อ)
+                                                        เช่า{{ $item->orderdetailmanytoonedress->typedress->type_dress_name }}{{ $item->orderdetailmanytoonedress->typedress->specific_letter }}{{ $item->orderdetailmanytoonedress->dress_code }}
+                                                        (เสื้อ)
                                                     @elseif($item->skirtitems_id)
-                                                    เช่า{{ $item->orderdetailmanytoonedress->typedress->type_dress_name }}{{ $item->orderdetailmanytoonedress->typedress->specific_letter }}{{ $item->orderdetailmanytoonedress->dress_code }}
-                                                    (ผ้าถุง)
+                                                        เช่า{{ $item->orderdetailmanytoonedress->typedress->type_dress_name }}{{ $item->orderdetailmanytoonedress->typedress->specific_letter }}{{ $item->orderdetailmanytoonedress->dress_code }}
+                                                        (ผ้าถุง)
                                                     @else
-                                                    เช่า{{ $item->orderdetailmanytoonedress->typedress->type_dress_name }}{{ $item->orderdetailmanytoonedress->typedress->specific_letter }}{{ $item->orderdetailmanytoonedress->dress_code }}
-                                                    (ทั้งชุด)
+                                                        เช่า{{ $item->orderdetailmanytoonedress->typedress->type_dress_name }}{{ $item->orderdetailmanytoonedress->typedress->specific_letter }}{{ $item->orderdetailmanytoonedress->dress_code }}
+                                                        (ทั้งชุด)
                                                     @endif
                                                 @endif
                                             @elseif($item->type_order == 3)
@@ -139,10 +137,12 @@
                 @else
                     <p style="text-align: center ; ">ไม่มีรายการที่ได้รับผลกระทบ</p>
                 @endif
-            </div>
-        </div>
 
+            </div>
+
+        </div>
     </div>
+
 
     {{-- Modal ยืนยันการยกเลิก --}}
     <div class="modal fade" id="cancelModal" tabindex="-1">

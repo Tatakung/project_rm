@@ -97,7 +97,7 @@
                     @endphp
 
                     @if ($dress->count() > 0)
-                        <div class="col-md-3 mb-4">
+                        <div class="col-md-4 mb-4">
                             <div class="card text-left custom-card">
                                 <button type="button" class="btn p-0" style="border: none; background: none;"
                                     onclick="window.location='{{ route('admin.typedress', ['id' => $item->id]) }}'">

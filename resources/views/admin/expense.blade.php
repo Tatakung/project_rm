@@ -37,8 +37,9 @@
                                 <option value="ค่าผ้า">ค่าผ้า</option>
                                 <option value="ค่าน้ำ">ค่าน้ำ</option>
                                 <option value="ค่าไฟ">ค่าไฟ</option>
-                                <option value="ค่าซ่อมบำรุง">ค่าซ่อมบำรุง</option>
                                 <option value="ค่าซักรีด">ค่าซักรีด</option>
+                                <option value="อุปกรณตัดเย็บ">อุปกรณตัดเย็บ(ซิป,กระดุม,ด้าย,ฟองน้ำ)</option>
+                                <option value="ผ้าซับใน">ผ้าซับใน</option>
                                 {{-- <option value="ค่าวัสดุสิ้นเปลือง">ค่าวัสดุสิ้นเปลือง</option> --}}
                                 <option value="other_expense">อื่นๆ</option>
                             </select>

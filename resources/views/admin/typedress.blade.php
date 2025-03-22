@@ -60,9 +60,9 @@
 
         <ol class="breadcrumb" style="background-color: transparent;">
             <li class="breadcrumb-item">
-                <a href="{{route('admin.dresstotal')}}" style="color: black ; ">รายการชุด </a>
+                <a href="{{ route('admin.dresstotal') }}" style="color: black ; ">รายการชุด </a>
             </li>
-            
+
             <li class="breadcrumb-item active">
                 ประเภท{{ $typedress->type_dress_name }}
             </li>
@@ -85,25 +85,33 @@
                             <a href="{{ route('admin.dressdetail', ['id' => $item->id, 'separable' => $item->separable]) }}"
                                 style="text-decoration: none;">
                                 @if ($item->dressimages->isNotEmpty())
-                                    <img src="{{ asset($item->dressimages->first()->dress_image) }}"
-                                        alt="" class="card-img-top custom-img">
+                                    <img src="{{ asset($item->dressimages->first()->dress_image) }}" alt=""
+                                        class="card-img-top custom-img">
                                 @endif
                                 <div class="card-body text-center">
-                                    <h6 style="color: black;"> {{$item->typedress->specific_letter}}{{$item->dress_code}} </h6>  <!-- Add this line to show dress code -->
+                                    <h6 style="color: black;">
+                                        {{ $item->typedress->specific_letter }}{{ $item->dress_code }} </h6>
+                                    <!-- Add this line to show dress code -->
                                     @if ($item->separable == 1)
                                         <h6 style="color: black;">ทั้งชุด</h6>
                                     @elseif($item->separable == 2)
                                         <h6 style="color: black;">ชุดแยก: เสื้อและผ้าถุง</h6>
                                     @endif
-                                
-                                    @if($item->dress_price == 0)
+
+                                    @if ($item->dress_price == 0)
                                         ยังไม่ได้กำหนดราคา
                                     @else
-                                        <h6 style="color: black;">ราคาเช่า: {{ number_format($item->dress_price, 2) }} บาท</h6>
+                                        <h6 style="color: black;">ราคาเช่า: {{ number_format($item->dress_price, 2) }} บาท
+                                        </h6>
                                     @endif
                                 </div>
                             </a>
                         </div>
+                        @if ($item->dress_status == 'ยุติการให้เช่า')
+                            <span class="badge badge-danger"
+                                style="position: absolute; top: 10px; left: 10px; font-size: 14px;">ยกเลิกให้เช่าแล้ว</span>
+                        @endif
+
                     </div>
                     @if (($index + 1) % 4 == 0)
             </div>

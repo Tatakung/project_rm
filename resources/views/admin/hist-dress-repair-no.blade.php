@@ -101,28 +101,31 @@
 
 
         @if ($history->count() > 0)
-            <div class="table-responsive mt-4">
-                <table class="table table-striped text-start">
-                    <thead>
-                        <tr>
-                            <th scope="col">วันที่</th>
-                            <th scope="col">รายละเอียด</th>
-                            <th scope="col">สถานะ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($history as $item)
+            <div class="card">
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped text-start">
+                        <thead>
                             <tr>
-                                <td>
-                                    {{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
-                                    {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
-                                </td>
-                                <td>{{ $item->repair_description }}</td>
-                                <td>{{ $item->repair_status }}</td>
+                                <th scope="col">วันที่</th>
+                                <th scope="col">รายละเอียด</th>
+                                <th scope="col">สถานะ</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($history as $item)
+                                <tr>
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($item->created_at)->locale('th')->isoFormat('D MMM') }}
+                                        {{ \Carbon\Carbon::parse($item->created_at)->year + 543 }}
+                                    </td>
+                                    <td>{{ $item->repair_description }}</td>
+                                    <td>{{ $item->repair_status }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         @else
             <p class="centered">ไม่มีรายการประวัติการซ่อม</p>

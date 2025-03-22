@@ -168,22 +168,25 @@
 
                         </div>
 
-                        <li>
-                            <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}" class="text-dark">
+                        <a>
+                            <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}" class="text-dark btn btn-sm btn-outline-primary mt-2">
                                 <i class="bi bi-clock-history"></i> ประวัติการเช่า
                             </a>
-                        </li>
+                        </a>
 
-                        <li>
-                            <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}" class="text-dark">
+                        <a>
+                            <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}" class="text-dark btn btn-sm btn-outline-danger mt-2">
                                 <i class="bi bi-tools"></i> ประวัติการซ่อม
                             </a>
-                        </li>
-                        <li @if ($check_admin == 0) style="visibility: hidden;" @endif>
-                            <a href="#" data-toggle="modal" data-target="#priceHistoryModal" class="text-dark">
+                        </a>
+                        <a @if ($check_admin == 0) style="visibility: hidden;" @endif>
+                            <a href="#" data-toggle="modal" data-target="#priceHistoryModal" class="text-dark btn btn-sm btn-outline-warning mt-2">
                                 <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่าทั้งชุด
                             </a>
-                        </li>
+                        </a>
+
+
+                        
                         <br>
 
 
@@ -378,13 +381,18 @@
                         </div>
 
                         <br>
-                        <li @if ($check_admin == 0) style="visibility: hidden;" @endif>
-                            <a href="#" data-toggle="modal" data-target="#priceHistoryModalshirt" class="text-dark"
-                                
+                        
+                        <a @if ($check_admin == 0) style="visibility: hidden;" @endif>
+                            <a href="#" data-toggle="modal" data-target="#priceHistoryModalshirt" class="text-dark btn btn-sm btn-outline-warning mt-2"
+
                                 >
                                 <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่าเสื้อ
                             </a>
-                        </li>
+                        </a>
+
+
+
+
 
                     </div>
                     <hr>
@@ -565,13 +573,18 @@
 
                         </div>
                         <br>
-                        <li @if ($check_admin == 0) style="visibility: hidden;" @endif>
+                        
+                        <a @if ($check_admin == 0) style="visibility: hidden;" @endif>
                             <a href="#" data-toggle="modal" data-target="#priceHistoryModalskirt"
-                                class="text-dark"
+                                class="text-dark btn btn-sm btn-outline-warning mt-2"
                                 >
                                 <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่าผ้าถุง
                             </a>
-                        </li>
+                        </a>
+
+
+
+                        
                     </div>
                     <hr>
                     <div class="container">

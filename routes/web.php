@@ -29,7 +29,14 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
+
+
+
+
+
 Auth::routes();
+
+
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -45,8 +52,8 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     //กลุ่มชุด
     Route::get('/admin/adddress-form', [DressController::class, 'formadddress'])->name('admin.formadddress'); //แบบฟอร์มเพิ่มชุด
-    
-    
+
+
 
 
 
@@ -80,7 +87,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
-    
+
     Route::get('/admin/managesetjewelry', [JewelryController::class, 'managesetjewelry'])->name('admin.managesetjewelry'); //หน้าจัดเซตเครื่องประดับ
     Route::get('/admin/managesetjewelryfilter', [JewelryController::class, 'managesetjewelryfilter'])->name('admin.managesetjewelryfilter'); //หน้าหลังจากฟิเลเตอร์ 
 
@@ -114,7 +121,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
 
-    
+
 
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/filter-shop', [DashboardController::class, 'dashboardfiltershop'])->name('dashboardfilter');
@@ -230,10 +237,10 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::post('/expenses/edit-update', [DressController::class, 'expenseeditupdate'])->name('expenseeditupdate'); //บันทึกค่าใช้จ่าย
     Route::post('/expenses/delete/{id}', [DressController::class, 'expensedelete'])->name('expensedelete'); //บันทึกค่าใช้จ่าย
-    
+
     Route::get('/expenses/filter', [DressController::class, 'expensefilter'])->name('expensefilter'); //บันทึกค่าใช้จ่าย
 
-    
+
     Route::post('/saveexpense', [DressController::class, 'saveexpense'])->name('admin.saveexpense'); //บันทึกค่าใช้จ่าย
 
 
@@ -415,8 +422,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/employee/ordertotal/detail/show/updatereturnjewelry/{id}', [Orderjewelry::class, 'updatereturnjewelry'])->name('employee.updatereturnjewelry'); //อัปเดตสถานะคืนเครื่องประดับ
 
 
-    
-    Route::get('/jewelry-problem-cancel', [Orderjewelry::class, 'jewelryproblemcancel'])->name('jewelryproblemcancel'); 
+
+    Route::get('/jewelry-problem-cancel', [Orderjewelry::class, 'jewelryproblemcancel'])->name('jewelryproblemcancel');
 
 
 

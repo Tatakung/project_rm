@@ -126,6 +126,10 @@
                                 <option value="ชุดผ้าไหม">ชุดผ้าไหม</option>
                                 <option value="ชุดราตรี">ชุดราตรี</option>
                                 <option value="ชุดเดรส">ชุดเดรส</option>
+                                <option value="ชุดไทยเรือนต้น">ชุดไทยเรือนต้น</option>
+                                <option value="ชุดสูท">ชุดสูท</option>
+                                <option value="ชุดผ้าไหมแพรวา">ชุดผ้าไหมแพรวา</option>
+                                <option value="ชุดไทยจิตรลดา">ชุดไทยจิตรลดา</option>
                                 <option value="other_type">อื่นๆ</option>
                             </select>
                         </div>

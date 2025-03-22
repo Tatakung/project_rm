@@ -8,6 +8,7 @@ use App\Models\Decoration;
 use App\Models\Orderdetailstatus;
 use App\Models\Reservation;
 use App\Models\AdditionalChange;
+use App\Models\Cancelbyemployee;
 use App\Models\Jewelry;
 use App\Models\Reservationfilterdress;
 use App\Models\Reservationfilters;
@@ -16,6 +17,7 @@ use App\Models\Dress;
 use Carbon\Carbon;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -109,16 +111,21 @@ class DashboardController extends Controller
                     } elseif ($value->status_detail == 'ตัดชุดเสร็จสิ้น') {
                         $income_success += $value->deposit;
                     } elseif ($value->status_detail == 'ส่งมอบชุดแล้ว') {
+                        //
                         $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
                         $income_success += $value->price + $decoration;
                     } elseif ($value->status_detail == 'แก้ไขชุด') {
                         $income_success += $value->deposit;
                     } elseif ($value->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
                         $income_success += $value->deposit;
+                    } elseif ($value->status_detail == 'ยกเลิกโดยลูกค้า') {
+                        $income_success += $value->deposit;
+                    } elseif ($value->status_detail == 'ยกเลิกโดยทางร้าน') {
+                        $income_success += 0;
                     }
                 } elseif ($value->status_payment == 2) {
-                    $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
-                    $income_success += $value->price + $decoration;
+                    // $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
+                    // $income_success += $value->price + $decoration;
 
                     if ($value->status_detail == 'รอดำเนินการตัด') {
                         $income_success += $value->price;
@@ -130,11 +137,14 @@ class DashboardController extends Controller
                         $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
                         $income_success += $value->price + $decoration;
                     } elseif ($value->status_detail == 'แก้ไขชุด') {
-                        $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
-                        $income_success += $value->price + $decoration;
+
+                        $income_success += $value->price;
                     } elseif ($value->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
-                        $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
-                        $income_success += $value->price + $decoration;
+                        $income_success += $value->price;
+                    } elseif ($value->status_detail == 'ยกเลิกโดยลูกค้า') {
+                        $income_success += $value->deposit;
+                    } elseif ($value->status_detail == 'ยกเลิกโดยทางร้าน') {
+                        $income_success += 0;
                     }
                 }
             } elseif ($value->type_order == 2) {
@@ -366,10 +376,14 @@ class DashboardController extends Controller
                     $cut_dress_pie_success += $cut_dress_value->deposit;
                 } elseif ($cut_dress_value->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
                     $cut_dress_pie_success += $cut_dress_value->deposit;
+                } elseif ($cut_dress_value->status_detail == 'ยกเลิกโดยลูกค้า') {
+                    $cut_dress_pie_success += $cut_dress_value->deposit;
+                } elseif ($cut_dress_value->status_detail == 'ยกเลิกโดยทางร้าน') {
+                    $cut_dress_pie_success += 0;
                 }
             } elseif ($cut_dress_value->status_payment == 2) {
-                $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
-                $cut_dress_pie_success += $cut_dress_value->price + $decoration;
+                // $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
+                // $cut_dress_pie_success += $cut_dress_value->price + $decoration;
 
                 if ($cut_dress_value->status_detail == 'รอดำเนินการตัด') {
                     $cut_dress_pie_success += $cut_dress_value->price;
@@ -381,11 +395,13 @@ class DashboardController extends Controller
                     $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
                     $cut_dress_pie_success += $cut_dress_value->price + $decoration;
                 } elseif ($cut_dress_value->status_detail == 'แก้ไขชุด') {
-                    $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
-                    $cut_dress_pie_success += $cut_dress_value->price + $decoration;
+                    $cut_dress_pie_success += $cut_dress_value->price;
                 } elseif ($cut_dress_value->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
-                    $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
-                    $cut_dress_pie_success += $cut_dress_value->price + $decoration;
+                    $cut_dress_pie_success += $cut_dress_value->price;
+                } elseif ($cut_dress_value->status_detail == 'ยกเลิกโดยลูกค้า') {
+                    $cut_dress_pie_success += $cut_dress_value->deposit;
+                } elseif ($cut_dress_value->status_detail == 'ยกเลิกโดยทางร้าน') {
+                    $cut_dress_pie_success += 0;
                 }
             }
         }
@@ -441,9 +457,16 @@ class DashboardController extends Controller
                     } elseif ($items->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
                         $price_totall += $items->deposit;
                     }
+                    elseif ($items->status_detail == 'ยกเลิกโดยลูกค้า') {
+                        $price_totall += $items->deposit;
+                    }
+                    elseif ($items->status_detail == 'ยกเลิกโดยทางร้าน') {
+                        $price_totall += 0;
+                    }
+
                 } elseif ($items->status_payment == 2) {
-                    $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
-                    $price_totall += $items->price + $decoration;
+                    // $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
+                    // $price_totall += $items->price + $decoration;
 
                     if ($items->status_detail == 'รอดำเนินการตัด') {
                         $price_totall += $items->price;
@@ -455,11 +478,17 @@ class DashboardController extends Controller
                         $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
                         $price_totall += $items->price + $decoration;
                     } elseif ($items->status_detail == 'แก้ไขชุด') {
-                        $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
-                        $price_totall += $items->price + $decoration;
+
+                        $price_totall += $items->price;
                     } elseif ($items->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
-                        $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
-                        $price_totall += $items->price + $decoration;
+
+                        $price_totall += $items->price;
+                    }
+                    elseif ($items->status_detail == 'ยกเลิกโดยลูกค้า') {
+                        $price_totall += $items->deposit;
+                    }
+                    elseif ($items->status_detail == 'ยกเลิกโดยทางร้าน') {
+                        $price_totall += 0;
                     }
                 }
             } elseif ($items->type_order == 2) {
@@ -562,11 +591,11 @@ class DashboardController extends Controller
             if (!$found) {
                 // คำนวณรายจ่ายรวม
                 $expense_totall = Expense::query();
-                if ($value_month != 0) {
-                    $expense_totall->whereMonth('date', $value_month);
+                if ($month != 0) {
+                    $expense_totall->whereMonth('date', $month);
                 }
-                if ($value_year != 0) {
-                    $expense_totall->whereYear('date', $value_year);
+                if ($year != 0) {
+                    $expense_totall->whereYear('date', $year);
                 }
                 $expense_totall = $expense_totall->sum('expense_value');
 
@@ -965,9 +994,17 @@ class DashboardController extends Controller
                 } elseif ($item->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
                     $real_price_tailoring += $item->deposit;
                 }
+                elseif ($item->status_detail == 'ยกเลิกโดยลูกค้า') {
+                    $real_price_tailoring += $item->deposit;
+                }
+                elseif ($item->status_detail == 'ยกเลิกโดยทางร้าน') {
+                    $real_price_tailoring += 0;
+                }
+
+
             } elseif ($item->status_payment == 2) {
-                $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
-                $real_price_tailoring += $item->price + $decoration;
+                // $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
+                // $real_price_tailoring += $item->price + $decoration;
 
                 if ($item->status_detail == 'รอดำเนินการตัด') {
                     $real_price_tailoring += $item->price;
@@ -979,11 +1016,16 @@ class DashboardController extends Controller
                     $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
                     $real_price_tailoring += $item->price + $decoration;
                 } elseif ($item->status_detail == 'แก้ไขชุด') {
-                    $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
-                    $real_price_tailoring += $item->price + $decoration;
+                    
+                    $real_price_tailoring += $item->price ;
                 } elseif ($item->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
-                    $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
-                    $real_price_tailoring += $item->price + $decoration;
+                    $real_price_tailoring += $item->price ;
+                }
+                elseif ($item->status_detail == 'ยกเลิกโดยลูกค้า') {
+                    $real_price_tailoring += $item->deposit;
+                }
+                elseif ($item->status_detail == 'ยกเลิกโดยทางร้าน') {
+                    $real_price_tailoring += 0;
                 }
             }
 
@@ -1137,6 +1179,20 @@ class DashboardController extends Controller
 
         return view('admin.dash-board', compact('monthsDataJewelrySet', 'revenueDataJewelrySet', 'monthsDataJewelry', 'revenueDataJewelry', 'monthsData', 'revenueData', 'value_month', 'value_year', 'amount_success', 'damage_insurance_success', 'expense_success', 'income_success', 'list_for_pie', 'label_bar', 'income_bar', 'expense_bar', 'rent_dress_pie_count', 'rent_jew_pie_count', 'rent_cut_dress_pie_count', 'cut_dress_pie_count', 'monthsDataTailoring', 'revenueDataTailoring', 'monthsDataRentalTailoring', 'revenueDataRentalTailoring'));
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function dashboardfiltershop(Request $request)
     {
         $value_month = $request->input('month');
@@ -1218,16 +1274,21 @@ class DashboardController extends Controller
                     } elseif ($value->status_detail == 'ตัดชุดเสร็จสิ้น') {
                         $income_success += $value->deposit;
                     } elseif ($value->status_detail == 'ส่งมอบชุดแล้ว') {
+                        //
                         $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
                         $income_success += $value->price + $decoration;
                     } elseif ($value->status_detail == 'แก้ไขชุด') {
                         $income_success += $value->deposit;
                     } elseif ($value->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
                         $income_success += $value->deposit;
+                    } elseif ($value->status_detail == 'ยกเลิกโดยลูกค้า') {
+                        $income_success += $value->deposit;
+                    } elseif ($value->status_detail == 'ยกเลิกโดยทางร้าน') {
+                        $income_success += 0;
                     }
                 } elseif ($value->status_payment == 2) {
-                    $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
-                    $income_success += $value->price + $decoration;
+                    // $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
+                    // $income_success += $value->price + $decoration;
 
                     if ($value->status_detail == 'รอดำเนินการตัด') {
                         $income_success += $value->price;
@@ -1239,11 +1300,14 @@ class DashboardController extends Controller
                         $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
                         $income_success += $value->price + $decoration;
                     } elseif ($value->status_detail == 'แก้ไขชุด') {
-                        $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
-                        $income_success += $value->price + $decoration;
+
+                        $income_success += $value->price;
                     } elseif ($value->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
-                        $decoration = Decoration::where('order_detail_id', $value->id)->sum('decoration_price');
-                        $income_success += $value->price + $decoration;
+                        $income_success += $value->price;
+                    } elseif ($value->status_detail == 'ยกเลิกโดยลูกค้า') {
+                        $income_success += $value->deposit;
+                    } elseif ($value->status_detail == 'ยกเลิกโดยทางร้าน') {
+                        $income_success += 0;
                     }
                 }
             } elseif ($value->type_order == 2) {
@@ -1475,10 +1539,14 @@ class DashboardController extends Controller
                     $cut_dress_pie_success += $cut_dress_value->deposit;
                 } elseif ($cut_dress_value->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
                     $cut_dress_pie_success += $cut_dress_value->deposit;
+                } elseif ($cut_dress_value->status_detail == 'ยกเลิกโดยลูกค้า') {
+                    $cut_dress_pie_success += $cut_dress_value->deposit;
+                } elseif ($cut_dress_value->status_detail == 'ยกเลิกโดยทางร้าน') {
+                    $cut_dress_pie_success += 0;
                 }
             } elseif ($cut_dress_value->status_payment == 2) {
-                $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
-                $cut_dress_pie_success += $cut_dress_value->price + $decoration;
+                // $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
+                // $cut_dress_pie_success += $cut_dress_value->price + $decoration;
 
                 if ($cut_dress_value->status_detail == 'รอดำเนินการตัด') {
                     $cut_dress_pie_success += $cut_dress_value->price;
@@ -1490,11 +1558,13 @@ class DashboardController extends Controller
                     $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
                     $cut_dress_pie_success += $cut_dress_value->price + $decoration;
                 } elseif ($cut_dress_value->status_detail == 'แก้ไขชุด') {
-                    $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
-                    $cut_dress_pie_success += $cut_dress_value->price + $decoration;
+                    $cut_dress_pie_success += $cut_dress_value->price;
                 } elseif ($cut_dress_value->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
-                    $decoration = Decoration::where('order_detail_id', $cut_dress_value->id)->sum('decoration_price');
-                    $cut_dress_pie_success += $cut_dress_value->price + $decoration;
+                    $cut_dress_pie_success += $cut_dress_value->price;
+                } elseif ($cut_dress_value->status_detail == 'ยกเลิกโดยลูกค้า') {
+                    $cut_dress_pie_success += $cut_dress_value->deposit;
+                } elseif ($cut_dress_value->status_detail == 'ยกเลิกโดยทางร้าน') {
+                    $cut_dress_pie_success += 0;
                 }
             }
         }
@@ -1510,6 +1580,10 @@ class DashboardController extends Controller
 
 
 
+        // $list_for_pie = [4084.0,120.0,1500.0,25800.0] ; 
+
+
+
 
         // รายได้ - รายจ่าย
         $list_combined = [];
@@ -1522,6 +1596,8 @@ class DashboardController extends Controller
             $data_orderdetail->whereYear('updated_at', $value_year);
         }
         $data_orderdetail = $data_orderdetail->get();
+
+
 
 
         foreach ($data_orderdetail as $items) {
@@ -1546,9 +1622,16 @@ class DashboardController extends Controller
                     } elseif ($items->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
                         $price_totall += $items->deposit;
                     }
+                    elseif ($items->status_detail == 'ยกเลิกโดยลูกค้า') {
+                        $price_totall += $items->deposit;
+                    }
+                    elseif ($items->status_detail == 'ยกเลิกโดยทางร้าน') {
+                        $price_totall += 0;
+                    }
+
                 } elseif ($items->status_payment == 2) {
-                    $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
-                    $price_totall += $items->price + $decoration;
+                    // $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
+                    // $price_totall += $items->price + $decoration;
 
                     if ($items->status_detail == 'รอดำเนินการตัด') {
                         $price_totall += $items->price;
@@ -1560,11 +1643,17 @@ class DashboardController extends Controller
                         $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
                         $price_totall += $items->price + $decoration;
                     } elseif ($items->status_detail == 'แก้ไขชุด') {
-                        $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
-                        $price_totall += $items->price + $decoration;
+
+                        $price_totall += $items->price;
                     } elseif ($items->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
-                        $decoration = Decoration::where('order_detail_id', $items->id)->sum('decoration_price');
-                        $price_totall += $items->price + $decoration;
+
+                        $price_totall += $items->price;
+                    }
+                    elseif ($items->status_detail == 'ยกเลิกโดยลูกค้า') {
+                        $price_totall += $items->deposit;
+                    }
+                    elseif ($items->status_detail == 'ยกเลิกโดยทางร้าน') {
+                        $price_totall += 0;
                     }
                 }
             } elseif ($items->type_order == 2) {
@@ -1647,12 +1736,16 @@ class DashboardController extends Controller
                 }
             }
 
+            
+
             // ใช้ array_column() เพื่อดึงค่า "เดือน" จาก $list_combined
             $column_months = array_column($list_combined, 0);
+
             $column_years = array_column($list_combined, 3);
 
 
             $found = false; // ใช้ flag เพื่อตรวจสอบว่าพบข้อมูลที่ซ้ำหรือไม่
+
             foreach ($list_combined as $index => $item) {
                 if ($item[0] == $month && $item[3] == $year) {
                     // ถ้าพบเดือนและปีตรงกัน ให้เพิ่มรายรับ
@@ -1661,22 +1754,23 @@ class DashboardController extends Controller
                     break; // ออกจากลูป ไม่ต้องเช็คต่อ
                 }
             }
+
             // ถ้ายังไม่พบเดือน + ปีซ้ำ ให้เพิ่มใหม่เข้าไป
             if (!$found) {
                 // คำนวณรายจ่ายรวม
                 $expense_totall = Expense::query();
-                if ($value_month != 0) {
-                    $expense_totall->whereMonth('date', $value_month);
+                if ($month != 0) {
+                    $expense_totall->whereMonth('date', $month);
                 }
-                if ($value_year != 0) {
-                    $expense_totall->whereYear('date', $value_year);
+                if ($year != 0) {
+                    $expense_totall->whereYear('date', $year);
                 }
                 $expense_totall = $expense_totall->sum('expense_value');
-
                 $list_combined[] = [$month, $price_totall, $expense_totall, $year];
             }
+
         }
-        // dd($list_combined) ;    
+
         foreach ($list_combined as $key => $item) {
             if ($item[0] == 1) {
                 $list_combined[$key][0] = 'มกราคม ' . $list_combined[$key][3] + 543;
@@ -1706,15 +1800,6 @@ class DashboardController extends Controller
         }
 
 
-        // dd($list_combined) ; 
-
-        // $list_combined = [
-        //     ['ตุลาคม 2567',5000,2000,2024] , 
-        //     ['พฤศจิกายน 2567',4000,15000,2024],
-        //     ['ธันวาคม 2567',4600,5000,2024]
-        // ] ; 
-
-
         // ใช้ array_map() เพื่อแยกข้อมูลเป็น 3 ลิสต์
         $label_bar = array_map(function ($item) {
             return $item[0];
@@ -1728,15 +1813,12 @@ class DashboardController extends Controller
             return $item[2];
         }, $list_combined);
 
-
-
+        
 
 
 
         // รายรับแยกตามประเภทชุด
         $orderdetailtypedress = Orderdetail::where('type_order', 2);  // ดึงข้อมูลมาเฉพาะการเช่าชุด
-
-
         if ($value_month != 0) {
             $orderdetailtypedress->whereMonth('updated_at', $value_month);
         }
@@ -1857,7 +1939,6 @@ class DashboardController extends Controller
                 $list_for_typejew[] = $typejew->id;
             }
         }
-
         $orderdetailtypejewelry = Orderdetail::whereIn('id', $list_for_typejew);
 
         if ($value_month != 0) {
@@ -1900,7 +1981,6 @@ class DashboardController extends Controller
             $Year = $item->updated_at->year;
             $Jewelry = $item->detail_many_one_re->resermanytoonejew->jewelry_m_o_typejew->type_jewelry_name;
             $found = false;
-
             foreach ($list_type_jewelry as $index => $data) {
                 if ($data[0] == $Month && $data[1] == $Year && $data[2] == $Jewelry) {
                     $list_type_jewelry[$index][3] += $real_price_jewelry;
@@ -1912,8 +1992,6 @@ class DashboardController extends Controller
                 $list_type_jewelry[] = [$Month, $Year, $Jewelry, $real_price_jewelry];
             }
         }
-
-
 
         $monthsDataJewelry = [];
         $revenueDataJewelry = [];
@@ -1950,19 +2028,15 @@ class DashboardController extends Controller
                 $revenueDataJewelry[$jewelryType][$index] += $revenue;
             }
         }
-        // $monthsDataJewelry = ['พฤศจิกายน 2567','ธันวาคม 2567','มกราคม 2568','มกราคม 2568'] ;
-        // $revenueDataJewelry = [
-        //     'กำไล' => [1920.0,3000.0,5840.0,340.0],
-        //     'เข็มกลัด' => [1500.0,700.0,9090.0,130.0],
-        //     'สร้อย' => [1500.0,1200.0,2516.0,100.0] ,
-        // ]
-
 
 
 
 
 
         // รายรับแยกตามเซตเครื่องประดับ
+
+
+
         $orderdetailJewelrySet_list = Orderdetail::where('type_order', 3)->get(); // ดึงข้อมูลเฉพาะการเช่าเซตเครื่องประดับ
         $jew_set_list = [];
         foreach ($orderdetailJewelrySet_list as $type_jew_set) {
@@ -2093,9 +2167,17 @@ class DashboardController extends Controller
                 } elseif ($item->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
                     $real_price_tailoring += $item->deposit;
                 }
+                elseif ($item->status_detail == 'ยกเลิกโดยลูกค้า') {
+                    $real_price_tailoring += $item->deposit;
+                }
+                elseif ($item->status_detail == 'ยกเลิกโดยทางร้าน') {
+                    $real_price_tailoring += 0;
+                }
+
+
             } elseif ($item->status_payment == 2) {
-                $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
-                $real_price_tailoring += $item->price + $decoration;
+                // $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
+                // $real_price_tailoring += $item->price + $decoration;
 
                 if ($item->status_detail == 'รอดำเนินการตัด') {
                     $real_price_tailoring += $item->price;
@@ -2107,11 +2189,16 @@ class DashboardController extends Controller
                     $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
                     $real_price_tailoring += $item->price + $decoration;
                 } elseif ($item->status_detail == 'แก้ไขชุด') {
-                    $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
-                    $real_price_tailoring += $item->price + $decoration;
+                    
+                    $real_price_tailoring += $item->price ;
                 } elseif ($item->status_detail == 'แก้ไขชุดเสร็จสิ้น') {
-                    $decoration = Decoration::where('order_detail_id', $item->id)->sum('decoration_price');
-                    $real_price_tailoring += $item->price + $decoration;
+                    $real_price_tailoring += $item->price ;
+                }
+                elseif ($item->status_detail == 'ยกเลิกโดยลูกค้า') {
+                    $real_price_tailoring += $item->deposit;
+                }
+                elseif ($item->status_detail == 'ยกเลิกโดยทางร้าน') {
+                    $real_price_tailoring += 0;
                 }
             }
 
@@ -2265,6 +2352,7 @@ class DashboardController extends Controller
 
         return view('admin.dash-board', compact('monthsDataJewelrySet', 'revenueDataJewelrySet', 'monthsDataJewelry', 'revenueDataJewelry', 'monthsData', 'revenueData', 'value_month', 'value_year', 'amount_success', 'damage_insurance_success', 'expense_success', 'income_success', 'list_for_pie', 'label_bar', 'income_bar', 'expense_bar', 'rent_dress_pie_count', 'rent_jew_pie_count', 'rent_cut_dress_pie_count', 'cut_dress_pie_count', 'monthsDataTailoring', 'revenueDataTailoring', 'monthsDataRentalTailoring', 'revenueDataRentalTailoring'));
     }
+    
 
 
 
@@ -2471,6 +2559,11 @@ class DashboardController extends Controller
                 }
             }
         }
+   
+        $cel = new Cancelbyemployee() ; 
+        $cel->order_detail_id = $id ; 
+        $cel->employee_id = Auth::user()->id;
+        $cel->save() ; 
         return redirect()->back()->with('success', 'ยกเลิกรายการสำเร็จ');
     }
 

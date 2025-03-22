@@ -53,7 +53,7 @@
     </head>
 
     </html>
-    
+
 
 
 
@@ -61,7 +61,7 @@
         <li class="breadcrumb-item">
             <a href="{{ route('admin.jewelrytotal') }}" style="color: black ; ">รายการเครื่องประดับ</a>
         </li>
-        
+
         <li class="breadcrumb-item active">
             ประเภท{{ $typename }}
         </li>
@@ -81,32 +81,38 @@
             <div class="row">
                 @foreach ($datajewelry as $index => $item)
                     <div class="col-md-3 mb-4">
-                        <div class="card text-left custom-card">
+                        <div class="card text-left custom-card" style="position: relative;">
+                            
+                            @if ($item->jewelry_status == 'ยุติการให้เช่า') 
+                                <span class="badge badge-danger" 
+                                      style="position: absolute; top: 10px; left: 10px; font-size: 14px; padding: 5px 10px;">
+                                    เครื่องประดับยกเลิกให้เช่า
+                                </span>
+                            @endif
+        
                             <a href="{{ route('admin.jewelrydetail', ['id' => $item->id]) }}" style="text-decoration: none;">
                                 @php
-                                    $image = App\Models\Jewelryimage::where('jewelry_id', $item->id)->value(
-                                        'jewelry_image',
-                                    );
+                                    $image = App\Models\Jewelryimage::where('jewelry_id', $item->id)->value('jewelry_image');
                                 @endphp
                                 <img src="{{ asset($image) }}" alt="" class="card-img-top custom-img">
                                 <div class="card-body text-center">
                                     <h6 style="color: black;">
-                                        {{ $item->jewelry_m_o_typejew->specific_letter }}{{ $item->jewelry_code }}</h6>
-                                    <h6 style="color: black;">ราคาเช่า: {{ number_format($item->jewelry_price, 2) }} บาท
+                                        {{ $item->jewelry_m_o_typejew->specific_letter }}{{ $item->jewelry_code }}
                                     </h6>
+                                    <h6 style="color: black;">ราคาเช่า: {{ number_format($item->jewelry_price, 2) }} บาท</h6>
                                 </div>
                             </a>
                         </div>
                     </div>
-
-                    <!-- Add a new row after every 4 items -->
+        
                     @if (($index + 1) % 4 == 0)
             </div>
             <div class="row mt-4">
-                @endif
+                    @endif
                 @endforeach
             </div>
         </div>
+        
 
     </body>
 @endsection

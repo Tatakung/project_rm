@@ -21,7 +21,7 @@ class User extends Authenticatable
     use SoftDeletes;
     protected $fillable = [
         'name',
-        'email',    
+        'email',
         'password',
         'lname',
         'is_admin',
@@ -39,16 +39,24 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'user_id');
     }
 
-    public function user_one_to_many_receipt(){
-        return $this->hasMany(Receipt::class,'employee_id') ;
+    public function user_one_to_many_receipt()
+    {
+        return $this->hasMany(Receipt::class, 'employee_id');
     }
 
-    public function user_one_to_many_receiptreturn(){
-        return $this->hasMany(ReceiptReturn::class,'employee_id') ;
+    public function user_one_to_many_receiptreturn()
+    {
+        return $this->hasMany(ReceiptReturn::class, 'employee_id');
     }
 
-    public function user_one_to_many_expense(){
-        return $this->hasMany(Expense::class,'employee_id') ; 
+    public function user_one_to_many_expense()
+    {
+        return $this->hasMany(Expense::class, 'employee_id');
+    }
+
+    public function user_one_to_many_cancelbyemployee()
+    {
+        return $this->hasMany(Cancelbyemployee::class, 'employee_id');
     }
 
 

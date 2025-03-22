@@ -28,8 +28,8 @@
     </style>
 
 
-    
 
+    
 
     <ol class="breadcrumb" style="background-color: transparent;">
         <li class="breadcrumb-item">
@@ -37,10 +37,10 @@
         </li>
         <li class="breadcrumb-item">
             <a href="{{ route('admin.typedress', ['id' => $datadress->type_dress_id]) }}"
-                style="color: black ;">ประเภท{{$name_type}}</a>
+                style="color: black ;">ประเภท{{ $name_type }}</a>
         </li>
         <li class="breadcrumb-item active">
-            รายละเอียด{{$name_type}} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
+            รายละเอียด{{ $name_type }} {{ $datadress->dress_code_new }}{{ $datadress->dress_code }}
         </li>
     </ol>
 
@@ -116,14 +116,15 @@
                     รายละเอียดชุด
                 </div>
                 <div>
-                    
-                    <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#stopRentalModal"
+
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal"
+                        data-target="#stopRentalModal"
                         @if ($check_admin == 1) @if ($datadress->dress_status == 'ยุติการให้เช่า' || $datadress->dress_status == 'สูญหาย')
                                 style="display: none ; "
                             @else
                                 style="display: block ; " @endif
                     @elseif($check_admin == 0) style="display: none ; " @endif>
-                        <i class="fas fa-stop"></i> ยุติการให้เช่า
+                        <i class="fas fa-stop"></i> ยกเลิกให้เช่า
                     </button>
 
                     <button type="button" class="btn btn-sm btn-outline-success" data-toggle="modal"
@@ -136,7 +137,7 @@
                         <i class="fas fa-stop"></i> เปิดให้เช่าอีกครั้ง
                     </button>
 
-                    
+
                 </div>
             </div>
 
@@ -185,7 +186,7 @@
                     <div class="modal-content shadow-lg border-0 rounded-3">
                         <div class="modal-header bg-danger text-white d-flex align-items-center">
                             <i class="fas fa-exclamation-triangle me-2 fa-lg"></i>
-                            <h5 class="modal-title" id="stopRentalModalLabel">ยืนยันการยุติการให้เช่า</h5>
+                            <h5 class="modal-title" id="stopRentalModalLabel">ยืนยันการยกเลิกให้เช่า</h5>
                             <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -193,7 +194,7 @@
                         <div class="modal-body text-center">
                             <i class="fas fa-exclamation-circle text-danger fa-3x mb-3"></i>
                             <p class="fs-5 mt-3">
-                                คุณแน่ใจหรือไม่ว่าต้องการยุติการให้เช่าชุดนี้?
+                                คุณแน่ใจหรือไม่ว่าต้องการยกเลิกให้เช่าชุดนี้?
                                 <span class="text-danger fw-bold">หากต้องการ สามารถเปิดให้เช่าอีกครั้งในภายหลังได้</span>
                             </p>
                         </div>
@@ -202,7 +203,8 @@
                                 <strong>มีลูกค้าที่จองชุดนี้ไว้ {{ $reser_dress_stopRent->count() }} คน</strong>
                                 <ul class="mt-2">
                                     @foreach ($reser_dress_stopRent as $item)
-                                        <li style="font-size : 14px;">คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }}
+                                        <li style="font-size : 14px;">
+                                            คุณ{{ $item->re_one_many_details->first()->order->customer->customer_fname }}
                                             {{ $item->re_one_many_details->first()->order->customer->customer_lname }}
                                             <span style="font-size : 14px;">(นัดรับวันที่
                                                 {{ \Carbon\Carbon::parse($item->start_date)->isoFormat('D MMM') }}
@@ -212,7 +214,7 @@
                                 </ul>
                                 <p class="text-danger fw-bold mt-2">**กรุณาพิจารณาผลกระทบก่อนยืนยันการดำเนินการ
                                     และติดต่อแจ้งลูกค้าหลังจากที่ยุติการให้เช่า</p>
-                                
+
                             </div>
                         @endif
                         <div class="modal-footer d-flex justify-content-center">
@@ -296,7 +298,7 @@
                                     </script>
 
 
-                                    
+
 
 
                             </div>
@@ -364,7 +366,7 @@
                     </div>
                     <div class="col-md-4">
                         <p><strong>ประเภทชุด:</strong> {{ $name_type }}</p>
-                        
+
 
 
                         @if ($datadress->dress_price == 0)
@@ -372,15 +374,11 @@
                         @else
                             <p><strong>ราคาเช่า:</strong> {{ number_format($datadress->dress_price, 2) }} บาท
                                 <button class="btn btn-link p-0 ml-2" data-toggle="modal" data-target="#edittotal"
-                                    @if ($check_admin == 1) 
-                                        @if($datadress->dress_status == 'ยุติการให้เช่า' || $datadress->dress_status == 'สูญหาย')
+                                    @if ($check_admin == 1) @if ($datadress->dress_status == 'ยุติการให้เช่า' || $datadress->dress_status == 'สูญหาย')
                                         style="display: none ; " 
                                         @else
-                                            style="display: inline-block ;"
-                                        @endif
-                                    @elseif($check_admin == 0) 
-                                        style="display: none ; " 
-                                    @endif>
+                                            style="display: inline-block ;" @endif
+                                @elseif($check_admin == 0) style="display: none ; " @endif>
                                     <i class="bi bi-pencil-square" style="color: rgb(138, 136, 136);"></i>
                                 </button>
                             </p>
@@ -444,15 +442,11 @@
 
                         <p><strong>คำอธิบายชุด:</strong><span><button class="btn btn-link p-0 ml-2" data-toggle="modal"
                                     data-target="#editdes"
-                                    @if ($check_admin == 1) 
-                                        @if($datadress->dress_status == 'ยุติการให้เช่า' || $datadress->dress_status == 'สูญหาย')
+                                    @if ($check_admin == 1) @if ($datadress->dress_status == 'ยุติการให้เช่า' || $datadress->dress_status == 'สูญหาย')
                                  style="display: none ; " 
                                         @else
-                                                           style="display: inline-block ;"
-                                        @endif
-                                    @elseif($check_admin == 0) 
-                                        style="display: none ; " 
-                                    @endif>
+                                                           style="display: inline-block ;" @endif
+                                @elseif($check_admin == 0) style="display: none ; " @endif>
                                     <i class="bi bi-pencil-square" style="color: rgb(138, 136, 136);"></i>
                                 </button>
                                 <br>
@@ -496,24 +490,24 @@
 
                 </div>
 
-                <li>
-                <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}" class="text-dark">
-                    <i class="bi bi-clock-history"></i> ประวัติการเช่า
+                <a>
+                    <a href="{{ route('admin.historydressrent', ['id' => $datadress->id]) }}" class="text-dark btn btn-sm btn-outline-primary mt-2">
+                        <i class="bi bi-clock-history"></i> ประวัติการเช่า
+                    </a>
+
                 </a>
-                
-                </li>
-                <li>
-                <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}" class="text-dark">
-                    <i class="bi bi-tools"></i> ประวัติการซ่อม
+                <a>
+                    <a href="{{ route('admin.historydressrepair', ['id' => $datadress->id]) }}" class="text-dark btn btn-sm btn-outline-danger mt-2">
+                        <i class="bi bi-tools"></i> ประวัติการซ่อม
+                    </a>
                 </a>
-                </li>
-                
-                <li @if ($check_admin == 0) style="visibility: hidden;" @endif>
-                <a href="#" data-toggle="modal" data-target="#priceHistoryModal" class="text-dark">
-                    <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
+
+                <a @if ($check_admin == 0) style="visibility: hidden;" @endif>
+                    <a href="#" data-toggle="modal" data-target="#priceHistoryModal" class="text-dark btn btn-sm btn-outline-warning mt-2">
+                        <i class="fas fa-history"></i> ประวัติการปรับแก้ไขราคาเช่า
+                    </a>
+
                 </a>
-                
-                </li>
 
 
             </div>
@@ -580,60 +574,53 @@
 
 
 
-             <!-- Modals for success and failure messages -->
-             <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true" data-backdrop="static">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content border-0 shadow-lg rounded-lg">
-                        <div class="modal-header bg-success text-white">
-                            <h5 class="modal-title"><i class="bi bi-check-circle-fill"></i> สำเร็จ</h5>
-        
-                        </div>
-                        <div class="modal-body text-center p-4">
-                            <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
-                            <p class="mt-3 text-success fw-bold">{{ session('success') }}</p>
-                        </div>
-                        <div class="modal-footer border-0 justify-content-center">
-                            <button type="button" class="btn btn-success px-4" data-dismiss="modal">ตกลง</button>
-                        </div>
-                    </div>
+    <!-- Modals for success and failure messages -->
+    <div class="modal fade" id="showsuccessss" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-lg">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-check-circle-fill"></i> สำเร็จ</h5>
+
+                </div>
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                    <p class="mt-3 text-success fw-bold">{{ session('success') }}</p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-success px-4" data-dismiss="modal">ตกลง</button>
                 </div>
             </div>
-        
-        
-            <div class="modal fade" id="showfail" role="dialog" aria-hidden="true" data-backdrop="static">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content border-0 shadow-lg rounded-lg">
-                        <div class="modal-header bg-danger text-white">
-                            <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill"></i> เกิดข้อผิดพลาด</h5>
-                        </div>
-                        <div class="modal-body text-center p-4">
-                            <i class="bi bi-x-circle-fill text-danger" style="font-size: 3rem;"></i>
-                            <p class="mt-3 text-danger fw-bold">{{ session('fail') }}</p>
-                        </div>
-                        <div class="modal-footer border-0 justify-content-center">
-                            <button type="button" class="btn btn-danger px-4" data-dismiss="modal">ปิด</button>
-                        </div>
-                    </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="showfail" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill"></i> ไม่สามารถยุติการให้เช่าได้</h5>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-x-circle-fill text-danger" style="font-size: 3rem;"></i>
+                    <p class="mt-3 text-danger fw-bold">{{ session('fail') }}</p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-danger px-4" data-dismiss="modal">ปิด</button>
                 </div>
             </div>
-        
-            <script>
-                @if (session('success'))
-                    setTimeout(function() {
-                        $('#showsuccessss').modal('show');
-                    }, 500);
-                @endif
-                @if (session('fail'))
-                    setTimeout(function() {
-                        $('#showfail').modal('show');
-                    }, 500);
-                @endif
-            </script>
-        
+        </div>
+    </div>
 
-
-
-
-
-
+    <script>
+        @if (session('success'))
+            setTimeout(function() {
+                $('#showsuccessss').modal('show');
+            }, 500);
+        @endif
+        @if (session('fail'))
+            setTimeout(function() {
+                $('#showfail').modal('show');
+            }, 500);
+        @endif
+    </script>
 @endsection

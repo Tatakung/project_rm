@@ -110,7 +110,7 @@
                 <table class="info-box" style="width: 100%;">
                     <tr>
                         <td>
-                            เลขที่ใบเสร็จ: {{ $receipt->id }}<span style="float: right;">เล่มที่01-21032025</span><br>
+                            เลขที่ใบเสร็จ: {{ $receipt->id }}<span style="float: right;">เล่มที่: 01-{{ \Carbon\Carbon::parse($receipt->created_at)->year }}</span><br>
                             วันที่: {{ \Carbon\Carbon::parse($receipt->created_at)->locale('th')->isoFormat('D MMM') }}
                             {{ \Carbon\Carbon::parse($receipt->created_at)->year + 543 }}
                             <br>

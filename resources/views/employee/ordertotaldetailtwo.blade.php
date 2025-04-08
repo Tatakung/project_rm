@@ -448,7 +448,9 @@
                                 <span style="color: red ; font-size: 12px;">ยกเลิกเมื่อ:
                                     {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->locale('th')->isoFormat('D MMM') }}
                                     {{ \Carbon\Carbon::parse($status_orderdetail->created_at)->year + 543 }} <br>
+                                    @if($item->orderdetail_one_to_one_cancelbyeemployee->cancelbyemployee_many_to_one_user != null)
                                     พนักงานที่ยกเลิก : {{$item->orderdetail_one_to_one_cancelbyeemployee->cancelbyemployee_many_to_one_user->name}} {{$item->orderdetail_one_to_one_cancelbyeemployee->cancelbyemployee_many_to_one_user->lname}}
+                                    @endif
                                 </span>
                                 
                             @endif

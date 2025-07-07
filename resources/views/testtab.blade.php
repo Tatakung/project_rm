@@ -3,15 +3,19 @@
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item">
             <a class="nav-link active" id="dress-tab" data-toggle="tab" href="#dress" role="tab" aria-controls="dress"
-                aria-selected="true">ข้อมูลชุด</a>
+                aria-selected="true">ใบนำโครงการ</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="shirt-tab" data-toggle="tab" href="#shirt" role="tab" aria-controls="shirt"
-                aria-selected="false">ข้อมูลเสื้อ</a>
+                aria-selected="false">ข้อมูลโครงการ</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="pants-tab" data-toggle="tab" href="#pants" role="tab" aria-controls="pants"
-                aria-selected="false">ข้อมูลกางเกง</a>
+                aria-selected="false">แผนการดำเนินงานประจำปี</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="pants-tab" data-toggle="tab" href="#pants" role="tab" aria-controls="pants"
+                aria-selected="false">แผนงานค่าใช้จ่ายประจำปี</a>
         </li>
     </ul>
 
@@ -55,29 +59,29 @@
         <!-- Nav tabs -->
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#home">Home</a>
+                <a class="nav-link active" data-toggle="tab" href="#home">ใบนำโครงการ</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#profile">Profile</a>
+                <a class="nav-link" data-toggle="tab" href="#profile">ข้อมูลโครงการ</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#contact">Contact</a>
+                <a class="nav-link" data-toggle="tab" href="#contact">แผนการดำเนินงานประจำปี</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#contact">แผนงานค่าใช้จ่ายประจำปี</a>
             </li>
         </ul>
         <!-- Tab content -->
         <div class="tab-content">
 
             <div class="tab-pane active" id="home">
-                <h3>Home Content</h3>
-                <p>This is the content for the Home tab.</p>
+               
             </div>
             <div class="tab-pane" id="profile">
-                <h3>Profile Content</h3>
-                <p>This is the content for the Profile tab.</p>
+            
             </div>
             <div class="tab-pane" id="contact">
-                <h3>Contact Content</h3>
-                <p>This is the content for the Contact tab.</p>
+             
             </div>
         </div>
     </div>

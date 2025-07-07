@@ -28,6 +28,15 @@
     </style>
 
 
+<div>
+    <p style="white-space: pre-wrap;">{{$datadress->dress_color}}</p>
+</div>
+
+<div>
+    <p>{!! nl2br(e($datadress->dress_color)) !!}</p>
+</div>
+
+
 
     
 

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>ใบเสร็จรับเงิน</title>
@@ -9,7 +8,6 @@
             font-family: 'THSarabunNew';
             src: url({{ storage_path('fonts/THSarabunNew.ttf') }}) format('truetype');
         }
-
         body {
             font-family: 'THSarabunNew';
             font-size: 19px;
